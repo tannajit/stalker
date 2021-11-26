@@ -20,6 +20,7 @@ import { ClientsComponent } from './clients/clients.component';
 import { RoutesComponent } from './routes/routes.component';
 import { HomeComponent } from './home/home.component';
 import { PlanningComponent } from './planning/planning.component';
+import { UpperMenuComponent } from './upper-menu/upper-menu.component';
 
 
 
@@ -32,7 +33,8 @@ import { PlanningComponent } from './planning/planning.component';
     ClientsComponent,
     RoutesComponent,
     HomeComponent,
-    PlanningComponent
+    PlanningComponent,
+    UpperMenuComponent
 
   ],
   imports: [

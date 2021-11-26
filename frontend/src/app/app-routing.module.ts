@@ -8,6 +8,7 @@ import { ClientsComponent } from './clients/clients.component';
 import { RoutesComponent } from './routes/routes.component';
 import { HomeComponent } from './home/home.component';
 import { PlanningComponent } from './planning/planning.component';
+import { UpperMenuComponent } from './upper-menu/upper-menu.component';
 
 
 
@@ -35,7 +36,10 @@ const routes: Routes = [
   },
   {
     path: 'planning', component: PlanningComponent
-  }
+  },
+  // {
+  //   path: 'upper', component: UpperMenuComponent
+  // }
 ];
 
 @NgModule({
