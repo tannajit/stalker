@@ -8,9 +8,10 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-
   hide: boolean = false;
   constructor(private fb: FormBuilder,private _auth:AuthenticationService,private _router:Router) { }
+
+  
   ngOnInit(){
 
   }

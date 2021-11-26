@@ -1,4 +1,4 @@
-<mat-sidenav-container fullscreen>
+<mat-sidenav-container fullscreen class="side-nav">
 	<mat-sidenav
 		#sidenav
 		mode="side"
@@ -17,7 +17,7 @@
 				</div>
                 
             </mat-list-item>
-			<mat-list-item routerLink="map" routerLinkActive="active">
+			<mat-list-item routerLink="/" routerLinkActive="active">
 				<mat-icon mat-list-icon>location_on</mat-icon>
 				<div fxFlex="10"></div>
 				<div *ngIf="sidenavWidth > 6" class="sidenav-item">

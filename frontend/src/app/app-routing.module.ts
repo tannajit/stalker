@@ -9,6 +9,7 @@ import { RoutesComponent } from './routes/routes.component';
 import { HomeComponent } from './home/home.component';
 import { PlanningComponent } from './planning/planning.component';
 import { AuthGaurdService } from './auth-gaurd.service';
+import { UpperMenuComponent } from './upper-menu/upper-menu.component';
 
 
 
@@ -42,6 +43,9 @@ const routes: Routes = [
     path: 'planning', component: PlanningComponent,
     canActivate: [AuthGaurdService]
   }
+  // {
+  //   path: 'upper', component: UpperMenuComponent
+  // }
 ];
 
 @NgModule({

@@ -1,5 +1,5 @@
 mat-card {
-    max-width: 600px;
+    max-width: 500px;
     margin: 2em auto;
     text-align: center;
     max-height: 600px;
@@ -34,6 +34,7 @@ mat-card {
   
   .emailInput{
     padding-top: 10px;
+  
   }
   
   .contentBody {
@@ -52,3 +53,4 @@ mat-card {
   .mat-flat-button{
       background-color: #27AE61;
   }
+ 

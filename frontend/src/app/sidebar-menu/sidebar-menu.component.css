@@ -18,6 +18,10 @@
 	font-size: 30px;
 }
 
+.side-nav{
+    position: fixed;
+}
+
 mat-icon {
 	color: white;
 }
