@@ -25,6 +25,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { AuthenticationService } from './authentication.service';
 import { AuthGaurdService } from './auth-gaurd.service';
 import { UpperMenuComponent } from './upper-menu/upper-menu.component';
+import { TestComponent } from './test/test.component';
+import { MatMenuModule} from '@angular/material/menu';
 
 
 
@@ -38,7 +40,8 @@ import { UpperMenuComponent } from './upper-menu/upper-menu.component';
     RoutesComponent,
     HomeComponent,
     PlanningComponent,
-    UpperMenuComponent
+    UpperMenuComponent,
+    TestComponent
 
   ],
   imports: [
@@ -56,6 +59,7 @@ import { UpperMenuComponent } from './upper-menu/upper-menu.component';
     ReactiveFormsModule,
     MatIconModule,
     RouterModule,
+    MatMenuModule,
     AppRoutingModule,
     MatGridListModule,
     
