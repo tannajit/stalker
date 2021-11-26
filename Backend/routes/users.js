@@ -66,7 +66,7 @@ async function getUser(user){
   var FindUser;
   let collection= db.collection("users")
   var status={value:401,data:null}
-  var FindUser= await collection.findOne({name:user.name})
+  var FindUser= await collection.findOne({email:user.email})
   if(FindUser!=null){
     console.log('find')
     var valid=await ValidPassword(user.password,FindUser.password)
@@ -74,7 +74,7 @@ async function getUser(user){
       let playload={subject: user._id}
       let token=jwt.sign(playload,'secretKey')
       status.value=200
-      status.data=token
+      status.data={token}
       //console.log(token)
     }else{
       status.value=401

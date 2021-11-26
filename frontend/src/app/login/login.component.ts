@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormGroup,FormBuilder,Validators}  from '@angular/forms'
+import { AuthenticationService } from '../authentication.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -8,7 +10,7 @@ import {FormGroup,FormBuilder,Validators}  from '@angular/forms'
 export class LoginComponent implements OnInit {
 
   hide: boolean = false;
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder,private _auth:AuthenticationService,private _router:Router) { }
   ngOnInit(){
 
   }
@@ -21,8 +23,27 @@ export class LoginComponent implements OnInit {
   onLogin(){
     if (!this.loginForm.valid) {
       return;
+    }else{
+            var email=this.loginForm.value.email;
+            var password=this.loginForm.value.password;
+            console.log(email,password)
+            var user={
+              'email':email,
+              'password':password}
+            this._auth.getUserLogin(user).subscribe(
+                  res=> this.Response(res),
+                  err=>console.log(err));
+        }
     }
-    console.log(this.loginForm.value);
 
-  }
+
+    // Store Token and delegate to Home page
+    Response(res){
+      localStorage.setItem('token', res.Data.token)
+      console.log(this._auth.getToken())
+      this._router.navigate([''])
+    }
+    
+
+  
 }

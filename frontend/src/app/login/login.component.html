@@ -3,7 +3,7 @@
       <div class="header">
         <P>Sign in  </P>
       </div>
-      <form (ngSubmit)="onLogin()" name="loginForm" [formGroup]="loginForm">
+      <form  name="loginForm" [formGroup]="loginForm">
         <div class="emailInput">
           <mat-form-field class="full-width" appearance="outline">
             <mat-label>Email</mat-label>
@@ -36,7 +36,7 @@
             </mat-error>
           </mat-form-field>
         </div>
-        <button mat-flat-button color="primary">Sign in</button>
+        <button mat-flat-button color="primary" (click)="onLogin()">Sign in</button>
       </form>
     </mat-card-content>
   </mat-card>

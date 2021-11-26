@@ -8,6 +8,7 @@ import { ClientsComponent } from './clients/clients.component';
 import { RoutesComponent } from './routes/routes.component';
 import { HomeComponent } from './home/home.component';
 import { PlanningComponent } from './planning/planning.component';
+import { AuthGaurdService } from './auth-gaurd.service';
 
 
 
@@ -15,26 +16,31 @@ const routes: Routes = [
   {
     path :'',
     component:HomeComponent,
-    pathMatch: 'full' 
+    pathMatch: 'full' ,
+    canActivate: [AuthGaurdService]
   },
   {
     path:'login',
     component:LoginComponent
   },
   {
-    path: 'menu', component: SidebarMenuComponent
+    path: 'menu', component: SidebarMenuComponent,
+    canActivate: [AuthGaurdService]
   },
   {
-    path: 'map', component: MapComponent
+    path: 'map', component: MapComponent,
+    canActivate: [AuthGaurdService]
   },
   {
     path: 'clients', component: ClientsComponent
   },
   {
-    path: 'routes', component: RoutesComponent
+    path: 'routes', component: RoutesComponent,
+    canActivate: [AuthGaurdService]
   },
   {
-    path: 'planning', component: PlanningComponent
+    path: 'planning', component: PlanningComponent,
+    canActivate: [AuthGaurdService]
   }
 ];
 

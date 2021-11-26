@@ -20,6 +20,9 @@ import { ClientsComponent } from './clients/clients.component';
 import { RoutesComponent } from './routes/routes.component';
 import { HomeComponent } from './home/home.component';
 import { PlanningComponent } from './planning/planning.component';
+import { HttpClientModule } from '@angular/common/http';
+import { AuthenticationService } from './authentication.service';
+import { AuthGaurdService } from './auth-gaurd.service';
 
 
 
@@ -42,6 +45,7 @@ import { PlanningComponent } from './planning/planning.component';
     MatToolbarModule,
     MatSidenavModule,
     MatButtonModule,
+    HttpClientModule,
     MatListModule,
     MatDividerModule,
     MatCardModule,
@@ -51,7 +55,7 @@ import { PlanningComponent } from './planning/planning.component';
     RouterModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [AuthenticationService,AuthGaurdService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
