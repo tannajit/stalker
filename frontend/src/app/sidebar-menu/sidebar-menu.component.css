@@ -1,0 +1,32 @@
+.example-sidenav-content {
+	display: flex;
+	height: 100vh;
+	align-items: center;
+	justify-content: center;
+}
+
+.example-sidenav {
+	background-color: #27AE61;
+    border-radius: 0px 30px 30px 0px;
+}
+.active {
+	background-color: rgba(9, 30, 66, 0.25);
+}
+
+.sidenav-item {
+	color: white;
+	font-size: 30px;
+}
+
+.side-nav{
+    position: fixed;
+}
+
+mat-icon {
+	color: white;
+}
+.logo{
+    width: 90px;
+    height: auto;
+}
+

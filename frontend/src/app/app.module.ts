@@ -13,13 +13,30 @@ import { MatIconModule}  from '@angular/material/icon'
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './login/login.component';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
+import {MatDividerModule} from '@angular/material/divider'
+import { MatListModule } from '@angular/material/list';
+import { MapComponent } from './map/map.component';
+import { ClientsComponent } from './clients/clients.component';
+import { RoutesComponent } from './routes/routes.component';
+import { HomeComponent } from './home/home.component';
+import { PlanningComponent } from './planning/planning.component';
+import { UpperMenuComponent } from './upper-menu/upper-menu.component';
 
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    SidebarMenuComponent,
+    LoginComponent,
+    MapComponent,
+    ClientsComponent,
+    RoutesComponent,
+    HomeComponent,
+    PlanningComponent,
+    UpperMenuComponent
+
   ],
   imports: [
     BrowserModule,
@@ -28,6 +45,8 @@ import { MatGridListModule } from '@angular/material/grid-list';
     MatToolbarModule,
     MatSidenavModule,
     MatButtonModule,
+    MatListModule,
+    MatDividerModule,
     MatCardModule,
     MatInputModule,
     ReactiveFormsModule,
