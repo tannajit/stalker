@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SidebarMenuComponent } from './sidebar-menu.component';
+import { RoutesComponent } from './routes.component';
 
-describe('SidebarMenuComponent', () => {
-  let component: SidebarMenuComponent;
-  let fixture: ComponentFixture<SidebarMenuComponent>;
+describe('RoutesComponent', () => {
+  let component: RoutesComponent;
+  let fixture: ComponentFixture<RoutesComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SidebarMenuComponent ]
+      declarations: [ RoutesComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SidebarMenuComponent);
+    fixture = TestBed.createComponent(RoutesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -22,7 +22,4 @@ describe('SidebarMenuComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  
 });
-
