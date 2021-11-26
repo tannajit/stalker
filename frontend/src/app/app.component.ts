@@ -8,5 +8,10 @@ import { AuthenticationService } from './authentication.service';
 })
 export class AppComponent {
   title = 'frontend';
-  constructor(private _auth:AuthenticationService){}
+  constructor(private _auth:AuthenticationService){
+  
+  }
+  getLogged(){
+    return this._auth.loggedIn()
+  }
 }

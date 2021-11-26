@@ -1,5 +1,6 @@
 <div class="app-view">
     <app-upper-menu></app-upper-menu>
-    <app-sidebar-menu></app-sidebar-menu>
+    <app-sidebar-menu *ngIf="getLogged()"></app-sidebar-menu>
+    <app-map></app-map>
     <router-outlet></router-outlet>
 </div>

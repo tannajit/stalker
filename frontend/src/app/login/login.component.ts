@@ -7,11 +7,11 @@ import { Router } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
+
 export class LoginComponent implements OnInit {
   hide: boolean = false;
   constructor(private fb: FormBuilder,private _auth:AuthenticationService,private _router:Router) { }
 
-  
   ngOnInit(){
 
   }
@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
                   res=> this.Response(res),
                   err=>console.log(err));
         }
-    }
+  }
 
 
     // Store Token and delegate to Home page
@@ -46,5 +46,4 @@ export class LoginComponent implements OnInit {
     }
     
 
-  
 }

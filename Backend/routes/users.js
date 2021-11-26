@@ -6,12 +6,12 @@ var salt=5 //any random value,  the salt value specifies how much time it’s go
 
 // MongoDataBase
 const MongoClient = require("mongodb").MongoClient;
-//var uri= "mongodb://192.168.2.230:27017"; // uri to your Mongo database if the server is available
-var uri="mongodb://localhost:27017"  // use your local Mongodb
+var uri= "mongodb://192.168.2.230:27017"; // uri to your Mongo database if the server is available
+//var uri="mongodb://localhost:27017"  // use your local Mongodb
 var client = new MongoClient(uri);
 var db; // database 
 var name_database="stalker1"
-var arraValues=[] // this array where we gonna put the docume
+var arraValues=[] // this array where we gonna put the document 
 async function run() {
 	try {
 		var t=await client.connect();
@@ -90,12 +90,10 @@ async function getUser(user){
 
 }
 
-
 /* GET users listing. */
 router.get('/', async function(req, res) {
   res.json("hey");
 });
-
 
 router.post('/login',async(req,res)=>{
   let user=req.body;
@@ -111,14 +109,13 @@ router.post('/register',async(req,res)=>{
 
 })
 
-
 async function ValidPassword(passwordG,passwordD){
     var result= await bcrypt.compare(passwordG,passwordD)
-     return(result);
-   
+     return(result); 
 }
+
 /*   var validPassword = await bcrypt.compare("Hafsa123",enc_password);
      console.log(validPassword)
-  */
+*/
 
 module.exports = router;
