@@ -5,7 +5,7 @@
 		class="example-sidenav"
 		[ngStyle]="{ 'width.em': sidenavWidth }"
 		opened="true"
-		(mouseenter)="increase()"
+		(click)="increase()"
 		(mouseleave)="decrease()"
 	>
 		<mat-nav-list>
@@ -66,7 +66,7 @@
             <div fxFlex="100%"  class="flexExpand"></div>
             <span style="font-size: 16px; color: #323030;">Ennaji Fadma</span>
             <button mat-icon-button [matMenuTriggerFor]="logout" 
-                #menuTrigger="matMenuTrigger" (mouseover)="menuTrigger.openMenu()">
+                #menuTrigger="matMenuTrigger" (click)="menuTrigger.openMenu()">
 
                 <mat-icon style="color: #323030;">keyboard_arrow_down</mat-icon>
 
