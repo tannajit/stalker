@@ -16,7 +16,7 @@ import { UpperMenuComponent } from './upper-menu/upper-menu.component';
 const routes: Routes = [
   {
     path :'',
-    component:HomeComponent,
+    component:MapComponent,
     pathMatch: 'full' ,
     canActivate: [AuthGaurdService]
   },
