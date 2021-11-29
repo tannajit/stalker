@@ -2,10 +2,11 @@
 var express = require('express');
 var router = express.Router();
 const MongoClient = require("mongodb").MongoClient;
-var uri= "mongodb://localhost:27017"; // uri to your Mongo database
+var uri= "mongodb://192.168.2.230:27017"; 
+//var uri= "mongodb://localhost:27017"; // uri to your Mongo database
 var client = new MongoClient(uri);
 var db; // database 
-var name_database="ttest"
+var name_database="stalker1"
 var arraValues=[] // this array where we gonna put the docume
 async function run() {
 	try {
