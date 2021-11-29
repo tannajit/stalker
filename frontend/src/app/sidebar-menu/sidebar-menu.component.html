@@ -9,7 +9,7 @@
 		(mouseleave)="decrease()"
 	>
 		<mat-nav-list>
-            <mat-list-item>
+            <mat-list-item routerLink="map">
                 <mat-icon mat-list-icon>dehaze</mat-icon>
                 <div fxFlex="10"></div>
                 <div *ngIf="sidenavWidth > 6" class="sidenav-item">
@@ -45,7 +45,7 @@
                 <mat-list-item routerLink="planning" routerLinkActive="active">
                     <mat-icon mat-list-icon>edit_calendar</mat-icon>
                     <div fxFlex="10"></div>
-                    <div *ngIf="sidenavWidth > 6" class="sidenav-item">
+                    <div *ngIf="sidenavWidth> 6" class="sidenav-item">
                         <h5>Planning</h5>
                     </div>
                 </mat-list-item>    
@@ -56,6 +56,7 @@
 	</mat-sidenav>
 
 	<div class="example-sidenav-content">
+
         <mat-toolbar color="primary" class="tool" fxLayout fxLayoutGap="16px">
             <!-- <button mat-icon-button>
                 <mat-icon>menu</mat-icon>
@@ -64,7 +65,7 @@
                 <mat-icon>arrow_back</mat-icon>
             </a> -->
             <div fxFlex="100%"  class="flexExpand"></div>
-            <span style="font-size: 16px; color: #323030;">Ennaji Fadma</span>
+            <span style="font-size: 16px; color: #323030;">Auditor Hicham</span>
             <button mat-icon-button [matMenuTriggerFor]="logout" 
                 #menuTrigger="matMenuTrigger" (click)="menuTrigger.openMenu()">
 
@@ -81,6 +82,10 @@
             </mat-menu>
         
         </mat-toolbar>
-		<router-outlet></router-outlet>
+        
+        <div class="body" >
+            <router-outlet></router-outlet>
+        </div>
+		
 	</div>
 </mat-sidenav-container>
