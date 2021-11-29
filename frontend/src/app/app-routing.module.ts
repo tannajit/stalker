@@ -14,11 +14,9 @@ import { UpperMenuComponent } from './upper-menu/upper-menu.component';
 
 
 const routes: Routes = [
+  
   {
-    path :'',
-    component:MapComponent,
-    pathMatch: 'full' ,
-    canActivate: [AuthGaurdService]
+    path: '', redirectTo: 'map', pathMatch: 'full', canActivate: [AuthGaurdService]
   },
   {
     path:'login',
