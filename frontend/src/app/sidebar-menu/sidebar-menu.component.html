@@ -1,4 +1,4 @@
-<mat-sidenav-container fullscreen class="side-nav">
+<mat-sidenav-container fullscreen>
 	<mat-sidenav
 		#sidenav
 		mode="side"
@@ -21,7 +21,7 @@
 				<mat-icon mat-list-icon>location_on</mat-icon>
 				<div fxFlex="10"></div>
 				<div *ngIf="sidenavWidth > 6" class="sidenav-item">
-					<h5>Map</h5>
+					<span>Map</span>
 				</div>
 			</mat-list-item>
 
@@ -29,7 +29,7 @@
 				<mat-icon mat-list-icon>store</mat-icon>
 				<div fxFlex="10"></div>
 				<div *ngIf="sidenavWidth > 6" class="sidenav-item">
-					<h5>Clients</h5>
+					<span>Clients</span>
 				</div>
 			</mat-list-item>
 
@@ -37,7 +37,7 @@
 				<mat-icon mat-list-icon>route</mat-icon>
 				<div fxFlex="10"></div>
 				<div *ngIf="sidenavWidth > 6" class="sidenav-item">
-					<h5>Routes</h5>
+					<span>Routes</span>
 				</div>
 			</mat-list-item>
 
@@ -46,7 +46,7 @@
                     <mat-icon mat-list-icon>edit_calendar</mat-icon>
                     <div fxFlex="10"></div>
                     <div *ngIf="sidenavWidth> 6" class="sidenav-item">
-                        <h5>Planning</h5>
+                        <span>Planning</span>
                     </div>
                 </mat-list-item>    
             </div>

@@ -29,12 +29,14 @@
 
 .sidenav-item {
 	color: white;
-	font-size: 40px;
+	font-size: 16px;
+}
+.sidenav-item span{
+    margin-left: 9px;
 }
 
-.side-nav{
-    position: fixed;
-}
+
+
 
 mat-icon {
 	color: white;
