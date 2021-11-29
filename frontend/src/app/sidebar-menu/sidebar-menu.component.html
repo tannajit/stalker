@@ -1,0 +1,86 @@
+<mat-sidenav-container fullscreen class="side-nav">
+	<mat-sidenav
+		#sidenav
+		mode="side"
+		class="example-sidenav"
+		[ngStyle]="{ 'width.em': sidenavWidth }"
+		opened="true"
+		(click)="increase()"
+		(mouseleave)="decrease()"
+	>
+		<mat-nav-list>
+            <mat-list-item>
+                <mat-icon mat-list-icon>dehaze</mat-icon>
+                <div fxFlex="10"></div>
+                <div *ngIf="sidenavWidth > 6" class="sidenav-item">
+                    <img src="/assets/images/stalker.png" alt="" class="logo">
+				</div>
+                
+            </mat-list-item>
+			<mat-list-item routerLink="map" routerLinkActive="active">
+				<mat-icon mat-list-icon>location_on</mat-icon>
+				<div fxFlex="10"></div>
+				<div *ngIf="sidenavWidth > 6" class="sidenav-item">
+					<h5>Map</h5>
+				</div>
+			</mat-list-item>
+
+			<mat-list-item routerLink="clients" routerLinkActive="active">
+				<mat-icon mat-list-icon>store</mat-icon>
+				<div fxFlex="10"></div>
+				<div *ngIf="sidenavWidth > 6" class="sidenav-item">
+					<h5>Clients</h5>
+				</div>
+			</mat-list-item>
+
+			<mat-list-item routerLink="routes" routerLinkActive="active">
+				<mat-icon mat-list-icon>route</mat-icon>
+				<div fxFlex="10"></div>
+				<div *ngIf="sidenavWidth > 6" class="sidenav-item">
+					<h5>Routes</h5>
+				</div>
+			</mat-list-item>
+
+            <div >
+                <mat-list-item routerLink="planning" routerLinkActive="active">
+                    <mat-icon mat-list-icon>edit_calendar</mat-icon>
+                    <div fxFlex="10"></div>
+                    <div *ngIf="sidenavWidth > 6" class="sidenav-item">
+                        <h5>Planning</h5>
+                    </div>
+                </mat-list-item>    
+            </div>
+            
+            
+		</mat-nav-list>
+	</mat-sidenav>
+
+	<div class="example-sidenav-content">
+        <mat-toolbar color="primary" class="tool" fxLayout fxLayoutGap="16px">
+            <!-- <button mat-icon-button>
+                <mat-icon>menu</mat-icon>
+            </button>
+            <a mat-icon-button>
+                <mat-icon>arrow_back</mat-icon>
+            </a> -->
+            <div fxFlex="100%"  class="flexExpand"></div>
+            <span style="font-size: 16px; color: #323030;">Ennaji Fadma</span>
+            <button mat-icon-button [matMenuTriggerFor]="logout" 
+                #menuTrigger="matMenuTrigger" (click)="menuTrigger.openMenu()">
+
+                <mat-icon style="color: #323030;">keyboard_arrow_down</mat-icon>
+
+            </button>
+            <!-- Drop down menu for logging out -->
+            <mat-menu #logout="matMenu" [overlapTrigger]="false">
+                <span (mouseleave)="menuTrigger.closeMenu()"></span>
+                <button mat-menu-item>
+                    <mat-icon>logout</mat-icon>
+                    <span>Logout</span>
+                </button>
+            </mat-menu>
+        
+        </mat-toolbar>
+		<router-outlet></router-outlet>
+	</div>
+</mat-sidenav-container>
