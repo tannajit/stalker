@@ -5,7 +5,7 @@
 		class="example-sidenav"
 		[ngStyle]="{ 'width.em': sidenavWidth }"
 		opened="true"
-		(mouseenter)="increase()"
+		(click)="increase()"
 		(mouseleave)="decrease()"
 	>
 		<mat-nav-list>
@@ -56,6 +56,31 @@
 	</mat-sidenav>
 
 	<div class="example-sidenav-content">
+        <mat-toolbar color="primary" class="tool" fxLayout fxLayoutGap="16px">
+            <!-- <button mat-icon-button>
+                <mat-icon>menu</mat-icon>
+            </button>
+            <a mat-icon-button>
+                <mat-icon>arrow_back</mat-icon>
+            </a> -->
+            <div fxFlex="100%"  class="flexExpand"></div>
+            <span style="font-size: 16px; color: #323030;">Ennaji Fadma</span>
+            <button mat-icon-button [matMenuTriggerFor]="logout" 
+                #menuTrigger="matMenuTrigger" (click)="menuTrigger.openMenu()">
+
+                <mat-icon style="color: #323030;">keyboard_arrow_down</mat-icon>
+
+            </button>
+            <!-- Drop down menu for logging out -->
+            <mat-menu #logout="matMenu" [overlapTrigger]="false">
+                <span (mouseleave)="menuTrigger.closeMenu()"></span>
+                <button mat-menu-item>
+                    <mat-icon>logout</mat-icon>
+                    <span>Logout</span>
+                </button>
+            </mat-menu>
+        
+        </mat-toolbar>
 		<router-outlet></router-outlet>
 	</div>
 </mat-sidenav-container>

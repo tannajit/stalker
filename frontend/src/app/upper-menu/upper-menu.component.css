@@ -76,10 +76,10 @@
           Adding hover effect
   ===================================================*/
   .dropdown-menu:hover~label{
-      background-color:#2581DC;
+      background-color:#fff;
   }
   nav a:hover{
-    background-color:#2581DC;  
+    background-color:#fff;  
     transition: all 0.5s ease 0s;
   }
   /*=================================================
