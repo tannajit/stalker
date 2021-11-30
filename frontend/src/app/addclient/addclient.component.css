@@ -1,0 +1,44 @@
+.checkcodes-container{
+    display: flex;
+    padding: 40px;
+    margin: 20px;
+    flex-flow: row wrap ;
+    justify-content: flex-start ;
+    align-items: center;
+    gap: 10px 20px; 
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    
+}
+.map-container{ 
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    
+}
+
+.action-button{
+    background-color: #27AE61;
+    border-radius: 12px;
+    border: 1px solid rgba(27, 31, 35, .15);
+    box-sizing: border-box;
+    box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+    color: #fff;
+    font-size: 14px;
+    line-height: 20px;
+    position: relative;
+    text-align: center;
+    width:100px;
+    height: 30px;
+}
+.check-button{
+   background-color: #FACF37; 
+   border-radius: 12px;
+   border: 1px solid rgba(27, 31, 35, .15);
+    box-sizing: border-box;
+    box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+    color: #fff;
+    font-size: 14px;
+    line-height: 20px;
+    position: relative;
+    text-align: center;
+    width:120px;
+    height: 30px;
+}

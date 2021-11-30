@@ -27,6 +27,8 @@ import { AuthGaurdService } from './auth-gaurd.service';
 import { UpperMenuComponent } from './upper-menu/upper-menu.component';
 import { TestComponent } from './test/test.component';
 import { MatMenuModule} from '@angular/material/menu';
+import { AddclientComponent } from './addclient/addclient.component';
+import { FormsModule } from '@angular/forms'
 
 
 
@@ -41,7 +43,8 @@ import { MatMenuModule} from '@angular/material/menu';
     HomeComponent,
     PlanningComponent,
     UpperMenuComponent,
-    TestComponent
+    TestComponent,
+    AddclientComponent
 
   ],
   imports: [
@@ -62,6 +65,7 @@ import { MatMenuModule} from '@angular/material/menu';
     MatMenuModule,
     AppRoutingModule,
     MatGridListModule,
+    FormsModule ,
     
   ],
   providers: [AuthenticationService,AuthGaurdService],

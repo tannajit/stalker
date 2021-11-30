@@ -21,4 +21,5 @@ export class SidebarMenuComponent implements OnInit {
 		this.sidenavWidth = 4;
 		console.log('decrease sidenav width');
 	}
+  
 }

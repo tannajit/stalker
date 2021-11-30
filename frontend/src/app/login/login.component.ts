@@ -36,14 +36,10 @@ export class LoginComponent implements OnInit {
                   err=>console.log(err));
         }
   }
-
-
     // Store Token and delegate to Home page
     Response(res){
       localStorage.setItem('token', res.Data.token)
       console.log(this._auth.getToken())
       this._router.navigate([''])
     }
-    
-
 }
