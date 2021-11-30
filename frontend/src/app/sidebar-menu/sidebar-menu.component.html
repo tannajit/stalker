@@ -1,21 +1,19 @@
 <mat-sidenav-container fullscreen>
-    <mat-sidenav #sidenav mode="side" class="example-sidenav" [ngStyle]="{ 'width.em': sidenavWidth }" opened="true"
-        (click)="increase()" (mouseleave)="decrease()">
-        <mat-nav-list>
+	<mat-sidenav
+		#sidenav
+		mode="side"
+		class="example-sidenav"
+		(click) = "sidenav.toggle()"
+		opened="false"
+	>
+		<mat-nav-list>
             <mat-list-item routerLink="map">
-                <mat-icon mat-list-icon>dehaze</mat-icon>
+                <mat-icon mat-list-icon>home</mat-icon>
                 <div fxFlex="10"></div>
                 <div *ngIf="sidenavWidth > 6" class="sidenav-item">
-                    <img src="/assets/images/stalker.png" alt="" class="logo">
-                </div>
-
-            </mat-list-item>
-            <mat-list-item routerLink="map" routerLinkActive="active">
-                <mat-icon mat-list-icon>location_on</mat-icon>
-                <div fxFlex="10"></div>
-                <div *ngIf="sidenavWidth > 6" class="sidenav-item">
-                    <span>Map</span>
-                </div>
+                    <span><img src="/assets/images/stalker.png" alt="" class="logo"></span>
+				</div>
+                
             </mat-list-item>
 
             <mat-list-item routerLink="client" routerLinkActive="active">
@@ -50,17 +48,20 @@
 
     <div class="example-sidenav-content">
 
-        <mat-toolbar color="primary" class="tool" fxLayout fxLayoutGap="16px">
-            <!-- <button mat-icon-button>
-                <mat-icon>menu</mat-icon>
+        
+        <mat-toolbar class="tool" fxLayout fxLayoutGap="16px">
+            <button mat-icon-button>
+                <mat-icon (click)="sidenav.toggle()" class="sidebar-toggle">menu</mat-icon>
             </button>
-            <a mat-icon-button>
-                <mat-icon>arrow_back</mat-icon>
-            </a> -->
-            <div fxFlex="100%" class="flexExpand"></div>
-            <span style="font-size: 16px; color: #323030;">Auditor Hicham</span>
-            <button mat-icon-button [matMenuTriggerFor]="logout" #menuTrigger="matMenuTrigger"
-                (click)="menuTrigger.openMenu()">
+            <!-- 
+                <a mat-icon-button>
+                    <mat-icon>arrow_back</mat-icon>
+                </a> 
+            -->
+            <div fxFlex="100%"  class="flexExpand"></div>
+            <span style="font-size: 12px; color: #444242;">Auditor Hicham</span>
+            <button mat-icon-button [matMenuTriggerFor]="logout" 
+                #menuTrigger="matMenuTrigger" (click)="menuTrigger.openMenu()">
 
                 <mat-icon style="color: #323030;">keyboard_arrow_down</mat-icon>
 
