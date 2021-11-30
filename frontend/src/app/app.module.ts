@@ -24,6 +24,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { AuthenticationService } from './authentication.service';
 import { AuthGaurdService } from './auth-gaurd.service';
 import { MatMenuModule} from '@angular/material/menu';
+import { AddclientComponent } from './addclient/addclient.component';
+import { FormsModule } from '@angular/forms'
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
 
 
 
@@ -36,6 +39,7 @@ import { MatMenuModule} from '@angular/material/menu';
     ClientsComponent,
     RoutesComponent,
     PlanningComponent,
+    AddclientComponent
 
   ],
   imports: [
@@ -56,6 +60,8 @@ import { MatMenuModule} from '@angular/material/menu';
     MatMenuModule,
     AppRoutingModule,
     MatGridListModule,
+    FormsModule ,
+    ZXingScannerModule,
     
   ],
   providers: [AuthenticationService,AuthGaurdService],
