@@ -24,10 +24,12 @@ export class MapComponent implements AfterViewInit {
   lon = -7.58481;
 
   private initMap(): void {
+    
     this.map = L.map('map', {
       center: [this.lat, this.lon],
       zoom: 15
     });
+    
     const tiles = L.tileLayer('https://map.novatis.tech/hot/{z}/{x}/{y}.png', {
       maxZoom: 30,
       minZoom: 0
@@ -37,12 +39,12 @@ export class MapComponent implements AfterViewInit {
     this.getAllSecteurs()
     this.map.addLayer(this.markersCluster);
 
-  }
 
-  constructor(private _serviceClient: ClientsService) { }
-  ngAfterViewInit(): void {
-    this.initMap();
-  }
+
+    constructor(private _serviceClient: ClientsService) { }
+    ngAfterViewInit(): void {
+      this.initMap();
+    }
 
 
   async getClients() {
