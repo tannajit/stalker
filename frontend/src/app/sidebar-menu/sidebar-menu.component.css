@@ -1,8 +1,21 @@
+.example-sidenav-content {
+    width: 100%;
+    
+}
 
 .tool{
-    background-color: #fff;
-    height: 9%;
-    box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+    position: fixed;
+    width: 100%;
+    background-color: rgb(246, 250, 247);
+    height: 6%;
+    margin: 0;
+    box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+}
+
+.body{
+    
+    width: 100%;
+    height:100%;
 }
 .flexExpand {
     flex: 1 1 auto;
@@ -17,13 +30,11 @@
 
 .sidenav-item {
 	color: white;
-	font-size: 30px;
+	font-size: 16px;
 }
-
-.side-nav{
-    position: fixed;
+.sidenav-item span{
+    margin-left: 9px;
 }
-
 mat-icon {
 	color: white;
 }

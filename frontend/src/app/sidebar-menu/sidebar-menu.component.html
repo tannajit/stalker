@@ -1,61 +1,55 @@
-<mat-sidenav-container fullscreen class="side-nav">
-	<mat-sidenav
-		#sidenav
-		mode="side"
-		class="example-sidenav"
-		[ngStyle]="{ 'width.em': sidenavWidth }"
-		opened="true"
-		(click)="increase()"
-		(mouseleave)="decrease()"
-	>
-		<mat-nav-list>
-            <mat-list-item>
+<mat-sidenav-container fullscreen>
+    <mat-sidenav #sidenav mode="side" class="example-sidenav" [ngStyle]="{ 'width.em': sidenavWidth }" opened="true"
+        (click)="increase()" (mouseleave)="decrease()">
+        <mat-nav-list>
+            <mat-list-item routerLink="map">
                 <mat-icon mat-list-icon>dehaze</mat-icon>
                 <div fxFlex="10"></div>
                 <div *ngIf="sidenavWidth > 6" class="sidenav-item">
                     <img src="/assets/images/stalker.png" alt="" class="logo">
-				</div>
-                
+                </div>
+
             </mat-list-item>
-			<mat-list-item routerLink="map" routerLinkActive="active">
-				<mat-icon mat-list-icon>location_on</mat-icon>
-				<div fxFlex="10"></div>
-				<div *ngIf="sidenavWidth > 6" class="sidenav-item">
-					<h5>Map</h5>
-				</div>
-			</mat-list-item>
+            <mat-list-item routerLink="map" routerLinkActive="active">
+                <mat-icon mat-list-icon>location_on</mat-icon>
+                <div fxFlex="10"></div>
+                <div *ngIf="sidenavWidth > 6" class="sidenav-item">
+                    <span>Map</span>
+                </div>
+            </mat-list-item>
 
-			<mat-list-item routerLink="client" routerLinkActive="active">
-				<mat-icon mat-list-icon>store</mat-icon>
-				<div fxFlex="10"></div>
-				<div *ngIf="sidenavWidth > 6" class="sidenav-item">
-					<h5>Clients</h5>
-				</div>
-			</mat-list-item>
+            <mat-list-item routerLink="client" routerLinkActive="active">
+                <mat-icon mat-list-icon>store</mat-icon>
+                <div fxFlex="10"></div>
+                <div *ngIf="sidenavWidth > 6" class="sidenav-item">
+                    <span>Clients</span>
+                </div>
+            </mat-list-item>
 
-			<mat-list-item routerLink="routes" routerLinkActive="active">
-				<mat-icon mat-list-icon>route</mat-icon>
-				<div fxFlex="10"></div>
-				<div *ngIf="sidenavWidth > 6" class="sidenav-item">
-					<h5>Routes</h5>
-				</div>
-			</mat-list-item>
+            <mat-list-item routerLink="routes" routerLinkActive="active">
+                <mat-icon mat-list-icon>route</mat-icon>
+                <div fxFlex="10"></div>
+                <div *ngIf="sidenavWidth > 6" class="sidenav-item">
+                    <span>Routes</span>
+                </div>
+            </mat-list-item>
 
-            <div >
+            <div>
                 <mat-list-item routerLink="planning" routerLinkActive="active">
                     <mat-icon mat-list-icon>edit_calendar</mat-icon>
                     <div fxFlex="10"></div>
-                    <div *ngIf="sidenavWidth > 6" class="sidenav-item">
-                        <h5>Planning</h5>
+                    <div *ngIf="sidenavWidth> 6" class="sidenav-item">
+                        <span>Planning</span>
                     </div>
-                </mat-list-item>    
+                </mat-list-item>
             </div>
-            
-            
-		</mat-nav-list>
-	</mat-sidenav>
 
-	<div class="example-sidenav-content">
+
+        </mat-nav-list>
+    </mat-sidenav>
+
+    <div class="example-sidenav-content">
+
         <mat-toolbar color="primary" class="tool" fxLayout fxLayoutGap="16px">
             <!-- <button mat-icon-button>
                 <mat-icon>menu</mat-icon>
@@ -63,10 +57,10 @@
             <a mat-icon-button>
                 <mat-icon>arrow_back</mat-icon>
             </a> -->
-            <div fxFlex="100%"  class="flexExpand"></div>
-            <span style="font-size: 16px; color: #323030;">Mellah Khaoula</span>
-            <button mat-icon-button [matMenuTriggerFor]="logout" 
-                #menuTrigger="matMenuTrigger" (click)="menuTrigger.openMenu()">
+            <div fxFlex="100%" class="flexExpand"></div>
+            <span style="font-size: 16px; color: #323030;">Auditor Hicham</span>
+            <button mat-icon-button [matMenuTriggerFor]="logout" #menuTrigger="matMenuTrigger"
+                (click)="menuTrigger.openMenu()">
 
                 <mat-icon style="color: #323030;">keyboard_arrow_down</mat-icon>
 
@@ -79,8 +73,12 @@
                     <span>Logout</span>
                 </button>
             </mat-menu>
-        
+
         </mat-toolbar>
-		<router-outlet></router-outlet>
-	</div>
+
+        <div class="body">
+            <router-outlet></router-outlet>
+        </div>
+
+    </div>
 </mat-sidenav-container>

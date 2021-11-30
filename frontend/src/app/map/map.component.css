@@ -1,16 +1,19 @@
-.map-container {
+/* .map-container {
+  position: relative;
     /* top: 0;
     left: 0;
     right: 0;
     bottom: 0; */
-    width: 1215px;
-    height: 400px;
-    border: 2px solid white;
-  }
+    /* width: 100vw;
+    height: 100vh; */
+    /* border: 2px solid black; 
+  } */
   
   
   
   #map {
+    
     height: 100%;
+    
   }
   

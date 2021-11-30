@@ -9,9 +9,26 @@
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     
 }
-.map-container{ 
+
+.Scan-container{
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    
+}
+
+.map-container{ 
+    width: 700px;
+    height: 400px;
+    margin: 20px ;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.small-video {
+    max-height: 700px;
+    width: 300px;
+    object-fit: contain;
+}
+.results{
+    background-color:#DADADA;
+
 }
 
 .action-button{
@@ -28,6 +45,18 @@
     width:100px;
     height: 30px;
 }
+
+.NFC-container{
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    display: flex;
+    padding: 40px;
+    margin: 20px;
+    flex-flow: row wrap ;
+    justify-content: flex-start ;
+    align-items: center;
+    gap: 10px 20px; 
+}
+
 .check-button{
    background-color: #FACF37; 
    border-radius: 12px;

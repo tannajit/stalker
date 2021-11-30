@@ -29,6 +29,8 @@ import { TestComponent } from './test/test.component';
 import { MatMenuModule} from '@angular/material/menu';
 import { AddclientComponent } from './addclient/addclient.component';
 import { FormsModule } from '@angular/forms'
+import { NgQRCodeReaderModule } from 'ng2-qrcode-reader';
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
 
 
 
@@ -66,6 +68,7 @@ import { FormsModule } from '@angular/forms'
     AppRoutingModule,
     MatGridListModule,
     FormsModule ,
+    ZXingScannerModule,
     
   ],
   providers: [AuthenticationService,AuthGaurdService],

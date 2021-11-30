@@ -14,12 +14,11 @@ import { AddclientComponent } from './addclient/addclient.component';
 
 
 
+
 const routes: Routes = [
+  
   {
-    path :'',
-    component:HomeComponent,
-    pathMatch: 'full' ,
-    canActivate: [AuthGaurdService]
+    path: '', redirectTo: 'map', pathMatch: 'full', canActivate: [AuthGaurdService]
   },
   {
     path:'login',

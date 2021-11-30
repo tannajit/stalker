@@ -6,8 +6,8 @@ var salt=5 //any random value,  the salt value specifies how much time it’s go
 
 // MongoDataBase
 const MongoClient = require("mongodb").MongoClient;
-var uri= "mongodb://192.168.2.230:27017"; // uri to your Mongo database if the server is available
-//var uri="mongodb://localhost:27017"  // use your local Mongodb
+//var uri= "mongodb://192.168.2.230:27017"; // uri to your Mongo database if the server is available
+var uri="mongodb://localhost:27017"  // use your local Mongodb
 var client = new MongoClient(uri);
 var db; // database 
 var name_database="stalker1"
