@@ -28,6 +28,7 @@ export class MapComponent implements AfterViewInit{
   });
 
   private initMap(): void {
+    
     this.map = L.map('map', {center: [ this.lat, this.lon ], zoom: 10 });
     const tiles = L.tileLayer('https://map.novatis.tech/hot/{z}/{x}/{y}.png', {
       maxZoom: 100,
@@ -43,8 +44,8 @@ export class MapComponent implements AfterViewInit{
    }
 
    ngAfterViewInit(): void {
-
     this.initMap();
+    this.map.invalidateSize()
     this.getAllSecteurs()
     this.getClients()
     
