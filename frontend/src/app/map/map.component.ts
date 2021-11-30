@@ -39,7 +39,7 @@ export class MapComponent implements AfterViewInit {
     this.getAllSecteurs()
     this.map.addLayer(this.markersCluster);
 
-
+  }
 
     constructor(private _serviceClient: ClientsService) { }
     ngAfterViewInit(): void {

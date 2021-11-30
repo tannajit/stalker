@@ -19,13 +19,10 @@ import { MatListModule } from '@angular/material/list';
 import { MapComponent } from './map/map.component';
 import { ClientsComponent } from './clients/clients.component';
 import { RoutesComponent } from './routes/routes.component';
-import { HomeComponent } from './home/home.component';
 import { PlanningComponent } from './planning/planning.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthenticationService } from './authentication.service';
 import { AuthGaurdService } from './auth-gaurd.service';
-import { UpperMenuComponent } from './upper-menu/upper-menu.component';
-import { TestComponent } from './test/test.component';
 import { MatMenuModule} from '@angular/material/menu';
 
 
@@ -38,10 +35,7 @@ import { MatMenuModule} from '@angular/material/menu';
     MapComponent,
     ClientsComponent,
     RoutesComponent,
-    HomeComponent,
     PlanningComponent,
-    UpperMenuComponent,
-    TestComponent
 
   ],
   imports: [

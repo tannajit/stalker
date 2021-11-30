@@ -6,10 +6,8 @@ import { LoginComponent } from './login/login.component';
 import { MapComponent } from './map/map.component';
 import { ClientsComponent } from './clients/clients.component';
 import { RoutesComponent } from './routes/routes.component';
-import { HomeComponent } from './home/home.component';
 import { PlanningComponent } from './planning/planning.component';
 import { AuthGaurdService } from './auth-gaurd.service';
-import { UpperMenuComponent } from './upper-menu/upper-menu.component';
 
 
 
