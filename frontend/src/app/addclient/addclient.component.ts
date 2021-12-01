@@ -12,6 +12,7 @@ export class AddclientComponent implements OnInit {
   progress = 0;
   qrResultString: string;
   isShown: boolean = false; // hidden by default
+
   constructor() { }
 
   ngOnInit(): void {
@@ -29,6 +30,7 @@ export class AddclientComponent implements OnInit {
   clearResult(): void {
     this.qrResultString = null;
   }
+  
   toggleShow() {
     this.isShown = !this.isShown;
   }

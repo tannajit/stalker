@@ -10,7 +10,6 @@ import { ClientsService } from '../clients.service';
   styleUrls: ['./map.component.css']
 })
 
-
 export class MapComponent implements AfterViewInit {
 
   private map;
@@ -25,7 +24,6 @@ export class MapComponent implements AfterViewInit {
   
 
   private initMap(): void {
-   
     this.map = L.map('map', {
       center: [this.lat, this.lon],
       zoom: 15,
@@ -64,7 +62,6 @@ export class MapComponent implements AfterViewInit {
 
   }
 
-
   constructor(private _serviceClient: ClientsService) { 
     
   }
@@ -95,7 +92,7 @@ export class MapComponent implements AfterViewInit {
 
   }
 
-  
+
   async getClients() {
     var arr = [];
     this._serviceClient.getAllClient().subscribe(

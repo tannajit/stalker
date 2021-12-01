@@ -40,6 +40,14 @@ mat-progress-bar {
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
+.custom-select{
+    border-radius: 12px;
+    width:170px;
+    height: 30px;
+    box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+    border: #fff;
+}
+
 .map-container{ 
     width: 700px;
     height: 400px;
@@ -50,14 +58,13 @@ mat-progress-bar {
     margin: auto;   
 }
 
-.small-video {
+.small-video{
     max-height: 700px;
     width: 300px;
     object-fit: contain;
 }
 .results{
     background-color:#DADADA;
-
 }
 
 .action-button{
@@ -85,6 +92,19 @@ mat-progress-bar {
     align-items: center;
     gap: 10px 20px; 
 }
+
+placeholder{
+    border-radius: 12px;
+    width:170px;
+    height: 30px;
+    box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+    border: #fff;
+    background-color: #fff;
+  }
+
+  mat-label{
+      color:#646262;
+  }
 
 .check-button{
    background-color: #FACF37; 

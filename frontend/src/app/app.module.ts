@@ -28,6 +28,7 @@ import { AddclientComponent } from './addclient/addclient.component';
 import { FormsModule , ReactiveFormsModule} from '@angular/forms'
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatSelectModule} from '@angular/material/select';
 
 
 
@@ -67,8 +68,10 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
     ZXingScannerModule,
     MatProgressBarModule,
     MatSelectModule
+
     
   ],
+
   providers: [AuthenticationService,AuthGaurdService],
   bootstrap: [AppComponent]
 })
