@@ -11,7 +11,6 @@ import { ClientsService } from '../clients.service';
   styleUrls: ['./map.component.css']
 })
 
-
 export class MapComponent implements AfterViewInit {
 
   private map;
@@ -24,7 +23,6 @@ export class MapComponent implements AfterViewInit {
   lon = -7.58481;
 
   private initMap(): void {
-    
     this.map = L.map('map', {
       center: [this.lat, this.lon],
       zoom: 15
@@ -34,18 +32,18 @@ export class MapComponent implements AfterViewInit {
       maxZoom: 30,
       minZoom: 0
     });
-    tiles.addTo(this.map);
-    this.getClients()
-    this.getAllSecteurs()
+    tiles.addTo(this.map)
+    this.getClients() 
+    this.getAllSecteurs() 
     this.map.addLayer(this.markersCluster);
 
   }
 
     constructor(private _serviceClient: ClientsService) { }
+
     ngAfterViewInit(): void {
       this.initMap();
     }
-
 
   async getClients() {
     var arr = [];

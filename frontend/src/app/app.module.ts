@@ -27,6 +27,8 @@ import { MatMenuModule} from '@angular/material/menu';
 import { AddclientComponent } from './addclient/addclient.component';
 import { FormsModule } from '@angular/forms'
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
+import {MatSelectModule} from '@angular/material/select';
+
 
 
 
@@ -62,8 +64,10 @@ import { ZXingScannerModule } from '@zxing/ngx-scanner';
     MatGridListModule,
     FormsModule ,
     ZXingScannerModule,
+    MatSelectModule,
     
   ],
+
   providers: [AuthenticationService,AuthGaurdService],
   bootstrap: [AppComponent]
 })
