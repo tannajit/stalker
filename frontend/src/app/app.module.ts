@@ -7,10 +7,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { MatToolbarModule } from '@angular/material/toolbar'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatButtonModule } from '@angular/material/button'
+import { MatSelectModule } from '@angular/material/select'
 import { MatCardModule } from '@angular/material/card'
 import { MatInputModule } from '@angular/material/input'
 import { MatIconModule}  from '@angular/material/icon'
-import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './login/login.component';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
@@ -25,8 +25,11 @@ import { AuthenticationService } from './authentication.service';
 import { AuthGaurdService } from './auth-gaurd.service';
 import { MatMenuModule} from '@angular/material/menu';
 import { AddclientComponent } from './addclient/addclient.component';
-import { FormsModule } from '@angular/forms'
+import { FormsModule , ReactiveFormsModule} from '@angular/forms'
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+
+
 
 
 
@@ -62,6 +65,8 @@ import { ZXingScannerModule } from '@zxing/ngx-scanner';
     MatGridListModule,
     FormsModule ,
     ZXingScannerModule,
+    MatProgressBarModule,
+    MatSelectModule
     
   ],
   providers: [AuthenticationService,AuthGaurdService],

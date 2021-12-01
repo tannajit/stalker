@@ -1,7 +1,13 @@
 <div class="content-body">
 
+    <p>Fixing Position...</p>
+    <div style="position: relative">
+        <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
+        <span style="position: absolute; top: 0em;" [ngStyle]="{'left': progress + '%'}">{{progress}}%</span>
+    </div>
+
     <div class="map-container">
-        <app-map></app-map>
+        <!-- <app-map></app-map> -->
     </div>
 
     <div class="checkcodes-container">
