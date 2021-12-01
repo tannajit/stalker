@@ -1,6 +1,42 @@
 <div class="map-frame">
-<div id="map"></div>
+      <div id="map"></div>
+      <div class="buttons-wrapper">
+            <button mat-button class="btn-primary" routerLink="/addclient">Add PDV</button>
+            <button mat-button class="btn-warning">Synchronize</button>
+      </div>
+      <div class="map-top-elements">
+            
+            <!-- <button mat-raised-button class="my-location">
+                  <mat-icon>my_location</mat-icon>
+            </button>  -->
+            <div class="my-location-container">
+                  <button mat-icon-button class="icon-button-large" 
+                  aria-label="small button" (click)="getLocation()">
+                        <mat-icon>my_location</mat-icon>
+                  </button>
+            </div>
+            <div class="element-container">
+                  <div class="search-input">
+                        <mat-icon>search</mat-icon>
+                        <input type="text" name="search" autocomplete="off">
+                  </div>
+                  <button>Search</button>
+            </div>
+            <div class="element-container">
+                  <div class="select-input">
+                        <mat-select panelClass="select-panel">
+                              <mat-option value="">Audit</mat-option>
+                              <mat-option value="">Audit Retail</mat-option>
+                              <mat-option value="">Other stuff</mat-option>
+                        </mat-select>
+                        <mat-icon>keyboard_arrow_down</mat-icon>
+                  </div>
+            </div>
+            
+            
+      </div>
 </div>
+
 
     
 
