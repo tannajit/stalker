@@ -30,6 +30,7 @@ export class AddclientComponent implements OnInit {
   progress = 0;
   
   constructor(private clientService:ClientService) { }
+  
   ngOnInit(): void {
     setInterval(() => this.manageProgress(), 150 )
   }

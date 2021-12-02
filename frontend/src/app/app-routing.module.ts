@@ -23,10 +23,6 @@ const routes: Routes = [
     component:LoginComponent
   },
   {
-    path:'client',
-    component:AddclientComponent
-  },
-  {
     path: 'menu', component: SidebarMenuComponent,
     canActivate: [AuthGaurdService]
   },
