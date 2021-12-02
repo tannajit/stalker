@@ -76,10 +76,14 @@
 .select-input mat-icon{
   color: #27AE61;
 }
-::ng-deep .mat-select{
+
+/* ::ng-deep .mat-select{
   width: 100px;
   font-size: 1em;
 }
+.search-input .select-panel{
+  background-color: #FACF37;
+} */
 .select-input select{
   -webkit-appearance: none;
    -moz-appearance: none;

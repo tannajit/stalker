@@ -33,10 +33,9 @@ export class MapComponent implements AfterViewInit {
     const zoomOptions = {
       zoomInText: '+',
       zoomOutText: '-',
-      position: "bottomleft"
     };
 
-    const zoom = L.control.zoom(zoomOptions);
+    // const zoom = L.control.zoom(zoomOptions);
 
 
     const tiles = L.tileLayer('https://map.novatis.tech/hot/{z}/{x}/{y}.png', {
@@ -54,13 +53,15 @@ export class MapComponent implements AfterViewInit {
     // const lc = L.control.locate(locationControl)
 
     // lc.addTo(this.map);
-    zoom.addTo(this.map);
+    // zoom.addTo(this.map);
     tiles.addTo(this.map);
     this.getClients()
     this.getAllSecteurs()
     this.map.addLayer(this.markersCluster);
-
+    this.map.addControl(L.control.zoom({ position: 'bottomleft' }))
   }
+
+
 
   constructor(private _serviceClient: ClientsService) { 
     
@@ -74,7 +75,7 @@ export class MapComponent implements AfterViewInit {
   getLocation() {
 
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position: Position) => {
+      navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
         if (position) {
           console.log("Latitude: " + position.coords.latitude +
             " Longitude: " + position.coords.longitude);
@@ -85,11 +86,15 @@ export class MapComponent implements AfterViewInit {
           this.initMap()
         }
       },
-        (error: PositionError) => console.log(error));
+        (error: GeolocationPositionError) => console.log(error));
     } else {
       alert("Geolocation is not supported by this browser.");
     }
 
+  }
+
+  locate(){
+    // this.panTo(new L.LatLng(40.737, -73.923));
   }
 
 
