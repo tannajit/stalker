@@ -1,5 +1,11 @@
 <div class="content-body">
 
+    <p>Fixing Position...</p>
+    <div style="position: relative">
+        <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
+        <span style="position: absolute; top: 0em;" [ngStyle]="{'left': progress + '%'}">{{progress}}%</span>
+    </div>
+
     <div class="map-container">
         <app-map></app-map>
     </div>
@@ -33,7 +39,7 @@
         </div>
     </div>
     <div class="NFC-container">
-        <div class="reas-nfc">
+        <div class="read-nfc">
             <label class="input-label">NFC card puce : </label>
             <button class="action-button" (click)="Read()" >Read</button>
         </div>

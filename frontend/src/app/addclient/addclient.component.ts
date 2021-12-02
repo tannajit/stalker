@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {ClientService} from "./client.service";
 import {Observable, Subject} from "rxjs";
+
+const incr = 1;
 @Component({
   selector: 'app-addclient',
   templateUrl: './addclient.component.html',
@@ -25,15 +27,25 @@ export class AddclientComponent implements OnInit {
   camera2: boolean=false;
   clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
     NomPrenom:null, PhoneNumber:null, PVPhoto:null}
-
+  progress = 0;
+  
   constructor(private clientService:ClientService) { }
-
   ngOnInit(): void {
+    setInterval(() => this.manageProgress(), 150 )
+  }
+
+  manageProgress() {
+    if(this.progress === 100) {
+      this.progress = 0;
+    } else {
+      this.progress = this.progress + incr;
+    }
   }
 
   clearResult(): void {
     this.qrResultString = null;
   }
+  
   toggleShow(nbr:number,resultString:string) {
     console.log(nbr);
     console.log(resultString);

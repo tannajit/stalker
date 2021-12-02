@@ -11,6 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule}  from '@angular/material/icon';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select'
 import { LoginComponent } from './login/login.component';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
@@ -25,10 +26,15 @@ import { AuthenticationService } from './authentication.service';
 import { AuthGaurdService } from './auth-gaurd.service';
 import { MatMenuModule} from '@angular/material/menu';
 import { AddclientComponent } from './addclient/addclient.component';
-import { FormsModule } from '@angular/forms';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {WebcamModule} from 'ngx-webcam';
+import { FormsModule } from '@angular/forms'
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+
+
+
+
 
 @NgModule({
   declarations: [
@@ -63,7 +69,9 @@ import {WebcamModule} from 'ngx-webcam';
     FormsModule ,
     ZXingScannerModule,
     MatFormFieldModule,
-    WebcamModule
+    WebcamModule,
+    MatProgressBarModule,
+    MatSelectModule
 
   ],
   providers: [AuthenticationService, AuthGaurdService],
