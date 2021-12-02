@@ -1,77 +1,109 @@
 .checkcodes-container{
-    display: flex;
-    padding: 40px;
-    margin: 20px;
-    flex-flow: row wrap ;
-    justify-content: flex-start ;
-    align-items: center;
-    gap: 10px 20px; 
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    
+  display: flex;
+  padding: 40px;
+  margin: 20px;
+  flex-flow: row wrap ;
+  justify-content: flex-start ;
+  align-items: center;
+  gap: 10px 20px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
 }
 
 .Scan-container{
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
-.map-container{ 
-    width: 700px;
-    height: 400px;
-    /* margin: 20px ; */
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    /* display: flex;
-    justify-content: center; */
-    margin: auto;
-    
+.custom-select{
+  border-radius: 12px;
+  width:170px;
+  height: 30px;
+  box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+  border: #fff;
+}
+
+.map-container{
+  width: 700px;
+  height: 400px;
+  /* margin: 20px ; */
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  /* display: flex;
+  justify-content: center; */
+  margin: auto;
+
 }
 
 .small-video {
-    max-height: 700px;
-    width: 300px;
-    object-fit: contain;
+  max-height: 700px;
+  width: 300px;
+  object-fit: contain;
 }
 .results{
-    background-color:#DADADA;
-
+  background-color:#DADADA;
 }
 
 .action-button{
-    background-color: #27AE61;
-    border-radius: 12px;
-    border: 1px solid rgba(27, 31, 35, .15);
-    box-sizing: border-box;
-    box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
-    color: #fff;
-    font-size: 14px;
-    line-height: 20px;
-    position: relative;
-    text-align: center;
-    width:100px;
-    height: 30px;
+  background-color: #27AE61;
+  border-radius: 12px;
+  border: 1px solid rgba(27, 31, 35, .15);
+  box-sizing: border-box;
+  box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+  color: #fff;
+  font-size: 14px;
+  line-height: 20px;
+  position: relative;
+  text-align: center;
+  width:100px;
+  height: 30px;
+}
+.action-buttonShot{
+  background-color: #27AE61;
+  border-radius: 12px;
+  border: 1px solid rgba(27, 31, 35, .15);
+  box-sizing: border-box;
+  box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+  color: #fff;
+  font-size: 14px;
+  line-height: 20px;
+  position: relative;
+  text-align: center;
+  padding: 5px;
 }
 
 .NFC-container{
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    display: flex;
-    padding: 40px;
-    margin: 20px;
-    flex-flow: row wrap ;
-    justify-content: flex-start ;
-    align-items: center;
-    gap: 10px 20px; 
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  display: flex;
+  padding: 40px;
+  margin: 20px;
+  flex-flow: row wrap ;
+  justify-content: flex-start ;
+  align-items: center;
+  gap: 10px 20px;
+}
+placeholder{
+  border-radius: 12px;
+  width:170px;
+  height: 30px;
+  box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+  border: #fff;
+  background-color: #fff;
+}
+
+mat-label{
+  color:#646262;
 }
 
 .check-button{
-   background-color: #FACF37; 
-   border-radius: 12px;
-   border: 1px solid rgba(27, 31, 35, .15);
-    box-sizing: border-box;
-    box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
-    color: #fff;
-    font-size: 14px;
-    line-height: 20px;
-    position: relative;
-    text-align: center;
-    width:120px;
-    height: 30px;
+  background-color: #FACF37;
+  border-radius: 12px;
+  border: 1px solid rgba(27, 31, 35, .15);
+  box-sizing: border-box;
+  box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+  color: #fff;
+  font-size: 14px;
+  line-height: 20px;
+  position: relative;
+  text-align: center;
+  width:120px;
+  height: 30px;
 }
