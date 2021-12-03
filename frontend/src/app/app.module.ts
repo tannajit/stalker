@@ -27,7 +27,9 @@ import { MatMenuModule} from '@angular/material/menu';
 import { AddclientComponent } from './addclient/addclient.component';
 import { FormsModule , ReactiveFormsModule} from '@angular/forms'
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import {CdkTableModule} from '@angular/cdk/table';
+import {CdkTreeModule} from '@angular/cdk/tree';
 
 
 
@@ -66,7 +68,9 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
     FormsModule ,
     ZXingScannerModule,
     MatProgressBarModule,
-    MatSelectModule
+    MatSelectModule,
+    CdkTableModule,
+    CdkTreeModule
 
     
   ],
