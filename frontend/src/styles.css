@@ -6,3 +6,9 @@ body { margin: 0;  }
     font-family: 'Montserrat', sans-serif;
     /* Add !important to overwrite all elements */
   }
+
+.cdk-overlay-container .cdk-overlay-pane .selectPanel{
+  margin-top: 20%;
+  background-color: #fff;
+  border-radius: 15px;
+}

@@ -19,6 +19,7 @@
 }
 .buttons-wrapper{
   display: flex;
+  align-items: flex-end;
   margin-right: 20px;
   right: 0;
   flex-flow: column wrap;
@@ -27,136 +28,683 @@
   z-index: 9999;
 }
 
-.map-top-elements{
-  display: flex;
-  margin-left: 20px;
-  justify-content: flex-start;
-  align-items: flex-start;
-  row-gap: 10px;
-  left: 0;
-  flex-flow: row wrap;
-  position: absolute;
-  top: 20px;
-  z-index: 9999;
-}
-.element-container{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-.element-container button{
-  margin: 8px;
-  height: 20px;
-  width: 80px;
-  background-color: #27AE61;
-  color: #fff;
-  font-size: 12px;
-  border-radius: 40px;
-  text-align: center !important;
-  outline: none;
-  border: none;
-  cursor: pointer;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
-}
-.select-input{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-end;
-  align-content: center;
-  padding-right: 10px;
-  margin-left: 20px;
-  border: none;
-  width: 250px;
-  height: 40px;
-  background-color: #fff;
-  border-radius: 30px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
-}
-.select-input mat-icon{
-  color: #27AE61;
-}
 
-/* ::ng-deep .mat-select{
-  width: 100px;
-  font-size: 1em;
-}
-.search-input .select-panel{
-  background-color: #FACF37;
-} */
-.select-input select{
-  -webkit-appearance: none;
-   -moz-appearance: none;
-   appearance: none;
-  width: 100px;
-  max-height:200px;
-  overflow-y:scroll;
-  outline : none;
-  border: none !important;
-  transition: none;
-  background-color: #fff;
-  color: #3b3a3a;
-}
-.select-input select option{
-  outline: none;
-  margin: 8px;
-}
-.search-input{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding-left: 10px;
-  margin-left: 30px;
-  border: none;
-  width: 300px;
-  height: 40px;
-  background-color: #fff;
-  border-radius: 30px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
-}
-.search-input mat-icon{
-  color: #27AE61;
-}
+/* Phone Only */
+@media (min-width: 200px) and (max-width: 350px) {
 
-.search-input input{
-  border: none;
-  outline: none;
-}
-.search-input input:focus{
-  outline: none;
-  color: #3b3a3a;
-  font-size: 12px;
-}
+  .map-top-elements{
 
-.my-location-container{
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
-}
+    display: flex;
+    margin-left: 10px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    left: 0;
+    gap: 8px;
+    flex-flow: column wrap;
+    position: absolute;
+    top: 4px;
+    z-index: 9999;
+  }
 
-.my-location{
-  color: #3b3a3a;
-  width: 10px;
-}
-.btn-primary{
-  margin: 8px;
-  background-color: #27AE61;
-  color: #fff;
-  font-size: 12px;
-  width: 140px !important;
-  border-radius: 40px;
-  text-align: center !important;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
-}
-.btn-warning{
-  margin: 8px;
-  background-color: #FACF37;
-  color: #fff;
-  font-size: 12px;
-  width: 140px !important;
-  border-radius: 40px;
-  text-align: center !important;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
-}
+  .element-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: flex-start;
+  }
 
+  .search-input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 10px;
+    margin-left: 0px;
+    border: none;
+    width: 160px;
+    height: 20px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .search-input mat-icon{
+    color: #27AE61;
+    font-size: 20px;
+    height: 20px;
+  }
+  .search-input input{
+    width: 120px;
+    border: none;
+    outline: none;
+    color: #3b3a3a;
+    font-size: 10px;
+  }
+  .search-input input:focus{
+    outline: none;
+    color: #3b3a3a;
+    font-size: 10px;
+  }
+  .element-container button{
+    margin: 8px;
+    height: 20px;
+    width: 60px;
+    background-color: #27AE61;
+    color: #fff;
+    font-size: 10px;
+    border-radius: 40px;
+    text-align: center !important;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .select-input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    align-content: center;
+    padding-right: 10px;
+    margin-left: 0px;
+    border: none;
+    width: 140px;
+    height: 20px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
   
+  ::ng-deep .mat-select-arrow {
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 3px solid;
+    margin: 0 4px;
+    color: #27AE61;
+  }
+  
+  ::ng-deep .mat-select{
+    margin-left: 10px;
+    width: 100px;
+    color: #3b3a3a;
+    font-size: 10px;
+  }
+  
+  .select-input select option{
+    outline: none;
+    margin: 8px;
+    color: #3b3a3a;
+    font-size: 10px;
+  }
+  
+  .my-location-container{
+    width: 40px;
+    background-color: #fff;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .my-location-container button{
+    margin: 0;
+  }
+  .btn-primary{
+    margin-top: 8px;
+    background-color: #27AE61;
+    color: #fff;
+    font-size: 10px;
+    line-height: 20px;
+    width: 90px !important;
+    border-radius: 40px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .btn-warning{
+    margin-top: 8px;
+    background-color: #FACF37;
+    color: #fff;
+    font-size: 10px;
+    line-height: 20px;
+    width: 90px !important;
+    border-radius: 40px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+}
+@media (min-width: 350px) and (max-width: 599px){
+  .map-top-elements{
+    display: flex;
+    margin-left: 10px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    row-gap: 8px;
+    left: 0;
+    flex-flow: column wrap;
+    position: absolute;
+    top: 10px;
+    z-index: 9999;
+  }
+
+  .element-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: flex-start;
+  }
+
+  .element-container button{
+    margin: 8px;
+    height: 30px;
+    width: 80px;
+    background-color: #27AE61;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 40px;
+    text-align: center !important;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .select-input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    align-content: center;
+    padding-right: 10px;
+    margin-left: 0px;
+    border: none;
+    width: 200px;
+    height: 30px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .select-input mat-icon{
+    color: #27AE61;
+  }
+  
+  ::ng-deep .mat-select-arrow {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid;
+    margin: 0 4px;
+    color: #27AE61;
+  }
+  
+  ::ng-deep .mat-select{
+    margin-left: 20px;
+    width: 100px;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  
+  .select-input select option{
+    outline: none;
+    margin: 8px;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  .search-input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 10px;
+    margin-left: 0px;
+    border: none;
+    width: 200px;
+    height: 30px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .search-input mat-icon{
+    color: #27AE61;
+  }
+  .search-input input{
+    width: 160px;
+    border: none;
+    outline: none;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  .search-input input:focus{
+    outline: none;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  .my-location-container{
+    width: 40px;
+    background-color: #fff;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .btn-primary{
+    margin-top: 8px;
+    background-color: #27AE61;
+    color: #fff;
+    font-size: 10px;
+    width: 100px !important;
+    border-radius: 40px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .btn-warning{
+    margin-top: 8px;
+    background-color: #FACF37;
+    color: #fff;
+    font-size: 10px;
+    width: 100px !important;
+    border-radius: 40px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+}
+/* for tablet portait */
+@media (min-width: 600px) and (max-width: 900px){
+  .map-top-elements{
+    display: flex;
+    margin-left: 10px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    row-gap: 8px;
+    left: 0;
+    flex-flow: column wrap;
+    position: absolute;
+    top: 10px;
+    z-index: 9999;
+  }
+
+  .element-container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: flex-start;
+  }
+
+  .element-container button{
+    margin: 8px;
+    height: 30px;
+    width: 80px;
+    background-color: #27AE61;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 40px;
+    text-align: center !important;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .select-input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    align-content: center;
+    padding-right: 10px;
+    margin-left: 0px;
+    border: none;
+    width: 200px;
+    height: 30px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .select-input mat-icon{
+    color: #27AE61;
+  }
+  
+  ::ng-deep .mat-select-arrow {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid;
+    margin: 0 4px;
+    color: #27AE61;
+  }
+  
+  ::ng-deep .mat-select{
+    margin-left: 20px;
+    width: 100px;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  
+  .select-input select option{
+    outline: none;
+    margin: 8px;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  .search-input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 10px;
+    margin-left: 0px;
+    border: none;
+    width: 200px;
+    height: 30px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .search-input mat-icon{
+    color: #27AE61;
+  }
+  .search-input input{
+    width: 160px;
+    border: none;
+    outline: none;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  .search-input input:focus{
+    outline: none;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  .my-location-container{
+    width: 40px;
+    background-color: #fff;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .btn-primary{
+    margin-top: 8px;
+    background-color: #27AE61;
+    color: #fff;
+    font-size: 10px;
+    width: 100px !important;
+    border-radius: 40px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .btn-warning{
+    margin-top: 8px;
+    background-color: #FACF37;
+    color: #fff;
+    font-size: 10px;
+    width: 100px !important;
+    border-radius: 40px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+}
+/* for tablet landscape*/
+@media (min-width: 900px) and (max-width: 1200px){
+
+  .map-top-elements{
+    display: flex;
+    margin-left: 10px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 10px;
+    left: 0;
+    flex-flow: row wrap;
+    position: absolute;
+    top: 10px;
+    z-index: 9999;
+  }
+
+  .element-container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    align-content: flex-start;
+  }
+
+  .element-container button{
+    margin-top: 8px;
+    height: 20px;
+    width: 80px;
+    background-color: #27AE61;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 40px;
+    text-align: center !important;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .select-input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    align-content: center;
+    padding-right: 10px;
+    margin-left: 0px;
+    border: none;
+    width: 200px;
+    height: 30px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .select-input mat-icon{
+    color: #27AE61;
+  }
+  
+  ::ng-deep .mat-select-arrow {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid;
+    margin: 0 4px;
+    color: #27AE61;
+  }
+  
+  ::ng-deep .mat-select{
+    margin-left: 20px;
+    width: 100px;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  
+  .select-input select option{
+    outline: none;
+    margin: 8px;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  .search-input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 10px;
+    margin-left: 0px;
+    border: none;
+    width: 200px;
+    height: 30px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .search-input mat-icon{
+    color: #27AE61;
+  }
+  .search-input input{
+    width: 160px;
+    border: none;
+    outline: none;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  .search-input input:focus{
+    outline: none;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  .my-location-container{
+    width: 40px;
+    background-color: #fff;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .btn-primary{
+    margin-top: 8px;
+    background-color: #27AE61;
+    color: #fff;
+    font-size: 10px;
+    width: 100px !important;
+    border-radius: 40px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .btn-warning{
+    margin-top: 8px;
+    background-color: #FACF37;
+    color: #fff;
+    font-size: 10px;
+    width: 100px !important;
+    border-radius: 40px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+}
+
+/* for desktop*/
+@media (min-width: 1200px){
+
+  .map-top-elements{
+    display: flex;
+    margin-left: 10px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 10px;
+    left: 0;
+    flex-flow: row wrap;
+    position: absolute;
+    top: 15px;
+    z-index: 9999;
+  }
+
+  .element-container{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    align-content: flex-start;
+  }
+
+  .element-container button{
+    margin-top: 8px;
+    height: 20px;
+    width: 80px;
+    background-color: #27AE61;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 40px;
+    text-align: center !important;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .select-input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    align-content: center;
+    padding-right: 10px;
+    margin-left: 0px;
+    border: none;
+    width: 200px;
+    height: 30px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .select-input mat-icon{
+    color: #27AE61;
+  }
+  
+  ::ng-deep .mat-select-arrow {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid;
+    margin: 0 4px;
+    color: #27AE61;
+  }
+  
+  ::ng-deep .mat-select{
+    margin-left: 20px;
+    width: 100px;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  
+  .select-input select option{
+    outline: none;
+    margin: 8px;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  .search-input{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 10px;
+    margin-left: 0px;
+    border: none;
+    width: 200px;
+    height: 30px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .search-input mat-icon{
+    color: #27AE61;
+  }
+  .search-input input{
+    width: 160px;
+    border: none;
+    outline: none;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  .search-input input:focus{
+    outline: none;
+    color: #3b3a3a;
+    font-size: 12px;
+  }
+  .my-location-container{
+    width: 40px;
+    background-color: #fff;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .btn-primary{
+    margin-top: 8px;
+    background-color: #27AE61;
+    color: #fff;
+    font-size: 12px;
+    width: 130px !important;
+    border-radius: 40px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+  .btn-warning{
+    margin-top: 8px;
+    background-color: #FACF37;
+    color: #fff;
+    font-size: 12px;
+    width: 130px !important;
+    border-radius: 40px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+  }
+}

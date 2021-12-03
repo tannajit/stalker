@@ -27,10 +27,14 @@ import { AuthGaurdService } from './auth-gaurd.service';
 import { MatMenuModule} from '@angular/material/menu';
 import { AddclientComponent } from './addclient/addclient.component';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import {CdkTableModule} from '@angular/cdk/table';
+import {CdkTreeModule} from '@angular/cdk/tree';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {WebcamModule} from 'ngx-webcam';
 import { FormsModule } from '@angular/forms'
-import {MatProgressBarModule} from '@angular/material/progress-bar';
+
+
 
 
 
@@ -71,7 +75,9 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
     MatFormFieldModule,
     WebcamModule,
     MatProgressBarModule,
-    MatSelectModule
+    MatSelectModule,
+    CdkTableModule,
+    CdkTreeModule
 
   ],
   providers: [AuthenticationService, AuthGaurdService],

@@ -17,6 +17,11 @@ export class MapComponent implements AfterViewInit {
     iconUrl: "assets/green.png",
     iconSize: [12, 12],
   });
+  
+  location_icon = L.icon({
+    iconUrl: "assets/location.png",
+    iconSize: [30,30]
+  });
   markersCluster = new L.MarkerClusterGroup();
   lat=33.27075
   lon=-9.58481
@@ -59,6 +64,7 @@ export class MapComponent implements AfterViewInit {
     this.getAllSecteurs()
     this.map.addLayer(this.markersCluster);
     this.map.addControl(L.control.zoom({ position: 'bottomleft' }))
+    
   }
 
 
@@ -83,7 +89,8 @@ export class MapComponent implements AfterViewInit {
           this.lon = position.coords.longitude;
           console.log(this.lat);
           console.log(this.lon);
-          this.initMap()
+          this.initMap();
+          L.marker([this.lat,this.lon], {icon: this.location_icon}).addTo(this.map);
         }
       },
         (error: GeolocationPositionError) => console.log(error));
@@ -94,7 +101,7 @@ export class MapComponent implements AfterViewInit {
   }
 
   locate(){
-    // this.panTo(new L.LatLng(40.737, -73.923));
+      this.map.flyTo(new L.LatLng(33.2607691,-7.6222771),13);
   }
 
 

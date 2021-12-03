@@ -12,6 +12,7 @@ var client = new MongoClient(uri);
 var db; // database 
 var name_database="stalker1"
 var arraValues=[] // this array where we gonna put the document 
+
 async function run() {
 	try {
 		var t=await client.connect();
@@ -74,7 +75,7 @@ async function getUser(user){
       let playload={subject: user._id}
       let token=jwt.sign(playload,'secretKey')
       status.value=200
-      status.data={token}
+      status.data={'token':token,'user':FindUser}
       //console.log(token)
     }else{
       status.value=401
@@ -106,7 +107,6 @@ router.post('/register',async(req,res)=>{
   let user=req.body;
   await InsertUser(user);
   res.status(200).send("User inserted/Updated")
-
 })
 
 async function ValidPassword(passwordG,passwordD){
