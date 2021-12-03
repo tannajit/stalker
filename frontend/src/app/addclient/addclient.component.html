@@ -13,76 +13,136 @@
     <div class="checkcodes-container">
         <div class="scan">
             <label class="input-label">Code Centrale Danoune : </label>
-            <button class="action-button" (click)="toggleShow()">Scan</button>
+            <button class="action-button"  (click)="toggleShow(1,qrResultString);" >Scan</button>
         </div>
         <div class="scan">
             <label class="input-label">Code Coca Cola : </label>
-            <button class="action-button" (click)="toggleShow()">Scan</button>
+            <button class="action-button" (click)="toggleShow(2,qrResultString);">Scan</button>
         </div>
         <div class="scan">
             <label class="input-label">Code FGD : </label>
-            <button class="action-button" (click)="toggleShow()">Scan</button>
+            <button class="action-button" (click)="toggleShow(3,qrResultString);">Scan</button>
         </div>
         <div class="action">
-            <button class="check-button">Check codes</button>
+            <button class="check-button" (click)="CheckCodes()" >Check codes</button>
         </div>
-        <div id="divshow" *ngIf="isShown" class="Scan-container">
+        <div id="divshow" *ngIf="isShown && !scan" class="Scan-container">
             <zxing-scanner Class="small-video" (scanSuccess)="onCodeResult($event)"></zxing-scanner>
 
             <section class="results" *ngIf="qrResultString">
                 <div>
-                    <small>Result : </small>
+                    <small>Result{{code.nbr}} : </small>
                     <strong>{{ qrResultString }}</strong>
                 </div>
-                <button mat-icon-button (click)="clearResult()">&times;</button>
+                <button class="mat-icon-button"  (click)="toggleShow(code.nbr,qrResultString)">Clear</button>
             </section>
         </div>
     </div>
     <div class="NFC-container">
         <div class="read-nfc">
             <label class="input-label">NFC card puce : </label>
-            <button class="action-button" >Read</button>
+            <button class="action-button" (click)="Read()" >Read</button>
         </div>
-        <div class="qr-code">
-            <label class="input-label">Qr Code : </label>
-            <button class="action-button" >Scan</button>
+
+      <div class="qr-code">
+        <label class="input-label">Qr Code : </label>
+        <button class="action-button"  (click)="toggleShow(4,qrResultString);scan=!scan" >Scan</button>
+      </div>
+
+      <div  *ngIf="isShown && scan " class="Scan-container">
+        <zxing-scanner Class="small-video" (scanSuccess)="onCodeResult($event)"></zxing-scanner>
+
+        <section class="results" *ngIf="qrResultString">
+          <div>
+            <small>Result{{code.nbr}} : </small>
+            <strong>{{ qrResultString }}</strong>
+          </div>
+          <button class="mat-icon-button"  (click)="toggleShow(code.nbr,qrResultString)">clear</button>
+        </section>
+      </div>
+
+
+        <div class="reas-nfc">
+          <label class="input-label" >NFC photo : </label>
+          <button class="action-button"  (click)="TakePhoto();camera1=!camera1">NFC photo</button>
         </div>
-        <div class="nfc-photo">
-            <label class="input-label">NFC photo : </label>
-            <button mat-button class="action-button" ><mat-icon>camera</mat-icon></button>
+        <div  *ngIf="isShownCam && camera1" class="Scan-container">
+          <webcam [height]="100"
+                  [width]="100"
+                  [trigger]="triggerObservable"
+                  (imageCapture)="handleImage($event)">
+          </webcam>
         </div>
-        <div >
-            <select class="custom-select" >
-                <option value="0"> PV Type </option>
-                <option value="1">Attar</option>
-                <option value="2">BMW</option>
-                <option value="3">Citroen</option>
-                <option value="4">Ford</option>
-                <option value="5">Honda</option>
-                <option value="6">Jaguar</option>
-                <option value="7">Land Rover</option>
-              </select>
-        </div>
-        <div class="name-container">
-            <mat-form-field class="example-full-width">
-                <mat-label>First Name & Last Name</mat-label>
-                <textarea matInput placeholder="Typing..."></textarea>
-              </mat-form-field>
-        </div>
-        <div class="phone-caontainer">
-            <mat-form-field class="example-full-width">
-                <mat-label>Phone number</mat-label>
-                <textarea matInput placeholder="+212"></textarea>
-              </mat-form-field>
-              <button class="action-button" >Verify</button>
-        </div>
-        <div class="read-nfc">
-            <label class="input-label">PV photo : </label>
-            <button mat-button class="action-button" ><mat-icon>camera</mat-icon></button>
-        </div>
-        <div class="action">
-            <button class="check-button">Send</button>
-        </div>
-            
+          <div class="reas-nfc">
+            <button class="action-buttonShot" *ngIf="isShownCam && camera1"  (click)="triggerSnapshot()">Click Here and take the Shot</button>
+          </div>
+
+<!--          <button class="actionBtn" (click)="triggerSnapshot();">-->
+<!--            Click Here and take the Shot</button>-->
+      <div  *ngIf="isShownCam && camera1" class="Scan-container">
+
+          <div class="snapshot" *ngIf="webcamImage">
+            <img [height]="90"
+                 [width]="90" [src]="webcamImage.imageAsDataUrl"/>
+          </div>
+      </div>
+
+      <div >
+        <select class="custom-select"[(ngModel)]="TypeDPV" >
+          <option value="PV Type"> PV Type </option>
+          <option value="Attar">Attar</option>
+          <option value="BMW">BMW</option>
+          <option value="Citroen">Citroen</option>
+          <option value="Ford">Ford</option>
+          <option value="Honda">Honda</option>
+          <option value="Jaguar">Jaguar</option>
+          <option value="Land Rover">Land Rover</option>
+        </select>
+      </div>
+      <div class="name-container">
+        <mat-form-field class="example-full-width">
+          <mat-label>First Name & Last Name</mat-label>
+          <textarea matInput placeholder="Typing..." [(ngModel)]="NomPrenom"></textarea>
+        </mat-form-field>
+      </div>
+      <div class="phone-caontainer">
+        <mat-form-field class="example-full-width">
+          <mat-label>Phone number</mat-label>
+          <textarea matInput placeholder="+212" [(ngModel)]="PhoneNumber"></textarea>
+        </mat-form-field>
+        <button class="action-button" (click)="Verify('code')" >Verify</button>
+      </div>
+<!--      <div class="read-nfc">-->
+<!--        <label class="input-label">PV photo : </label>-->
+<!--        <button mat-button class="action-button" (click)="TakePhoto('photo')"  ><mat-icon>camera</mat-icon></button>-->
+<!--      </div>-->
+      <div class="reas-nfc">
+        <label class="input-label" >PV photo : </label>
+        <button class="action-button"  (click)="TakePhoto();camera2=!camera2">Camera</button>
+      </div>
+      <div  *ngIf="isShownCam && camera2" class="Scan-container">
+        <webcam [height]="100"
+                [width]="100"
+                [trigger]="triggerObservable"
+                (imageCapture)="handleImage($event)">
+            </webcam>
+          </div>
+          <div class="reas-nfc">
+            <button class="action-buttonShot" *ngIf="isShownCam && camera2"  (click)="triggerSnapshot()">Click Here and take the Shot</button>
+          </div>
+
+          <!--          <button class="actionBtn" (click)="triggerSnapshot();">-->
+          <!--            Click Here and take the Shot</button>-->
+          <div  *ngIf="isShownCam && camera2" class="Scan-container">
+
+            <div class="snapshot" *ngIf="webcamImage">
+              <img [height]="90"
+                   [width]="90" [src]="webcamImage.imageAsDataUrl"/>
+            </div>
+          </div>
+
+      <div class="action">
+        <button class="check-button" (click)="Send()">Send</button>
+      </div>
     </div>
 </div>

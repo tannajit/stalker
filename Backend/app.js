@@ -5,9 +5,11 @@ const cors=require("cors")
 require("dotenv").config();
 var api = require('./routes/api');
 var users=require('./routes/users')
+var client=require('./routes/client')
+
 //Port=8081;
 
-const Port = process.env.PORT || 3000 
+const Port = process.env.PORT || 3000
 var app = express();
 app.use(cors())
 
@@ -20,7 +22,9 @@ app.get('/', function(req,res){
 });
 app.use('/api', api);
 app.use('/users', users);
+app.use('/client', client);
+
 
 app.listen(Port, function () {
     console.log("Server is runing on :"+Port);
- });
+});
