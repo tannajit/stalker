@@ -1,5 +1,17 @@
+.progress-cantainer{
+    position: relative; 
+    width: 500px;
+    margin: auto;
+}
+
+.progress-cantainer span{
+    position: absolute; 
+    top: 0em; 
+    font-size: 12px; 
+    margin: auto;
+}
 mat-progress-bar {
-    height: 1.5em;
+    height: 1em;
     margin-bottom: 20px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
 }
@@ -17,28 +29,84 @@ mat-progress-bar {
 }
 .content-body{
     background-color: #F6F6F6;
-    padding: 50px;
+    padding: 20px;
     text-align: center;
+    margin: auto;
 }
+
 .content-body p{
     margin-bottom: 10px;
+    color: #646262;
 }
-.checkcodes-container{
+
+.container{
     display: flex;
-    padding: 40px;
+    padding: 20px;
     margin: 20px;
-    flex-flow: row wrap ;
+    flex-flow: column wrap ;
     background-color: #fff;
     justify-content: flex-start ;
     align-items: center;
     gap: 10px 20px; 
     border-radius: 20px;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+}
+.container button{
+    align-self: flex-end;
 }
 
+.checkcodes-fields{
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    gap: 20px;
+}
+
+.scan-field{
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    gap: 10px;
+}
+.scan-field label{
+    color: #646262;
+}
 .Scan-container{
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
+
+.inputs-container{
+    display: flex;
+    flex-flow: row wrap;
+    gap: 60px;
+    align-items: flex-start;
+}
+.nfc{
+    display: flex;
+    flex-flow: column wrap;
+    gap: 20px;
+}
+.pdv{
+    display: flex;
+    flex-flow: column wrap;
+    gap: 20px;
+}
+/* ::ng-deep .mat-select-arrow {
+    width: 0;
+    height: 0;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 3px solid;
+    margin: 0 4px;
+    color: #27AE61;
+  }
+
+  ::ng-deep .mat-select{
+    margin-left: 20px;
+    width: 100px;
+    color: #3b3a3a;
+    font-size: 12px;
+  } */
 
 .custom-select{
     border-radius: 12px;
@@ -49,20 +117,30 @@ mat-progress-bar {
 }
 
 .map-container{ 
+
     width: 700px;
     height: 400px;
     /* margin: 20px ; */
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
     /* display: flex;
     justify-content: center; */
-    margin: auto;   
+    margin: auto;  
+    border-radius: 10px;
+     
 }
+
+#map2 {
+    height: 100%;
+    border-radius: 10px;
+}
+
 
 .small-video{
     max-height: 700px;
     width: 300px;
     object-fit: contain;
 }
+
 .results{
     background-color:#DADADA;
 }
@@ -82,41 +160,26 @@ mat-progress-bar {
     height: 30px;
 }
 
-.NFC-container{
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    display: flex;
-    padding: 40px;
-    margin: 20px;
-    flex-flow: row wrap ;
-    justify-content: flex-start ;
-    align-items: center;
-    gap: 10px 20px; 
-}
 
-placeholder{
-    border-radius: 12px;
-    width:170px;
-    height: 30px;
-    box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
-    border: #fff;
-    background-color: #fff;
-  }
 
-  mat-label{
-      color:#646262;
-  }
-
-.check-button{
-   background-color: #FACF37; 
-   border-radius: 12px;
-   border: 1px solid rgba(27, 31, 35, .15);
-    box-sizing: border-box;
-    box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+.btn-yellow{
+    margin-top: 8px;
+    background-color: #FACF37;
     color: #fff;
-    font-size: 14px;
-    line-height: 20px;
-    position: relative;
-    text-align: center;
-    width:120px;
-    height: 30px;
+    font-size: 13px;
+    line-height: 30px;
+    /* width: 100px !important; */
+    border-radius: 40px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+.btn-green{
+    background-color: #27AE61;
+    color: #fff;
+    font-size: 13px;
+    line-height: 30px;
+    width: 130px !important;
+    border-radius: 20px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
 }

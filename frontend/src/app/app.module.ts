@@ -30,6 +30,7 @@ import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import {CdkTableModule} from '@angular/cdk/table';
 import {CdkTreeModule} from '@angular/cdk/tree';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 
 
@@ -70,7 +71,8 @@ import {CdkTreeModule} from '@angular/cdk/tree';
     MatProgressBarModule,
     MatSelectModule,
     CdkTableModule,
-    CdkTreeModule
+    CdkTreeModule,
+    MatFormFieldModule
 
     
   ],

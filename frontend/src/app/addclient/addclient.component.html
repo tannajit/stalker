@@ -1,88 +1,103 @@
 <div class="content-body">
 
     <p>Fixing Position...</p>
-    <div style="position: relative">
+    <div class="progress-cantainer">
         <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
-        <span style="position: absolute; top: 0em;" [ngStyle]="{'left': progress + '%'}">{{progress}}%</span>
+        <span [ngStyle]="{'left': progress + '%'}">{{progress}}%</span>
     </div>
 
     <div class="map-container">
-        <app-map></app-map>
+        <div id="map2"></div>
     </div>
 
-    <div class="checkcodes-container">
-        <div class="scan">
-            <label class="input-label">Code Centrale Danoune : </label>
-            <button class="action-button" (click)="toggleShow()">Scan</button>
+    <button mat-button class="btn-yellow">
+        Recalculate the position
+    </button>
+
+    
+    <div class="container">
+        <div class="checkcodes-fields">
+            <div class="scan-field">
+                <label class="input-label">Code Centrale Danoune : </label>
+                <button mat-button class="btn-green" (click)="toggleShow()">Scan</button>
+            </div>
+            <div class="scan-field">
+                <label class="input-label">Code Coca Cola : </label>
+                <button mat-button class="btn-green" (click)="toggleShow()">Scan</button>
+            </div>
+            <div class="scan-field">
+                <label class="input-label">Code FGD : </label>
+                <button mat-button class="btn-green" (click)="toggleShow()">Scan</button>
+            </div>
         </div>
-        <div class="scan">
-            <label class="input-label">Code Coca Cola : </label>
-            <button class="action-button" (click)="toggleShow()">Scan</button>
-        </div>
-        <div class="scan">
-            <label class="input-label">Code FGD : </label>
-            <button class="action-button" (click)="toggleShow()">Scan</button>
-        </div>
-        <div class="action">
-            <button class="check-button">Check codes</button>
-        </div>
+        <button mat-button class="btn-yellow">Check codes</button>
+        
         <div id="divshow" *ngIf="isShown" class="Scan-container">
             <zxing-scanner Class="small-video" (scanSuccess)="onCodeResult($event)"></zxing-scanner>
 
             <section class="results" *ngIf="qrResultString">
                 <div>
-                    <small>Result : </small>
+                    <small>Result: </small>
                     <strong>{{ qrResultString }}</strong>
                 </div>
                 <button mat-icon-button (click)="clearResult()">&times;</button>
             </section>
         </div>
     </div>
-    <div class="NFC-container">
-        <div class="read-nfc">
-            <label class="input-label">NFC card puce : </label>
-            <button class="action-button" >Read</button>
-        </div>
-        <div class="qr-code">
-            <label class="input-label">Qr Code : </label>
-            <button class="action-button" >Scan</button>
-        </div>
-        <div class="nfc-photo">
-            <label class="input-label">NFC photo : </label>
-            <button mat-button class="action-button" ><mat-icon>camera</mat-icon></button>
-        </div>
-        <div >
-            <select class="custom-select" >
-                <option value="0"> PV Type </option>
-                <option value="1">Attar</option>
-                <option value="2">BMW</option>
-                <option value="3">Citroen</option>
-                <option value="4">Ford</option>
-                <option value="5">Honda</option>
-                <option value="6">Jaguar</option>
-                <option value="7">Land Rover</option>
-              </select>
-        </div>
-        <div class="name-container">
-            <mat-form-field class="example-full-width">
-                <mat-label>First Name & Last Name</mat-label>
-                <textarea matInput placeholder="Typing..."></textarea>
-              </mat-form-field>
-        </div>
-        <div class="phone-caontainer">
-            <mat-form-field class="example-full-width">
-                <mat-label>Phone number</mat-label>
-                <textarea matInput placeholder="+212"></textarea>
-              </mat-form-field>
-              <button class="action-button" >Verify</button>
-        </div>
-        <div class="read-nfc">
-            <label class="input-label">PV photo : </label>
-            <button mat-button class="action-button" ><mat-icon>camera</mat-icon></button>
-        </div>
-        <div class="action">
-            <button class="check-button">Send</button>
-        </div>
+
+    <div class="container">
+
+        <div class="inputs-container">
+            <div class="nfc">
+                <div class="scan-field">
+                    <label class="input-label">NFC card puce : </label>
+                    <button mat-button class="btn-green" >Read</button>
+                </div>
+                <div class="scan-field">
+                    <label class="input-label">Qr Code : </label>
+                    <button mat-button class="btn-green" >Scan</button>
+                </div>
+                <div class="scan-field">
+                    <label class="input-label">NFC photo : </label>
+                    <button mat-button class="btn-green" ><mat-icon>camera_alt</mat-icon></button>
+                </div>
+            </div>
             
+            <div class="pdv">
+
+                <mat-form-field>
+                    <mat-select placeholder="Type" panelClass="selectPanel2">
+                        <mat-option>Alimentation</mat-option>
+                        <mat-option>Superette</mat-option>
+                        <mat-option>Aattar</mat-option>
+                        <mat-option>Fruits sec</mat-option>
+                        <mat-option>Boundif</mat-option>
+                        <mat-option>Parfumerie</mat-option>
+                        <mat-option>Kioske</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                    
+                    
+                <div class="name-container">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>First Name & Last Name</mat-label>
+                        <textarea matInput placeholder="Typing..."></textarea>
+                      </mat-form-field>
+                </div>
+                <div class="phone-caontainer">
+                    <mat-form-field class="example-full-width">
+                        <mat-label>Phone number</mat-label>
+                        <textarea matInput placeholder="+212"></textarea>
+                      </mat-form-field>
+                      <button class="action-button" >Verify</button>
+                </div>
+                <div class="read-nfc">
+                    <label class="input-label">PV photo : </label>
+                    <button mat-button class="action-button" ><mat-icon>camera</mat-icon></button>
+                </div>
+            </div>
+        </div>
+        
+        <button mat-button class="btn-yellow">Send</button>  
     </div>
 </div>
