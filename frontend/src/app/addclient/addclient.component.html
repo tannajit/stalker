@@ -1,30 +1,41 @@
 <div class="content-body">
 
     <p>Fixing Position...</p>
-    <div style="position: relative">
-        <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
-        <span style="position: absolute; top: 0em;" [ngStyle]="{'left': progress + '%'}">{{progress}}%</span>
-    </div>
+  
+    <div ng-app ng-controller="ApplicationController">   
+        <pre>Status: {{ percentage }}%</pre>
+      </div>
 
     <div class="map-container">
-        <app-map></app-map>
+        <div id="map1"></div>
     </div>
 
-    <div class="checkcodes-container">
+      <div>
+        <button (click)="showcheck()" [disabled]="(percentage!=100) ||  !Status">Add New Client</button>
+        <div>
+           
+            <small>Result : </small>
+            <strong>{{ lat }}</strong>, 
+            <strong>{{ lon }}</strong>
+        
+        </div>
+      </div>
+
+    <div id="checkcodes" *ngIf="hide" class="checkcodes-container">
         <div class="scan">
             <label class="input-label">Code Centrale Danoune : </label>
-            <button class="action-button" (click)="toggleShow()">Scan</button>
+            <button class="action-button" [disabled]="test" (click)="toggleShow()">Scan</button>
         </div>
         <div class="scan">
             <label class="input-label">Code Coca Cola : </label>
-            <button class="action-button" (click)="toggleShow()">Scan</button>
+            <button class="action-button" [disabled]="test" (click)="toggleShow()">Scan</button>
         </div>
         <div class="scan">
             <label class="input-label">Code FGD : </label>
-            <button class="action-button" (click)="toggleShow()">Scan</button>
+            <button class="action-button" [disabled]="test" (click)="toggleShow()">Scan</button>
         </div>
         <div class="action">
-            <button class="check-button">Check codes</button>
+            <button class="check-button" (click)="nfcShow()">Check codes</button>
         </div>
         <div id="divshow" *ngIf="isShown" class="Scan-container">
             <zxing-scanner Class="small-video" (scanSuccess)="onCodeResult($event)"></zxing-scanner>
@@ -38,7 +49,8 @@
             </section>
         </div>
     </div>
-    <div class="NFC-container">
+
+    <div id="nfc" *ngIf="nfcShown" class="NFC-container">
         <div class="read-nfc">
             <label class="input-label">NFC card puce : </label>
             <button class="action-button" >Read</button>

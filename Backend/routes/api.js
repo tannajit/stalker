@@ -3,7 +3,7 @@ var express = require('express');
 var router = express.Router();
 const MongoClient = require("mongodb").MongoClient;
 var uri= "mongodb://192.168.2.230:27017"; 
-//var uri= "mongodb://localhost:27017"; // uri to your Mongo database
+// var uri= "mongodb://localhost:27017"; // uri to your Mongo database
 var client = new MongoClient(uri);
 var db; // database 
 var name_database="stalker1"
@@ -22,8 +22,6 @@ run().catch(console.log)
 
 function put(value){
 	arraValues.push(value)
-	
-	
 }
 
 async function getData(){
@@ -33,9 +31,8 @@ async function getData(){
     values.forEach(value=>{arrValues.push(value)},error=>console.log(error)) 
 	console.log(arrValues)
 	return arrValues;
-    //console.log(arraValues)
-	//return values;
-    
+    // console.log(arraValues)
+	// return values;  
 }
 
 
@@ -59,7 +56,7 @@ router.get('/clients', async(req, res)=> {
 
 router.get('/secteurs', async(req, res)=> {
 	let collection=await db.collection("geometries") // collection 
-	//console.log(collection)
+	// console.log(collection)
 	/*let values=collection.find({'geometry.geometry.type':'Point'})
     values.forEach(value=>{arrValues.push(value)},error=>console.log(error)) 
 	console.log(arrValues)

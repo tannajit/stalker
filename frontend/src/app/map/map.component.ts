@@ -13,20 +13,20 @@ import { ClientsService } from '../clients.service';
 export class MapComponent implements AfterViewInit {
 
   private map;
+
   icon = L.icon({
     iconUrl: "assets/green.png",
     iconSize: [12, 12],
   });
+
   markersCluster = new L.MarkerClusterGroup();
-  lat=33.27075
-  lon=-9.58481
-
+  lat=33.817517
+  lon=-6.237595
   
-
   private initMap(): void {
     this.map = L.map('map', {
       center: [this.lat, this.lon],
-      zoom: 15,
+      zoom: 10,
       zoomControl: false
     });
     
@@ -36,13 +36,10 @@ export class MapComponent implements AfterViewInit {
     };
 
     // const zoom = L.control.zoom(zoomOptions);
-
-
     const tiles = L.tileLayer('https://map.novatis.tech/hot/{z}/{x}/{y}.png', {
       maxZoom: 30,
       minZoom: 0
     });
-
 
     // const locationControl = {
     //   position: 'bottomleft',
@@ -54,6 +51,7 @@ export class MapComponent implements AfterViewInit {
 
     // lc.addTo(this.map);
     // zoom.addTo(this.map);
+  
     tiles.addTo(this.map);
     this.getClients()
     this.getAllSecteurs()
@@ -68,30 +66,10 @@ export class MapComponent implements AfterViewInit {
   }
   
   ngAfterViewInit(): void {
-    this.getLocation()
-    //this.initMap()
+      //this.getLocation()
+    this.initMap()
   }
 
-  getLocation() {
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
-        if (position) {
-          console.log("Latitude: " + position.coords.latitude +
-            " Longitude: " + position.coords.longitude);
-          this.lat = position.coords.latitude;
-          this.lon = position.coords.longitude;
-          console.log(this.lat);
-          console.log(this.lon);
-          this.initMap()
-        }
-      },
-        (error: GeolocationPositionError) => console.log(error));
-    } else {
-      alert("Geolocation is not supported by this browser.");
-    }
-
-  }
 
   locate(){
     // this.panTo(new L.LatLng(40.737, -73.923));

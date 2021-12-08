@@ -91,6 +91,8 @@ mat-progress-bar {
     justify-content: flex-start ;
     align-items: center;
     gap: 10px 20px; 
+    background-color: #fff;
+    border-radius: 20px;
 }
 
 placeholder{
@@ -106,6 +108,16 @@ placeholder{
       color:#646262;
   }
 
+  #map1 {
+    height: 100%;
+  }
+
+  .map-frame {
+    position: relative;
+    /* border: 2px solid black; */
+    height: 100%;
+  }
+  
 .check-button{
    background-color: #FACF37; 
    border-radius: 12px;
