@@ -15,9 +15,7 @@ import { AddclientComponent } from './addclient/addclient.component';
 
 const routes: Routes = [
 
-  {
-    path: '', redirectTo: 'map', pathMatch: 'full', canActivate: [AuthGaurdService]
-  },
+  { path: '', redirectTo: 'map', pathMatch: 'full' },
   {
     path:'login',
     component:LoginComponent
@@ -51,7 +49,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
