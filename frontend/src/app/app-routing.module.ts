@@ -8,16 +8,14 @@ import { ClientsComponent } from './clients/clients.component';
 import { RoutesComponent } from './routes/routes.component';
 import { PlanningComponent } from './planning/planning.component';
 import { AuthGaurdService } from './auth-gaurd.service';
-import { AddclientComponent } from './addclient/addclient.component'; 
+import { AddclientComponent } from './addclient/addclient.component';
 
 
 
 
 const routes: Routes = [
-  
-  {
-    path: '', redirectTo: 'map', pathMatch: 'full', canActivate: [AuthGaurdService]
-  },
+
+  { path: '', redirectTo: 'map', pathMatch: 'full' },
   {
     path:'login',
     component:LoginComponent
@@ -51,7 +49,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

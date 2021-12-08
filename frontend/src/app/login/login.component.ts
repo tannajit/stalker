@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormGroup,FormBuilder,Validators}  from '@angular/forms'
 import { AuthenticationService } from '../authentication.service';
 import { Router } from '@angular/router';
+import { SidebarMenuComponent } from '../sidebar-menu/sidebar-menu.component';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -38,8 +39,11 @@ export class LoginComponent implements OnInit {
   }
     // Store Token and delegate to Home page
     Response(res){
+      console.log(res)
       localStorage.setItem('token', res.Data.token)
       console.log(this._auth.getToken())
+      localStorage.setItem("name",res.Data.user.name)
+      //SidebarMenuComponent.
       this._router.navigate([''])
     }
 }

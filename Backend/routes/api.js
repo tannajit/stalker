@@ -8,6 +8,8 @@ var client = new MongoClient(uri);
 var db; // database 
 var name_database="stalker1"
 var arraValues=[] // this array where we gonna put the docume
+
+
 async function run() {
 	try {
 		var t=await client.connect();
@@ -31,8 +33,13 @@ async function getData(){
     values.forEach(value=>{arrValues.push(value)},error=>console.log(error)) 
 	console.log(arrValues)
 	return arrValues;
+<<<<<<< HEAD
     // console.log(arraValues)
 	// return values;  
+=======
+    //console.log(arraValues)
+	//return values; 
+>>>>>>> 5efe0644b21ea3a794554ade03041059b5aae9f6
 }
 
 
@@ -49,7 +56,7 @@ router.get('/clients', async(req, res)=> {
     res.send(arrValues)*/
 	var values=await collection.find({'geometry.geometry.type':'Point'}).toArray()
 	//console.log(values)
-	console.log("---send data -----------")
+	console.log("--- send data -----------")
 	res.json(values)
 
 });

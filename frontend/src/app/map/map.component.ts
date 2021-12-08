@@ -18,7 +18,11 @@ export class MapComponent implements AfterViewInit {
     iconUrl: "assets/green.png",
     iconSize: [12, 12],
   });
-
+  
+  location_icon = L.icon({
+    iconUrl: "assets/location.png",
+    iconSize: [30,30]
+  });
   markersCluster = new L.MarkerClusterGroup();
   lat=33.817517
   lon=-6.237595
@@ -57,6 +61,7 @@ export class MapComponent implements AfterViewInit {
     this.getAllSecteurs()
     this.map.addLayer(this.markersCluster);
     this.map.addControl(L.control.zoom({ position: 'bottomleft' }))
+    
   }
 
 
@@ -70,9 +75,30 @@ export class MapComponent implements AfterViewInit {
     this.initMap()
   }
 
+  getLocation() {
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
+        if (position) {
+          console.log("Latitude: " + position.coords.latitude +
+            " Longitude: " + position.coords.longitude);
+          this.lat = position.coords.latitude;
+          this.lon = position.coords.longitude;
+          console.log(this.lat);
+          console.log(this.lon);
+          this.initMap();
+          L.marker([this.lat,this.lon], {icon: this.location_icon}).addTo(this.map);
+        }
+      },
+        (error: GeolocationPositionError) => console.log(error));
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+
+  }
 
   locate(){
-    // this.panTo(new L.LatLng(40.737, -73.923));
+      this.map.flyTo(new L.LatLng(33.2607691,-7.6222771),13);
   }
 
 

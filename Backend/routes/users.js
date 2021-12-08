@@ -6,12 +6,13 @@ var salt=5 //any random value,  the salt value specifies how much time it’s go
 
 // MongoDataBase
 const MongoClient = require("mongodb").MongoClient;
-//var uri= "mongodb://192.168.2.230:27017"; // uri to your Mongo database if the server is available
-var uri="mongodb://localhost:27017"  // use your local Mongodb
+var uri= "mongodb://192.168.2.230:27017"; // uri to your Mongo database if the server is available
+//var uri="mongodb://localhost:27017"  // use your local Mongodb
 var client = new MongoClient(uri);
 var db; // database 
 var name_database="stalker1"
 var arraValues=[] // this array where we gonna put the document 
+
 async function run() {
 	try {
 		var t=await client.connect();
@@ -74,7 +75,7 @@ async function getUser(user){
       let playload={subject: user._id}
       let token=jwt.sign(playload,'secretKey')
       status.value=200
-      status.data={token}
+      status.data={'token':token,'user':FindUser}
       //console.log(token)
     }else{
       status.value=401
@@ -106,7 +107,6 @@ router.post('/register',async(req,res)=>{
   let user=req.body;
   await InsertUser(user);
   res.status(200).send("User inserted/Updated")
-
 })
 
 async function ValidPassword(passwordG,passwordD){
