@@ -8,11 +8,12 @@ import { Component, OnInit } from '@angular/core';
 export class SidebarMenuComponent implements OnInit {
 
   sidenavWidth = 15;
-  constructor() { }
+  name="user";
+  constructor() {  }
 
   ngOnInit(): void {
   }
-
+ 
   // increase() {
 	// 	this.sidenavWidth = 15;
 	// 	console.log('increase sidenav width');

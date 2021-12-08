@@ -12,3 +12,10 @@ body { margin: 0;  }
   background-color: #fff;
   border-radius: 15px;
 }
+
+.cdk-overlay-container .cdk-overlay-pane .selectPanel2{
+  margin-top: 20%;
+  background-color: #fff;
+  border-radius: 15px;
+  color: black;
+}

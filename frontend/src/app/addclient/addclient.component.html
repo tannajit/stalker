@@ -1,31 +1,37 @@
 <div class="content-body">
 
     <p>Fixing Position...</p>
-    <div style="position: relative">
+    <div class="progress-cantainer">
         <mat-progress-bar mode="determinate" [value]="progress"></mat-progress-bar>
-        <span style="position: absolute; top: 0em;" [ngStyle]="{'left': progress + '%'}">{{progress}}%</span>
+        <span [ngStyle]="{'left': progress + '%'}">{{progress}}%</span>
     </div>
 
     <div class="map-container">
-        <app-map></app-map>
+        <div id="map2"></div>
     </div>
 
-    <div class="checkcodes-container">
-        <div class="scan">
-            <label class="input-label">Code Centrale Danoune : </label>
-            <button class="action-button"  (click)="toggleShow(1,qrResultString);" >Scan</button>
+    <button mat-button class="btn-yellow">
+        Recalculate the position
+    </button>
+
+    
+    <div class="container">
+        <div class="checkcodes-fields">
+            <div class="scan-field">
+                <label class="input-label">Code Centrale Danoune : </label>
+                <button mat-button class="btn-green" (click)="toggleShow(1,qrResultString);">Scan</button>
+            </div>
+            <div class="scan-field">
+                <label class="input-label">Code Coca Cola : </label>
+                <button mat-button class="btn-green" (click)="toggleShow(2,qrResultString)">Scan</button>
+            </div>
+            <div class="scan-field">
+                <label class="input-label">Code FGD : </label>
+                <button mat-button class="btn-green" (click)="toggleShow(3,qrResultString)">Scan</button>
+            </div>
         </div>
-        <div class="scan">
-            <label class="input-label">Code Coca Cola : </label>
-            <button class="action-button" (click)="toggleShow(2,qrResultString);">Scan</button>
-        </div>
-        <div class="scan">
-            <label class="input-label">Code FGD : </label>
-            <button class="action-button" (click)="toggleShow(3,qrResultString);">Scan</button>
-        </div>
-        <div class="action">
-            <button class="check-button" (click)="CheckCodes()" >Check codes</button>
-        </div>
+        <button mat-button class="btn-yellow" (click)="CheckCodes()">Check codes</button>
+        
         <div id="divshow" *ngIf="isShown && !scan" class="Scan-container">
             <zxing-scanner Class="small-video" (scanSuccess)="onCodeResult($event)"></zxing-scanner>
 
@@ -38,111 +44,115 @@
             </section>
         </div>
     </div>
-    <div class="NFC-container">
-        <div class="read-nfc">
-            <label class="input-label">NFC card puce : </label>
-            <button class="action-button" (click)="Read()" >Read</button>
-        </div>
 
-      <div class="qr-code">
-        <label class="input-label">Qr Code : </label>
-        <button class="action-button"  (click)="toggleShow(4,qrResultString);scan=!scan" >Scan</button>
-      </div>
+    <div class="container">
 
-      <div  *ngIf="isShown && scan " class="Scan-container">
-        <zxing-scanner Class="small-video" (scanSuccess)="onCodeResult($event)"></zxing-scanner>
+        <div class="inputs-container">
+            <div class="nfc">
+                <div class="scan-field">
+                    <label class="input-label">NFC card puce : </label>
+                    <button mat-button class="btn-green" (click)="Read()">Read</button>
+                </div>
+                <div class="scan-field">
+                    <label class="input-label">Qr Code : </label>
+                    <button mat-button class="btn-green" (click)="toggleShow(4,qrResultString);scan=!scan">Scan</button>
+                </div>
+                <div *ngIf="isShown && scan " class="Scan-container">
+                    <zxing-scanner Class="small-video" (scanSuccess)="onCodeResult($event)"></zxing-scanner>
+            
+                    <section class="results" *ngIf="qrResultString">
+                      <div>
+                        <small>Result{{code.nbr}} : </small>
+                        <strong>{{ qrResultString }}</strong>
+                      </div>
+                      <button class="mat-icon-button"  (click)="toggleShow(code.nbr,qrResultString)">clear</button>
+                    </section>
+                </div>
+                <div class="scan-field">
+                    <label class="input-label">NFC photo : </label>
+                    <button mat-button class="btn-green" (click)="TakePhoto();camera1=!camera1" ><mat-icon>camera_alt</mat-icon></button>
+                </div>
+                <div  *ngIf="isShownCam && camera1" class="Scan-container">
+                    <webcam [height]="100"
+                            [width]="100"
+                            [trigger]="triggerObservable"
+                            (imageCapture)="handleImage($event)">
+                    </webcam>
+                </div>
+                <div class="reas-nfc">
+                    <button class="action-buttonShot" *ngIf="isShownCam && camera1"  (click)="triggerSnapshot()">Click Here and take the Shot</button>
+                </div>
+                <div  *ngIf="isShownCam && camera1" class="Scan-container">
 
-        <section class="results" *ngIf="qrResultString">
-          <div>
-            <small>Result{{code.nbr}} : </small>
-            <strong>{{ qrResultString }}</strong>
-          </div>
-          <button class="mat-icon-button"  (click)="toggleShow(code.nbr,qrResultString)">clear</button>
-        </section>
-      </div>
+                    <div class="snapshot" *ngIf="webcamImage">
+                      <img [height]="90"
 
-
-        <div class="reas-nfc">
-          <label class="input-label" >NFC photo : </label>
-          <button class="action-button"  (click)="TakePhoto();camera1=!camera1">NFC photo</button>
-        </div>
-        <div  *ngIf="isShownCam && camera1" class="Scan-container">
-          <webcam [height]="100"
-                  [width]="100"
-                  [trigger]="triggerObservable"
-                  (imageCapture)="handleImage($event)">
-          </webcam>
-        </div>
-          <div class="reas-nfc">
-            <button class="action-buttonShot" *ngIf="isShownCam && camera1"  (click)="triggerSnapshot()">Click Here and take the Shot</button>
-          </div>
-
-<!--          <button class="actionBtn" (click)="triggerSnapshot();">-->
-<!--            Click Here and take the Shot</button>-->
-      <div  *ngIf="isShownCam && camera1" class="Scan-container">
-
-          <div class="snapshot" *ngIf="webcamImage">
-            <img [height]="90"
-                 [width]="90" [src]="webcamImage.imageAsDataUrl"/>
-          </div>
-      </div>
-
-      <div >
-        <select class="custom-select"[(ngModel)]="TypeDPV" >
-          <option value="PV Type"> PV Type </option>
-          <option value="Attar">Attar</option>
-          <option value="BMW">BMW</option>
-          <option value="Citroen">Citroen</option>
-          <option value="Ford">Ford</option>
-          <option value="Honda">Honda</option>
-          <option value="Jaguar">Jaguar</option>
-          <option value="Land Rover">Land Rover</option>
-        </select>
-      </div>
-      <div class="name-container">
-        <mat-form-field class="example-full-width">
-          <mat-label>First Name & Last Name</mat-label>
-          <textarea matInput placeholder="Typing..." [(ngModel)]="NomPrenom"></textarea>
-        </mat-form-field>
-      </div>
-      <div class="phone-caontainer">
-        <mat-form-field class="example-full-width">
-          <mat-label>Phone number</mat-label>
-          <textarea matInput placeholder="+212" [(ngModel)]="PhoneNumber"></textarea>
-        </mat-form-field>
-        <button class="action-button" (click)="Verify('code')" >Verify</button>
-      </div>
-<!--      <div class="read-nfc">-->
-<!--        <label class="input-label">PV photo : </label>-->
-<!--        <button mat-button class="action-button" (click)="TakePhoto('photo')"  ><mat-icon>camera</mat-icon></button>-->
-<!--      </div>-->
-      <div class="reas-nfc">
-        <label class="input-label" >PV photo : </label>
-        <button class="action-button"  (click)="TakePhoto();camera2=!camera2">Camera</button>
-      </div>
-      <div  *ngIf="isShownCam && camera2" class="Scan-container">
-        <webcam [height]="100"
-                [width]="100"
-                [trigger]="triggerObservable"
-                (imageCapture)="handleImage($event)">
-            </webcam>
-          </div>
-          <div class="reas-nfc">
-            <button class="action-buttonShot" *ngIf="isShownCam && camera2"  (click)="triggerSnapshot()">Click Here and take the Shot</button>
-          </div>
-
-          <!--          <button class="actionBtn" (click)="triggerSnapshot();">-->
-          <!--            Click Here and take the Shot</button>-->
-          <div  *ngIf="isShownCam && camera2" class="Scan-container">
-
-            <div class="snapshot" *ngIf="webcamImage">
-              <img [height]="90"
-                   [width]="90" [src]="webcamImage.imageAsDataUrl"/>
+                           [width]="90" [src]="webcamImage.imageAsDataUrl"/>
+                    </div>
+                </div>
             </div>
-          </div>
+            
+            <div class="pdv">
 
-      <div class="action">
-        <button class="check-button" (click)="Send()">Send</button>
-      </div>
+                <div class="field">
+                    <mat-form-field>
+                        <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="TypeDPV">
+                            <mat-option value="">Alimentation</mat-option>
+                            <mat-option value="">Superette</mat-option>
+                            <mat-option value="">Aattar</mat-option>
+                            <mat-option value="">Fruits sec</mat-option>
+                            <mat-option value="">Boundif</mat-option>
+                            <mat-option value="">Parfumerie</mat-option>
+                            <mat-option value="">Kioske</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                    
+                <div class="field">
+                    <mat-form-field>
+                        <mat-label>First & Last Name*</mat-label>
+                        <input matInput placeholder="Typing..." [(ngModel)]="NomPrenom"/>
+                    </mat-form-field>
+                </div>
+                
+                <div class="field">
+                    <mat-form-field>
+                        <mat-label>Phone number*</mat-label>
+                        <input matInput placeholder="+212" [(ngModel)]="PhoneNumber"/>
+                    </mat-form-field>
+    
+                    <button mat-button class="btn-green" (click)="Verify('code')">Verify</button>
+                </div>
+                
+                
+                <div class="field">
+                    <mat-label class="input-label">PV photo : </mat-label>
+                    <button mat-button class="btn-green" (click)="TakePhoto();camera2=!camera2"><mat-icon>camera_alt</mat-icon></button>    
+                </div>
+
+                <div  *ngIf="isShownCam && camera2" class="Scan-container">
+                    <webcam [height]="100"
+                            [width]="100"
+                            [trigger]="triggerObservable"
+                            (imageCapture)="handleImage($event)">
+                    </webcam>
+                </div>
+                <div class="reas-nfc">
+                    <button class="action-buttonShot" *ngIf="isShownCam && camera2"  (click)="triggerSnapshot()">Click Here and take the Shot</button>
+                  </div>
+        
+                  <!--          <button class="actionBtn" (click)="triggerSnapshot();">-->
+                  <!--            Click Here and take the Shot</button>-->
+                  <div  *ngIf="isShownCam && camera2" class="Scan-container">
+        
+                    <div class="snapshot" *ngIf="webcamImage">
+                      <img [height]="90"
+                           [width]="90" [src]="webcamImage.imageAsDataUrl"/>
+                    </div>
+                  </div>
+            </div>
+        </div>
+        
+        <button mat-button class="btn-yellow" (click)="Send()">Send</button>  
     </div>
 </div>

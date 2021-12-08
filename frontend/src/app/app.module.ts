@@ -77,7 +77,8 @@ import { FormsModule } from '@angular/forms'
     MatProgressBarModule,
     MatSelectModule,
     CdkTableModule,
-    CdkTreeModule
+    CdkTreeModule,
+    MatFormFieldModule
 
   ],
   providers: [AuthenticationService, AuthGaurdService],
