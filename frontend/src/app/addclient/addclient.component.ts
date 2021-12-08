@@ -1,20 +1,22 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { ViewEncapsulation } from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import {ClientService} from "./client.service";
 import {Observable, Subject} from "rxjs";
 
 const incr = 1;
+
 @Component({
   selector: 'app-addclient',
   templateUrl: './addclient.component.html',
-  styleUrls: ['./addclient.component.css']
+  styleUrls: ['./addclient.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 
 export class AddclientComponent implements AfterViewInit {
 
   progress = 0;
-
   //from hajar
   ListCodes=[];
   code={nbr:null,value: null}
@@ -32,7 +34,7 @@ export class AddclientComponent implements AfterViewInit {
   camera1: boolean=false;
   camera2: boolean=false;
   clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
-    NomPrenom:null, PhoneNumber:null, PVPhoto:null}
+  NomPrenom:null, PhoneNumber:null, PVPhoto:null}
  
   // map
   private map;
@@ -85,12 +87,7 @@ export class AddclientComponent implements AfterViewInit {
     });
 
 
-    // const locationControl = {
-    //   position: 'bottomleft',
-    //   strings: {
-    //       title: "Show me where I am, yo!"
-    //   }}
-
+    
     // const lc = L.control.locate(locationControl)
 
     // lc.addTo(this.map);
@@ -100,7 +97,6 @@ export class AddclientComponent implements AfterViewInit {
     this.map.addControl(L.control.zoom({ position: 'bottomleft' }))
     
   }
-
   manageProgress() {
     if(this.progress === 100) {
       this.progress = 0;

@@ -57,7 +57,7 @@
                     <label class="input-label">Qr Code : </label>
                     <button mat-button class="btn-green" (click)="toggleShow(4,qrResultString);scan=!scan">Scan</button>
                 </div>
-                <div  *ngIf="isShown && scan " class="Scan-container">
+                <div *ngIf="isShown && scan " class="Scan-container">
                     <zxing-scanner Class="small-video" (scanSuccess)="onCodeResult($event)"></zxing-scanner>
             
                     <section class="results" *ngIf="qrResultString">
@@ -86,6 +86,7 @@
 
                     <div class="snapshot" *ngIf="webcamImage">
                       <img [height]="90"
+
                            [width]="90" [src]="webcamImage.imageAsDataUrl"/>
                     </div>
                 </div>
@@ -93,42 +94,48 @@
             
             <div class="pdv">
 
-                <mat-form-field>
-                    <mat-select placeholder="Type" panelClass="selectPanel2" [(ngModel)]="TypeDPV">
-                        <mat-option>Alimentation</mat-option>
-                        <mat-option>Superette</mat-option>
-                        <mat-option>Aattar</mat-option>
-                        <mat-option>Fruits sec</mat-option>
-                        <mat-option>Boundif</mat-option>
-                        <mat-option>Parfumerie</mat-option>
-                        <mat-option>Kioske</mat-option>
-                    </mat-select>
-                </mat-form-field>
+                <div class="field">
+                    <mat-form-field>
+                        <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="TypeDPV">
+                            <mat-option value="">Alimentation</mat-option>
+                            <mat-option value="">Superette</mat-option>
+                            <mat-option value="">Aattar</mat-option>
+                            <mat-option value="">Fruits sec</mat-option>
+                            <mat-option value="">Boundif</mat-option>
+                            <mat-option value="">Parfumerie</mat-option>
+                            <mat-option value="">Kioske</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
                     
-                    
-                <div class="name-container">
-                    <mat-form-field class="example-full-width">
-                        <mat-label>First Name & Last Name</mat-label>
-                        <textarea matInput placeholder="Typing..." [(ngModel)]="NomPrenom"></textarea>
-                      </mat-form-field>
+                <div class="field">
+                    <mat-form-field>
+                        <mat-label>First & Last Name*</mat-label>
+                        <input matInput placeholder="Typing..." [(ngModel)]="NomPrenom"/>
+                    </mat-form-field>
                 </div>
-                <div class="phone-caontainer">
-                    <mat-form-field class="example-full-width">
-                        <mat-label>Phone number</mat-label>
-                        <textarea matInput placeholder="+212" [(ngModel)]="PhoneNumber"></textarea>
-                      </mat-form-field>
-                      <button class="action-button" (click)="Verify('code')">Verify</button>
+                
+                <div class="field">
+                    <mat-form-field>
+                        <mat-label>Phone number*</mat-label>
+                        <input matInput placeholder="+212" [(ngModel)]="PhoneNumber"/>
+                    </mat-form-field>
+    
+                    <button mat-button class="btn-green" (click)="Verify('code')">Verify</button>
                 </div>
-                <div class="read-nfc">
-                    <label class="input-label">PV photo : </label>
-                    <button mat-button class="action-button" (click)="TakePhoto();camera2=!camera2"><mat-icon>camera</mat-icon></button>
+                
+                
+                <div class="field">
+                    <mat-label class="input-label">PV photo : </mat-label>
+                    <button mat-button class="btn-green" (click)="TakePhoto();camera2=!camera2"><mat-icon>camera_alt</mat-icon></button>    
                 </div>
+
                 <div  *ngIf="isShownCam && camera2" class="Scan-container">
                     <webcam [height]="100"
                             [width]="100"
                             [trigger]="triggerObservable"
                             (imageCapture)="handleImage($event)">
-                        </webcam>
+                    </webcam>
                 </div>
                 <div class="reas-nfc">
                     <button class="action-buttonShot" *ngIf="isShownCam && camera2"  (click)="triggerSnapshot()">Click Here and take the Shot</button>
@@ -146,6 +153,6 @@
             </div>
         </div>
         
-        <button mat-button class="btn-yellow" (click)="Send()"></button>>Send</button>  
+        <button mat-button class="btn-yellow" (click)="Send()">Send</button>  
     </div>
 </div>
