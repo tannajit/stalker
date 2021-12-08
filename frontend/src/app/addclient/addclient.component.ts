@@ -58,8 +58,7 @@ export class AddclientComponent implements AfterViewInit {
 
 
   nfcShow(){
-    this.nfcShown = !this.nfcShown;
-    this.test =true;}
+    }
 
   showcheck(){
     this.Status=true
@@ -305,8 +304,11 @@ export class AddclientComponent implements AfterViewInit {
     this.Status=false
   }
   CheckCodes() {
+    this.nfcShown = !this.nfcShown;
+    this.test =true;
    console.log(this.ListCodes)
     this.clientInfos.codes=this.ListCodes
+    
   }
 
   Verify(code: string) {
