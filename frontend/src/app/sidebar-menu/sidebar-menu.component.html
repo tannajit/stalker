@@ -70,7 +70,7 @@
             <!-- Drop down menu for logging out -->
             <mat-menu #logout="matMenu" [overlapTrigger]="false">
                 <span (mouseleave)="menuTrigger.closeMenu()"></span>
-                <button mat-menu-item>
+                <button mat-menu-item (click)="_authService.logoutUser()">
                     <mat-icon>logout</mat-icon>
                     <span>Logout</span>
                 </button>
