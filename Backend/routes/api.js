@@ -33,13 +33,8 @@ async function getData(){
     values.forEach(value=>{arrValues.push(value)},error=>console.log(error)) 
 	console.log(arrValues)
 	return arrValues;
-<<<<<<< HEAD
-    // console.log(arraValues)
-	// return values;  
-=======
     //console.log(arraValues)
 	//return values; 
->>>>>>> 5efe0644b21ea3a794554ade03041059b5aae9f6
 }
 
 
