@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { AuthenticationService } from '../authentication.service';
 @Component({
   selector: 'app-sidebar-menu',
   templateUrl: './sidebar-menu.component.html',
@@ -9,7 +9,7 @@ export class SidebarMenuComponent implements OnInit {
 
   sidenavWidth = 15;
   name="user";
-  constructor() {  }
+  constructor(public _authService: AuthenticationService) {  }
 
   ngOnInit(): void {
   }

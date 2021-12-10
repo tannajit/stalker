@@ -33,13 +33,8 @@ import {CdkTreeModule} from '@angular/cdk/tree';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {WebcamModule} from 'ngx-webcam';
 import { FormsModule } from '@angular/forms'
-
-
-
-
-
-
-
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptorService } from './token-interceptor.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -81,7 +76,14 @@ import { FormsModule } from '@angular/forms'
     MatFormFieldModule
 
   ],
-  providers: [AuthenticationService, AuthGaurdService],
+  providers: [
+    AuthenticationService, 
+    AuthGaurdService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptorService,
+      multi: true
+    }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
