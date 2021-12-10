@@ -1,26 +1,22 @@
 var express = require('express');
 var router = express.Router();
-const bcrypt = require('bcrypt')
-const jwt=require("jsonwebtoken")
-var salt=5 //any random value,  the salt value specifies how much time it’s gonna take to hash the password. higher the salt value, more secure the password is and more time it will take for calculation.
-
-// MongoDataBase
+const mongo = require('mongodb');
+var ObjectId = require('mongodb').ObjectId;
+// Mongo URI
 const MongoClient = require("mongodb").MongoClient;
-//var uri= "mongodb://192.168.2.230:27017"; // uri to your Mongo database if the server is available
-var uri="mongodb://localhost:27017"  // use your local Mongodb
+var stream = require('stream');
+var uri="mongodb://localhost:27017"
 var client = new MongoClient(uri);
-var db; // database
 var name_database="stalker1"
-var arraValues=[] // this array where we gonna put the document
 async function run() {
-    try {
-        var t=await client.connect();
-        db = client.db(name_database);
-        console.log("db is ready for the client")
-    }catch (error){
-        //Ensures that the client will close when you finish/error
-        console.log(error)
-    }
+	try {
+		var t=await client.connect();
+		db = client.db(name_database);
+		console.log("db is ready")
+	}catch (error){
+	//Ensures that the client will close when you finish/error
+		console.log(error)
+	}
 }
 run().catch(console.log)
 //// Generate and validate Token
@@ -39,20 +35,24 @@ async function InsertClient(client){
         if(v.nbr===2) codeCOLA=v.value
         if(v.nbr===3) codeFGD=v.value
         if(v.nbr===4) codeQR=v.value
-
-
     })
+    var id_pv;
+    var id_NFC;
+    await test(db,client.NomPrenom,client.PVPhoto).then(s=>id_pv=s._id,err=>console.log(err))
+   await test(db,client.NomPrenom,client.NFCPhoto).then(s=>id_NFC=s._id,err=>console.log(err))  //PV photo
+        console.log(id_NFC)
+        console.log(id_pv);
     await collection.insertOne({
             codeDANON:codeDANON,
             codeCOLA:codeCOLA,
             codeFGD:codeFGD,
             codeNFC:client.codeNFC,
             codeQR:codeQR,
-            NFCPhoto:client.NFCPhoto,
+            NFCPhoto:id_NFC,
             TypeDPV:client.TypeDPV,
             NomPrenom:client.NomPrenom,
             PhoneNumber:client.PhoneNumber,
-            PVPhoto:client.PVPhoto
+            PVPhoto:id_pv
         })
     console.log('Client Inserted by function')
 
@@ -70,5 +70,57 @@ router.post('/Add',async(req,res)=>{
 })
 
 
+router.post('/addClient',async (req,res)=>{
+    res.status(200).json("done")
+})
+
+/// gridFS script 
+function getFileSystemItem(dbo,id) {
+    var buf = new Buffer('');
+    return new Promise(function(resolve, reject) {
+      var bucket = new mongo.GridFSBucket(dbo);
+      var readstream = bucket.openDownloadStream(ObjectId('61b36b5b074c20c0ff1d7b74'));
+      readstream.on('data', (chunk) => {
+        buf = Buffer.concat([buf, chunk]);
+      });
+      readstream.on('error', (err) => {
+          reject(err);
+      });
+      readstream.on('end', () => {
+          var res = buf.toString();
+          buf = null; // Clean up memory
+          readstream.destroy();
+          resolve(res);
+      });
+    });
+  }
+  
+  function putFileSystemItem(dbo, filename, data) {
+    var putItemHelper = function(bucket, resolve, reject) {
+      var writeStream = bucket.openUploadStream(filename);
+      var s = new stream.Readable();
+      s.push(data);
+      s.push(null); // Push null to end stream
+      s.pipe(writeStream);
+      writeStream.on('finish', resolve);
+      writeStream.on('error', reject);
+    };
+    return new Promise(function(resolve, reject) {
+      var bucket = new mongo.GridFSBucket(dbo);
+      bucket.find({filename: filename}).count(function(err, count) {
+        if (err) return reject(err);
+        if (count > 0) {
+            bucket.delete(filename, function() {
+            putItemHelper(bucket, resolve, reject);
+          }, reject)
+        } else {
+          putItemHelper(bucket, resolve, reject);
+        }
+      }, reject);
+    });
+  }
+  async function test(db,filename,data) {
+      return putFileSystemItem(db,filename,data) 
+  }
 
 module.exports = router;

@@ -9,7 +9,9 @@ var client = new MongoClient(uri);
 var db; // database 
 var name_database="stalker1"
 const jwt=require("jsonwebtoken")
-var arraValues=[] // this array where we gonna put the docume
+var arraValues=[] // this array where we gonna put the document 
+
+
 
 async function run() {
 	try {
@@ -98,6 +100,5 @@ router.get('/clients',verifyToken,async (req,res)=>{
    var sec=await collectiongeom.find({'geometry.geometry.type':'Point','_id': { $in: arrv}}).toArray()
 	res.json(sec)
 })
-
 
 module.exports = router;

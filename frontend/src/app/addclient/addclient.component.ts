@@ -374,7 +374,7 @@ export class AddclientComponent implements AfterViewInit {
   handleNFCImage(webcamNFCImage): void {
     console.info('received webcam image', webcamNFCImage);
     this.webcamNFCImage = webcamNFCImage;
-    this.clientInfos.NFCPhoto= webcamNFCImage;
+    this.clientInfos.NFCPhoto= webcamNFCImage.imageAsDataUrl;
 
   }
 
@@ -390,6 +390,6 @@ export class AddclientComponent implements AfterViewInit {
   handlePDVImage(webcamPDVImage){
     console.info('received webcam image', webcamPDVImage);
     this.webcamPDVImage = webcamPDVImage;
-    this.clientInfos.NFCPhoto= webcamPDVImage;
+    this.clientInfos.NFCPhoto= webcamPDVImage.imageAsDataUrl;
   }
 }
