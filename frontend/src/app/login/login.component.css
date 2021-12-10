@@ -1,8 +1,19 @@
+.container{
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
 mat-card {
     max-width: 500px;
-    margin: 2em auto;
     text-align: center;
     max-height: 600px;
+   margin-left: auto;
+   margin-right: auto;
+   vertical-align: center;
   }
   
   .header{
@@ -37,11 +48,7 @@ mat-card {
   
   }
   
-  .contentBody {
-    padding: 60px 1rem;
-    background :#27AE61;
-    display: block;
-  }
+ 
   
   .aLink{
     float: right;
@@ -53,4 +60,12 @@ mat-card {
   .mat-flat-button{
       background-color: #27AE61;
   }
+
+  mat-form-field.mat-focused span.mat-form-field-label-wrapper label {
+    color:#27AE61 !important;
+  }
+
+  .mat-form-field-outline {
+    background-color: #27AE61 !important;
+}
  
