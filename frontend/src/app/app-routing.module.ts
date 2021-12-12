@@ -29,7 +29,8 @@ const routes: Routes = [
     canActivate: [AuthGaurdService]
   },
   {
-    path: 'clients', component: ClientsComponent
+    path: 'clients', component: ClientsComponent,
+    canActivate: [AuthGaurdService]
   },
   {
     path: 'routes', component: RoutesComponent,
