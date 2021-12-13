@@ -42,6 +42,7 @@ async function InsertClient(client){
    await test(db,client.NomPrenom,client.NFCPhoto).then(s=>id_NFC=s._id,err=>console.log(err))  //PV photo
         console.log(id_NFC)
         console.log(id_pv);
+        console.log("--------------"+client.lat)
     await collection.insertOne({
             codeDANON:codeDANON,
             codeCOLA:codeCOLA,
@@ -49,20 +50,34 @@ async function InsertClient(client){
             codeNFC:client.codeNFC,
             codeQR:codeQR,
             NFCPhoto:id_NFC,
+            lat:client.lat,
+            lon:client.lon,
             TypeDPV:client.TypeDPV,
             NomPrenom:client.NomPrenom,
             PhoneNumber:client.PhoneNumber,
-            PVPhoto:id_pv
+            PVPhoto:id_pv,
+            status:client.Status
+
         })
     console.log('Client Inserted by function')
 
 }
-router.get('/', function(req,res){
-    res.status(200).send(req.body);
-});
+router.get('/', async function(req,res){
 
+   cursor = await db.collection("clients").find({}).toArray();
+  if ((db.collection("clients").find({}).count()) === 0) {
+
+    console.log("No documents found!");
+
+  }
+
+  res.json(cursor)
+
+
+});
 router.post('/Add',async(req,res)=>{
     let client=req.body;
+    console.log(client)
     await InsertClient(client);
     res.status(200).send("Client Inserted From Ang")
 
