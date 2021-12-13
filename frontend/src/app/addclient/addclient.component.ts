@@ -6,6 +6,7 @@ import {ClientService} from "./client.service";
 import {Observable, Subject} from "rxjs";
 import { interval } from 'rxjs';
 import * as geojson from 'geojson';
+import { Router } from '@angular/router';
 import { GeoJsonTypes } from 'geojson';
 
 const incr = 1;
@@ -97,7 +98,7 @@ export class AddclientComponent implements AfterViewInit {
   markersCluster = new L.MarkerClusterGroup();
 
 
-  constructor(private clientService:ClientService) { }
+  constructor(private clientService:ClientService, private _router: Router) { }
 
   // ngOnInit(): void {
   //   setInterval(() => this.manageProgress(), 150 )
@@ -371,6 +372,7 @@ export class AddclientComponent implements AfterViewInit {
     this.clientInfos.TypeDPV=this.TypeDPV;
     console.log(this.clientInfos)
     this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res),err=> console.log(err))
+    this._router.navigate(['map'])
   }
 
 
