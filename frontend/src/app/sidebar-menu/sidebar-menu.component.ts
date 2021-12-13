@@ -13,6 +13,10 @@ export class SidebarMenuComponent implements OnInit {
 
   ngOnInit(): void {
   }
+
+  getLogged(){
+    return this._authService.loggedIn()
+  }
  
   // increase() {
 	// 	this.sidenavWidth = 15;

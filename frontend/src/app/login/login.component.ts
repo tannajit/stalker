@@ -44,6 +44,8 @@ export class LoginComponent implements OnInit {
       console.log(this._auth.getToken())
       localStorage.setItem("name",res.Data.user.name)
       //SidebarMenuComponent.
-      this._router.navigate([''])
+      this._router.navigate(['']).then(() => {
+        window.location.reload();
+     });
     }
 }

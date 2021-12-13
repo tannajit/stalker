@@ -22,7 +22,10 @@ export class AuthenticationService {
     return !!localStorage.getItem('token')    
   }
   logoutUser() {
+    
     localStorage.removeItem('token')
-    this._router.navigate(['/login'])
+    this._router.navigate(['login']).then(() => {
+      window.location.reload();
+   });
   }
 }
