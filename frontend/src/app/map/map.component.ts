@@ -25,6 +25,16 @@ export class MapComponent implements AfterViewInit {
     iconUrl: "assets/location.png",
     iconSize: [30,30]
   });
+
+  clientwithNFC_icon = L.icon({
+    iconUrl: "assets/green.png",
+    iconSize: [30,30]
+  });
+
+  clientwithoutNFC_icon = L.icon({
+    iconUrl: "assets/red.png",
+    iconSize: [30,30]
+  });
   
   markersCluster = new L.MarkerClusterGroup();
   lat= 9.5981
@@ -76,6 +86,7 @@ export class MapComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.getLocation()
     this.initMap()
+    this.getClient()
   }
 
   getLocation() {
@@ -107,7 +118,29 @@ export class MapComponent implements AfterViewInit {
     this.map.flyTo(new L.LatLng(this.lat,this.lon),13);
   }
 
+  
 
+  getClient() {
+    let client=this._serviceClient.getClient().subscribe( res => {
+      res.forEach(element => {
+        console.log(element.lat,element.lon);
+        if(element.status==="red"){
+          L.marker([element.lat,element.lon], {icon: this.clientwithoutNFC_icon}).addTo(this.map);
+
+        }
+        if(element.status==="green"){
+          L.marker([element.lat,element.lon], {icon: this.clientwithNFC_icon}).addTo(this.map);
+
+        }
+
+      });
+    },
+    err => console.log(err))
+    console.log(client);
+    
+   
+
+  }
   async getClients() {
     var arr = [];
     this._serviceClient.getAllClient().subscribe(

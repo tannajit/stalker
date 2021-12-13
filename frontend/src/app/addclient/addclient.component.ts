@@ -16,7 +16,7 @@ const incr = 1;
   templateUrl: './addclient.component.html',
   styleUrls: ['./addclient.component.css'],
   encapsulation: ViewEncapsulation.None
-  
+
 })
 
 export class AddclientComponent implements AfterViewInit {
@@ -26,7 +26,7 @@ export class AddclientComponent implements AfterViewInit {
   ListCodes=[];
   code={nbr:null,value: null}
   qrResultString: string;
-  isShown: boolean = false; 
+  isShown: boolean = false;
   nfcShown: boolean = false;
   hide: boolean = false;// hidden by default
   test: boolean = false;
@@ -72,25 +72,25 @@ export class AddclientComponent implements AfterViewInit {
     this.Status=true
     this.hide = !this.hide;
   }
-  
-  
+
+
   codeNFC:null;
   TypeDPV:null;
   NomPrenom:null;
   PhoneNumber:null;
   scan:boolean=false;
   clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
-  NomPrenom:null, PhoneNumber:null, PVPhoto:null}
+  NomPrenom:null, PhoneNumber:null, PVPhoto:null,Status:"red"}
   latclt
   lonclt
- 
+
   // map
 
   icon = L.icon({
     iconUrl: "assets/green.png",
     iconSize: [12, 12],
   });
-  
+
   location_icon = L.icon({
     iconUrl: "assets/location.png",
     iconSize: [30,30]
@@ -113,13 +113,13 @@ export class AddclientComponent implements AfterViewInit {
   // }
 
   // private initMap(): void {
-    
+
   //   this.map = L.map('map2', {
   //     center: [this.lat, this.lon],
   //     zoom: 15,
   //     zoomControl: false
   //   });
-    
+
   //   const zoomOptions = {
   //     zoomInText: '+',
   //     zoomOutText: '-',
@@ -134,7 +134,7 @@ export class AddclientComponent implements AfterViewInit {
   //   });
 
 
-    
+
   //   // const lc = L.control.locate(locationControl)
 
   //   // lc.addTo(this.map);
@@ -142,7 +142,7 @@ export class AddclientComponent implements AfterViewInit {
   //   tiles.addTo(this.map);
   //   this.map.addLayer(this.markersCluster);
   //   this.map.addControl(L.control.zoom({ position: 'bottomleft' }))
-    
+
   // }
   manageProgress() {
     if (this.progress === 100) {
@@ -155,7 +155,7 @@ export class AddclientComponent implements AfterViewInit {
   clearResult(): void {
     this.qrResultString = null;
   }
-  
+
   toggleShow(nbr:number,resultString:string) {
     console.log(nbr);
     console.log(resultString);
@@ -195,7 +195,7 @@ export class AddclientComponent implements AfterViewInit {
 
   }
 
-  
+
 
    upsert(array, item) { // (1)
     const i = array.findIndex(_item => _item.nbr === item.nbr);
@@ -203,7 +203,7 @@ export class AddclientComponent implements AfterViewInit {
     else array.push(item);
   }
   inter;
-  
+
   onCodeResult(resultString: string) {
     this.qrResultString = resultString;
   }
@@ -221,7 +221,7 @@ export class AddclientComponent implements AfterViewInit {
 
     this.Status=true
     this.testTimer()
-    
+
     this.map = L.map('map2', {
       center: [this.lat, this.lon],
       zoom: 14,
@@ -242,9 +242,9 @@ export class AddclientComponent implements AfterViewInit {
     var marker= L.marker([this.lat, this.lon], {icon:location_icon})
 
 
-  
+
     this.inter= interval(1000).subscribe(x => {
-      
+
       if (navigator.geolocation) {
         if(this.percentage==100){
           this.inter.unsubscribe();
@@ -260,17 +260,17 @@ export class AddclientComponent implements AfterViewInit {
         };
         console.log(this.percentage)
         var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
-       
+
           if (position) {
             console.log("Latitude: " + position.coords.latitude +
               " // Longitude: " + position.coords.longitude);
               var newlat=position.coords.latitude
               var newLon=position.coords.longitude;
-              
+
               // if (position.coords.accuracy > 10) {
               //   console.log("The GPS accuracy isn't good enough");
               // }
-              if(newlat!=this.lat || newLon!=this.lat){ 
+              if(newlat!=this.lat || newLon!=this.lat){
                 //console.log("nmi rah tbdl")
                 // this.percentage=0
                 this.lat = newlat
@@ -278,22 +278,22 @@ export class AddclientComponent implements AfterViewInit {
                 this.list.push(position)
                 console.log(this.list)
                 console.log("Accuracy:"+position.coords.accuracy)
-                
+
                 if (position.coords.accuracy<this.acc){
                   console.log("********** Accuracy:"+position.coords.accuracy)
                   this.acc= position.coords.accuracy
                   this.lat=position.coords.latitude
-                  this.lon=position.coords.longitude  
+                  this.lon=position.coords.longitude
                   this.latclt= position.coords.latitude
                   this.lonclt=position.coords.longitude
                 }
                 console.log(this.lat)
                 console.log(this.lon)
                 this.map.removeLayer(marker);
-                this.show=false 
+                this.show=false
                 this.Status=true
                 marker = new (L.marker as any)([this.lat,this.lon],{icon:location_icon}).addTo(this.map);
-              }         
+              }
         }
         },
           (error: GeolocationPositionError) => console.log(error),options);
@@ -303,8 +303,8 @@ export class AddclientComponent implements AfterViewInit {
         alert("Geolocation is not supported by this browser.");
       }
     });
-  
-  
+
+
 }
   getLo(){
     // var marker = L.geoJSON(this.geojsonFeature, {
@@ -324,12 +324,12 @@ export class AddclientComponent implements AfterViewInit {
 
   }
 
-  
+
 
   testTimer(){
-    this.percentage=0
+    this.percentage =0
     interval(300).subscribe(x=>{
-        if( this.percentage<100){
+        if( this.percentage <100){
           this.percentage+=4
             }
         });
@@ -344,18 +344,27 @@ export class AddclientComponent implements AfterViewInit {
     this.test =true;
    console.log(this.ListCodes)
     this.clientInfos.codes=this.ListCodes
-    
+
   }
 
   Verify(code: string) {
   this.clientInfos.PhoneNumber=this.PhoneNumber
   }
 
-  
+
 
   Read() {
     console.log("read")
     this.clientInfos.codeNFC="dgfdjkgnk"
+
+    if(this.clientInfos.codeNFC===null){
+      this.clientInfos["Status"]="red"
+    }
+    else{
+      this.clientInfos["Status"]="green"
+    }
+
+
   }
 
   getCoordinates(){
@@ -363,7 +372,7 @@ export class AddclientComponent implements AfterViewInit {
   }
 
 
-  
+
 
 
   Send() {
@@ -373,20 +382,22 @@ export class AddclientComponent implements AfterViewInit {
     console.log(this.clientInfos)
     this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res),err=> console.log(err))
     this._router.navigate(['map'])
+    this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
+      NomPrenom:null, PhoneNumber:null, PVPhoto:null,Status:"red"}
   }
 
 
   ///////////////////////
-  
-
-  
 
 
-  
 
-  
 
-  
+
+
+
+
+
+
 
   // fadma's code
 
@@ -402,7 +413,7 @@ export class AddclientComponent implements AfterViewInit {
   triggerSnapshot(): void {
     this.trigger.next();
   }
-  
+
   // handleImage(webcamImage): void {
   //   console.info('Saved webcam image', webcamImage);
   //   this.webcamImage = webcamImage;
