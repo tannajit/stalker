@@ -23,6 +23,7 @@ export class MapComponent implements AfterViewInit {
     iconUrl: "assets/location.png",
     iconSize: [30,30]
   });
+  
   markersCluster = new L.MarkerClusterGroup();
   lat=33.817517
   lon=-6.237595

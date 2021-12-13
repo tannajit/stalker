@@ -63,7 +63,6 @@ router.get('/', function(req,res){
 
 router.post('/Add',async(req,res)=>{
     let client=req.body;
-
     await InsertClient(client);
     res.status(200).send("Client Inserted From Ang")
 

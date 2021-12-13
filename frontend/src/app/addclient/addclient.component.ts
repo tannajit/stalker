@@ -349,6 +349,7 @@ export class AddclientComponent implements AfterViewInit {
     //this.isShownCam=!this.isShownCam
     this.trigger.next();
   }
+  
   handleImage(webcamImage): void {
     console.info('Saved webcam image', webcamImage);
     this.webcamImage = webcamImage;
