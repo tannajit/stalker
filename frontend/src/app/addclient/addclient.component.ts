@@ -241,13 +241,22 @@ export class AddclientComponent implements AfterViewInit {
     interval(1000).subscribe(x => {
       if (navigator.geolocation) {
 
-        navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
+        var options = {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 2000
+        };
+        var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
        
           if (position) {
             console.log("Latitude: " + position.coords.latitude +
               " // Longitude: " + position.coords.longitude);
               var newlat=position.coords.latitude
               var newLon=position.coords.longitude;
+              console.log("********** Accuracy:"+position.coords.accuracy)
+              if (position.coords.accuracy > 10) {
+                console.log("The GPS accuracy isn't good enough");
+              }
               if(newlat!=this.lat || newLon!=this.lat){ 
                 //console.log("nmi rah tbdl")
                 // this.percentage=0
@@ -262,7 +271,9 @@ export class AddclientComponent implements AfterViewInit {
               }         
         }
         },
-          (error: GeolocationPositionError) => console.log(error));
+          (error: GeolocationPositionError) => console.log(error),options);
+          // console.log('Clear watch called');
+          // window.navigator.geolocation.clearWatch(geoId);
       } else {
         alert("Geolocation is not supported by this browser.");
       }
@@ -290,9 +301,7 @@ export class AddclientComponent implements AfterViewInit {
 
   }
 
-  getLocation(){
-    
-  }
+  
 
   testTimer(){
     this.percentage=0
