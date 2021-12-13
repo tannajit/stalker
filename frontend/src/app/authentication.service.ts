@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 
 @Injectable({
@@ -7,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class AuthenticationService {
   private _UsersUrl="http://localhost:3000/users/login"
-  constructor(private http:HttpClient) { }
+  constructor(private http:HttpClient,private _router: Router) { }
 
   getUserLogin(data){
     return this.http.post<any>(this._UsersUrl,data)
@@ -19,5 +20,12 @@ export class AuthenticationService {
 
   loggedIn() {
     return !!localStorage.getItem('token')    
+  }
+  logoutUser() {
+    
+    localStorage.removeItem('token')
+    this._router.navigate(['login']).then(() => {
+      window.location.reload();
+   });
   }
 }

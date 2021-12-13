@@ -1,8 +1,22 @@
-mat-card {
+@media (min-width: 1200px){
+
+  .container{
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: #AFE3C6;
+  }
+
+  mat-card {
     max-width: 500px;
-    margin: 2em auto;
     text-align: center;
     max-height: 600px;
+   margin-left: auto;
+   margin-right: auto;
+   vertical-align: center;
   }
   
   .header{
@@ -37,11 +51,7 @@ mat-card {
   
   }
   
-  .contentBody {
-    padding: 60px 1rem;
-    background :#27AE61;
-    display: block;
-  }
+ 
   
   .aLink{
     float: right;
@@ -53,4 +63,315 @@ mat-card {
   .mat-flat-button{
       background-color: #27AE61;
   }
+
+  ::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+    color: #27AE61 !important;
+  }
+  
+  
+}
+
+@media (min-width: 900px) and (max-width: 1200px){
+
+  .container{
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: #AFE3C6;
+  }
+  
+  mat-card {
+    max-width: 500px;
+    text-align: center;
+    max-height: 600px;
+   margin-left: auto;
+   margin-right: auto;
+   vertical-align: center;
+  }
+  
+  .header{
+    text-align: center;
+    color: #27AE61;
+    size: 12;
+    font-weight: bold;
+    font-size: 150%;
+  
+  }
+  .full-width {
+    width: 80%;
+  }
+  
+  .button-row {
+    padding-top: 5px;
+  }
+  
+  .button-row a {
+    margin-right: 8px;
+    text-align: center;
+  }
+  
+  .forget-password{
+    padding-left: 0px;
+    color: #27AE61;
+  }
+  
+  
+  .emailInput{
+    padding-top: 10px;
+  
+  }
+  
  
+  
+  .aLink{
+    float: right;
+    padding-right: 60px;
+    text-decoration: none;
+    color: #27AE61;
+  }
+
+  .mat-flat-button{
+      background-color: #27AE61;
+  }
+
+  ::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+    color: #27AE61 !important;
+  }
+  
+  
+}
+
+@media (min-width: 599px) and (max-width: 900px){
+
+  .container{
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: #AFE3C6;
+  }
+  
+  mat-card {
+    max-width: 500px;
+    text-align: center;
+    max-height: 600px;
+   margin-left: auto;
+   margin-right: auto;
+   vertical-align: center;
+  }
+  
+  .header{
+    text-align: center;
+    color: #27AE61;
+    size: 12;
+    font-weight: bold;
+    font-size: 150%;
+  
+  }
+  .full-width {
+    width: 80%;
+  }
+  
+  .button-row {
+    padding-top: 5px;
+  }
+  
+  .button-row a {
+    margin-right: 8px;
+    text-align: center;
+  }
+  
+  .forget-password{
+    padding-left: 0px;
+    color: #27AE61;
+  }
+  
+  
+  .emailInput{
+    padding-top: 10px;
+  
+  }
+  
+ 
+  
+  .aLink{
+    float: right;
+    padding-right: 60px;
+    text-decoration: none;
+    color: #27AE61;
+  }
+
+  .mat-flat-button{
+      background-color: #27AE61;
+  }
+
+  ::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+    color: #27AE61 !important;
+  }
+  
+  
+}
+
+@media (min-width: 350px) and (max-width: 599px){
+
+  .container{
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: #AFE3C6;
+  }
+  
+  mat-card {
+    max-width: 300px;
+    text-align: center;
+    max-height: 500px;
+    margin-left: auto;
+    margin-right: auto;
+   vertical-align: center;
+  }
+  
+  .header{
+    text-align: center;
+    color: #27AE61;
+    size: 12;
+    font-weight: bold;
+    font-size: 150%;
+  
+  }
+  .full-width {
+    width: 80%;
+  }
+  
+  .button-row {
+    padding-top: 5px;
+  }
+  
+  .button-row a {
+    margin-right: 8px;
+    text-align: center;
+  }
+  
+  .forget-password{
+    padding-left: 0px;
+    color: #27AE61;
+  }
+  
+  
+  .emailInput{
+    padding-top: 10px;
+  
+  }
+  
+ 
+  
+  .aLink{
+    float: right;
+    padding-right: 60px;
+    text-decoration: none;
+    color: #27AE61;
+  }
+
+  .mat-flat-button{
+      background-color: #27AE61;
+  }
+
+  ::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+    color: #27AE61 !important;
+  }
+  
+  
+}
+
+@media (min-width: 200px) and (max-width: 350px){
+
+  .container{
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: #AFE3C6;
+  }
+  
+  mat-card {
+    max-width: 250px;
+    text-align: center;
+    max-height: 250px;
+   margin-left: auto;
+   margin-right: auto;
+   vertical-align: center;
+  }
+
+  
+  .header{
+    text-align: center;
+    color: #27AE61;
+    size: 12;
+    font-weight: bold;
+    font-size: 18px;
+  
+  }
+  .full-width {
+    width: 80%;
+  }
+  ::ng-deep .mat-form-field-flex > .mat-form-field-infix { padding: 0.4em 0px !important;}
+  ::ng-deep .mat-form-field-label-wrapper { top: -1.5em; }
+
+  ::ng-deep .mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
+      transform: translateY(-1.1em) scale(.75);
+      width: 133.33333%;
+  }
+  .button-row {
+    padding-top: 5px;
+  }
+  
+  .button-row a {
+    margin-right: 8px;
+    text-align: center;
+  }
+  
+  .forget-password{
+    padding-left: 0px;
+    color: #27AE61;
+  }
+  
+  
+  .emailInput{
+    padding-top: 10px;
+  
+  }
+  
+ 
+  
+  .aLink{
+    float: right;
+    text-decoration: none;
+    color: #27AE61;
+    font-size: 12px;
+  }
+
+  .mat-flat-button{
+      background-color: #27AE61;
+  }
+
+  ::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+    color: #27AE61 !important;
+  }
+
+
+  
+  
+}
+
+
+
+  

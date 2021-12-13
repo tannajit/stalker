@@ -15,21 +15,18 @@ import { AddclientComponent } from './addclient/addclient.component';
 
 const routes: Routes = [
 
-  { path: '', redirectTo: 'map', pathMatch: 'full' },
+  { path: '', redirectTo: '/map', pathMatch: 'full' },
   {
     path:'login',
     component:LoginComponent
-  },
-  {
-    path: 'menu', component: SidebarMenuComponent,
-    canActivate: [AuthGaurdService]
   },
   {
     path: 'map', component: MapComponent,
     canActivate: [AuthGaurdService]
   },
   {
-    path: 'clients', component: ClientsComponent
+    path: 'clients', component: ClientsComponent,
+    canActivate: [AuthGaurdService]
   },
   {
     path: 'routes', component: RoutesComponent,

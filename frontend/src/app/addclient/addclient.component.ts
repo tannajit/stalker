@@ -15,6 +15,7 @@ const incr = 1;
   templateUrl: './addclient.component.html',
   styleUrls: ['./addclient.component.css'],
   encapsulation: ViewEncapsulation.None
+  
 })
 
 export class AddclientComponent implements AfterViewInit {
@@ -43,6 +44,7 @@ export class AddclientComponent implements AfterViewInit {
   percentage=0
   Status=true
   show=false
+  list=[]
 
   geojsonFeature = {
     type: 'Feature' as GeoJsonTypes, // or type: <GeoJsonTypes> 'Feature',
@@ -57,8 +59,13 @@ export class AddclientComponent implements AfterViewInit {
   };
 
 
-  nfcShow(){
-    }
+  // fadma's variables
+  showVerifCodeInput = false
+  showNFCWebcam : boolean = false;
+  showPDVWebcam : boolean = false;
+  public webcamNFCImage = null;
+  public webcamPDVImage = null;
+  private trigger: Subject<void> = new Subject<void>();
 
   showcheck(){
     this.Status=true
@@ -67,18 +74,14 @@ export class AddclientComponent implements AfterViewInit {
   
   
   codeNFC:null;
-  NFCPhoto:null;
   TypeDPV:null;
   NomPrenom:null;
   PhoneNumber:null;
-  PVPhoto:null;
-  isShownCam:boolean=false;
-  isShownCam2:boolean=false;
   scan:boolean=false;
-  camera1: boolean=false;
-  camera2: boolean=false;
   clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
   NomPrenom:null, PhoneNumber:null, PVPhoto:null}
+  latclt
+  lonclt
  
   // map
 
@@ -155,8 +158,10 @@ export class AddclientComponent implements AfterViewInit {
   toggleShow(nbr:number,resultString:string) {
     console.log(nbr);
     console.log(resultString);
+    console.log(this.ListCodes);
 
     this.isShown = !this.isShown;
+
     if(nbr===1) {
       this.code={nbr:nbr,value: resultString}
       this.upsert(this.ListCodes,this.code)
@@ -189,11 +194,14 @@ export class AddclientComponent implements AfterViewInit {
 
   }
 
+  
+
    upsert(array, item) { // (1)
     const i = array.findIndex(_item => _item.nbr === item.nbr);
     if (i > -1) array[i] = item; // (2)
     else array.push(item);
   }
+  inter;
   
   onCodeResult(resultString: string) {
     this.qrResultString = resultString;
@@ -206,6 +214,7 @@ export class AddclientComponent implements AfterViewInit {
     // this.getLo();
 
   }
+  acc=1222000;
 
   private initMap(): void {
 
@@ -232,23 +241,51 @@ export class AddclientComponent implements AfterViewInit {
     var marker= L.marker([this.lat, this.lon], {icon:location_icon})
 
 
-  if(this.percentage<100){
-
-    interval(1000).subscribe(x => {
+  
+    this.inter= interval(1000).subscribe(x => {
+      
       if (navigator.geolocation) {
+        if(this.percentage==100){
+          this.inter.unsubscribe();
+          this.clientInfos["lat"]=this.latclt
+          this.clientInfos["lon"]=this.lonclt
+          console.log(this.clientInfos)
+        }
 
-        navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
+        var options = {
+          enableHighAccuracy: false,
+          timeout: 5000,
+          maximumAge: 2000
+        };
+        console.log(this.percentage)
+        var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
        
           if (position) {
             console.log("Latitude: " + position.coords.latitude +
               " // Longitude: " + position.coords.longitude);
               var newlat=position.coords.latitude
               var newLon=position.coords.longitude;
+              
+              // if (position.coords.accuracy > 10) {
+              //   console.log("The GPS accuracy isn't good enough");
+              // }
               if(newlat!=this.lat || newLon!=this.lat){ 
                 //console.log("nmi rah tbdl")
                 // this.percentage=0
                 this.lat = newlat
                 this.lon = newLon
+                this.list.push(position)
+                console.log(this.list)
+                console.log("Accuracy:"+position.coords.accuracy)
+                
+                if (position.coords.accuracy<this.acc){
+                  console.log("********** Accuracy:"+position.coords.accuracy)
+                  this.acc= position.coords.accuracy
+                  this.lat=position.coords.latitude
+                  this.lon=position.coords.longitude  
+                  this.latclt= position.coords.latitude
+                  this.lonclt=position.coords.longitude
+                }
                 console.log(this.lat)
                 console.log(this.lon)
                 this.map.removeLayer(marker);
@@ -258,14 +295,14 @@ export class AddclientComponent implements AfterViewInit {
               }         
         }
         },
-          (error: GeolocationPositionError) => console.log(error));
+          (error: GeolocationPositionError) => console.log(error),options);
+          // console.log('Clear watch called');
+          // window.navigator.geolocation.clearWatch(geoId);
       } else {
         alert("Geolocation is not supported by this browser.");
       }
     });
-  }else{
-    console.log("stop a nmi")
-  }
+  
   
 }
   getLo(){
@@ -286,13 +323,11 @@ export class AddclientComponent implements AfterViewInit {
 
   }
 
-  getLocation(){
-    
-  }
+  
 
   testTimer(){
     this.percentage=0
-    interval(100).subscribe(x=>{
+    interval(300).subscribe(x=>{
         if( this.percentage<100){
           this.percentage+=4
             }
@@ -315,24 +350,21 @@ export class AddclientComponent implements AfterViewInit {
   this.clientInfos.PhoneNumber=this.PhoneNumber
   }
 
-  TakePhoto() {
-    console.log("TakePhoto")
-    this.isShownCam=!this.isShownCam
-
-  }
+  
 
   Read() {
     console.log("read")
     this.clientInfos.codeNFC="dgfdjkgnk"
   }
 
-
-  TakePhotoNFC() {
-    this.isShownCam=!this.isShownCam
-    console.log("photonfc")
-
+  getCoordinates(){
 
   }
+
+
+  
+
+
   Send() {
     this.clientInfos.PhoneNumber=this.PhoneNumber
     this.clientInfos.NomPrenom=this.NomPrenom
@@ -341,26 +373,66 @@ export class AddclientComponent implements AfterViewInit {
     this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res),err=> console.log(err))
   }
 
+
   ///////////////////////
-  public webcamImage = null;
-  private trigger: Subject<void> = new Subject<void>();
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  // fadma's code
+
+  toggleNFCWebcam(){
+    this.showNFCWebcam = !this.showNFCWebcam;
+  }
+
+
+  displayNFCam(){
+    this.showNFCWebcam = !this.showNFCWebcam;
+  }
 
   triggerSnapshot(): void {
-    //this.isShownCam=!this.isShownCam
     this.trigger.next();
   }
   
-  handleImage(webcamImage): void {
-    console.info('Saved webcam image', webcamImage);
-    this.webcamImage = webcamImage;
-    if(this.camera1) {this.clientInfos.NFCPhoto= webcamImage}
-    if(this.camera2) {this.clientInfos.PVPhoto = webcamImage}
+  // handleImage(webcamImage): void {
+  //   console.info('Saved webcam image', webcamImage);
+  //   this.webcamImage = webcamImage;
+  //   if(this.camera1) {this.clientInfos.NFCPhoto= webcamImage}
+  //   if(this.camera2) {this.clientInfos.PVPhoto = webcamImage}
 
-  }
+  //   console.log(this.webcamNFCImage.imageAsDataUrl);
+  // }
 
-  public get triggerObservable(): Observable<void> {
+  get triggerObservable(): Observable<void> {
     return this.trigger.asObservable();
   }
 
+  handleNFCImage(webcamNFCImage): void {
+    console.info('received webcam image', webcamNFCImage);
+    this.webcamNFCImage = webcamNFCImage;
+    this.clientInfos.NFCPhoto= webcamNFCImage.imageAsDataUrl;
 
+  }
+
+  togglePDVWebcam(){
+    this.showPDVWebcam = !this.showPDVWebcam;
+  }
+
+
+  displayPDVcam(){
+    this.showPDVWebcam = !this.showPDVWebcam;
+  }
+
+  handlePDVImage(webcamPDVImage){
+    console.info('received webcam image', webcamPDVImage);
+    this.webcamPDVImage = webcamPDVImage;
+    this.clientInfos.NFCPhoto= webcamPDVImage.imageAsDataUrl;
+  }
 }

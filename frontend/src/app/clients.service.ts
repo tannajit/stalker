@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 export class ClientsService {
   private _clientUrl="http://localhost:3000/api/clients"
   private _secteurUrl="http://localhost:3000/api/secteurs"
+  private _addclient="http://localhost:3000/api/addClient"
 
   constructor(private http:HttpClient,private _router:Router) { }
 

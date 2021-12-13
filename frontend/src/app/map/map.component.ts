@@ -3,6 +3,8 @@ import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import * as geojson from 'geojson';
 import { ClientsService } from '../clients.service';
+import { interval } from 'rxjs';
+
 
 @Component({
   selector: 'app-map',
@@ -25,8 +27,8 @@ export class MapComponent implements AfterViewInit {
   });
   
   markersCluster = new L.MarkerClusterGroup();
-  lat=33.817517
-  lon=-6.237595
+  lat= 9.5981
+  lon= 30.4278
   
   private initMap(): void {
     this.map = L.map('map', {
@@ -72,11 +74,12 @@ export class MapComponent implements AfterViewInit {
   }
   
   ngAfterViewInit(): void {
-      //this.getLocation()
+    this.getLocation()
     this.initMap()
   }
 
   getLocation() {
+    // interval(1000).subscribe(x => {
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
@@ -87,7 +90,8 @@ export class MapComponent implements AfterViewInit {
           this.lon = position.coords.longitude;
           console.log(this.lat);
           console.log(this.lon);
-          this.initMap();
+          this.map.setView(new L.LatLng(this.lat, this.lon), 11, { animation: true });    
+          
           L.marker([this.lat,this.lon], {icon: this.location_icon}).addTo(this.map);
         }
       },
@@ -96,10 +100,11 @@ export class MapComponent implements AfterViewInit {
       alert("Geolocation is not supported by this browser.");
     }
 
+    // });
   }
 
   locate(){
-      this.map.flyTo(new L.LatLng(33.2607691,-7.6222771),13);
+    this.map.flyTo(new L.LatLng(this.lat,this.lon),13);
   }
 
 
