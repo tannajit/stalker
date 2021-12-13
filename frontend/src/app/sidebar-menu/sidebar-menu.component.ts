@@ -8,11 +8,12 @@ import { AuthenticationService } from '../authentication.service';
 export class SidebarMenuComponent implements OnInit {
 
   sidenavWidth = 15;
-  name="user";
+  name= localStorage.getItem("name");
   constructor(public _authService: AuthenticationService) {  }
 
   ngOnInit(): void {
   }
+
 
   getLogged(){
     return this._authService.loggedIn()
