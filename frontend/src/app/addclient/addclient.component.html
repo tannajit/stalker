@@ -98,6 +98,7 @@
                 <div class="scan-field">
                     <label class="input-label">NFC card puce : </label>
                     <button mat-button class="btn-green" (click)="Read()">Read</button>
+                    {{clientInfos.codeNFC}}
                 </div>
                 <div class="scan-field">
                     <label class="input-label">Qr Code : </label>
@@ -167,6 +168,7 @@
                     </mat-form-field>
                 </div>
                 
+                     
                 <div class="field">
                     <mat-form-field>
                         <mat-label>Phone number*</mat-label>
@@ -178,10 +180,11 @@
 
                 <div class="field" *ngIf="showVerifCodeInput">
                     <mat-form-field>
-                        <input matInput placeholder="Code"/>
+                        <input matInput placeholder="code SMS" name="codeSMS" [(ngModel)]="codeSMS"/>
                     </mat-form-field>
+                    <button (click)="VerifySMS()">OK</button>
+                    {{status}}
                 </div>
-                
                 <div class="field">
                     <mat-label class="input-label">PV photo : </mat-label>
                     <button mat-button class="btn-green" (click)="displayPDVcam()"><mat-icon>camera_alt</mat-icon></button>    

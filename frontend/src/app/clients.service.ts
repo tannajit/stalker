@@ -6,10 +6,11 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class ClientsService {
-  private _clientUrl="http://localhost:3000/api/clients"
-  private _secteurUrl="http://localhost:3000/api/secteurs"
-  private _addclient="http://localhost:3000/api/addClient"
-  uri = 'http://localhost:3000/client';
+	 uri="192.168.43.47";
+  private _clientUrl="https://"+this.uri+"/api/clients";
+  private _secteurUrl="https://"+this.uri+"/api/secteurs";
+  private _addclient="https://"+this.uri+"/api/addClient";
+  urii = "https://"+this.uri+"/client";
 
   constructor(private http:HttpClient,private _router:Router) { }
 
@@ -20,7 +21,7 @@ export class ClientsService {
     return this.http.get<any>(this._secteurUrl)
   }
   getClient() {
-    return this.http.get<any>(this.uri);
+    return this.http.get<any>(this.urii);
   }
 
 }

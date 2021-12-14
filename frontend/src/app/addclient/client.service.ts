@@ -5,7 +5,17 @@ import {HttpClient} from '@angular/common/http';
   providedIn: 'root'
 })
 export class ClientService {
-  uri = 'http://localhost:3000/client';
+  uri = 'https://192.168.43.47/client';
+  
+   getNFC(){
+    var url="http://localhost:7000/nfc"
+    return this.http.post<any>(url,"0633691574")
+  }
+  getSMS(phone){
+    var url="http://localhost:7000/sms"
+    return this.http.post<any>(url,phone)
+   
+  }
   constructor(private http: HttpClient) {}
 
   SendClient(client: any) {

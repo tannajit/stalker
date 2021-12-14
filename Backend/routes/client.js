@@ -70,6 +70,7 @@ router.get('/', async function(req,res){
     console.log("No documents found!");
 
   }
+  console.log(cursor)
 
   res.json(cursor)
 

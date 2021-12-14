@@ -59,7 +59,7 @@ export class AddclientComponent implements AfterViewInit {
     }
   };
 
-
+  
   // fadma's variables
   showVerifCodeInput = false
   showNFCWebcam : boolean = false;
@@ -347,22 +347,16 @@ export class AddclientComponent implements AfterViewInit {
 
   }
 
-  Verify(code: string) {
-  this.clientInfos.PhoneNumber=this.PhoneNumber
-  }
-
 
 
   Read() {
     console.log("read")
-    this.clientInfos.codeNFC="dgfdjkgnk"
+    
+     this.clientService.getNFC().subscribe(
+        res=> this.clientInfos.codeNFC=res.Numero_Serie
+      )
 
-    if(this.clientInfos.codeNFC===null){
-      this.clientInfos["Status"]="red"
-    }
-    else{
-      this.clientInfos["Status"]="green"
-    }
+    
 
 
   }
@@ -371,16 +365,43 @@ export class AddclientComponent implements AfterViewInit {
 
   }
 
-
-
+  verification_code=123456;
+SendSMS(phone){
+    this.clientService.getSMS(phone).subscribe(
+      res=> { 
+        console.log(res) 
+      this.verification_code=res.code
+      });
+  }
+   status;
+  codeSMS;
+  Verify(code: string) {
+    this.clientInfos.PhoneNumber=this.PhoneNumber
+    this.SendSMS(this.PhoneNumber);
+    
+    }
+  
+  VerifySMS(){
+    if(this.verification_code===this.codeSMS){
+        this.status="the code is correct"
+    }else{
+      this.status="the code is incorrect"
+    }
+  }
 
 
   Send() {
     this.clientInfos.PhoneNumber=this.PhoneNumber
     this.clientInfos.NomPrenom=this.NomPrenom
     this.clientInfos.TypeDPV=this.TypeDPV;
+    if(this.clientInfos.codeNFC===null){
+      this.clientInfos["Status"]="red"
+    }
+    else{
+      this.clientInfos["Status"]="green"
+    }
     console.log(this.clientInfos)
-    this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res),err=> console.log(err))
+    this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res))
     this._router.navigate(['map'])
     this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
       NomPrenom:null, PhoneNumber:null, PVPhoto:null,Status:"red"}

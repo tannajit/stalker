@@ -4,6 +4,7 @@ import 'leaflet.markercluster';
 import * as geojson from 'geojson';
 import { ClientsService } from '../clients.service';
 import { interval } from 'rxjs';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -27,13 +28,13 @@ export class MapComponent implements AfterViewInit {
   });
 
   clientwithNFC_icon = L.icon({
-    iconUrl: "assets/green.png",
-    iconSize: [30,30]
+    iconUrl: "assets/blue.png",
+    iconSize: [15,15]
   });
 
   clientwithoutNFC_icon = L.icon({
     iconUrl: "assets/red.png",
-    iconSize: [30,30]
+    iconSize: [15,15]
   });
   
   markersCluster = new L.MarkerClusterGroup();
@@ -79,7 +80,7 @@ export class MapComponent implements AfterViewInit {
 
 
 
-  constructor(private _serviceClient: ClientsService) { 
+  constructor(private _serviceClient: ClientsService,private _router:Router) { 
     
   }
   
@@ -122,7 +123,10 @@ export class MapComponent implements AfterViewInit {
 
   getClient() {
     let client=this._serviceClient.getClient().subscribe( res => {
+      console.log("*********** ")
+      console.log(res)
       res.forEach(element => {
+        
         console.log(element.lat,element.lon);
         if(element.status==="red"){
           L.marker([element.lat,element.lon], {icon: this.clientwithoutNFC_icon}).addTo(this.map);
@@ -181,6 +185,10 @@ export class MapComponent implements AfterViewInit {
     return await arr;
   }
 
-
-
+ sync()
+{
+  this._router.navigate(['']).then(() => {
+    window.location.reload();
+ });
+}
 }
