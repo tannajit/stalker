@@ -18,7 +18,11 @@
 }
 
 .clients-list{
-
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 .clients-list mat-card{
     width: 200px;
@@ -27,7 +31,13 @@
 .clients-list mat-card img{
     padding: 8px;
     box-sizing: border-box;
+    margin-bottom: 0;
+    border-radius: 10px !important;
 }
+
 .card-content{
-    
+    text-align: center;
+}
+p{
+    margin-bottom: 0;
 }

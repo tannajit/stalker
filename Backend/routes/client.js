@@ -8,6 +8,7 @@ var stream = require('stream');
 var uri="mongodb://localhost:27017"
 var client = new MongoClient(uri);
 var name_database="stalker1"
+
 async function run() {
 	try {
 		var t=await client.connect();
@@ -62,6 +63,7 @@ async function InsertClient(client){
     console.log('Client Inserted by function')
 
 }
+
 router.get('/', async function(req,res){
 
    cursor = await db.collection("clients").find({}).toArray();

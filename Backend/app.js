@@ -3,7 +3,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 const cors=require("cors")
 require("dotenv").config();
-var api = require('./routes/api');
+var api = require('./routes/api1');
 var users=require('./routes/users')
 var client=require('./routes/client')
 
@@ -20,9 +20,9 @@ app.use(express.static("dist"))
 app.get('/', function(req,res){
     res.status(200).send('Hello');
 });
-app.use('/api', api);
-app.use('/users', users);
-app.use('/client', client);
+app.use('/api1', api);
+// app.use('/users', users);
+// app.use('/client', client);
 
 
 app.listen(Port, function () {
