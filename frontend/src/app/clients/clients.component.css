@@ -18,7 +18,9 @@
 }
 
 .clients-list{
-
+    display: flex;
+    flex-flow: row wrap;
+    
 }
 .clients-list mat-card{
     width: 200px;
