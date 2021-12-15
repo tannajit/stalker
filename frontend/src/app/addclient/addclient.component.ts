@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { ViewEncapsulation } from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
-import {ClientService} from "./client.service";
+import { ClientsService } from '../clients.service';
 import {Observable, Subject} from "rxjs";
 import { interval } from 'rxjs';
 import * as geojson from 'geojson';
@@ -98,7 +98,7 @@ export class AddclientComponent implements AfterViewInit {
   markersCluster = new L.MarkerClusterGroup();
 
 
-  constructor(private clientService:ClientService, private _router: Router) { }
+  constructor(private clientService:ClientsService, private _router: Router) { }
 
   // ngOnInit(): void {
   //   setInterval(() => this.manageProgress(), 150 )
@@ -405,6 +405,8 @@ SendSMS(phone){
     this._router.navigate(['map'])
     this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
       NomPrenom:null, PhoneNumber:null, PVPhoto:null,Status:"red"}
+    
+
   }
 
 

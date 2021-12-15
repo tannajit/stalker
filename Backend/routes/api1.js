@@ -62,7 +62,21 @@ async function getData(){
     //console.log(arraValues)
 	//return values; 
 }
+// get new added clients
+router.get('/addedClients', async function(req,res){
 
+    cursor = await db.collection("clients").find({}).toArray();
+   if ((db.collection("clients").find({}).count()) === 0) {
+ 
+     console.log("No documents found!");
+ 
+   }
+   console.log(cursor)
+ 
+   res.json(cursor)
+ 
+ 
+ });
 /* GET . */
 router.get('/clientss', async(req, res)=> {
 
@@ -176,17 +190,13 @@ async function InsertClient(client){
 
 
 // });
-router.post('/Add',async(req,res)=>{
+
+router.post('/AddClient',async(req,res)=>{
     let client=req.body;
     console.log(client)
     await InsertClient(client);
     res.status(200).send("Client Inserted From Ang")
 
-})
-
-
-router.post('/addClient',async (req,res)=>{
-    res.status(200).json("done")
 })
 
 /// gridFS script 
@@ -208,115 +218,117 @@ function getFileSystemItem(dbo,id) {
           resolve(res);
       });
     });
-  }
+}
   
-  function putFileSystemItem(dbo, filename, data) {
-    var putItemHelper = function(bucket, resolve, reject) {
-      var writeStream = bucket.openUploadStream(filename);
-      var s = new stream.Readable();
-      s.push(data);
-      s.push(null); // Push null to end stream
-      s.pipe(writeStream);
-      writeStream.on('finish', resolve);
-      writeStream.on('error', reject);
-    };
-    return new Promise(function(resolve, reject) {
-      var bucket = new mongo.GridFSBucket(dbo);
-      bucket.find({filename: filename}).count(function(err, count) {
-        if (err) return reject(err);
-        if (count > 0) {
-            bucket.delete(filename, function() {
-            putItemHelper(bucket, resolve, reject);
-          }, reject)
-        } else {
-          putItemHelper(bucket, resolve, reject);
-        }
-      }, reject);
-    });
-  }
-  async function test(db,filename,data) {
-      return putFileSystemItem(db,filename,data) 
-  }
+function putFileSystemItem(dbo, filename, data) {
+var putItemHelper = function(bucket, resolve, reject) {
+    var writeStream = bucket.openUploadStream(filename);
+    var s = new stream.Readable();
+    s.push(data);
+    s.push(null); // Push null to end stream
+    s.pipe(writeStream);
+    writeStream.on('finish', resolve);
+    writeStream.on('error', reject);
+};
+return new Promise(function(resolve, reject) {
+    var bucket = new mongo.GridFSBucket(dbo);
+    bucket.find({filename: filename}).count(function(err, count) {
+    if (err) return reject(err);
+    if (count > 0) {
+        bucket.delete(filename, function() {
+        putItemHelper(bucket, resolve, reject);
+        }, reject)
+    } else {
+        putItemHelper(bucket, resolve, reject);
+    }
+    }, reject);
+});
+}
+
+async function test(db,filename,data) {
+    return putFileSystemItem(db,filename,data) 
+}
 
   /************************** Users API ******************* */
 
   //// Generate and validate Token
   
   // Insert User 
-  async function InsertUser(user){
-      user.password=await GenerateHashPassword(user.password)
-      console.log(user)
-      let collection=db.collection("users") // collection users 
-      await collection.update({name:user.name},{$setOnInsert:{
-                        phone:user.phone,
-                        CIN:user.CIN,
-                        role:user.role,
-                        email:user.email,
-                        password:user.password    
-          } },{upsert:true})
-      console.log('User inserted/Updated')   
-  }
-  /// Generate Password
-  async function GenerateHashPassword(password){
-    let salt_value = await bcrypt.genSalt(salt);
-    var encrypted_password = await bcrypt.hash(password, salt_value);
-    return encrypted_password;
-  }
-  /// get User from database 
-  async function getUser(user){
-    var FindUser;
-    let collection= db.collection("users")
-    var status={value:401,data:null}
-    var FindUser= await collection.findOne({email:user.email})
-    if(FindUser!=null){
-      console.log('find')
-      var valid=await ValidPassword(user.password,FindUser.password)
-      if(valid){
-        let playload={subject:FindUser._id}
-        let token=jwt.sign(playload,'secretKey')
-        status.value=200
-        status.data={'token':token,'user':FindUser}
-      }else{
-        status.value=401
-        status.data="invalid password"
-        console.log("invalid password")
-      }
+async function InsertUser(user){
+    user.password=await GenerateHashPassword(user.password)
+    console.log(user)
+    let collection=db.collection("users") // collection users 
+    await collection.update({name:user.name},{$setOnInsert:{
+                    phone:user.phone,
+                    CIN:user.CIN,
+                    role:user.role,
+                    email:user.email,
+                    password:user.password    
+        } },{upsert:true})
+    console.log('User inserted/Updated')   
+}
+/// Generate Password
+async function GenerateHashPassword(password){
+let salt_value = await bcrypt.genSalt(salt);
+var encrypted_password = await bcrypt.hash(password, salt_value);
+return encrypted_password;
+}
+/// get User from database 
+async function getUser(user){
+var FindUser;
+let collection= db.collection("users")
+var status={value:401,data:null}
+var FindUser= await collection.findOne({email:user.email})
+if(FindUser!=null){
+    console.log('find')
+    var valid=await ValidPassword(user.password,FindUser.password)
+    if(valid){
+    let playload={subject:FindUser._id}
+    let token=jwt.sign(playload,'secretKey')
+    status.value=200
+    status.data={'token':token,'user':FindUser}
     }else{
-        status.value=401
-        status.data="invalid User"
-        console.log("invalid User")
+    status.value=401
+    status.data="invalid password"
+    console.log("invalid password")
     }
-    return status;
-  
-  }
+}else{
+    status.value=401
+    status.data="invalid User"
+    console.log("invalid User")
+}
+return status;
+
+}
   
   /* GET users listing. */
 //   router.get('/', async function(req, res) {
 //     res.json("hey");
 //   });
   
-  router.post('/login',async(req,res)=>{
-  
-    console.log(JSON.stringify(req.headers));
-    let user=req.body;
-    console.log(user)
-    var status=await getUser(user)
-    res.status(status.value).send({'Data':status.data})
-  })
-  
-  router.post('/register',async(req,res)=>{
-    let user=req.body;
-    await InsertUser(user);
-    res.status(200).send("User inserted/Updated")
-  })
-  router.get('/client', async(req, res)=>{
-      console.log("client info")
-  })
-  
-  async function ValidPassword(passwordG,passwordD){
-      var result= await bcrypt.compare(passwordG,passwordD)
-       return(result); 
-  }
+router.post('/login',async(req,res)=>{
+
+console.log(JSON.stringify(req.headers));
+let user=req.body;
+console.log(user)
+var status=await getUser(user)
+res.status(status.value).send({'Data':status.data})
+})
+
+router.post('/register',async(req,res)=>{
+let user=req.body;
+await InsertUser(user);
+res.status(200).send("User inserted/Updated")
+})
+
+router.get('/client', async(req, res)=>{
+    console.log("client info")
+})
+
+async function ValidPassword(passwordG,passwordD){
+    var result= await bcrypt.compare(passwordG,passwordD)
+    return(result); 
+}
 
 
 module.exports = router;

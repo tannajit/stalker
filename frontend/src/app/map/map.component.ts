@@ -129,7 +129,7 @@ export class MapComponent implements AfterViewInit {
         
         console.log(element.lat,element.lon);
         if(element.status==="red"){
-          L.marker([element.lat,element.lon], {icon: this.clientwithoutNFC_icon}).addTo(this.map);
+          L.marker([element.lat,element.lon], {icon: this.clientwithoutNFC_icon}).addTo(this.map).bindPopup("<h1> <b>Client Information</b></h1> <img src='/assets/images/blank.jpg' style='width: 100%; height:100%;'/><p><b>Name:</b> "+element.NomPrenom+"</p>");
 
         }
         if(element.status==="green"){
@@ -138,12 +138,9 @@ export class MapComponent implements AfterViewInit {
         }
 
       });
-    },
-    err => console.log(err))
+    })
     console.log(client);
     
-   
-
   }
   async getClients() {
     var arr = [];
@@ -159,7 +156,7 @@ export class MapComponent implements AfterViewInit {
             }
           });
           this.markersCluster.addLayer(marker)
-          marker.bindPopup(String(element.geometry.properties.Nom_Client));
+          marker.bindPopup("<h1> <b>Client Information</b></h1> <img src='/assets/images/blank.jpg' style='width: 100%; height:100%;'/><p><b>Name:</b> "+String(element.geometry.properties.Nom_Client)+"</p><p><b>Sector Name: </b>"+String(element.geometry.properties.Nom_du_Secteur)+"</p>");
           marker.addTo(this.map);
         });
       },
