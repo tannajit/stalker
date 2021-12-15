@@ -23,6 +23,8 @@
     justify-content: center;
     align-items: center;
     width: 100%;
+    flex-flow: row wrap;
+    
 }
 .clients-list mat-card{
     width: 200px;

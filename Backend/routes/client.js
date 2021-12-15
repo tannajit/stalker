@@ -25,7 +25,7 @@ run().catch(console.log)
 // Insert User
 async function InsertClient(client){
 
-    let collection=db.collection("clients") // collection users
+    let collection = db.collection("clients") // collection users
     let codeDANON
     let codeCOLA
     let codeFGD
@@ -78,6 +78,7 @@ router.get('/', async function(req,res){
 
 
 });
+
 router.post('/Add',async(req,res)=>{
     let client=req.body;
     console.log(client)
@@ -110,34 +111,35 @@ function getFileSystemItem(dbo,id) {
           resolve(res);
       });
     });
-  }
+}
   
-  function putFileSystemItem(dbo, filename, data) {
-    var putItemHelper = function(bucket, resolve, reject) {
-      var writeStream = bucket.openUploadStream(filename);
-      var s = new stream.Readable();
-      s.push(data);
-      s.push(null); // Push null to end stream
-      s.pipe(writeStream);
-      writeStream.on('finish', resolve);
-      writeStream.on('error', reject);
-    };
-    return new Promise(function(resolve, reject) {
-      var bucket = new mongo.GridFSBucket(dbo);
-      bucket.find({filename: filename}).count(function(err, count) {
-        if (err) return reject(err);
-        if (count > 0) {
-            bucket.delete(filename, function() {
-            putItemHelper(bucket, resolve, reject);
-          }, reject)
-        } else {
+function putFileSystemItem(dbo, filename, data) {
+  var putItemHelper = function(bucket, resolve, reject) {
+    var writeStream = bucket.openUploadStream(filename);
+    var s = new stream.Readable();
+    s.push(data);
+    s.push(null); // Push null to end stream
+    s.pipe(writeStream);
+    writeStream.on('finish', resolve);
+    writeStream.on('error', reject);
+  };
+  return new Promise(function(resolve, reject) {
+    var bucket = new mongo.GridFSBucket(dbo);
+    bucket.find({filename: filename}).count(function(err, count) {
+      if (err) return reject(err);
+      if (count > 0) {
+          bucket.delete(filename, function() {
           putItemHelper(bucket, resolve, reject);
-        }
-      }, reject);
-    });
-  }
-  async function test(db,filename,data) {
-      return putFileSystemItem(db,filename,data) 
-  }
+        }, reject)
+      } else {
+        putItemHelper(bucket, resolve, reject);
+      }
+    }, reject);
+  });
+}
+
+async function test(db,filename,data) {
+    return putFileSystemItem(db,filename,data) 
+}
 
 module.exports = router;
