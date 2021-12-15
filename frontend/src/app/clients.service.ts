@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class ClientsService {
-	 uri="localhost:3000";
+	 uri="localhost";
   private _clientUrl="http://"+this.uri+"/api1/clients";
   private _secteurUrl="http://"+this.uri+"/api1/secteurs";
   private _addclient="http://"+this.uri+"/api1/addClient";
