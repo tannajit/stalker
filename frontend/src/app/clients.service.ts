@@ -6,11 +6,11 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class ClientsService {
-	 uri="localhost:3000";
-  private _clientUrl="http://"+this.uri+"/api1/clients";
-  private _secteurUrl="http://"+this.uri+"/api1/secteurs";
-  private _addclient="http://"+this.uri+"/api1/AddClient";
-  private _getclient = "http://"+this.uri+"/api1/addedClients";
+  uri="192.168.174.129";
+  private _clientUrl="https://"+this.uri+"/api1/clients";
+  private _secteurUrl="https://"+this.uri+"/api1/secteurs";
+  private _addclient="https://"+this.uri+"/api1/AddClient";
+  private _getclient = "https://"+this.uri+"/api1/addedClients";
   
    getNFC(){
     var url="http://localhost:7000/nfc"
