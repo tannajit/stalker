@@ -129,7 +129,14 @@ export class MapComponent implements AfterViewInit {
         
         console.log(element.lat,element.lon);
         if(element.status==="red"){
-          L.marker([element.lat,element.lon], {icon: this.clientwithoutNFC_icon}).addTo(this.map).bindPopup("<h1> <b>Client Information</b></h1> <img src='/assets/images/blank.jpg' style='width: 100%; height:100%;'/><p><b>Name:</b> "+element.NomPrenom+"</p>");
+
+          var popupOptions = {
+            maxWidth: 800,
+            className: "popup"
+          }
+
+          var popupContent= "<h1> <b>Client Information</b></h1> <div style='display: flex; fex-flow: column;'><img src='/assets/images/blank.jpg' style='width: 40%; height:40%; border-radius: 8px;'/><p style='color:27AE61;'><img src='/assets/images/blank.jpg' style='width=40%; height:40%; border-radius: 8px;'/></div>Name: "+ element.NomPrenom +"</p>"
+          L.marker([element.lat,element.lon], {icon: this.clientwithoutNFC_icon}).addTo(this.map).bindPopup(popupContent,popupOptions);
 
         }
         if(element.status==="green"){

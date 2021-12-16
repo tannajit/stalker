@@ -9,10 +9,7 @@ var client=require('./routes/client')
 var fs = require('fs');
 
 
-/// SSL for https
-var https = require('https');
-var privateKey  = fs.readFileSync('/etc/ssl/private/nginx-selfsigned.key', 'utf8');
-var certificate = fs.readFileSync('/etc/ssl/certs/nginx-selfsigned.crt', 'utf8');
+
 
 const Port = process.env.PORT || 3000
 var app = express();
@@ -23,7 +20,7 @@ app.use(bodyParser.json({limit: "50mb"}));
 app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
 
 ///  
-var credentials = {key: privateKey, cert: certificate};
+//var credentials = {key: privateKey, cert: certificate};
 
 
 app.get('/', function(req,res){
@@ -38,9 +35,15 @@ app.listen(Port, function () {
     console.log("Server is runing on :"+Port);
 });
 
-/// run https
-var httpsServer = https.createServer(credentials, app);
+/***************************https */
 
-httpsServer.listen(8443,function(){
-	console.log("server https is runing on : "+8443);
-});
+/// SSL for https
+// var https = require('https');
+// var privateKey  = fs.readFileSync('/etc/ssl/private/nginx-selfsigned.key', 'utf8');
+// var certificate = fs.readFileSync('/etc/ssl/certs/nginx-selfsigned.crt', 'utf8');
+/// run https
+// var httpsServer = https.createServer(credentials, app);
+
+// httpsServer.listen(8443,function(){
+// 	console.log("server https is runing on : "+8443);
+// });
