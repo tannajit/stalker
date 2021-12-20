@@ -475,6 +475,6 @@ SendSMS(phone){
   handlePDVImage(webcamPDVImage){
     console.info('received webcam image', webcamPDVImage);
     this.webcamPDVImage = webcamPDVImage;
-    this.clientInfos.NFCPhoto= webcamPDVImage.imageAsDataUrl;
+    this.clientInfos.PVPhoto= webcamPDVImage.imageAsDataUrl;
   }
 }

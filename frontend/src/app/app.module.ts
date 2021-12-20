@@ -37,6 +37,7 @@ import { FormsModule } from '@angular/forms'
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptorService } from './token-interceptor.service';
 import { MatDialogModule } from '@angular/material/dialog';
+import { UpdateClientComponent } from './update-client/update-client.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -47,7 +48,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     RoutesComponent,
     PlanningComponent,
     AddclientComponent,
-    ClientInfoComponent
+    ClientInfoComponent,
+    UpdateClientComponent
 
   ],
   imports: [

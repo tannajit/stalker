@@ -9,6 +9,7 @@ import { RoutesComponent } from './routes/routes.component';
 import { PlanningComponent } from './planning/planning.component';
 import { AuthGaurdService } from './auth-gaurd.service';
 import { AddclientComponent } from './addclient/addclient.component';
+import { UpdateClientComponent } from './update-client/update-client.component';
 
 
 
@@ -38,6 +39,10 @@ const routes: Routes = [
   },
   {
     path: 'addclient', component: AddclientComponent,
+    canActivate: [AuthGaurdService]
+  },
+  {
+    path: 'updateclient', component: UpdateClientComponent,
     canActivate: [AuthGaurdService]
   }
   // {

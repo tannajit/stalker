@@ -6,6 +6,9 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class ClientsService {
+
+  // for update functionality
+  private currentClient;
   uri="localhost:3000";
   private _clientUrl="http://"+this.uri+"/api1/clients";
   private _secteurUrl="http://"+this.uri+"/api1/secteurs";
@@ -38,4 +41,13 @@ export class ClientsService {
     return this.http.get<any>(this._getclient);
   }
 
+  // used for update functionality
+  setCurrentClientInfo(client: any) {
+    this.currentClient = client;
+    // console.log(this.currentClient.NomPrenom)
+  }
+
+  getClientInfo(){
+    return this.currentClient;
+  }
 }
