@@ -22,6 +22,8 @@ const incr = 1;
 export class AddclientComponent implements AfterViewInit {
 
   progress = 0;
+  selected= null;
+  user = JSON.parse(localStorage.getItem("user"));
   //from hajar
   ListCodes=[];
   code={nbr:null,value: null}
@@ -76,11 +78,12 @@ export class AddclientComponent implements AfterViewInit {
 
   codeNFC:null;
   TypeDPV:null;
+  detailType:null;
   NomPrenom:null;
   PhoneNumber:null;
   scan:boolean=false;
   clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
-  NomPrenom:null, PhoneNumber:null, PVPhoto:null,Status:"red"}
+  NomPrenom:null,detailType:null,userId:null,userRole:null, PhoneNumber:null, PVPhoto:null,Status:"red"}
   latclt
   lonclt
 
@@ -394,6 +397,9 @@ SendSMS(phone){
     this.clientInfos.PhoneNumber=this.PhoneNumber
     this.clientInfos.NomPrenom=this.NomPrenom
     this.clientInfos.TypeDPV=this.TypeDPV;
+    this.clientInfos.detailType = this.detailType;
+    this.clientInfos.userId = this.user._id;
+    this.clientInfos.userRole = this.user.role;
     if(this.clientInfos.codeNFC===null){
       this.clientInfos["Status"]="red"
     }
@@ -404,7 +410,7 @@ SendSMS(phone){
     this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res))
     this._router.navigate(['map'])
     this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
-      NomPrenom:null, PhoneNumber:null, PVPhoto:null,Status:"red"}
+      NomPrenom:null, PhoneNumber:null, detailType:null,userId:null, userRole:null, PVPhoto:null,Status:"red"}
     
 
   }

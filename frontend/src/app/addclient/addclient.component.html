@@ -149,14 +149,23 @@
 
                 <div class="field">
                     <mat-form-field>
-                        <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="TypeDPV">
-                            <mat-option value="">Alimentation</mat-option>
-                            <mat-option value="">Superette</mat-option>
-                            <mat-option value="">Aattar</mat-option>
-                            <mat-option value="">Fruits sec</mat-option>
-                            <mat-option value="">Boundif</mat-option>
-                            <mat-option value="">Parfumerie</mat-option>
-                            <mat-option value="">Kioske</mat-option>
+                        <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="TypeDPV" [(value)]="selected">
+                            <mat-option value="Detail">Detail</mat-option>
+                            <mat-option value="Gros">Gros</mat-option>
+                            <mat-option value="Demi Gros">Demi Gros</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="field" *ngIf="selected == 'Detail'">
+                    <mat-form-field>
+                        <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2" [(ngModel)]="detailType">
+                            <mat-option value="Alimentation">Alimentation</mat-option>
+                            <mat-option value="Superette">Superette</mat-option>
+                            <mat-option value="Aattar">Aattar</mat-option>
+                            <mat-option value="Fruits sec">Fruits sec</mat-option>
+                            <mat-option value="Boundif">Boundif</mat-option>
+                            <mat-option value="Parfumerie">Parfumerie</mat-option>
+                            <mat-option value="Kioske">Kioske</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
@@ -170,6 +179,7 @@
                 
                      
                 <div class="field">
+
                     <mat-form-field>
                         <mat-label>Phone number*</mat-label>
                         <input matInput placeholder="+212" [(ngModel)]="PhoneNumber"/>

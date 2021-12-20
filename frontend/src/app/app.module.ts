@@ -15,6 +15,7 @@ import { MatSelectModule } from '@angular/material/select'
 import { LoginComponent } from './login/login.component';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { SidebarMenuComponent } from './sidebar-menu/sidebar-menu.component';
+import { ClientInfoComponent } from './client-info/client-info.component';
 import {MatDividerModule} from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MapComponent } from './map/map.component';
@@ -35,6 +36,7 @@ import {WebcamModule} from 'ngx-webcam';
 import { FormsModule } from '@angular/forms'
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptorService } from './token-interceptor.service';
+import { MatDialogModule } from '@angular/material/dialog';
 @NgModule({
   declarations: [
     AppComponent,
@@ -44,7 +46,8 @@ import { TokenInterceptorService } from './token-interceptor.service';
     ClientsComponent,
     RoutesComponent,
     PlanningComponent,
-    AddclientComponent
+    AddclientComponent,
+    ClientInfoComponent
 
   ],
   imports: [
@@ -73,7 +76,8 @@ import { TokenInterceptorService } from './token-interceptor.service';
     MatSelectModule,
     CdkTableModule,
     CdkTreeModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatDialogModule
 
   ],
   providers: [

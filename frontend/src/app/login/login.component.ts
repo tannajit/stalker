@@ -41,6 +41,7 @@ export class LoginComponent implements OnInit {
     Response(res){
       console.log(res)
       localStorage.setItem('token', res.Data.token)
+      localStorage.setItem("user",JSON.stringify(res.Data.user))
       console.log(this._auth.getToken())
       localStorage.setItem("name",res.Data.user.name)
       //SidebarMenuComponent.

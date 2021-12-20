@@ -5,6 +5,9 @@ import * as geojson from 'geojson';
 import { ClientsService } from '../clients.service';
 import { interval } from 'rxjs';
 import { Router } from '@angular/router';
+import { ClientInfoComponent } from '../client-info/client-info.component';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { NgZone } from '@angular/core';
 
 
 @Component({
@@ -15,7 +18,9 @@ import { Router } from '@angular/router';
 
 export class MapComponent implements AfterViewInit {
 
+  dialogRef: MatDialogRef<ClientInfoComponent>;
   private map;
+  public content=null;
 
   icon = L.icon({
     iconUrl: "assets/green.png",
@@ -80,7 +85,11 @@ export class MapComponent implements AfterViewInit {
 
 
 
-  constructor(private _serviceClient: ClientsService,private _router:Router) { 
+  constructor(
+    private _serviceClient: ClientsService,
+    private _router:Router,
+    private zone: NgZone,
+    private dialog: MatDialog) { 
     
   }
   
@@ -135,9 +144,10 @@ export class MapComponent implements AfterViewInit {
             className: "popup"
           }
 
-          var popupContent= "<h1> <b>Client Information</b></h1> <div style='display: flex; fex-flow: column;'><img src='/assets/images/blank.jpg' style='width: 40%; height:40%; border-radius: 8px;'/><p style='color:27AE61;'><img src='/assets/images/blank.jpg' style='width=40%; height:40%; border-radius: 8px;'/></div>Name: "+ element.NomPrenom +"</p>"
-          L.marker([element.lat,element.lon], {icon: this.clientwithoutNFC_icon}).addTo(this.map).bindPopup(popupContent,popupOptions);
-
+          L.marker([element.lat,element.lon], {icon: this.clientwithoutNFC_icon}).addTo(this.map).on('click', ()=>{
+            this.content = element;
+            this.zone.run(() => this.openDialog(element));
+          } )
         }
         if(element.status==="green"){
           L.marker([element.lat,element.lon], {icon: this.clientwithNFC_icon}).addTo(this.map);
@@ -149,6 +159,13 @@ export class MapComponent implements AfterViewInit {
     console.log(client);
     
   }
+
+  // open dialog with client info
+  openDialog(content){
+    console.log(content)
+    this.dialogRef = this.dialog.open(ClientInfoComponent, {data:content});
+  }
+
   async getClients() {
     var arr = [];
     this._serviceClient.getAllClient().subscribe(
