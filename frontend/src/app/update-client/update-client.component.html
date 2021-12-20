@@ -1,48 +1,16 @@
 <div class="content-body">
 
     
-    
-    <ng-container *ngIf="percentage == 100; else elseTemplate">
-        <p>Position Fixed</p>
-    </ng-container>
-    <ng-template #elseTemplate>
-        <p>Fixing Position...</p>
-    </ng-template>
 
-     <div >   
-        <pre>pos collectés: {{list.length}}</pre>
-        <pre>Accuracy: {{acc}}</pre>
-    </div>
 
     
-
-    <div ng-app ng-controller="ApplicationController" class="progress-cantainer">
-        <mat-progress-bar mode="determinate" [value]="percentage"></mat-progress-bar>
-        <span style="position: absolute; top: 0em;" [ngStyle]="{'left': percentage + '%'}">{{percentage}}%</span>
-    </div>
-
-   
-    <div class="map-container">
-        <div id="map2"></div>
-    </div>
-
-      <div>
-        <button mat-button class="btn-yellow" (click)="showcheck()" [disabled]="(percentage!=100) ||  !Status">Next</button>
-        <!-- <div>
-           
-            <small>Result : </small>
-            <strong>{{ lat }}</strong>, 
-            <strong>{{ lon }}</strong>
-        
-        </div> -->
-      </div>
 <!-- 
     <button mat-button class="btn-yellow">
         Recalculate the position
     </button> -->
 
     
-    <div class="container" id="checkcodes" *ngIf="hide">
+    <div class="container" id="checkcodes">
         <div class="checkcodes-fields">
             <div class="scan-field">
                 <label class="input-label">Code Centrale Danoune : </label>
@@ -91,7 +59,7 @@
         
     </div>
 
-    <div class="container" id="nfc" *ngIf="nfcShown">
+    <div class="container" id="nfc">
 
         <div class="inputs-container">
             <div class="nfc">

@@ -5,7 +5,7 @@
 // then run  ' node script.js'
 
 const MongoClient = require("mongodb").MongoClient;
-var uri= "mongodb://localhost:27017"; // uri to your Mongo database
+var uri= "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 var fs = require('fs');
 var client = new MongoClient(uri);
 var db; // database 

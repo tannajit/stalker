@@ -5,7 +5,8 @@ var mongo = require('mongodb');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
 //var uri= "mongodb://192.168.2.230:27017"; 
-var uri = "mongodb://localhost:27017"; // uri to your Mongo database
+var uri= "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+ // uri to your Mongo database
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
@@ -16,8 +17,6 @@ const bcrypt = require('bcrypt')
 const jwt = require("jsonwebtoken")
 var salt = 5 //any random value,  the salt value specifies how much time it’s gonna take to hash the password. higher the salt value, more secure the password is and more time it will take for calculation.
 // MongoDataBase
-
-
 
 async function run() {
     try {
@@ -91,11 +90,8 @@ router.get('/addedClients', async function (req, res) {
                 elem.PVP = re
             })
             a.push(elem)
-
         })
-
         Promise.all(curs).then(ee => res.json(a));
-
     }
 
 });
