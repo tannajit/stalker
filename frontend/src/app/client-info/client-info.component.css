@@ -1,0 +1,174 @@
+.dialog-container{
+    width: 900px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+}
+.aud-sell-container{
+    width: 100%;
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    align-items: center;
+}
+.aud-container{
+    width: 400px;
+    margin: 10px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 10px;
+    box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+    border-radius: 10px;
+}
+.aud-container span{
+    background-color: #e7a1a1;
+    border-radius: 2px;
+    font-size: 15px;
+    color: #fff;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+.sell-container{
+    width: 400px;
+    margin: 10px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 10px;
+    box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+    border-radius: 10px;
+}
+
+.sell-container span{
+    background-color: #e7a1a1;
+    border-radius: 2px;
+    font-size: 15px;
+    color: #fff;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+.pdv-info-container{
+    display: flex;
+    flex-flow: row;
+    gap: 6px;
+    justify-content: flex-start;
+    align-items: center;
+}
+.pdv-img img{
+    width: 100px;
+    border-radius: 4px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
+}
+.pdv-info p{
+    margin: 2px;
+    font-size: 10px;
+}
+.pdv-action-btns{
+    display: flex;
+    flex-flow: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 20px;
+}
+.pdv-action-btns .btn-valid{
+    justify-self: flex-start;
+    font-size: 13px;
+    color: #ffff;
+    background-color: #27AE61;
+    border-radius: 10px;
+    width: 100px;
+    line-height: 25px;
+}
+.pdv-action-btns .btn-refus{
+    font-size: 13px;
+    color: #ffff;
+    background-color: #AE5827;
+    border-radius: 10px;
+    width: 100px;
+    line-height: 25px;
+}
+
+.validPDV-container{
+    width: 100%;
+    margin: 10px 30px 10px 40px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 10px;
+    box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+    border-radius: 10px;
+}
+.validPDV-container span{
+    background-color: #e7a1a1;
+    border-radius: 2px;
+    font-size: 15px;
+    color: #fff;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.valid-pdv-container{
+    width: 100%;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: center;
+    gap: 30%;
+}
+
+.pdv-info-container{
+    display: flex;
+    flex-flow: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 10%;
+}
+
+.nfc-card{
+    width: 200px;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    background-color: #DADADA;
+}
+
+.action-btns{
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    gap: 10%;
+}
+.btn-green{
+    font-size: 13px;
+    color: #ffff;
+    background-color: #27AE61;
+    border-radius: 8px;
+    width: 150px;
+    line-height: 35px;
+}
+.btn-red{
+    font-size: 13px;
+    color: #ffff;
+    background-color: #AE5827;
+    border-radius: 8px;
+    width: 150px;
+    line-height: 35px;
+}
+.btn-orange{
+    font-size: 13px;
+    color: #fff;
+    background-color: #FACF37;
+    border-radius: 8px;
+    width: 200px;
+    line-height: 35px;
+}
