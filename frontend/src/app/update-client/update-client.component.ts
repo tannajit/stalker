@@ -9,18 +9,15 @@ import * as geojson from 'geojson';
 import { Router } from '@angular/router';
 import { GeoJsonTypes } from 'geojson';
 
+
 const incr = 1;
 
 @Component({
-  selector: 'app-addclient',
-  templateUrl: './addclient.component.html',
-  styleUrls: ['./addclient.component.css'],
-  encapsulation: ViewEncapsulation.None
-
+  selector: 'app-update-client',
+  templateUrl: './update-client.component.html',
+  styleUrls: ['./update-client.component.css']
 })
-
-export class AddclientComponent implements AfterViewInit {
-
+export class UpdateClientComponent implements AfterViewInit {
   progress = 0;
   selected= null;
   user = JSON.parse(localStorage.getItem("user"));
@@ -61,6 +58,8 @@ export class AddclientComponent implements AfterViewInit {
     }
   };
 
+  // for update functionality
+  clientInfo: any;
   
   // fadma's variables
   showVerifCodeInput = false
@@ -101,7 +100,9 @@ export class AddclientComponent implements AfterViewInit {
   markersCluster = new L.MarkerClusterGroup();
 
 
-  constructor(private clientService:ClientsService, private _router: Router) { }
+  constructor(
+    private clientService:ClientsService, 
+    private _router: Router) { }
 
   // ngOnInit(): void {
   //   setInterval(() => this.manageProgress(), 150 )
@@ -216,6 +217,10 @@ export class AddclientComponent implements AfterViewInit {
     this.initMap();
     // this.getLocation()
     // this.getLo();
+    this.clientService.getClientInfo().subscribe(info => {
+      this.clientInfo = info;
+      console.log('*********************************$$'+this.clientInfo.NomPrenom)
+    })
 
   }
   acc=1222000;
@@ -393,24 +398,24 @@ SendSMS(phone){
   }
 
 
-  Send() {
-    this.clientInfos.PhoneNumber=this.PhoneNumber
-    this.clientInfos.NomPrenom=this.NomPrenom
-    this.clientInfos.TypeDPV=this.TypeDPV;
-    this.clientInfos.detailType = this.detailType;
-    this.clientInfos.userId = this.user._id;
-    this.clientInfos.userRole = this.user.role;
-    if(this.clientInfos.codeNFC===null){
-      this.clientInfos["Status"]="red"
-    }
-    else{
-      this.clientInfos["Status"]="green"
-    }
-    console.log(this.clientInfos)
-    this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res))
-    this._router.navigate(['map'])
-    this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
-      NomPrenom:null, PhoneNumber:null, detailType:null,userId:null, userRole:null, PVPhoto:null,Status:"red"}
+  Update() {
+    // this.clientInfos.PhoneNumber=this.PhoneNumber
+    // this.clientInfos.NomPrenom=this.NomPrenom
+    // this.clientInfos.TypeDPV=this.TypeDPV;
+    // this.clientInfos.detailType = this.detailType;
+    // this.clientInfos.userId = this.user._id;
+    // this.clientInfos.userRole = this.user.role;
+    // if(this.clientInfos.codeNFC===null){
+    //   this.clientInfos["Status"]="red"
+    // }
+    // else{
+    //   this.clientInfos["Status"]="green"
+    // }
+    // console.log(this.clientInfos)
+    // this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res))
+    // this._router.navigate(['map'])
+    // this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
+    //   NomPrenom:null, PhoneNumber:null, detailType:null,userId:null, userRole:null, PVPhoto:null,Status:"red"}
     
 
   }
@@ -475,6 +480,7 @@ SendSMS(phone){
   handlePDVImage(webcamPDVImage){
     console.info('received webcam image', webcamPDVImage);
     this.webcamPDVImage = webcamPDVImage;
-    this.clientInfos.PVPhoto= webcamPDVImage.imageAsDataUrl;
+    this.clientInfos.NFCPhoto= webcamPDVImage.imageAsDataUrl;
   }
+
 }

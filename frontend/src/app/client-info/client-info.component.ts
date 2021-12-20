@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {  MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {  MAT_DIALOG_DATA, } from '@angular/material/dialog';
 import { Inject } from '@angular/core'; 
+import { ClientsService } from '../clients.service';
 
 @Component({
   selector: 'app-client-info',
@@ -10,10 +11,17 @@ import { Inject } from '@angular/core';
 export class ClientInfoComponent implements OnInit {
 
 
+  loggedUser;
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any ) { }
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private clientService: ClientsService ) { }
 
   ngOnInit(): void {
+    this.loggedUser = JSON.parse(localStorage.getItem("user"))
+  }
+
+  onUpdateClick(){
+    
 
   }
   
