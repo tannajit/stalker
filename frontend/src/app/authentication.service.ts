@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 })
 export class AuthenticationService {
   private _UsersUrl="http://localhost:3000/api1/login"
+  
 
   constructor(private http:HttpClient,private _router: Router) { }
 
@@ -23,7 +24,6 @@ export class AuthenticationService {
     return !!localStorage.getItem('token')    
   }
   logoutUser() {
-    
     localStorage.removeItem('token')
     this._router.navigate(['login']).then(() => {
       window.location.reload();

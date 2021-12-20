@@ -1,6 +1,7 @@
 //const { json } = require('express');
 var express = require('express');
 var router = express.Router();
+var mongo = require('mongodb');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
 //var uri= "mongodb://192.168.2.230:27017"; 
@@ -166,6 +167,9 @@ async function InsertClient(client){
             lat:client.lat,
             lon:client.lon,
             TypeDPV:client.TypeDPV,
+            detailType: client.detailType,
+            userId: client.userId,
+            userRole:client.userRole,
             NomPrenom:client.NomPrenom,
             PhoneNumber:client.PhoneNumber,
             PVPhoto:id_pv,
