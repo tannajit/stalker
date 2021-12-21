@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { ClientInfoComponent } from '../client-info/client-info.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { NgZone } from '@angular/core';
+import * as turf from '@turf/turf';
 
 
 @Component({
@@ -21,6 +22,7 @@ export class MapComponent implements AfterViewInit {
   dialogRef: MatDialogRef<ClientInfoComponent>;
   private map;
   public content=null;
+  mySector="hello"
 
   icon = L.icon({
     iconUrl: "assets/green.png",
@@ -45,6 +47,8 @@ export class MapComponent implements AfterViewInit {
   markersCluster = new L.MarkerClusterGroup();
   lat= 9.5981
   lon= 30.4278
+  myMarker;
+  statusAddClient=false;
   
   private initMap(): void {
     this.map = L.map('map', {
@@ -113,7 +117,10 @@ export class MapComponent implements AfterViewInit {
           console.log(this.lon);
           this.map.setView(new L.LatLng(this.lat, this.lon), 11, { animation: true });    
           
-          L.marker([this.lat,this.lon], {icon: this.location_icon}).addTo(this.map);
+          this.myMarker=L.marker([this.lat,this.lon], {icon: this.location_icon});
+          //this.myMarker.bindPopup("my")
+          this.myMarker.addTo(this.map) 
+          
         }
       },
         (error: GeolocationPositionError) => console.log(error));
@@ -126,6 +133,7 @@ export class MapComponent implements AfterViewInit {
 
   locate(){
     this.map.flyTo(new L.LatLng(this.lat,this.lon),13);
+    this.Insid()
   }
 
   
@@ -182,40 +190,77 @@ export class MapComponent implements AfterViewInit {
           });
           this.markersCluster.addLayer(marker)
           if(element.geometry.properties?.nfc!=undefined){
-            marker.bindPopup("<h1> <b>Client Information</b></h1> <img src="+element.NFCP+" style='width: 100%; height:100%;'/><p><b>Name:</b> "+String(element.geometry.properties.NomPrenom)+"</p><p><b>Sector Name: </b></p>");
+            marker.bindPopup("<h1> <b>Client Information</b></h1> <img src="+element.geometry.properties.NFCP+" style='width: 100%; height:100%;'/><p><b>Name:</b> "+String(element.geometry.properties.NomPrenom)+"</p><p><b>Sector Name: </b></p>");
          
           }else{
           marker.bindPopup("<h1> <b>Client Information</b></h1> <img src='/assets/images/blank.jpg' style='width: 100%; height:100%;'/><p><b>Name:</b> "+String(element.geometry.properties.Nom_Client)+"</p><p><b>Sector Name: </b>"+String(element.geometry.properties.Nom_du_Secteur)+"</p>");
           }
           marker.addTo(this.map);
         });
-      },
-      err => console.log(err));
+      });
     //console.log(await arr)
     return await arr;
   }
 
-
+  AllSecteurs=[];
   async getAllSecteurs() {
-    var arr = [];
+
     this._serviceClient.getAllSecteurs().subscribe(
       res => {
         //console.log(res)
         res.forEach(element => {
-          var marker = L.geoJSON(element.geometry, { style: { color: 'red' } });
-          //marker.bindPopup(String(element.geometry.properties.Nom_Client));
+          var marker = L.geoJSON(element.geometry, { style: {  color:"red"}});
+          marker.bindPopup(String(element.geometry.properties.codeRegion));
           marker.addTo(this.map);
+          this.AllSecteurs.push({coor:element.geometry.geometry.coordinates,sector:element.geometry.properties.idSecteur})
         });
-      },
-      err => console.log(err));
+      });
     //console.log(await arr)
-    return await arr;
+    //return await arr;
   }
 
- sync()
-{
-  this._router.navigate(['']).then(() => {
-    window.location.reload();
- });
-}
+  sync(){
+      this._router.navigate(['']).then(() => {
+        window.location.reload();
+    });
+  }
+  isMarkerInsidePolygon(marker, poly) {
+    var polyPoints = poly.getLatLngs();       
+    var x = marker.getLatLng().lat, y = marker.getLatLng().lng;
+
+    var inside = false;
+    for (var i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
+        var xi = polyPoints[i].lat, yi = polyPoints[i].lng;
+        var xj = polyPoints[j].lat, yj = polyPoints[j].lng;
+
+        var intersect = ((yi > y) != (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+    return inside;
+  }
+  Insid(){
+    this.statusAddClient=false
+    this.AllSecteurs.forEach(elem=>{
+      //console.log(this.myMarker)
+      //console.log(this.myMarker._latlng)
+      var lat=this.myMarker._latlng.lat
+      var lon=this.myMarker._latlng.lng
+      var test=turf.point([lon,lat])
+      var poly = turf.polygon(elem.coor[0]);
+      console.log(poly)
+      //console.log(test)
+      //this.isMarkerInsidePolygon(this.myMarker,elem)
+      
+      if (turf.booleanPointInPolygon(test, poly)) {
+            this.statusAddClient=true
+            this.mySector=elem.sector
+            console.log(this.mySector)
+      } else {
+            console.log("not in ")
+      }
+      
+      
+    })
+  }
 }

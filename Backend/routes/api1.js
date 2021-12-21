@@ -78,10 +78,10 @@ router.get('/addedClients', async function (req, res) {
         a = []
         curs = cursor.map(async (elem) => {
             var values;
-            console.log("---- zmm--------")
+            
             console.log(elem)
             await test1(db,ObjectId(elem.nfc.NFCPhoto)).then(re => {
-                console.log("---- zmm1--------")
+                
                 elem.NFCP = re
             })
             
@@ -134,7 +134,7 @@ router.get('/secteurs', verifyToken, async (req, res) => {
 /* GET clients Based on User */
 router.get('/clients', verifyToken, async (req, res) => {
     var userId = req.userId;
-    console.log("hhh")
+    //console.log("hhh")
     let collectionSec = await db.collection("secteurs") //collection where ids are stored 
     let collectiongeom = await db.collection("geometries")
     var values = await collectionSec.aggregate([
@@ -144,21 +144,19 @@ router.get('/clients', verifyToken, async (req, res) => {
     var arrv = [];
     a = []
     values.forEach(elm => {
-        console.log(elm.points[0].point)
         elm.points.forEach(e => arrv.push(ObjectId(e.point)), err => console.log(err))
     }, err => console.log(err))
+    //console.log(arrv)
     var sec = await collectiongeom.find({ 'geometry.geometry.type': 'Point', '_id': { $in: arrv } }).toArray()
     curs = sec.map(async (elem) => {
         if(elem.geometry.properties?.nfc!=undefined){
             var element=elem.geometry.properties;
         await test1(db,ObjectId(element.nfc.NFCPhoto)).then(re => {
-            console.log("---- zmm1--------")
-            elem.NFCP = re
+            elem.geometry.properties.NFCP = re
         })
         
         await test1(db,ObjectId(element.PVPhoto)).then(re => {
-            console.log("---- zmm3--------")
-            elem.PVP = re
+            elem.geometry.properties.PVP = re
         })
         //a.add(elem)
     }
@@ -167,7 +165,7 @@ router.get('/clients', verifyToken, async (req, res) => {
     })
     //console.log(a.length)
     Promise.all(curs).then(ee => {
-        console.log(a.length)
+        //console.log(a.length)
         res.json(a)});
 
     //res.json(sec)
@@ -251,8 +249,7 @@ async function InsertClient(client) {
             technologies: "NDEF",
             UUID: "2I27KB278LJH2OIYOIY2H2"
         },
-        Code_Region: 903,
-        Code_Secteur_OS: 903030381,
+        Code_Secteur_OS: parseInt(client.sector),
         machine: "CMG",
         TypeDPV: client.TypeDPV,
         detailType: client.detailType,
