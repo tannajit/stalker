@@ -144,7 +144,6 @@ router.get('/clients', verifyToken, async (req, res) => {
     var arrv = [];
     a = []
     values.forEach(elm => {
-        console.log(elm.points[0].point)
         elm.points.forEach(e => arrv.push(ObjectId(e.point)), err => console.log(err))
     }, err => console.log(err))
     var sec = await collectiongeom.find({ 'geometry.geometry.type': 'Point', '_id': { $in: arrv } }).toArray()
@@ -153,12 +152,12 @@ router.get('/clients', verifyToken, async (req, res) => {
             var element=elem.geometry.properties;
         await test1(db,ObjectId(element.nfc.NFCPhoto)).then(re => {
             console.log("---- zmm1--------")
-            elem.NFCP = re
+            elem.geometry.properties.NFCP = re
         })
         
         await test1(db,ObjectId(element.PVPhoto)).then(re => {
             console.log("---- zmm3--------")
-            elem.PVP = re
+            elem.geometry.properties.PVP = re
         })
         //a.add(elem)
     }

@@ -172,7 +172,8 @@ export class MapComponent implements AfterViewInit {
     this._serviceClient.getAllClient().subscribe(
       res => {
         res.forEach(element => {
-          console.log(element)
+          console.log("@@@@@@@@@@@@@@@@@@@")
+          console.log(element.geometry)
           var geojsonPoint: geojson.Point = element.geometry.geometry
           var marker = L.geoJSON(geojsonPoint, {
             pointToLayer: (point, latlon) => {
@@ -182,10 +183,13 @@ export class MapComponent implements AfterViewInit {
           });
           this.markersCluster.addLayer(marker)
           if(element.geometry.properties?.nfc!=undefined){
-            marker.bindPopup("<h1> <b>Client Information</b></h1> <img src="+element.NFCP+" style='width: 100%; height:100%;'/><p><b>Name:</b> "+String(element.geometry.properties.NomPrenom)+"</p><p><b>Sector Name: </b></p>");
-         
+
+            marker.on('click', ()=>{
+              this.content = element.geometry;
+              this.zone.run(() => this.openDialog(element.geometry));
+            })         
           }else{
-          marker.bindPopup("<h1> <b>Client Information</b></h1> <img src='/assets/images/blank.jpg' style='width: 100%; height:100%;'/><p><b>Name:</b> "+String(element.geometry.properties.Nom_Client)+"</p><p><b>Sector Name: </b>"+String(element.geometry.properties.Nom_du_Secteur)+"</p>");
+          marker.bindPopup("<h1> <b>Client Information</b></h1><p><b>Name:</b> "+String(element.geometry.properties.Nom_Client)+"</p><p><b>Sector Name: </b>"+String(element.geometry.properties.Nom_du_Secteur)+"</p>");
           }
           marker.addTo(this.map);
         });

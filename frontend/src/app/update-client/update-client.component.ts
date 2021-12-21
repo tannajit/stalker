@@ -219,12 +219,13 @@ export class UpdateClientComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     // setInterval(() => this.manageProgress(), 150)
-    // this.initMap();
+     this.initMap();
     // this.getLocation()
     // this.getLo();
    
       this.clientInfo = this.clientService.getClientInfo();
-      console.log('@@@@@@@@@@@@@@@@'+this.clientInfo.NomPrenom)
+      // console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
+      // console.log(this.clientInfo)
     
 
   }
@@ -404,6 +405,7 @@ SendSMS(phone){
 
 
   Update() {
+    
     // this.clientInfos.PhoneNumber=this.PhoneNumber
     // this.clientInfos.NomPrenom=this.NomPrenom
     // this.clientInfos.TypeDPV=this.TypeDPV;
@@ -416,7 +418,8 @@ SendSMS(phone){
     // else{
     //   this.clientInfos["Status"]="green"
     // }
-    // console.log(this.clientInfos)
+    console.log('########## Client ##########')
+    console.log(this.clientInfo)
     // this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res))
     // this._router.navigate(['map'])
     // this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,

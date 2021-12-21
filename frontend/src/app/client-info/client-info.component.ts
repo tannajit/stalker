@@ -26,8 +26,9 @@ export class ClientInfoComponent implements OnInit {
 
   onUpdateClick(){
     this.clientService.setCurrentClientInfo(this.data)
-    this._router.navigate(['/updateclient'])
     this.dialogRef.close();
+    this._router.navigate(['/updateclient'])
+    
 
   }
   

@@ -5,6 +5,16 @@
     justify-content: center;
     align-items: center;
 }
+.dialog-content{
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+}
+.dialog-content h2{
+    font-weight: bold;
+    color: rgb(39, 38, 38);
+}
 .aud-sell-container{
     width: 100%;
     display: flex;
@@ -53,16 +63,11 @@
     padding-left: 4px;
     padding-right: 4px;
 }
-.pdv-info-container{
-    display: flex;
-    flex-flow: row;
-    gap: 6px;
-    justify-content: flex-start;
-    align-items: center;
-}
+
 .pdv-img img{
     width: 100px;
-    border-radius: 4px;
+    height: 150px;
+    border-radius: 2px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
 }
 .pdv-info p{
@@ -127,9 +132,9 @@
 .pdv-info-container{
     display: flex;
     flex-flow: row;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 10%;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4%;
 }
 
 .nfc-card{
@@ -171,4 +176,19 @@
     border-radius: 8px;
     width: 200px;
     line-height: 35px;
+}
+.pdv-info label{
+    font-style: bold; 
+    color: green; 
+    float: left;
+    font-size: 13px;
+    margin-right: 6px;
+}
+
+.pdv-info p{
+    font-size: 13px;
+}
+
+.pdv-info{
+    width: 300px;
 }

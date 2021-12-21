@@ -45,6 +45,10 @@
         text-align: center;
         margin: auto;
     }
+    .content-body h2{
+        font-weight: bold;
+        color: #27AE61;
+    }
     
     .content-body p{
         margin-bottom: 10px;

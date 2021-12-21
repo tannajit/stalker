@@ -1,6 +1,33 @@
 <div class="content-body">
 
     <h2>Update Client</h2>
+
+    <ng-container *ngIf="percentage == 100; else elseTemplate">
+        <p>Position Fixed</p>
+    </ng-container>
+    <ng-template #elseTemplate>
+        <p>Fixing Position...</p>
+    </ng-template>
+
+     <div >   
+        <pre>pos collectés: {{list.length}}</pre>
+        <pre>Accuracy: {{acc}}</pre>
+    </div>
+
+    
+
+    <div ng-app ng-controller="ApplicationController" class="progress-cantainer">
+        <mat-progress-bar mode="determinate" [value]="percentage"></mat-progress-bar>
+        <span style="position: absolute; top: 0em;" [ngStyle]="{'left': percentage + '%'}">{{percentage}}%</span>
+    </div>
+
+    <div class="map-container">
+        <div id="map2"></div>
+    </div>
+
+    <div>
+        <button mat-button class="btn-yellow" (click)="showcheck()" [disabled]="(percentage!=100) ||  !Status">Next</button>
+    </div>
     
     <div class="container" id="checkcodes">
         <div class="checkcodes-fields">
@@ -9,9 +36,12 @@
                 <div>
                     <button mat-button class="btn-green" [disabled]="test" (click)="toggleShow(1,qrResultString);">Scan</button>
                     <div *ngFor="let code of ListCodes" class="qr-container">
-                        <span *ngIf="code.nbr == 1">{{ clientInfo.codeDANON}}</span>
+                        <span *ngIf="code.nbr == 1">{{ clientInfo.properties.codeDANON}}</span>
                     </div>
-                    <span>{{clientInfo.codeDANON}}</span>
+                    <span *ngIf="clientInfo.properties.codeDANON==null, else scanned" style="color: red;">Not scanned</span>
+                    <ng-template #scanned>{{clientInfo.properties.codeDANON}}</ng-template>
+                    
+                    
                 </div>
 
             </div>
@@ -20,8 +50,10 @@
                 <div>
                     <button mat-button class="btn-green" [disabled]="test" (click)="toggleShow(2,qrResultString)">Scan</button>
                     <div *ngFor="let code of ListCodes" class="qr-container">
-                        <span *ngIf="code.nbr == 2">{{ clientInfo.codeCOLA}}</span>
+                        <span *ngIf="code.nbr == 2">{{ clientInfo.properties.codeCOLA}}</span>
                     </div>
+                    <span *ngIf="clientInfo.properties.codeCOLA==null, else scanned" style="color: red;">Not scanned</span>
+                    <ng-template #scanned>{{clientInfo.properties.codeCOLA}}</ng-template>
                 </div>
                 
             </div>
@@ -30,8 +62,10 @@
                 <div>
                     <button mat-button class="btn-green" [disabled]="test" (click)="toggleShow(3,qrResultString)">Scan</button>
                     <div *ngFor="let code of ListCodes" class="qr-container">
-                        <span *ngIf="code.nbr == 3">{{ clientInfo.codeFGD}}</span>
+                        <span *ngIf="code.nbr == 3">{{ clientInfo.properties.codeFGD}}</span>
                     </div>
+                    <span *ngIf="clientInfo.properties.codeFGD==null, else scanned" style="color: red;">Not scanned</span>
+                    <ng-template #scanned>{{clientInfo.properties.codeFGD}}</ng-template>
                 </div>
                 
             </div>
@@ -59,15 +93,17 @@
                 <div class="scan-field">
                     <label class="input-label">NFC card puce : </label>
                     <button mat-button class="btn-green" (click)="Read()">Read</button>
-                    
+                    <span>{{clientInfo.properties.nfc.UUID}}</span>
                 </div>
                 <div class="scan-field">
                     <label class="input-label">Qr Code : </label>
                     <div>
                         <button mat-button class="btn-green" (click)="toggleShow(4,qrResultString);scan=!scan">Scan</button>
                         <div *ngFor="let code of ListCodes" class="qr-container">
-                            <span *ngIf="code.nbr == 4">{{clientInfo.codeNFC}}</span>
+                            <span *ngIf="code.nbr == 4">{{clientInfo.properties.codeNFC}}</span>
                         </div>
+                        <span *ngIf="clientInfo.properties.codeNFC==null, else scanned" style="color: red;">Not scanned</span>
+                        <ng-template #scanned>{{clientInfo.properties.codeNFC}}</ng-template>
                     </div>
                     
                 </div>
@@ -101,7 +137,7 @@
                 <div class="Scan-container">
                     <div class="snapshot" >
                       <img [height]="200"
-                           [width]="200" src="{{clientInfo.NFCP}}" style="border-radius: 8px;"/>
+                           [width]="200" src="{{clientInfo.properties.NFCP}}" style="border-radius: 8px;"/>
                     </div>
                 </div>
             </div>
@@ -110,16 +146,16 @@
 
                 <div class="field">
                     <mat-form-field>
-                        <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="clientInfo.TypeDPV">
+                        <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="clientInfo.properties.TypeDPV">
                             <mat-option value="Detail">Detail</mat-option>
                             <mat-option value="Gros">Gros</mat-option>
                             <mat-option value="Demi Gros">Demi Gros</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div class="field">
+                <div class="field" *ngIf="clientInfo.TypeDPV=='Detail'">
                     <mat-form-field>
-                        <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2" [(ngModel)]="clientInfo.detailType">
+                        <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2" [(ngModel)]="clientInfo.properties.detailType">
                             <mat-option value="Alimentation">Alimentation</mat-option>
                             <mat-option value="Superette">Superette</mat-option>
                             <mat-option value="Aattar">Aattar</mat-option>
@@ -134,7 +170,7 @@
                 <div class="field">
                     <mat-form-field>
                         <mat-label>First & Last Name*</mat-label>
-                        <input matInput placeholder="Typing..." [(ngModel)]="clientInfo.NomPrenom"/>
+                        <input matInput placeholder="Typing..." [(ngModel)]="clientInfo.properties.NomPrenom"/>
                     </mat-form-field>
                 </div>
                 
@@ -143,7 +179,7 @@
 
                     <mat-form-field>
                         <mat-label>Phone number*</mat-label>
-                        <input matInput placeholder="+212" [(ngModel)]="clientInfo.PhoneNumber"/>
+                        <input matInput placeholder="+212" [(ngModel)]="clientInfo.properties.PhoneNumber"/>
                     </mat-form-field>
     
                     <button mat-button class="btn-green" (click)="Verify('code'); showVerifCodeInput= true">Verify</button>
@@ -180,7 +216,7 @@
         
                     <div class="snapshot">
                       <img [height]="200"
-                           [width]="200" [src]="clientInfo.PVP"/>
+                           [width]="200" [src]="clientInfo.properties.PVP"/>
                     </div>
                   </div>
             </div>
@@ -188,141 +224,6 @@
         
         <button mat-button class="btn-yellow" (click)="Update()">Update</button>  
     </div>
-    <div class="container" id="nfc">
-
-        <div class="inputs-container">
-            <div class="nfc">
-                <div class="scan-field">
-                    <label class="input-label">NFC card puce : </label>
-                    <button mat-button class="btn-green" (click)="Read()">Read</button>
-                    
-                </div>
-                <div class="scan-field">
-                    <label class="input-label">Qr Code : </label>
-                    <div>
-                        <button mat-button class="btn-green" (click)="toggleShow(4,qrResultString);scan=!scan">Scan</button>
-                        <div *ngFor="let code of ListCodes" class="qr-container">
-                            <span *ngIf="code.nbr == 4">{{clientInfo.codeNFC}}</span>
-                        </div>
-                    </div>
-                    
-                </div>
-                <div *ngIf="isShown && scan " class="Scan-container">
-                    <zxing-scanner Class="small-video" (scanSuccess)="onCodeResult($event)"></zxing-scanner>
-            
-                    <section class="results" *ngIf="qrResultString">
-                      <div>
-                        <small>Result: </small>
-                        <strong>{{ qrResultString }}</strong>
-                      </div>
-                      <button mat-button class="btn-green" (click)="toggleShow(code.nbr,qrResultString)">Done</button>
-                    </section>
-                </div>
-                <div class="scan-field">
-                    <label class="input-label">NFC photo : </label>
-                    <button mat-button class="btn-green" (click)="displayNFCam();" ><mat-icon>camera_alt</mat-icon></button>
-                </div>
-                <div *ngIf="showNFCWebcam" class="Scan-container">
-                    <webcam [height]="200"
-                            [width]="500"
-                            [trigger]="triggerObservable"
-                            (imageCapture)="handleNFCImage($event)">
-                    </webcam>
-                    <div class="reas-nfc">
-                        <button mat-button class="btn-green"  (click)="triggerSnapshot();">Click Here</button>
-                        <button mat-button class="btn-green"  (click)="toggleNFCWebcam();">Close Camera</button>
-                    </div>
-                </div>
-                
-                <div *ngIf="webcamNFCImage" class="Scan-container">
-                    <div class="snapshot" >
-                      <img [height]="200"
-                           [width]="200" [src]="clientInfo.NFCP" style="border-radius: 8px;"/>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="pdv">
-
-                <div class="field">
-                    <mat-form-field>
-                        <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="TypeDPV" [(value)]="selected" value="{{clientInfo.TypeDPV}}">
-                            <mat-option value="Detail">Detail</mat-option>
-                            <mat-option value="Gros">Gros</mat-option>
-                            <mat-option value="Demi Gros">Demi Gros</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <div class="field" *ngIf="selected == 'Detail'">
-                    <mat-form-field>
-                        <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2" [(ngModel)]="detailType" value="{{clientInfo.PDVtype}}">
-                            <mat-option value="Alimentation">Alimentation</mat-option>
-                            <mat-option value="Superette">Superette</mat-option>
-                            <mat-option value="Aattar">Aattar</mat-option>
-                            <mat-option value="Fruits sec">Fruits sec</mat-option>
-                            <mat-option value="Boundif">Boundif</mat-option>
-                            <mat-option value="Parfumerie">Parfumerie</mat-option>
-                            <mat-option value="Kioske">Kioske</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                    
-                <div class="field">
-                    <mat-form-field>
-                        <mat-label>First & Last Name*</mat-label>
-                        <input matInput placeholder="Typing..." [(ngModel)]="NomPrenom" value="{{clientInfo.NomPrenom}}"/>
-                    </mat-form-field>
-                </div>
-                
-                     
-                <div class="field">
-
-                    <mat-form-field>
-                        <mat-label>Phone number*</mat-label>
-                        <input matInput placeholder="+212" [(ngModel)]="PhoneNumber" value="{{ clientInfo.PhoneNumber}}"/>
-                    </mat-form-field>
-    
-                    <button mat-button class="btn-green" (click)="Verify('code'); showVerifCodeInput= true">Verify</button>
-                </div>
-
-                <div class="field" *ngIf="showVerifCodeInput">
-                    <mat-form-field>
-                        <input matInput placeholder="code SMS" name="codeSMS" [(ngModel)]="codeSMS"/>
-                    </mat-form-field>
-                    <button (click)="VerifySMS()">OK</button>
-                    {{status}}
-                </div>
-                <div class="field">
-                    <mat-label class="input-label">PV photo : </mat-label>
-                    <button mat-button class="btn-green" (click)="displayPDVcam()"><mat-icon>camera_alt</mat-icon></button>    
-                </div>
-
-                <div  *ngIf="showPDVWebcam" class="Scan-container">
-                    <webcam [height]="200"
-                            [width]="500"
-                            [trigger]="triggerObservable"
-                            (imageCapture)="handlePDVImage($event)">
-                    </webcam>
-                    <div class="reas-nfc">
-                        <button mat-button class="btn-green"  (click)="triggerSnapshot()">Click Here</button>
-                        <button mat-button class="btn-green"  (click)="togglePDVWebcam()">Close Camera</button>
-                    </div>
-                </div>
-                
-        
-                  <!--          <button class="actionBtn" (click)="triggerSnapshot();">-->
-                  <!--            Click Here and take the Shot</button>-->
-                  <div  *ngIf="webcamPDVImage" class="Scan-container">
-        
-                    <div class="snapshot">
-                      <img [height]="200"
-                           [width]="200" [src]="clientInfo.PVP"/>
-                    </div>
-                  </div>
-            </div>
-        </div>
-        
-        <button mat-button class="btn-yellow" (click)="Update()">Send</button>  
-    </div>
+   
 
 </div>
