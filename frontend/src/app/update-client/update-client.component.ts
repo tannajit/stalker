@@ -59,7 +59,8 @@ export class UpdateClientComponent implements AfterViewInit {
   };
 
   // for update functionality
-  clientInfo: any;
+  
+  
   
   // fadma's variables
   showVerifCodeInput = false
@@ -74,7 +75,7 @@ export class UpdateClientComponent implements AfterViewInit {
     this.hide = !this.hide;
   }
 
-
+  clientInfo;
   codeNFC:null;
   TypeDPV:null;
   detailType:null;
@@ -101,8 +102,12 @@ export class UpdateClientComponent implements AfterViewInit {
 
 
   constructor(
-    private clientService:ClientsService, 
-    private _router: Router) { }
+    private clientService: ClientsService, 
+    private _router: Router) { 
+
+      this.clientInfo = clientService.getClientInfo();
+      console.log('@@@@@@@@@@@@@@@@'+this.clientInfo.NomPrenom)
+    }
 
   // ngOnInit(): void {
   //   setInterval(() => this.manageProgress(), 150 )
@@ -214,13 +219,13 @@ export class UpdateClientComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     // setInterval(() => this.manageProgress(), 150)
-    this.initMap();
+    // this.initMap();
     // this.getLocation()
     // this.getLo();
-    this.clientService.getClientInfo().subscribe(info => {
-      this.clientInfo = info;
-      console.log('*********************************$$'+this.clientInfo.NomPrenom)
-    })
+   
+      this.clientInfo = this.clientService.getClientInfo();
+      console.log('@@@@@@@@@@@@@@@@'+this.clientInfo.NomPrenom)
+    
 
   }
   acc=1222000;

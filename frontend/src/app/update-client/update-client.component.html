@@ -1,14 +1,6 @@
 <div class="content-body">
 
-    
-
-
-    
-<!-- 
-    <button mat-button class="btn-yellow">
-        Recalculate the position
-    </button> -->
-
+    <h2>Update Client</h2>
     
     <div class="container" id="checkcodes">
         <div class="checkcodes-fields">
@@ -19,8 +11,9 @@
                     <div *ngFor="let code of ListCodes" class="qr-container">
                         <span *ngIf="code.nbr == 1">{{ clientInfo.codeDANON}}</span>
                     </div>
+                    <span>{{clientInfo.codeDANON}}</span>
                 </div>
-                
+
             </div>
             <div class="scan-field">
                 <label class="input-label">Code Coca Cola : </label>
@@ -105,10 +98,10 @@
                     </div>
                 </div>
                 
-                <div *ngIf="webcamNFCImage" class="Scan-container">
+                <div class="Scan-container">
                     <div class="snapshot" >
                       <img [height]="200"
-                           [width]="200" [src]="clientInfo.NFCP" style="border-radius: 8px;"/>
+                           [width]="200" src="{{clientInfo.NFCP}}" style="border-radius: 8px;"/>
                     </div>
                 </div>
             </div>
@@ -117,16 +110,16 @@
 
                 <div class="field">
                     <mat-form-field>
-                        <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="TypeDPV" [(value)]="selected" value="{{clientInfo.TypeDPV}}">
+                        <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="clientInfo.TypeDPV">
                             <mat-option value="Detail">Detail</mat-option>
                             <mat-option value="Gros">Gros</mat-option>
                             <mat-option value="Demi Gros">Demi Gros</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div class="field" *ngIf="selected == 'Detail'">
+                <div class="field">
                     <mat-form-field>
-                        <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2" [(ngModel)]="detailType" value="{{clientInfo.PDVtype}}">
+                        <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2" [(ngModel)]="clientInfo.detailType">
                             <mat-option value="Alimentation">Alimentation</mat-option>
                             <mat-option value="Superette">Superette</mat-option>
                             <mat-option value="Aattar">Aattar</mat-option>
@@ -141,7 +134,7 @@
                 <div class="field">
                     <mat-form-field>
                         <mat-label>First & Last Name*</mat-label>
-                        <input matInput placeholder="Typing..." [(ngModel)]="NomPrenom" value="{{clientInfo.NomPrenom}}"/>
+                        <input matInput placeholder="Typing..." [(ngModel)]="clientInfo.NomPrenom"/>
                     </mat-form-field>
                 </div>
                 
@@ -150,7 +143,7 @@
 
                     <mat-form-field>
                         <mat-label>Phone number*</mat-label>
-                        <input matInput placeholder="+212" [(ngModel)]="PhoneNumber" value="{{ clientInfo.PhoneNumber}}"/>
+                        <input matInput placeholder="+212" [(ngModel)]="clientInfo.PhoneNumber"/>
                     </mat-form-field>
     
                     <button mat-button class="btn-green" (click)="Verify('code'); showVerifCodeInput= true">Verify</button>
@@ -183,7 +176,7 @@
         
                   <!--          <button class="actionBtn" (click)="triggerSnapshot();">-->
                   <!--            Click Here and take the Shot</button>-->
-                  <div  *ngIf="webcamPDVImage" class="Scan-container">
+                  <div class="Scan-container">
         
                     <div class="snapshot">
                       <img [height]="200"
@@ -193,6 +186,6 @@
             </div>
         </div>
         
-        <button mat-button class="btn-yellow" (click)="Update()">Send</button>  
+        <button mat-button class="btn-yellow" (click)="Update()">Update</button>  
     </div>
 </div>

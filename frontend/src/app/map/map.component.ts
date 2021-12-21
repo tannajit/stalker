@@ -162,7 +162,7 @@ export class MapComponent implements AfterViewInit {
 
   // open dialog with client info
   openDialog(content){
-    console.log(content)
+    //console.log(content)
     this.dialogRef = this.dialog.open(ClientInfoComponent, {data:content});
     
   }

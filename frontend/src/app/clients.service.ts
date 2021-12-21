@@ -44,7 +44,7 @@ export class ClientsService {
   // used for update functionality
   setCurrentClientInfo(client: any) {
     this.currentClient = client;
-    // console.log(this.currentClient.NomPrenom)
+    console.log('***************************'+this.currentClient.NomPrenom)
   }
 
   getClientInfo(){

@@ -1,4 +1,5 @@
 <div *ngIf="loggedUser.role == 'Back Office'">
+
     <mat-dialog-content>
         <div class="dialog-container">
             <div class="aud-sell-container">
@@ -71,8 +72,9 @@
         <button mat-raised-button color="primary" class="btn-red">Delete Client</button>
         <button mat-raised-button color="primary" class="btn-orange">Navigate to the client</button>
     </mat-dialog-actions>
+
 </div>
-<div *ngIf="loggedUser.role == 'Admin'">
+<div *ngIf="loggedUser.role == 'Seller' || loggedUser.role == 'Auditor'">
     <mat-dialog-content>
         <div class="aud-sell-container">
             <section class="sell-container">
@@ -81,10 +83,10 @@
                         <img src="{{data.NFCP}}" alt="">
                     </div>
                     <div class="pdv-info">
-                        <p>Auditor: auditor1</p>
-                        <p>Name: {{data.NomPrenom}}</p>
-                        <p>Phone Number: 0656453456</p>
-                        <p>Type: Demi Gros</p>
+                        <p><b>Sector:</b> {{data.Code_Secteur_OS}}</p>
+                        <p><b>Name:</b> {{data.NomPrenom}}</p>
+                        <p><b>Phone Number:</b> {{data.PhoneNumber}}</p>
+                        <p><b>Type PDV:</b> {{ data.TypeDPV}}, {{data.detailType}}</p>
                     </div>
                 </div>
                 <div class="pdv-info-container">
@@ -92,10 +94,9 @@
                         <img src="{{data.PVP}}" alt="">
                     </div>
                     <div class="pdv-info">
-                        <p>Auditor: auditor1</p>
-                        <p>Name: {{data.NomPrenom}}</p>
-                        <p>Phone Number: 0656453456</p>
-                        <p>Type: Demi Gros</p>
+                        <p><b>Code NFC:</b> {{data.nfc.codeNFC}}</p>
+                        <p><b>UUID:</b> {{data.nfc.UUID}}</p>
+                    
                     </div>
                 </div>
                 
@@ -105,7 +106,7 @@
     </mat-dialog-content>
 
     <mat-dialog-actions class="action-btns" align="center">
-        <button mat-raised-button color="primary" class="btn-green" routerLink="/updateclient" mat-dialog-close>Update Client</button>
+        <button mat-raised-button color="primary" class="btn-green" (click)="onUpdateClick()" mat-dialog-close>Update Client</button>
         <button mat-raised-button color="primary" class="btn-red">Delete Client</button>
     </mat-dialog-actions>
 </div>
