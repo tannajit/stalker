@@ -52,7 +52,7 @@
                 <div>
                     <button mat-button class="btn-green" [disabled]="test" (click)="toggleShow(2,qrResultString)">Scan</button>
                     <div *ngFor="let code of ListCodes" class="qr-container">
-                        <span *ngIf="code.nbr == 2">{{ code.value}}</span>
+                        <span *ngIf="code.nbr == 2">{{code.value}}</span>
                     </div>
                 </div>
                 

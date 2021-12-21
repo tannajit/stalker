@@ -38,6 +38,10 @@ const routes: Routes = [
     canActivate: [AuthGaurdService]
   },
   {
+    path: 'addclient/:sector', component: AddclientComponent,
+    canActivate: [AuthGaurdService]
+  },
+  {
     path: 'addclient', component: AddclientComponent,
     canActivate: [AuthGaurdService]
   },

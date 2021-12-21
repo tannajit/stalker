@@ -8,6 +8,7 @@ import { interval } from 'rxjs';
 import * as geojson from 'geojson';
 import { Router } from '@angular/router';
 import { GeoJsonTypes } from 'geojson';
+import { ActivatedRoute } from '@angular/router';
 
 const incr = 1;
 
@@ -20,7 +21,7 @@ const incr = 1;
 })
 
 export class AddclientComponent implements AfterViewInit {
-
+  mySector="test";
   progress = 0;
   selected= null;
   user = JSON.parse(localStorage.getItem("user"));
@@ -82,8 +83,10 @@ export class AddclientComponent implements AfterViewInit {
   NomPrenom:null;
   PhoneNumber:null;
   scan:boolean=false;
-  clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
-  NomPrenom:null,detailType:null,userId:null,userRole:null, PhoneNumber:null, PVPhoto:null,Status:"red"}
+  
+  clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,sector:null,
+  NomPrenom:null,detailType:null,userId:null,userRole:null, PhoneNumber:null, PVPhoto:null,Status:"red"
+}
   latclt
   lonclt
 
@@ -101,7 +104,7 @@ export class AddclientComponent implements AfterViewInit {
   markersCluster = new L.MarkerClusterGroup();
 
 
-  constructor(private clientService:ClientsService, private _router: Router) { }
+  constructor(private clientService:ClientsService, private _router: Router,private aroute:ActivatedRoute) { }
 
   // ngOnInit(): void {
   //   setInterval(() => this.manageProgress(), 150 )
@@ -214,6 +217,12 @@ export class AddclientComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     // setInterval(() => this.manageProgress(), 150)
     this.initMap();
+    this.aroute.paramMap.subscribe( params =>
+     { this.mySector = params.get('sector')
+      console.log("mysector"+this.mySector)
+      this.clientInfos.sector=this.mySector
+    }
+  )
     // this.getLocation()
     // this.getLo();
 
@@ -409,7 +418,7 @@ SendSMS(phone){
     console.log(this.clientInfos)
     this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res))
     this._router.navigate(['map'])
-    this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
+    this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,sector:null,
       NomPrenom:null, PhoneNumber:null, detailType:null,userId:null, userRole:null, PVPhoto:null,Status:"red"}
     
 
