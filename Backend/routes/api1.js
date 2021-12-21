@@ -142,12 +142,35 @@ router.get('/clients', verifyToken, async (req, res) => {
         { $project: { points: 1, _id: 0 } }
     ]).toArray();
     var arrv = [];
+    a = []
     values.forEach(elm => {
         console.log(elm.points[0].point)
         elm.points.forEach(e => arrv.push(ObjectId(e.point)), err => console.log(err))
     }, err => console.log(err))
     var sec = await collectiongeom.find({ 'geometry.geometry.type': 'Point', '_id': { $in: arrv } }).toArray()
-    res.json(sec)
+    curs = sec.map(async (elem) => {
+        if(elem.geometry.properties?.nfc!=undefined){
+            var element=elem.geometry.properties;
+        await test1(db,ObjectId(element.nfc.NFCPhoto)).then(re => {
+            console.log("---- zmm1--------")
+            elem.NFCP = re
+        })
+        
+        await test1(db,ObjectId(element.PVPhoto)).then(re => {
+            console.log("---- zmm3--------")
+            elem.PVP = re
+        })
+        //a.add(elem)
+    }
+    a.push(elem)
+    
+    })
+    //console.log(a.length)
+    Promise.all(curs).then(ee => {
+        console.log(a.length)
+        res.json(a)});
+
+    //res.json(sec)
 })
 
 

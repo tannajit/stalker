@@ -188,4 +188,141 @@
         
         <button mat-button class="btn-yellow" (click)="Update()">Update</button>  
     </div>
+    <div class="container" id="nfc">
+
+        <div class="inputs-container">
+            <div class="nfc">
+                <div class="scan-field">
+                    <label class="input-label">NFC card puce : </label>
+                    <button mat-button class="btn-green" (click)="Read()">Read</button>
+                    
+                </div>
+                <div class="scan-field">
+                    <label class="input-label">Qr Code : </label>
+                    <div>
+                        <button mat-button class="btn-green" (click)="toggleShow(4,qrResultString);scan=!scan">Scan</button>
+                        <div *ngFor="let code of ListCodes" class="qr-container">
+                            <span *ngIf="code.nbr == 4">{{clientInfo.codeNFC}}</span>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div *ngIf="isShown && scan " class="Scan-container">
+                    <zxing-scanner Class="small-video" (scanSuccess)="onCodeResult($event)"></zxing-scanner>
+            
+                    <section class="results" *ngIf="qrResultString">
+                      <div>
+                        <small>Result: </small>
+                        <strong>{{ qrResultString }}</strong>
+                      </div>
+                      <button mat-button class="btn-green" (click)="toggleShow(code.nbr,qrResultString)">Done</button>
+                    </section>
+                </div>
+                <div class="scan-field">
+                    <label class="input-label">NFC photo : </label>
+                    <button mat-button class="btn-green" (click)="displayNFCam();" ><mat-icon>camera_alt</mat-icon></button>
+                </div>
+                <div *ngIf="showNFCWebcam" class="Scan-container">
+                    <webcam [height]="200"
+                            [width]="500"
+                            [trigger]="triggerObservable"
+                            (imageCapture)="handleNFCImage($event)">
+                    </webcam>
+                    <div class="reas-nfc">
+                        <button mat-button class="btn-green"  (click)="triggerSnapshot();">Click Here</button>
+                        <button mat-button class="btn-green"  (click)="toggleNFCWebcam();">Close Camera</button>
+                    </div>
+                </div>
+                
+                <div *ngIf="webcamNFCImage" class="Scan-container">
+                    <div class="snapshot" >
+                      <img [height]="200"
+                           [width]="200" [src]="clientInfo.NFCP" style="border-radius: 8px;"/>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pdv">
+
+                <div class="field">
+                    <mat-form-field>
+                        <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="TypeDPV" [(value)]="selected" value="{{clientInfo.TypeDPV}}">
+                            <mat-option value="Detail">Detail</mat-option>
+                            <mat-option value="Gros">Gros</mat-option>
+                            <mat-option value="Demi Gros">Demi Gros</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="field" *ngIf="selected == 'Detail'">
+                    <mat-form-field>
+                        <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2" [(ngModel)]="detailType" value="{{clientInfo.PDVtype}}">
+                            <mat-option value="Alimentation">Alimentation</mat-option>
+                            <mat-option value="Superette">Superette</mat-option>
+                            <mat-option value="Aattar">Aattar</mat-option>
+                            <mat-option value="Fruits sec">Fruits sec</mat-option>
+                            <mat-option value="Boundif">Boundif</mat-option>
+                            <mat-option value="Parfumerie">Parfumerie</mat-option>
+                            <mat-option value="Kioske">Kioske</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                    
+                <div class="field">
+                    <mat-form-field>
+                        <mat-label>First & Last Name*</mat-label>
+                        <input matInput placeholder="Typing..." [(ngModel)]="NomPrenom" value="{{clientInfo.NomPrenom}}"/>
+                    </mat-form-field>
+                </div>
+                
+                     
+                <div class="field">
+
+                    <mat-form-field>
+                        <mat-label>Phone number*</mat-label>
+                        <input matInput placeholder="+212" [(ngModel)]="PhoneNumber" value="{{ clientInfo.PhoneNumber}}"/>
+                    </mat-form-field>
+    
+                    <button mat-button class="btn-green" (click)="Verify('code'); showVerifCodeInput= true">Verify</button>
+                </div>
+
+                <div class="field" *ngIf="showVerifCodeInput">
+                    <mat-form-field>
+                        <input matInput placeholder="code SMS" name="codeSMS" [(ngModel)]="codeSMS"/>
+                    </mat-form-field>
+                    <button (click)="VerifySMS()">OK</button>
+                    {{status}}
+                </div>
+                <div class="field">
+                    <mat-label class="input-label">PV photo : </mat-label>
+                    <button mat-button class="btn-green" (click)="displayPDVcam()"><mat-icon>camera_alt</mat-icon></button>    
+                </div>
+
+                <div  *ngIf="showPDVWebcam" class="Scan-container">
+                    <webcam [height]="200"
+                            [width]="500"
+                            [trigger]="triggerObservable"
+                            (imageCapture)="handlePDVImage($event)">
+                    </webcam>
+                    <div class="reas-nfc">
+                        <button mat-button class="btn-green"  (click)="triggerSnapshot()">Click Here</button>
+                        <button mat-button class="btn-green"  (click)="togglePDVWebcam()">Close Camera</button>
+                    </div>
+                </div>
+                
+        
+                  <!--          <button class="actionBtn" (click)="triggerSnapshot();">-->
+                  <!--            Click Here and take the Shot</button>-->
+                  <div  *ngIf="webcamPDVImage" class="Scan-container">
+        
+                    <div class="snapshot">
+                      <img [height]="200"
+                           [width]="200" [src]="clientInfo.PVP"/>
+                    </div>
+                  </div>
+            </div>
+        </div>
+        
+        <button mat-button class="btn-yellow" (click)="Update()">Send</button>  
+    </div>
+
 </div>
