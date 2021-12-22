@@ -172,13 +172,13 @@
                 
                      
                 <div class="field">
-
                     <mat-form-field>
                         <mat-label>Phone number*</mat-label>
                         <input matInput placeholder="+212" [(ngModel)]="PhoneNumber"/>
                     </mat-form-field>
     
-                    <button mat-button class="btn-green" (click)="Verify('code'); showVerifCodeInput= true">Verify</button>
+                    <button mat-button class="btn-green" [disabled]="disbale_sms" (click)="Verify('code'); showVerifCodeInput= true">Verify</button>
+                {{display}}
                 </div>
 
                 <div class="field" *ngIf="showVerifCodeInput">
