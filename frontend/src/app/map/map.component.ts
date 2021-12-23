@@ -50,8 +50,8 @@ export class MapComponent implements AfterViewInit {
 
   markersCluster = new L.MarkerClusterGroup();
   markerClusterSector = new L.MarkerClusterGroup();
-  lat = 9.5981
-  lon = 30.4278
+  lat = 33.61041004
+  lon = -7.527008504
   myMarker;
   statusAddClient = false;
 
@@ -85,7 +85,6 @@ export class MapComponent implements AfterViewInit {
     // zoom.addTo(this.map);
 
     tiles.addTo(this.map);
-    this.getLocation()
     //this.getClients()
     this.getDataClient()
     //this.getAllSecteurs()
@@ -105,6 +104,7 @@ export class MapComponent implements AfterViewInit {
     private dialog: MatDialog) { this.index.createDatabase() }
 
   ngAfterViewInit(): void {
+    this.getLocation()
     this.initMap()
     //this.getClient()
   }
@@ -122,7 +122,6 @@ export class MapComponent implements AfterViewInit {
           console.log(this.lat);
           console.log(this.lon);
           this.map.setView(new L.LatLng(this.lat, this.lon), 11, { animation: true });
-
           this.myMarker = L.marker([this.lat, this.lon], { icon: this.location_icon });
           //this.myMarker.bindPopup("my")
           this.myMarker.addTo(this.map)

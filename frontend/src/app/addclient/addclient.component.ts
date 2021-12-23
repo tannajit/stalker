@@ -365,7 +365,6 @@ export class AddclientComponent implements AfterViewInit {
     this.test = true;
     console.log(this.ListCodes)
     this.clientInfos.codes = this.ListCodes
-
   }
 
 
@@ -376,9 +375,6 @@ export class AddclientComponent implements AfterViewInit {
     this.clientService.getNFC().subscribe(
       res => this.clientInfos.codeNFC = res.Numero_Serie
     )
-
-
-
 
   }
 
