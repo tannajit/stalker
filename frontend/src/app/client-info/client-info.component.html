@@ -1,5 +1,5 @@
 <div *ngIf="loggedUser.role == 'Back Office' || loggedUser.role == 'Admin'">
-
+ {{data.idGeo}}
     <mat-dialog-content>
         <div class="dialog-container">
             <div class="aud-sell-container">
@@ -21,8 +21,8 @@
                         </div>
                     </div>
                     <div class="pdv-action-btns">
-                        <button mat-button class="btn-valid">Valid</button>
-                        <button mat-button class="btn-refus">Refus</button>
+                        <!-- <button mat-button class="btn-valid" (click)="validateSeller()">Valid</button>
+                        <button mat-button class="btn-refus">Refus</button> -->
                     </div>
                 </section>
                 <section class="aud-container">
@@ -43,8 +43,8 @@
                         </div>
                     </div>
                     <div class="pdv-action-btns">
-                        <button mat-button class="btn-valid">Valid</button>
-                        <button mat-button class="btn-refus">Refus</button>
+                        <button mat-button class="btn-valid" (click)="validate(data.idGeo,'green')">Valid</button>
+                        <button mat-button class="btn-refus" (click)="validate(data.idGeo,'black')">Refus</button>
                     </div>
                 </section>
             </div>
@@ -54,7 +54,7 @@
                 <section class="valid-pdv-container">
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="{{data.properties.NFCP}}" alt="">
+                            <img src="{{data.properties.PVP}}" alt="">
                         </div>
                         <div class="pdv-info">
                             <label>Sector:</label> 
@@ -67,9 +67,15 @@
                             <p>{{ data.properties.TypeDPV}}, {{data.properties.detailType}}</p>
                         </div>
                     </div>
-                    <div class="nfc-info-container">
-                        <div class="nfc-card">
-                            <p style="margin: 0;">NFC not intalled yet</p>
+                    <div class="pdv-info-container" >
+                        <div class="pdv-img">
+                            <img src="{{data.properties.NFCP}}" alt="">
+                        </div>
+                        <div class="pdv-info">
+                            <label>NFC UUID:</label> 
+                            <p>{{data.properties.nfc.UUID}}</p>
+                            <label>NFC code Qr:</label> 
+                            <p>{{data.properties.codeQR}}</p>
                         </div>
                     </div>
                 </section>

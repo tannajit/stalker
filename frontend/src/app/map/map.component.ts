@@ -251,12 +251,12 @@ export class MapComponent implements AfterViewInit {
           console.log("---")
           var elm = JSON.parse(element.Valeur);
           var Point = { _id: element._id, geometry: elm }
-
+          console.log(Point)
           var geojsonPoint: geojson.Point = Point.geometry
           //console.log(geojsonPoint)
           var marker = L.geoJSON(geojsonPoint, {
             pointToLayer: (point, latlon) => {
-              console.log("***")
+              //console.log("***")
               console.log(point)
               return L.marker(latlon, { icon: this.getIcon(Point.geometry.properties.status) })
               //return L.circle([latlon.lat,latlon.lng], {color:"green",radius:20}).addTo(this.map);
@@ -264,7 +264,7 @@ export class MapComponent implements AfterViewInit {
           });
           this.markersCluster.addLayer(marker)
           if (Point.geometry.properties?.nfc != undefined) {
-
+            Point.geometry.idGeo=Point._id
             marker.on('click', () => {
               this.content = Point.geometry;
               this.zone.run(() => this.openDialog(Point.geometry));
@@ -402,9 +402,9 @@ export class MapComponent implements AfterViewInit {
    });*/
     this.markersCluster.clearLayers()
     this.index.ClearData();
-    this.index.ClearDataSector()
+    //this.index.ClearDataSector()
     this.PutData()
-    this.PutDataSector()
+    //this.PutDataSector()
     console.log("whya")
 
     //this.index.getDataClient(this.map, this.markersCluster, this.icon)

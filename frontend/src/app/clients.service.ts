@@ -16,6 +16,7 @@ export class ClientsService {
   private _getclient = "http://"+this.uri+"/api1/addedClients";
   private _updateclient = "http://"+this.uri+"/api1/updateClient";
   private getClientBySell = "http://"+this.uri+"/api1/getClientBySeller";
+  private _validate = "http://"+this.uri+"/api1/validate";
 
   
    getNFC(){
@@ -69,5 +70,13 @@ export class ClientsService {
 
   updateClient(client:any){
     return this.http.post(this._updateclient, client);
+  }
+
+  
+
+  validateAuditorInfo(info){
+    console.log("#############################")
+    console.log(info)
+    return this.http.post<any>(this._validate,info);
   }
 }

@@ -23,7 +23,10 @@ export class ClientInfoComponent implements OnInit {
     public _router: Router ) { }
 
   ngOnInit(): void {
+    console.log("############################ Wa client")
+    console.log(this.data)
     this.loggedUser = JSON.parse(localStorage.getItem("user"))
+    if(this.loggedUser.role == 'Admin' || this.loggedUser.role == 'Back Office'){
     this.clientService.getClientBySeller(this.data.geometry.coordinates[1],this.data.geometry.coordinates[0]).subscribe(res=>{
       this.clientOfSeller = res;
       console.log("!!!!!!!!!!!!!!!! Seller !!!!!!!!!!!!!!")
@@ -34,9 +37,12 @@ export class ClientInfoComponent implements OnInit {
         console.log(res)
       })
     })
+  }else{
+    console.log("############################ Wa client")
+    console.log(this.data)
+  }
     
-    // console.log("############################")
-    // console.log(this.data.geometry.coordinates[1])
+    
   }
 
   onUpdateClick(){
@@ -45,6 +51,24 @@ export class ClientInfoComponent implements OnInit {
     this._router.navigate(['/updateclient'])
 
   }
-  
 
+  validateSeller(){
+  
+    // this.clientService.validateSellerInfo()
+    // this.dialogRef.close();
+    //this._router.navigate(['/map'])
+  }
+  
+  // validateAuditor(){
+  //   this.clientService.validateAuditorInfo()
+  // }
+
+  validate(id, status){
+
+    console.log("######## id:"+id)
+    this.clientService.validateAuditorInfo({'id':id,'status':status}).subscribe(res=>console.log(res))
+    this.dialogRef.close();
+
+    //this._router.navigate(['/map'])
+  }
 }

@@ -5,8 +5,8 @@ var mongo = require('mongodb');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
 //var uri= "mongodb://192.168.2.230:27017"; 
-//var uri= "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
-var uri="mongodb://localhost:27017"
+var uri= "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+//var uri="mongodb://localhost:27017"
 // uri to your Mongo database
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
@@ -151,7 +151,7 @@ router.get('/clients', verifyToken, async (req, res) => {
             ///data injected by script 
             elem.geometry.properties.status="green"
         }
-        console.log(elem)
+        //console.log(elem)
         if(elem.geometry.properties?.nfc!=undefined){
             var element=elem.geometry.properties;
             //elem.geometry.properties.status="red_white"
@@ -190,12 +190,21 @@ router.get('/getClientByAuditor/:lat/:long', async(req,res) => {
 
     var status = await getClientByAuditor(req.params.lat,req.params.long)
     console.log("-------------------- ")
-    console.log(status)
+    //console.log(status)
     res.json(status)
     
     
 })
 
+router.post('/validate', async(req,res) => {
+    let id = req.body.id;
+    let status=req.body.status
+    console.log(req)
+    console.log(id)
+    await validateData(id,status);
+    res.status(200).json("client insterted from ANg")
+    
+})
 
 
 async function InsertClient(client) {
@@ -239,7 +248,8 @@ async function InsertClient(client) {
         PhoneNumber: client.PhoneNumber,
         PVPhoto: id_pv,
         status: client.Status,
-        created_at: client.created_at
+        created_at: client.created_at,
+        updated_at: client.updated_at
     }
     await collection.insertOne(clientinfo)
     ////********* Add in geometries *****************/
@@ -260,7 +270,8 @@ async function InsertClient(client) {
 
 async function updateClient(client){
 
-    console.log("/n /n ************************** /n /n")
+    console.log("/n /n ******$$$$$$$$$$$$$$$$$$$$$$$$$$******************** /n /n")
+    console.log(client)
     let collection = db.collection("clients") // collection clients
     let geometries = db.collection("geometries") /// geometries Collections
     let secteurs = db.collection("secteurs")
@@ -296,7 +307,7 @@ async function updateClient(client){
             technologies: "NDEF",
             UUID: "2I27KB278LJH2OIYOIY2H2"
         },
-        Code_Secteur_OS: 93603636360,
+        Code_Secteur_OS:(client.sector!=null)? parseInt(client.sector) : 93603636360 ,
         machine: "CMG",
         TypeDPV: client.properties.TypeDPV,
         detailType: client.properties.detailType,
@@ -314,13 +325,15 @@ async function updateClient(client){
     await collection.insertOne(clientinfo).then(async (result)=> {
         var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
         console.log(clientGeo)
-        var updated=await geometries.updateOne({"geometry.geometry.coordinates":clientinfo.lon},
-        { $set: {"geometry.properties": clientGeo.properties} })
-        console.log(updated)
-        console.log("********** geometrie updated ******")
+
+        // var updated=await geometries.updateOne({"geometry.geometry.coordinates":clientinfo.lat,"geometry.geometry.type":"Point"},
+        // { $set: {"geometry.properties": clientGeo.properties} })
+        // console.log(updated)
+        // console.log("********** geometrie updated ******")
+
     })
 
-    console.log("************* Client inserted in client *****************");
+    console.log("************* Client updated in geometry *****************");
 
     
     
@@ -329,6 +342,22 @@ async function updateClient(client){
 }
 
 
+async function validateData(id,status){
+
+    console.log("okeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+    console.log(id)
+    let geometries = db.collection("geometries") /// geometries Collections
+       
+    var updated = await geometries.updateOne({"_id":ObjectId(id),"geometry.geometry.type":"Point"},
+    { $set: 
+        {  
+            "geometry.properties.status": status,
+        }
+     })
+    console.log(updated)
+    console.log("********** okeeeeeeeeeeeeeeeee ******")
+
+}
 // router.get('/', async function(req,res){
 
 //    cursor = await db.collection("clients").find({}).toArray();
@@ -474,6 +503,7 @@ async function getClientBySeller(lat,long){
         }
     ).sort({'updated_at':-1}).limit(1).toArray()
     var status = { clientOf: "seller", data: null }
+    var cli=[];
     if (client.length!=0) {
         console.log("############### Seller ##########")
         console.log(client)
@@ -481,9 +511,6 @@ async function getClientBySeller(lat,long){
         ///***  */
         //console.log(client)
         cli=client[0]
-        await test1(db,ObjectId(cli.nfc.NFCPhoto)).then(re => {
-            cli.NFCP = re
-        })
         await test1(db,ObjectId(cli.PVPhoto)).then(re => {
             console.log("---- zmm3 selllerrrrr  --------")
             cli.PVP = re

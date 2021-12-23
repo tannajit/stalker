@@ -38,6 +38,7 @@ export class AddclientComponent implements AfterViewInit {
   test: boolean = false;
   map;
 
+  loggedUser;
   lat = 33.2607691
   lon = -7.6222771
 
@@ -223,6 +224,7 @@ export class AddclientComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     // setInterval(() => this.manageProgress(), 150)
+    this.loggedUser = JSON.parse(localStorage.getItem("user"));
     this.initMap();
     this._setting.getTimeSMS().subscribe(res => this.timeLeft = res.details.time)
     this.aroute.paramMap.subscribe(params => {
