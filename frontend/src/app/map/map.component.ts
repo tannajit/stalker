@@ -9,6 +9,8 @@ import { ClientInfoComponent } from '../client-info/client-info.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { NgZone } from '@angular/core';
 import * as turf from '@turf/turf';
+import { IndexdbService } from '../indexdb.service';
+
 
 
 @Component({
@@ -93,6 +95,7 @@ export class MapComponent implements AfterViewInit {
     private _serviceClient: ClientsService,
     private _router:Router,
     private zone: NgZone,
+    private index:IndexdbService,
     private dialog: MatDialog) { 
     
   }
@@ -100,6 +103,10 @@ export class MapComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.getLocation()
     this.initMap()
+    
+    this.index.createDatabase()
+    
+    
     //this.getClient()
   }
 
@@ -224,9 +231,10 @@ export class MapComponent implements AfterViewInit {
   }
 
   sync(){
-      this._router.navigate(['']).then(() => {
+     /* this._router.navigate(['']).then(() => {
         window.location.reload();
-    });
+    });*/
+    this.index.AddItem()
   }
   isMarkerInsidePolygon(marker, poly) {
     var polyPoints = poly.getLatLngs();       

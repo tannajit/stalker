@@ -9,6 +9,8 @@ import * as geojson from 'geojson';
 import { Router } from '@angular/router';
 import { GeoJsonTypes } from 'geojson';
 import { ActivatedRoute } from '@angular/router';
+import { SettingsService } from '../settings/settings.service';
+
 
 const incr = 1;
 
@@ -104,7 +106,10 @@ export class AddclientComponent implements AfterViewInit {
   markersCluster = new L.MarkerClusterGroup();
 
 
-  constructor(private clientService:ClientsService, private _router: Router,private aroute:ActivatedRoute) { }
+  constructor(private clientService:ClientsService, 
+    private _router: Router,
+    private aroute:ActivatedRoute,
+    private _setting:SettingsService) { }
 
   // ngOnInit(): void {
   //   setInterval(() => this.manageProgress(), 150 )
@@ -217,6 +222,7 @@ export class AddclientComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     // setInterval(() => this.manageProgress(), 150)
     this.initMap();
+    this._setting.getTimeSMS().subscribe(res=>this.timeLeft=res.details.time)
     this.aroute.paramMap.subscribe( params =>
      { this.mySector = params.get('sector')
       console.log("mysector"+this.mySector)
@@ -377,20 +383,28 @@ export class AddclientComponent implements AfterViewInit {
 
   }
 
-  verification_code=123456;
-SendSMS(phone){
+  ///******************* SMS vars (hafsa) *********************//////////
+  disbale_sms=false;
+  verification_code=null;
+  timeLeft: number = 5;
+  interval_validation;
+  status;
+  display;
+  codeSMS
+  ///send sms (Nano)
+  SendSMS(phone){
     this.clientService.getSMS(phone).subscribe(
       res=> { 
         console.log(res) 
-      this.verification_code=res.code
+        this.verification_code=res.code
       });
   }
-   status;
-  codeSMS;
+;
   Verify(code: string) {
-    this.clientInfos.PhoneNumber=this.PhoneNumber
-    this.SendSMS(this.PhoneNumber);
-    
+      this.disbale_sms=true;
+      this.clientInfos.PhoneNumber=this.PhoneNumber
+      this.timer(this.timeLeft);
+      this.SendSMS(this.PhoneNumber);
     }
   
   VerifySMS(){
@@ -400,6 +414,35 @@ SendSMS(phone){
       this.status="the code is incorrect"
     }
   }
+
+  timer(minute) {
+    // let minute = 1;
+    let seconds: number = minute * 60;
+    let textSec: any = "0";
+    let statSec: number = 60;
+
+    const prefix = minute < 10 ? "0" : "";
+
+    const timer = setInterval(() => {
+      seconds--;
+      if (statSec != 0) statSec--;
+      else statSec = 59;
+
+      if (statSec < 10) {
+        textSec = "0" + statSec;
+      } else textSec = statSec;
+
+      this.display = `${prefix}${Math.floor(seconds / 60)}:${textSec}`;
+
+      if (seconds == 0) {
+        console.log("finished");
+        clearInterval(timer);
+        this.verification_code=null;
+        this.disbale_sms=false;
+      }
+    }, 1000);
+  }
+/////////////////////////*******************///////////////////////////////////////
 
 
   Send() {

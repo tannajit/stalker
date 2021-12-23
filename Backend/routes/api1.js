@@ -599,5 +599,31 @@ async function ValidPassword(passwordG, passwordD) {
     return (result);
 }
 
+///////// *************** Settings *************** ///////
+
+router.post("/settings", async (req, res) => {
+    console.log("**************set settings in the dataBase******************")
+    var time = req.body.time;
+    console.log(time)
+    let collection = await db.collection("settings") // collection users 
+    await collection.updateOne({ "proprety": "sms" },
+        {
+            $set: {
+                "details.time": time,
+                "details.code_length": 4
+            }
+        }, { upsert: true })
+
+    res.status(200).json("SMS time set successfully")
+
+});
+router.get("/settings", async (req, res) => {
+    console.log("***********get settings**************")
+    let collection = await db.collection("settings") // collection 
+    var values = await collection.find({ "proprety": 'sms' }).toArray()
+    console.log(values[0])
+    res.json(values[0])
+})
+//////////***********************************////////////////////////
 
 module.exports = router;
