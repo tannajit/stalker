@@ -1,4 +1,4 @@
-<div *ngIf="loggedUser.role == 'Back Office'">
+<div *ngIf="loggedUser.role == 'Back Office' || loggedUser.role == 'Admin'">
 
     <mat-dialog-content>
         <div class="dialog-container">
@@ -7,13 +7,17 @@
                     <span>Seller</span>
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="/assets/images/pdvImage.jpg" alt="">
+                            <img src="{{clientOfSeller.PVP}}" alt="">
                         </div>
                         <div class="pdv-info">
-                            <p>Auditor: auditor1</p>
-                            <p>Name: {{data.NomPrenom}}</p>
-                            <p>Phone Number: 0656453456</p>
-                            <p>Type: Demi Gros</p>
+                            <label>Sector:</label> 
+                            <p>{{clientOfSeller.Code_Secteur_OS}}</p>
+                            <label>Name:</label> 
+                            <p>{{clientOfSeller.NomPrenom}}</p>
+                            <label>Phone Number:</label> 
+                            <p>{{clientOfSeller.PhoneNumber}}</p>
+                            <label>Type PDV:</label>
+                            <p>{{ clientOfSeller.TypeDPV}}, {{clientOfSeller.detailType}}</p>
                         </div>
                     </div>
                     <div class="pdv-action-btns">
@@ -25,13 +29,17 @@
                     <span>Auditor</span>
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="/assets/images/pdvImage.jpg" alt="">
+                            <img src="{{clientOfSeller.NFCP}}" alt="">
                         </div>
                         <div class="pdv-info">
-                            <p>Auditor: auditor1</p>
-                            <p>Name: {{data.NomPrenom}}</p>
-                            <p>Phone Number: 0656453456</p>
-                            <p>Type: Demi Gros</p>
+                            <label>Sector:</label> 
+                            <p>{{clientOfAuditor.Code_Secteur_OS}}</p>
+                            <label>Name:</label> 
+                            <p>{{clientOfAuditor.NomPrenom}}</p>
+                            <label>Phone Number:</label> 
+                            <p>{{clientOfAuditor.PhoneNumber}}</p>
+                            <label>Type PDV:</label>
+                            <p>{{ clientOfAuditor.TypeDPV}}, {{clientOfAuditor.detailType}}</p>
                         </div>
                     </div>
                     <div class="pdv-action-btns">
@@ -46,13 +54,17 @@
                 <section class="valid-pdv-container">
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="/assets/images/pdvImage.jpg" alt="">
+                            <img src="{{data.properties.NFCP}}" alt="">
                         </div>
                         <div class="pdv-info">
-                            <p>Auditor: auditor1</p>
-                            <p>Name: {{data.NomPrenom}}</p>
-                            <p>Phone Number: 0656453456</p>
-                            <p>Type: Demi Gros</p>
+                            <label>Sector:</label> 
+                            <p>{{data.properties.Code_Secteur_OS}}</p>
+                            <label>Name:</label> 
+                            <p>{{data.properties.NomPrenom}}</p>
+                            <label>Phone Number:</label> 
+                            <p>{{data.properties.PhoneNumber}}</p>
+                            <label>Type PDV:</label>
+                            <p>{{ data.properties.TypeDPV}}, {{data.properties.detailType}}</p>
                         </div>
                     </div>
                     <div class="nfc-info-container">

@@ -63,7 +63,7 @@ export class MapComponent implements AfterViewInit {
     };
 
     // const zoom = L.control.zoom(zoomOptions);
-    const tiles = L.tileLayer('https://map.novatis.tech/hot/{z}/{x}/{y}.png', {
+    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 30,
       minZoom: 0
     });

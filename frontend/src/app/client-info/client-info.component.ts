@@ -14,6 +14,8 @@ export class ClientInfoComponent implements OnInit {
 
 
   loggedUser;
+  clientOfSeller;
+  clientOfAuditor;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private clientService: ClientsService,
@@ -22,13 +24,22 @@ export class ClientInfoComponent implements OnInit {
 
   ngOnInit(): void {
     this.loggedUser = JSON.parse(localStorage.getItem("user"))
+    this.clientService.getClientBySeller(this.data.geometry.coordinates[1],this.data.geometry.coordinates[0]).subscribe(res=>{
+      this.clientOfSeller = res;
+      console.log(res)
+    })
+    this.clientService.getClientByAuditor(this.data.geometry.coordinates[1],this.data.geometry.coordinates[0]).subscribe(res=>{
+      this.clientOfAuditor = res;
+      console.log(res)
+    })
+    // console.log("############################")
+    // console.log(this.data.geometry.coordinates[1])
   }
 
   onUpdateClick(){
     this.clientService.setCurrentClientInfo(this.data)
     this.dialogRef.close();
     this._router.navigate(['/updateclient'])
-    
 
   }
   
