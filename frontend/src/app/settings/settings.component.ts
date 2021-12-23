@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { SettingsService } from './settings.service';
 
 @Component({
@@ -9,7 +10,8 @@ import { SettingsService } from './settings.service';
 export class SettingsComponent implements OnInit {
   time=2;
   Message;
-  constructor(private _setting:SettingsService) { }
+  constructor(private _setting:SettingsService,
+              private _router:Router) { }
 
   ngOnInit(): void {
     this.getSMS()
@@ -18,6 +20,7 @@ export class SettingsComponent implements OnInit {
     this._setting.setTimeSMS(this.time).subscribe(res=>{
       console.log(res)
       this.Message=res
+      this._router.navigate([''])
     })
   }
   getSMS(){
