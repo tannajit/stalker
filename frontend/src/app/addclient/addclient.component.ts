@@ -455,12 +455,13 @@ export class AddclientComponent implements AfterViewInit {
     this.clientInfos.detailType = this.detailType;
     this.clientInfos.userId = this.user._id;
     this.clientInfos.userRole = this.user.role;
-    if (this.clientInfos.codeNFC == null) {
-      this.clientInfos.Status = "pink"
+    /*if(this.clientInfos.codeNFC===null){
+      this.clientInfos["Status"]="red"
     }
-    else {
-      this.clientInfos.Status = "purple"
-    }
+    else{
+      this.clientInfos["Status"]="green"
+    }*/
+    this.clientInfos.Status="red_white"
     console.log(this.clientInfos)
     this.clientService.SendClient(this.clientInfos).subscribe(res => {
       console.log(res)

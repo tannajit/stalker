@@ -79,12 +79,10 @@ router.get('/addedClients', async function (req, res) {
         a = []
         curs = cursor.map(async (elem) => {
             var values;
-            
             console.log(elem)
             await test1(db,ObjectId(elem.nfc.NFCPhoto)).then(re => {
                 elem.NFCP = re
             })
-            
             await test1(db,ObjectId(elem.PVPhoto)).then(re => {
                 console.log("---- zmm3--------")
                 elem.PVP = re
@@ -153,14 +151,17 @@ router.get('/clients', verifyToken, async (req, res) => {
             ///data injected by script 
             elem.geometry.properties.status="green"
         }
+        console.log(elem)
         if(elem.geometry.properties?.nfc!=undefined){
             var element=elem.geometry.properties;
             //elem.geometry.properties.status="red_white"
         await test1(db,ObjectId(element.nfc.NFCPhoto)).then(re => {
+            console.log("hna 1")
             elem.geometry.properties.NFCP = re
         })
         
         await test1(db,ObjectId(element.PVPhoto)).then(re => {
+            console.log("hna 2")
             elem.geometry.properties.PVP = re
         })
         //a.add(elem)
@@ -174,6 +175,25 @@ router.get('/clients', verifyToken, async (req, res) => {
         res.json(a)});
 
     //res.json(sec)
+})
+
+// get client by seller 
+router.get('/getClientBySeller/:lat/:long', async(req,res) => {
+
+    var status = await getClientBySeller(req.params.lat,req.params.long)
+    res.json(status)
+    
+    
+})
+
+router.get('/getClientByAuditor/:lat/:long', async(req,res) => {
+
+    var status = await getClientByAuditor(req.params.lat,req.params.long)
+    console.log("-------------------- ")
+    console.log(status)
+    res.json(status)
+    
+    
 })
 
 
@@ -237,6 +257,76 @@ async function InsertClient(client) {
     console.log('Client Inserted by function')
 }
 
+async function updateClient(client){
+
+    console.log("/n /n ************************** /n /n")
+    let collection = db.collection("clients") // collection clients
+    let geometries = db.collection("geometries") /// geometries Collections
+    let secteurs = db.collection("secteurs")
+    var id_NFC,id_pv;
+    if(client.properties.NFCP==null){
+        
+        await test(db, client.properties.NomPrenom, client.properties.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
+        console.log(id_NFC)
+    }else{
+        id_NFC = client.properties.nfc.NFCPhoto;
+    }
+    if(client.properties.PVP==null){
+        
+        await test(db, client.properties.NomPrenom, client.properties.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
+        console.log(id_pv);
+    }else{
+        id_pv = client.properties.PVPhoto;
+    }
+    
+    
+    console.log("-------------- " + client.lat)
+
+    let clientinfo = {
+        codeDANON: client.properties.codeDANON,
+        codeCOLA: client.properties.codeCOLA,
+        codeFGD: client.properties.codeFGD,
+        codeQR: client.properties.codeQR,
+        lat: client.lat,
+        lon: client.lon,
+        nfc: {
+            NFCPhoto: id_NFC,
+            codeNFC: client.properties.nfc.codeNFC,
+            technologies: "NDEF",
+            UUID: "2I27KB278LJH2OIYOIY2H2"
+        },
+        Code_Secteur_OS: 93603636360,
+        machine: "CMG",
+        TypeDPV: client.properties.TypeDPV,
+        detailType: client.properties.detailType,
+        userId: client.properties.userId,
+        updatedBy: client.properties.updatedBy,
+        userRole: client.properties.userRole,
+        NomPrenom: client.properties.NomPrenom,
+        PhoneNumber: client.properties.PhoneNumber,
+        PVPhoto: id_pv,
+        status: client.properties.status,
+        updated_at: client.properties.updated_at,
+        lat: client.geometry.coordinates[1],
+        lon: client.geometry.coordinates[0]
+    }
+    await collection.insertOne(clientinfo).then(async (result)=> {
+        var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
+        console.log(clientGeo)
+        var updated=await geometries.updateOne({"geometry.geometry.coordinates":clientinfo.lon},
+        { $set: {"geometry.properties": clientGeo.properties} })
+        console.log(updated)
+        console.log("********** geometrie updated ******")
+    })
+
+    console.log("************* Client inserted in client *****************");
+
+    
+    
+    
+    
+}
+
 
 // router.get('/', async function(req,res){
 
@@ -261,6 +351,12 @@ router.post('/AddClient', async (req, res) => {
 
 })
 
+router.post('/updateClient', async(req,res) =>{
+    let client = req.body;
+    console.log(client)
+    await updateClient(client);
+    res.status(200).send("Client Inserted From Ang")
+})
 /// gridFS script 
 function getFileSystemItem(dbo, id) {
     var buf = Buffer('');
@@ -364,6 +460,76 @@ async function getUser(user) {
     return status;
 }
 
+async function getClientBySeller(lat,long){
+    console.log(lat)
+    // console.log(long)
+    let clientCollection = db.collection("clients")
+    var client = await clientCollection.findOne(
+        {
+            'lat':parseFloat(lat),
+            'lon':parseFloat(long),
+            'userRole':'Seller',
+            'updatedBy':{$exists: false},
+        }
+    )
+    var status = { clientOf: "seller", data: null }
+    if (client != null) {
+        console.log("############### Seller ##########")
+        console.log(client)
+        status.data = {'client': client}
+        ///***  */
+        //console.log(client)
+        await test1(db,ObjectId(client.nfc.NFCPhoto)).then(re => {
+            client.NFCP = re
+        })
+        await test1(db,ObjectId(client.PVPhoto)).then(re => {
+            console.log("---- zmm3 selllerrrrr  --------")
+            client.PVP = re
+        })
+
+        status.data = {'client': client}
+
+        //console.log(status)
+    }
+    console.log(client)
+    return client;
+}
+
+async function getClientByAuditor(lat,long){
+
+    let clientCollection = db.collection("clients")
+    var client = await clientCollection.find(
+        {
+            'lat':parseFloat(lat),
+            'lon':parseFloat(long),
+            'userRole':'Auditor',
+            'updated_at':{$exists: true}
+            
+        }
+    ).sort({'updated_at':-1}).limit(1).toArray()
+    var status = { clientOf: "auditor", data: null }
+    if (client.length!=0) {
+        console.log("############### Auditor ##########")
+        console.log(client)
+        cli=client[0]
+        await test1(db,ObjectId(cli.nfc.NFCPhoto)).then(re => {
+            cli.NFCP = re
+        })
+        await test1(db,ObjectId(cli.PVPhoto)).then(re => {
+            console.log("---- zmm3 auditor --------")
+            cli.PVP = re
+        })
+
+        status.data = {'client': cli}
+        //console.log(status)
+    }else{
+        console.log("not found")
+        al=[];
+        return al;
+    }
+    //console.log(cli)
+    return cli;
+}
 /* GET users listing. */
 //   router.get('/', async function(req, res) {
 //     res.json("hey");

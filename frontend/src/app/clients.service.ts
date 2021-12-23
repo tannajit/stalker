@@ -14,6 +14,9 @@ export class ClientsService {
   private _secteurUrl="http://"+this.uri+"/api1/secteurs";
   private _addclient="http://"+this.uri+"/api1/AddClient";
   private _getclient = "http://"+this.uri+"/api1/addedClients";
+  private _updateclient = "http://"+this.uri+"/api1/updateClient";
+  private getClientBySell = "http://"+this.uri+"/api1/getClientBySeller";
+
   
    getNFC(){
     var url="http://localhost:7000/nfc"
@@ -34,6 +37,19 @@ export class ClientsService {
   getAllClient(){
     return this.http.get<any>(this._clientUrl)
   }
+
+  getClientBySeller(lat,long){
+     var url="http://localhost:3000/api1/getClientBySeller/"+lat+"/"+long+""
+    console.log(url)
+    return this.http.get<any>(url)
+  }
+
+  getClientByAuditor(lat,long){
+    var url="http://localhost:3000/api1/getClientByAuditor/"+lat+"/"+long+""
+   console.log(url)
+   return this.http.get<any>(url)
+ }
+
   getAllSecteurs(){
     return this.http.get<any>(this._secteurUrl)
   }
@@ -49,5 +65,9 @@ export class ClientsService {
 
   getClientInfo(){
     return this.currentClient;
+  }
+
+  updateClient(client:any){
+    return this.http.post(this._updateclient, client);
   }
 }

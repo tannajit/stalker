@@ -36,12 +36,10 @@
                 <div>
                     <button mat-button class="btn-green" [disabled]="test" (click)="toggleShow(1,qrResultString);">Scan</button>
                     <div *ngFor="let code of ListCodes" class="qr-container">
-                        <span *ngIf="code.nbr == 1">{{ clientInfo.properties.codeDANON}}</span>
+                        <span *ngIf="code.nbr == 1">{{ code.value}}</span>
                     </div>
                     <span *ngIf="clientInfo.properties.codeDANON==null, else scanned" style="color: red;">Not scanned</span>
-                    <ng-template #scanned>{{clientInfo.properties.codeDANON}}</ng-template>
-                    
-                    
+                    <ng-template #scanned>{{clientInfo.properties.codeDANON}}</ng-template>     
                 </div>
 
             </div>
@@ -100,7 +98,7 @@
                     <div>
                         <button mat-button class="btn-green" (click)="toggleShow(4,qrResultString);scan=!scan">Scan</button>
                         <div *ngFor="let code of ListCodes" class="qr-container">
-                            <span *ngIf="code.nbr == 4">{{clientInfo.properties.codeNFC}}</span>
+                            <span *ngIf="code.nbr == 4">{{code.value}}</span>
                         </div>
                         <span *ngIf="clientInfo.properties.codeNFC==null, else scanned" style="color: red;">Not scanned</span>
                         <ng-template #scanned>{{clientInfo.properties.codeNFC}}</ng-template>
@@ -135,9 +133,17 @@
                 </div>
                 
                 <div class="Scan-container">
-                    <div class="snapshot" >
-                      <img [height]="200"
+                    <div class="snapshot"  >
+                    
+                        <img *ngIf="webcamNFCImage; else nfcphoto" [height]="200"
+                           [width]="200" [src]="webcamNFCImage.imageAsDataUrl" style="border-radius: 8px;"/>
+                        
+                    
+                    <ng-template #nfcphoto>
+                        <img  [height]="200"
                            [width]="200" src="{{clientInfo.properties.NFCP}}" style="border-radius: 8px;"/>
+                    </ng-template>
+                    
                     </div>
                 </div>
             </div>
@@ -215,8 +221,14 @@
                   <div class="Scan-container">
         
                     <div class="snapshot">
-                      <img [height]="200"
-                           [width]="200" [src]="clientInfo.properties.PVP"/>
+                        <img *ngIf="webcamPDVImage; else pdvphoto" [height]="200"
+                        [width]="200" [src]="webcamPDVImage.imageAsDataUrl" style="border-radius: 8px;"/>
+                     
+                 
+                 <ng-template #pdvphoto>
+                     <img  [height]="200"
+                        [width]="200" src="{{clientInfo.properties.PVP}}" style="border-radius: 8px;"/>
+                 </ng-template>
                     </div>
                   </div>
             </div>

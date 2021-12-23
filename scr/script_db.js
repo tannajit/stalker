@@ -15,6 +15,8 @@ var user5 = {"name" : "Hagui Meryem", "CIN" : "JT78695", "email" : "m.hagui@fgdd
 var user6 = {"name" : "Bendhi Jamila", "CIN" : "JT78695", "email" : "j.bendhi@fgddistrib.com", "password":"Jamila123","phone" : "0680846529", "role" : "Back Office" };
 var user7 = {"name" : "Donji Hanane", "CIN" : "JT78695", "email" : "h.donji@fgddistrib.com", "password":"Hanane123","phone" : "0680846529", "role" : "Back Office" };
 var user8 = {"name" : "Ialioune Nezha", "CIN" : "JT78695", "email" : "i.nezha@fgddistrib.com", "password":"Nezha123","phone" : "0680846529", "role" : "Back Office" };
+var user9 = {"name" : "Said Outajer", "CIN" : "JT78695", "email" : "s.outajer@fgddistrib.com", "password":"Said123","phone" : "0680846529", "role" : "Auditor" };
+var user10 = {"name" : "Abbes Elahrami", "CIN" : "JT78695", "email" : "a.elahrami@fgddistrib.com", "password":"Abbes123","phone" : "0680846529", "role" : "Auditor" };
 
 
 run().catch(console.log)
@@ -36,6 +38,8 @@ async function run() {
     InsertUser(user6,901011082).catch(console.log)
     InsertUser(user7,901011483).catch(console.log)
     InsertUser(user8,902020481).catch(console.log)
+    InsertUser(user9,902020481).catch(console.log)
+    InsertUser(user10,902020481).catch(console.log)
 	}catch (error){
 	//Ensures that the client will close when you finish/error
 		console.log(error)
