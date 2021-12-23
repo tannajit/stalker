@@ -255,7 +255,7 @@ async function InsertClient(client) {
     }
     await collection.insertOne(clientinfo)
     ////********* Add in geometries *****************/
-    /*let getInsertedId; //// put Id inserted
+    let getInsertedId; //// put Id inserted
     var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
     console.log(clientGeo)
     geometries.insertOne({ geometry: clientGeo }).then(result => {
