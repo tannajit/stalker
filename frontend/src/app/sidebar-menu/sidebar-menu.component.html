@@ -33,8 +33,6 @@
                     <span>Routes</span>
                 </div>
             </mat-list-item>
-
-            <div>
                 <mat-list-item routerLink="planning" routerLinkActive="active">
                     <mat-icon mat-list-icon>edit_calendar</mat-icon>
                     <div fxFlex="10"></div>
@@ -42,17 +40,14 @@
                         <span>Planning</span>
                     </div>
                 </mat-list-item>
-            </div>
-            <div>
              <mat-list-item routerLink="offline" routerLinkActive="active">
                     <mat-icon mat-list-icon>refresh</mat-icon>
                     <div fxFlex="10"></div>
                     <div *ngIf="sidenavWidth> 6" class="sidenav-item">
                         <span>Synchronisation</span>
+                    </div>
                 </mat-list-item>
 
-            </div>
-            <div>
                 <mat-list-item routerLink="settings" routerLinkActive="active">
                     <mat-icon mat-list-icon>settings</mat-icon>
                     <div fxFlex="10"></div>
@@ -60,7 +55,6 @@
                         <span>Settings</span>
                     </div>
                 </mat-list-item>
-            </div>
             
         </mat-nav-list>
     </mat-sidenav>
