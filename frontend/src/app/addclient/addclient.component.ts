@@ -493,6 +493,7 @@ export class AddclientComponent implements AfterViewInit {
     console.log(this.clientInfos)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodo(this.clientInfos);
+      this._router.navigate(['map'])
     }else{
     this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res))
     this._router.navigate(['map'])
