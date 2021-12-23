@@ -8,14 +8,11 @@ import { interval } from 'rxjs';
 import * as geojson from 'geojson';
 import { Router } from '@angular/router';
 import { GeoJsonTypes } from 'geojson';
-<<<<<<< HEAD
 import { UUID } from 'angular2-uuid';
 import { OnlineOfflineServiceService} from '../online-offline-service.service';
-=======
 import { ActivatedRoute } from '@angular/router';
 import { SettingsService } from '../settings/settings.service';
 import { IndexdbService } from '../indexdb.service';
->>>>>>> 39bf5c251892aafc4d8fdcf65f90925cca103e99
 
 
 const incr = 1;
@@ -95,15 +92,10 @@ export class AddclientComponent implements AfterViewInit {
   NomPrenom:null;
   PhoneNumber:null;
   scan:boolean=false;
-<<<<<<< HEAD
-  clientInfos={UUid:null,codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
-  NomPrenom:null,detailType:null,userId:null,userRole:null, PhoneNumber:null, PVPhoto:null,Status:"red"}
-=======
   
-  clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,sector:null,
+  clientInfos={UUid:null,codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,sector:null,
   NomPrenom:null,detailType:null,userId:null,userRole:null, PhoneNumber:null, PVPhoto:null,Status:"red", created_at:null,updated_at:null
-}
->>>>>>> 39bf5c251892aafc4d8fdcf65f90925cca103e99
+ }
   latclt
   lonclt
 
@@ -121,20 +113,12 @@ export class AddclientComponent implements AfterViewInit {
   markersCluster = new L.MarkerClusterGroup();
 
 
-<<<<<<< HEAD
-  constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,private clientService:ClientsService, private _router: Router) {
-    //  this.registerToEvents(onlineOfflineService);
-    // this.AlertOffOn();
-   }
- 
-
-=======
-  constructor(private clientService: ClientsService,
+  constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,
+    private clientService: ClientsService,
     private _router: Router,
     private aroute: ActivatedRoute,
     private index: IndexdbService,
     private _setting: SettingsService) { }
->>>>>>> 39bf5c251892aafc4d8fdcf65f90925cca103e99
 
   // ngOnInit(): void {
   //   setInterval(() => this.manageProgress(), 150 )
@@ -245,11 +229,8 @@ export class AddclientComponent implements AfterViewInit {
 
   }
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> 39bf5c251892aafc4d8fdcf65f90925cca103e99
   upsert(array, item) { // (1)
     const i = array.findIndex(_item => _item.nbr === item.nbr);
     if (i > -1) array[i] = item; // (2)
@@ -309,15 +290,9 @@ export class AddclientComponent implements AfterViewInit {
       if (navigator.geolocation) {
         if (this.percentage == 100) {
           this.inter.unsubscribe();
-<<<<<<< HEAD
           this.clientInfos["lat"]=this.latclt
           this.clientInfos["lon"]=this.lonclt
           // console.log(this.clientInfos)
-=======
-          this.clientInfos["lat"] = this.latclt
-          this.clientInfos["lon"] = this.lonclt
-          console.log(this.clientInfos)
->>>>>>> 39bf5c251892aafc4d8fdcf65f90925cca103e99
         }
 
         var options = {
@@ -329,7 +304,6 @@ export class AddclientComponent implements AfterViewInit {
         var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
 
           if (position) {
-<<<<<<< HEAD
             // console.log("Latitude: " + position.coords.latitude +
               // " // Longitude: " + position.coords.longitude);
               var newlat=position.coords.latitude
@@ -361,32 +335,6 @@ export class AddclientComponent implements AfterViewInit {
                 this.show=false
                 this.Status=true
                 marker = new (L.marker as any)([this.lat,this.lon],{icon:location_icon}).addTo(this.map);
-=======
-            console.log("Latitude: " + position.coords.latitude +
-              " // Longitude: " + position.coords.longitude);
-            var newlat = position.coords.latitude
-            var newLon = position.coords.longitude;
-
-            // if (position.coords.accuracy > 10) {
-            //   console.log("The GPS accuracy isn't good enough");
-            // }
-            if (newlat != this.lat || newLon != this.lat) {
-              //console.log("nmi rah tbdl")
-              // this.percentage=0
-              this.lat = newlat
-              this.lon = newLon
-              this.list.push(position)
-              console.log(this.list)
-              console.log("Accuracy:" + position.coords.accuracy)
-
-              if (position.coords.accuracy < this.acc) {
-                console.log("********** Accuracy:" + position.coords.accuracy)
-                this.acc = position.coords.accuracy
-                this.lat = position.coords.latitude
-                this.lon = position.coords.longitude
-                this.latclt = position.coords.latitude
-                this.lonclt = position.coords.longitude
->>>>>>> 39bf5c251892aafc4d8fdcf65f90925cca103e99
               }
               console.log(this.lat)
               console.log(this.lon)
@@ -394,7 +342,7 @@ export class AddclientComponent implements AfterViewInit {
               this.show = false
               this.Status = true
               marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
-            }
+            
           }
         },
           (error: GeolocationPositionError) => console.log(error), options);
@@ -459,11 +407,6 @@ export class AddclientComponent implements AfterViewInit {
 
   }
 
-<<<<<<< HEAD
-  verification_code=123456;
-
-  SendSMS(phone){
-=======
   getCoordinates() {
 
   }
@@ -478,7 +421,6 @@ export class AddclientComponent implements AfterViewInit {
   codeSMS
   ///send sms (Nano)
   SendSMS(phone) {
->>>>>>> 39bf5c251892aafc4d8fdcf65f90925cca103e99
     this.clientService.getSMS(phone).subscribe(
       res => {
         console.log(res)
@@ -532,16 +474,10 @@ export class AddclientComponent implements AfterViewInit {
   version = 6
 
   Send() {
-<<<<<<< HEAD
     // this.clientInfos.UUid=UUID.UUID();
     this.clientInfos.PhoneNumber=this.PhoneNumber
     this.clientInfos.NomPrenom=this.NomPrenom
     this.clientInfos.TypeDPV=this.TypeDPV;
-=======
-    this.clientInfos.PhoneNumber = this.PhoneNumber
-    this.clientInfos.NomPrenom = this.NomPrenom
-    this.clientInfos.TypeDPV = this.TypeDPV;
->>>>>>> 39bf5c251892aafc4d8fdcf65f90925cca103e99
     this.clientInfos.detailType = this.detailType;
     this.clientInfos.userId = this.user._id;
     this.clientInfos.userRole = this.user.role;
@@ -560,12 +496,7 @@ export class AddclientComponent implements AfterViewInit {
     }else{
     this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res))
     this._router.navigate(['map'])
-<<<<<<< HEAD
-    this.clientInfos={UUid:null,codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
-      NomPrenom:null, PhoneNumber:null, detailType:null,userId:null, userRole:null, PVPhoto:null,Status:"red"}
-    }
-=======
-    this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,sector:null,
+    this.clientInfos={UUid:null,codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,sector:null,
       NomPrenom:null, PhoneNumber:null, detailType:null,userId:null, userRole:null, PVPhoto:null,Status:"red",created_at:null,updated_at:null}
     
     this.clientService.SendClient(this.clientInfos).subscribe(res => {
@@ -597,28 +528,16 @@ export class AddclientComponent implements AfterViewInit {
     })
 
     this.clientInfos = {
-      codes: [], codeNFC: null, NFCPhoto: null, TypeDPV: null, sector: null,
+      UUid:null,codes: [], codeNFC: null, NFCPhoto: null, TypeDPV: null, sector: null,
       NomPrenom: null, PhoneNumber: null, detailType: null, userId: null, userRole: null, PVPhoto: null, Status: "red", created_at:null,updated_at:null
     }
 
->>>>>>> 39bf5c251892aafc4d8fdcf65f90925cca103e99
 
   }
 
-
+  }
 
   ///////////////////////
-
-
-
-
-
-
-
-
-
-
-
   // fadma's code
 
   toggleNFCWebcam() {
