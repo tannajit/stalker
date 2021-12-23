@@ -10,6 +10,7 @@ import { PlanningComponent } from './planning/planning.component';
 import { AuthGaurdService } from './auth-gaurd.service';
 import { AddclientComponent } from './addclient/addclient.component';
 import { UpdateClientComponent } from './update-client/update-client.component';
+import { OfflineComponent } from './offline/offline.component';
 
 
 
@@ -43,6 +44,10 @@ const routes: Routes = [
   },
   {
     path: 'updateclient', component: UpdateClientComponent,
+    canActivate: [AuthGaurdService]
+  },
+  {
+    path: 'offline', component: OfflineComponent,
     canActivate: [AuthGaurdService]
   }
   // {

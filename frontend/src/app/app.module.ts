@@ -40,6 +40,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { UpdateClientComponent } from './update-client/update-client.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { OfflineComponent } from './offline/offline.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -51,7 +52,8 @@ import { environment } from '../environments/environment';
     PlanningComponent,
     AddclientComponent,
     ClientInfoComponent,
-    UpdateClientComponent
+    UpdateClientComponent,
+    OfflineComponent
 
   ],
   imports: [

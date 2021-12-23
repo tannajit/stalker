@@ -8,6 +8,9 @@ import { interval } from 'rxjs';
 import * as geojson from 'geojson';
 import { Router } from '@angular/router';
 import { GeoJsonTypes } from 'geojson';
+import { UUID } from 'angular2-uuid';
+import { OnlineOfflineServiceService} from '../online-offline-service.service';
+
 
 const incr = 1;
 
@@ -69,6 +72,7 @@ export class AddclientComponent implements AfterViewInit {
   public webcamNFCImage = null;
   public webcamPDVImage = null;
   private trigger: Subject<void> = new Subject<void>();
+  popupService: any;
 
   showcheck(){
     this.Status=true
@@ -77,12 +81,14 @@ export class AddclientComponent implements AfterViewInit {
 
 
   codeNFC:null;
+  UUid:null;
+
   TypeDPV:null;
   detailType:null;
   NomPrenom:null;
   PhoneNumber:null;
   scan:boolean=false;
-  clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
+  clientInfos={UUid:null,codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
   NomPrenom:null,detailType:null,userId:null,userRole:null, PhoneNumber:null, PVPhoto:null,Status:"red"}
   latclt
   lonclt
@@ -101,7 +107,12 @@ export class AddclientComponent implements AfterViewInit {
   markersCluster = new L.MarkerClusterGroup();
 
 
-  constructor(private clientService:ClientsService, private _router: Router) { }
+  constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,private clientService:ClientsService, private _router: Router) {
+    //  this.registerToEvents(onlineOfflineService);
+    // this.AlertOffOn();
+   }
+ 
+
 
   // ngOnInit(): void {
   //   setInterval(() => this.manageProgress(), 150 )
@@ -147,6 +158,22 @@ export class AddclientComponent implements AfterViewInit {
   //   this.map.addControl(L.control.zoom({ position: 'bottomleft' }))
 
   // }
+
+
+  //  AlertOffOn(){
+  //    if (!this.onlineOfflineService.isOnline){
+  //     let popup = this.popupService.showPopupOverlay("Saved successfully");
+  //     setTimeout(() => {
+  //       popup.hide();
+  //     }, 2500);
+  //    }else{
+  //     let popup = this.popupService.showPopupOverlay("Saved successfully");
+  //     setTimeout(() => {
+  //       popup.hide();
+  //     }, 2500);
+  //    }
+  //  }
+
   manageProgress() {
     if (this.progress === 100) {
       this.progress = 0;
@@ -194,13 +221,9 @@ export class AddclientComponent implements AfterViewInit {
     //this.code={nbr:nbr,value: resultString}
     //this.upsert(this.ListCodes,this.code)
 
-
-
   }
 
-
-
-   upsert(array, item) { // (1)
+  upsert(array, item) { // (1)
     const i = array.findIndex(_item => _item.nbr === item.nbr);
     if (i > -1) array[i] = item; // (2)
     else array.push(item);
@@ -253,7 +276,7 @@ export class AddclientComponent implements AfterViewInit {
           this.inter.unsubscribe();
           this.clientInfos["lat"]=this.latclt
           this.clientInfos["lon"]=this.lonclt
-          console.log(this.clientInfos)
+          // console.log(this.clientInfos)
         }
 
         var options = {
@@ -265,8 +288,8 @@ export class AddclientComponent implements AfterViewInit {
         var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
 
           if (position) {
-            console.log("Latitude: " + position.coords.latitude +
-              " // Longitude: " + position.coords.longitude);
+            // console.log("Latitude: " + position.coords.latitude +
+              // " // Longitude: " + position.coords.longitude);
               var newlat=position.coords.latitude
               var newLon=position.coords.longitude;
 
@@ -279,8 +302,8 @@ export class AddclientComponent implements AfterViewInit {
                 this.lat = newlat
                 this.lon = newLon
                 this.list.push(position)
-                console.log(this.list)
-                console.log("Accuracy:"+position.coords.accuracy)
+                // console.log(this.list)
+                // console.log("Accuracy:"+position.coords.accuracy)
 
                 if (position.coords.accuracy<this.acc){
                   console.log("********** Accuracy:"+position.coords.accuracy)
@@ -290,8 +313,8 @@ export class AddclientComponent implements AfterViewInit {
                   this.latclt= position.coords.latitude
                   this.lonclt=position.coords.longitude
                 }
-                console.log(this.lat)
-                console.log(this.lon)
+                // console.log(this.lat)
+                // console.log(this.lon)
                 this.map.removeLayer(marker);
                 this.show=false
                 this.Status=true
@@ -342,6 +365,7 @@ export class AddclientComponent implements AfterViewInit {
     this.show=true
     this.Status=false
   }
+
   CheckCodes() {
     this.nfcShown = !this.nfcShown;
     this.test =true;
@@ -364,12 +388,9 @@ export class AddclientComponent implements AfterViewInit {
 
   }
 
-  getCoordinates(){
-
-  }
-
   verification_code=123456;
-SendSMS(phone){
+
+  SendSMS(phone){
     this.clientService.getSMS(phone).subscribe(
       res=> { 
         console.log(res) 
@@ -394,6 +415,7 @@ SendSMS(phone){
 
 
   Send() {
+    // this.clientInfos.UUid=UUID.UUID();
     this.clientInfos.PhoneNumber=this.PhoneNumber
     this.clientInfos.NomPrenom=this.NomPrenom
     this.clientInfos.TypeDPV=this.TypeDPV;
@@ -407,13 +429,17 @@ SendSMS(phone){
       this.clientInfos["Status"]="green"
     }
     console.log(this.clientInfos)
+    if (!this.onlineOfflineService.isOnline) {
+      this.clientService.addTodo(this.clientInfos);
+    }else{
     this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res))
     this._router.navigate(['map'])
-    this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
+    this.clientInfos={UUid:null,codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
       NomPrenom:null, PhoneNumber:null, detailType:null,userId:null, userRole:null, PVPhoto:null,Status:"red"}
-    
+    }
 
   }
+
 
 
   ///////////////////////
