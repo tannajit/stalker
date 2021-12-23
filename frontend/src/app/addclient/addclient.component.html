@@ -26,16 +26,9 @@
         <div id="map2"></div>
     </div>
 
-      <div>
+    <div>
         <button mat-button class="btn-yellow" (click)="showcheck()" [disabled]="(percentage!=100) ||  !Status">Next</button>
-        <!-- <div>
-           
-            <small>Result : </small>
-            <strong>{{ lat }}</strong>, 
-            <strong>{{ lon }}</strong>
-        
-        </div> -->
-      </div>
+    </div>
 <!-- 
     <button mat-button class="btn-yellow">
         Recalculate the position
@@ -59,7 +52,7 @@
                 <div>
                     <button mat-button class="btn-green" [disabled]="test" (click)="toggleShow(2,qrResultString)">Scan</button>
                     <div *ngFor="let code of ListCodes" class="qr-container">
-                        <span *ngIf="code.nbr == 2">{{ code.value}}</span>
+                        <span *ngIf="code.nbr == 2">{{code.value}}</span>
                     </div>
                 </div>
                 
@@ -94,7 +87,7 @@
     <div class="container" id="nfc" *ngIf="nfcShown">
 
         <div class="inputs-container">
-            <div class="nfc">
+            <div class="nfc" *ngIf="loggedUser.role == 'Auditor'">
                 <div class="scan-field">
                     <label class="input-label">NFC card puce : </label>
                     <button mat-button class="btn-green" (click)="Read()">Read</button>
@@ -141,6 +134,7 @@
                     <div class="snapshot" >
                       <img [height]="200"
                            [width]="200" [src]="webcamNFCImage.imageAsDataUrl" style="border-radius: 8px;"/>
+                    
                     </div>
                 </div>
             </div>
@@ -179,13 +173,13 @@
                 
                      
                 <div class="field">
-
                     <mat-form-field>
                         <mat-label>Phone number*</mat-label>
                         <input matInput placeholder="+212" [(ngModel)]="PhoneNumber"/>
                     </mat-form-field>
     
-                    <button mat-button class="btn-green" (click)="Verify('code'); showVerifCodeInput= true">Verify</button>
+                    <button mat-button class="btn-green" [disabled]="disbale_sms" (click)="Verify('code'); showVerifCodeInput= true">Verify</button>
+                {{display}}
                 </div>
 
                 <div class="field" *ngIf="showVerifCodeInput">

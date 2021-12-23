@@ -8,6 +8,7 @@ import { interval } from 'rxjs';
 import * as geojson from 'geojson';
 import { Router } from '@angular/router';
 import { GeoJsonTypes } from 'geojson';
+import { ThrowStmt } from '@angular/compiler';
 
 
 const incr = 1;
@@ -59,7 +60,8 @@ export class UpdateClientComponent implements AfterViewInit {
   };
 
   // for update functionality
-  clientInfo: any;
+  
+  
   
   // fadma's variables
   showVerifCodeInput = false
@@ -74,7 +76,7 @@ export class UpdateClientComponent implements AfterViewInit {
     this.hide = !this.hide;
   }
 
-
+  clientInfo;
   codeNFC:null;
   TypeDPV:null;
   detailType:null;
@@ -101,8 +103,12 @@ export class UpdateClientComponent implements AfterViewInit {
 
 
   constructor(
-    private clientService:ClientsService, 
-    private _router: Router) { }
+    private clientService: ClientsService, 
+    private _router: Router) { 
+
+      this.clientInfo = clientService.getClientInfo();
+      console.log('@@@@@@@@@@@@@@@@'+this.clientInfo.NomPrenom)
+    }
 
   // ngOnInit(): void {
   //   setInterval(() => this.manageProgress(), 150 )
@@ -214,13 +220,14 @@ export class UpdateClientComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     // setInterval(() => this.manageProgress(), 150)
-    this.initMap();
+     this.initMap();
     // this.getLocation()
     // this.getLo();
-    this.clientService.getClientInfo().subscribe(info => {
-      this.clientInfo = info;
-      console.log('*********************************$$'+this.clientInfo.NomPrenom)
-    })
+   
+      this.clientInfo = this.clientService.getClientInfo();
+      // console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
+      // console.log(this.clientInfo)
+    
 
   }
   acc=1222000;
@@ -399,6 +406,7 @@ SendSMS(phone){
 
 
   Update() {
+    
     // this.clientInfos.PhoneNumber=this.PhoneNumber
     // this.clientInfos.NomPrenom=this.NomPrenom
     // this.clientInfos.TypeDPV=this.TypeDPV;
@@ -411,12 +419,49 @@ SendSMS(phone){
     // else{
     //   this.clientInfos["Status"]="green"
     // }
-    // console.log(this.clientInfos)
-    // this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res))
-    // this._router.navigate(['map'])
+    // ***************** scanned codes ************* //
+    if(this.ListCodes.length != 0){
+      this.ListCodes.forEach(element => {
+        if(element.nbr == 1){
+          this.clientInfo.properties.codeDANON = element.value;
+        }else if(element.nbr == 2){
+          this.clientInfo.properties.codeCOLA = element.value
+        }else if(element.nbr == 3){
+          this.clientInfo.properties.codeFGD = element.value
+        }else if(element.nbr == 4){
+          this.clientInfo.properties.codeQR = element.value
+        }
+      });
+      
+      console.log()
+      // this.clientInfo.properties.=this.ListCodes
+    }
+
+    if(this.clientInfos.NFCPhoto){
+      this.clientInfo.properties.nfc.NFCPhoto = this.clientInfos.NFCPhoto
+      this.clientInfo.properties.NFCP=null
+    }
+
+    if(this.clientInfos.PVPhoto){
+      this.clientInfo.properties.PVPhoto = this.clientInfos.PVPhoto
+      this.clientInfo.properties.PVP=null
+    }
+    // add user ids
+    this.clientInfo.properties.updatedBy = this.user._id;
+    this.clientInfo.properties.userRole = this.user.role;
+    this.clientInfo.properties.updated_at = Date.now();
+    console.log('########## Updated Client ##########')
+    console.log(this.clientInfo)
+    if(this.clientInfo.codeNFC===null){
+      this.clientInfo.properties.status="pink"
+    }
+    else{
+      this.clientInfo.properties.status="purple"
+    }
+    this.clientService.updateClient(this.clientInfo).subscribe(res => console.log(res))
+    this._router.navigate(['map'])
     // this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
-    //   NomPrenom:null, PhoneNumber:null, detailType:null,userId:null, userRole:null, PVPhoto:null,Status:"red"}
-    
+    //  NomPrenom:null, PhoneNumber:null, detailType:null,userId:null, userRole:null, PVPhoto:null,Status:"red"}
 
   }
 
@@ -480,7 +525,7 @@ SendSMS(phone){
   handlePDVImage(webcamPDVImage){
     console.info('received webcam image', webcamPDVImage);
     this.webcamPDVImage = webcamPDVImage;
-    this.clientInfos.NFCPhoto= webcamPDVImage.imageAsDataUrl;
+    this.clientInfos.PVPhoto= webcamPDVImage.imageAsDataUrl;
   }
 
 }

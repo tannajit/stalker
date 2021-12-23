@@ -41,6 +41,7 @@ import { UpdateClientComponent } from './update-client/update-client.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { OfflineComponent } from './offline/offline.component';
+import { SettingsComponent } from './settings/settings.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,7 +54,8 @@ import { OfflineComponent } from './offline/offline.component';
     AddclientComponent,
     ClientInfoComponent,
     UpdateClientComponent,
-    OfflineComponent
+    OfflineComponent,
+    SettingsComponent
 
   ],
   imports: [

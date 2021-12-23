@@ -49,6 +49,13 @@
                     <div fxFlex="10"></div>
                     <div *ngIf="sidenavWidth> 6" class="sidenav-item">
                         <span>Synchronisation</span>
+
+            <div>
+                <mat-list-item routerLink="settings" routerLinkActive="active">
+                    <mat-icon mat-list-icon>settings</mat-icon>
+                    <div fxFlex="10"></div>
+                    <div *ngIf="sidenavWidth> 6" class="sidenav-item">
+                        <span>Settings</span>
                     </div>
                 </mat-list-item>
             </div>

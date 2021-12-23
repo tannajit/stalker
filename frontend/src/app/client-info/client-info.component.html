@@ -1,4 +1,5 @@
-<div *ngIf="loggedUser.role == 'Back Office'">
+<div *ngIf="loggedUser.role == 'Back Office' || loggedUser.role == 'Admin'">
+ {{data.idGeo}}
     <mat-dialog-content>
         <div class="dialog-container">
             <div class="aud-sell-container">
@@ -6,36 +7,44 @@
                     <span>Seller</span>
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="/assets/images/pdvImage.jpg" alt="">
+                            <img src="{{clientOfSeller.PVP}}" alt="">
                         </div>
                         <div class="pdv-info">
-                            <p>Auditor: auditor1</p>
-                            <p>Name: {{data.NomPrenom}}</p>
-                            <p>Phone Number: 0656453456</p>
-                            <p>Type: Demi Gros</p>
+                            <label>Sector:</label> 
+                            <p>{{clientOfSeller.Code_Secteur_OS}}</p>
+                            <label>Name:</label> 
+                            <p>{{clientOfSeller.NomPrenom}}</p>
+                            <label>Phone Number:</label> 
+                            <p>{{clientOfSeller.PhoneNumber}}</p>
+                            <label>Type PDV:</label>
+                            <p>{{ clientOfSeller.TypeDPV}}, {{clientOfSeller.detailType}}</p>
                         </div>
                     </div>
                     <div class="pdv-action-btns">
-                        <button mat-button class="btn-valid">Valid</button>
-                        <button mat-button class="btn-refus">Refus</button>
+                        <!-- <button mat-button class="btn-valid" (click)="validateSeller()">Valid</button>
+                        <button mat-button class="btn-refus">Refus</button> -->
                     </div>
                 </section>
                 <section class="aud-container">
                     <span>Auditor</span>
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="/assets/images/pdvImage.jpg" alt="">
+                            <img src="{{clientOfAuditor.PVP}}" alt="">
                         </div>
                         <div class="pdv-info">
-                            <p>Auditor: auditor1</p>
-                            <p>Name: {{data.NomPrenom}}</p>
-                            <p>Phone Number: 0656453456</p>
-                            <p>Type: Demi Gros</p>
+                            <label>Sector:</label> 
+                            <p>{{clientOfAuditor.Code_Secteur_OS}}</p>
+                            <label>Name:</label> 
+                            <p>{{clientOfAuditor.NomPrenom}}</p>
+                            <label>Phone Number:</label> 
+                            <p>{{clientOfAuditor.PhoneNumber}}</p>
+                            <label>Type PDV:</label>
+                            <p>{{ clientOfAuditor.TypeDPV}}, {{clientOfAuditor.detailType}}</p>
                         </div>
                     </div>
                     <div class="pdv-action-btns">
-                        <button mat-button class="btn-valid">Valid</button>
-                        <button mat-button class="btn-refus">Refus</button>
+                        <button mat-button class="btn-valid" (click)="validate(data.idGeo,'green')">Valid</button>
+                        <button mat-button class="btn-refus" (click)="validate(data.idGeo,'black')">Refus</button>
                     </div>
                 </section>
             </div>
@@ -45,18 +54,28 @@
                 <section class="valid-pdv-container">
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="/assets/images/pdvImage.jpg" alt="">
+                            <img src="{{data.properties.PVP}}" alt="">
                         </div>
                         <div class="pdv-info">
-                            <p>Auditor: auditor1</p>
-                            <p>Name: {{data.NomPrenom}}</p>
-                            <p>Phone Number: 0656453456</p>
-                            <p>Type: Demi Gros</p>
+                            <label>Sector:</label> 
+                            <p>{{data.properties.Code_Secteur_OS}}</p>
+                            <label>Name:</label> 
+                            <p>{{data.properties.NomPrenom}}</p>
+                            <label>Phone Number:</label> 
+                            <p>{{data.properties.PhoneNumber}}</p>
+                            <label>Type PDV:</label>
+                            <p>{{ data.properties.TypeDPV}}, {{data.properties.detailType}}</p>
                         </div>
                     </div>
-                    <div class="nfc-info-container">
-                        <div class="nfc-card">
-                            <p style="margin: 0;">NFC not intalled yet</p>
+                    <div class="pdv-info-container" >
+                        <div class="pdv-img">
+                            <img src="{{data.properties.NFCP}}" alt="">
+                        </div>
+                        <div class="pdv-info">
+                            <label>NFC UUID:</label> 
+                            <p>{{data.properties.nfc.UUID}}</p>
+                            <label>NFC code Qr:</label> 
+                            <p>{{data.properties.codeQR}}</p>
                         </div>
                     </div>
                 </section>
@@ -71,41 +90,47 @@
         <button mat-raised-button color="primary" class="btn-red">Delete Client</button>
         <button mat-raised-button color="primary" class="btn-orange">Navigate to the client</button>
     </mat-dialog-actions>
+
 </div>
-<div *ngIf="loggedUser.role == 'Seller'">
-    <mat-dialog-content>
-        <div class="aud-sell-container">
-            <section class="sell-container">
-                <div class="pdv-info-container">
-                    <div class="pdv-img">
-                        <img src="{{data.NFCP}}" alt="">
-                    </div>
-                    <div class="pdv-info">
-                        <p>Auditor: auditor1</p>
-                        <p>Name: {{data.NomPrenom}}</p>
-                        <p>Phone Number: 0656453456</p>
-                        <p>Type: Demi Gros</p>
-                    </div>
+<div *ngIf="loggedUser.role == 'Seller' || loggedUser.role == 'Auditor'">
+    <mat-dialog-content class="dialog-content">
+        <h2>Client Information</h2>
+        <section fxLayout="column" fxLayoutAlign="center">
+            <div class="pdv-info-container">
+                <div class="pdv-img">
+                    <img src="{{data.properties.NFCP}}" alt="">
                 </div>
-                <div class="pdv-info-container">
-                    <div class="pdv-img">
-                        <img src="{{data.PVP}}" alt="">
-                    </div>
-                    <div class="pdv-info">
-                        <p>Auditor: auditor1</p>
-                        <p>Name: {{data.NomPrenom}}</p>
-                        <p>Phone Number: 0656453456</p>
-                        <p>Type: Demi Gros</p>
-                    </div>
+                <div class="pdv-info">
+                    <label>Sector:</label> 
+                    <p>{{data.properties.Code_Secteur_OS}}</p>
+                    <label>Name:</label> 
+                    <p>{{data.properties.NomPrenom}}</p>
+                    <label>Phone Number:</label> 
+                    <p>{{data.properties.PhoneNumber}}</p>
+                    <label>Type PDV:</label>
+                    <p>{{ data.properties.TypeDPV}}, {{data.properties.detailType}}</p>
                 </div>
+            </div>
+            <div class="pdv-info-container">
+                <div class="pdv-img">
+                    <img src="{{data.properties.PVP}}" alt="">
+                </div>
+                <div class="pdv-info">
+                    <label>Code NFC:</label>
+                    <p *ngIf="!data.properties.nfc.codeNFC, else nfc">Doesn't exist</p>
+                    <ng-template #nfc>{{data.properties.nfc.codeNFC}}</ng-template>
+                    <label>UUID:</label>
+                    <p>{{data.properties.nfc.UUID}}</p>
                 
-            </section>
-        </div>
+                </div>
+            </div>
+            
+        </section>
         <!-- <p> {{data.NomPrenom}}</p> -->
     </mat-dialog-content>
 
     <mat-dialog-actions class="action-btns" align="center">
-        <button mat-raised-button color="primary" class="btn-green" routerLink="/updateclient" mat-dialog-close>Update Client</button>
+        <button mat-raised-button color="primary" class="btn-green" (click)="onUpdateClick()" >Update Client</button>
         <button mat-raised-button color="primary" class="btn-red">Delete Client</button>
     </mat-dialog-actions>
 </div>

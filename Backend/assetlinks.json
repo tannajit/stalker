@@ -1,0 +1,7 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target" : { 
+  	"namespace": "android_app", 
+  	"package_name": "com.example.nano_nfc_sms",
+	"sha256_cert_fingerprints": ["10:73:E8:68:37:23:CD:AF:13:DD:82:7E:74:14:CC:C7:4B:4F:40:38:50:28:6F:65:CB:FB:FB:88:B0:0D:9F:25"] }
+}]

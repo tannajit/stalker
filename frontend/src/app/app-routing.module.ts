@@ -11,6 +11,7 @@ import { AuthGaurdService } from './auth-gaurd.service';
 import { AddclientComponent } from './addclient/addclient.component';
 import { UpdateClientComponent } from './update-client/update-client.component';
 import { OfflineComponent } from './offline/offline.component';
+import { SettingsComponent } from './settings/settings.component';
 
 
 
@@ -39,6 +40,10 @@ const routes: Routes = [
     canActivate: [AuthGaurdService]
   },
   {
+    path: 'addclient/:sector', component: AddclientComponent,
+    canActivate: [AuthGaurdService]
+  },
+  {
     path: 'addclient', component: AddclientComponent,
     canActivate: [AuthGaurdService]
   },
@@ -48,6 +53,9 @@ const routes: Routes = [
   },
   {
     path: 'offline', component: OfflineComponent,
+  },
+  {
+    path: 'settings', component: SettingsComponent,
     canActivate: [AuthGaurdService]
   }
   // {

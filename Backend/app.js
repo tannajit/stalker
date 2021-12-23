@@ -30,6 +30,11 @@ app.use('/api1', api);
 // app.use('/users', users);
 // app.use('/client', client);
 
+var assetlinks = fs.readFileSync(__dirname + '\\assetlinks.json');
+app.get('/.well-known/assetlinks.json', function(req, res, next) {
+     res.set('Content-Type', 'application/json');
+     res.status(200).send(assetlinks);
+});
 
 app.listen(Port, function () {
     console.log("Server is runing on :"+Port);
