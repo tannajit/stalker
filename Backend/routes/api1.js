@@ -5,8 +5,9 @@ var mongo = require('mongodb');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
 //var uri= "mongodb://192.168.2.230:27017"; 
-var uri= "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
- // uri to your Mongo database
+//var uri= "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+var uri="mongodb://localhost:27017"
+// uri to your Mongo database
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
@@ -81,7 +82,6 @@ router.get('/addedClients', async function (req, res) {
             
             console.log(elem)
             await test1(db,ObjectId(elem.nfc.NFCPhoto)).then(re => {
-                
                 elem.NFCP = re
             })
             
@@ -149,8 +149,13 @@ router.get('/clients', verifyToken, async (req, res) => {
     //console.log(arrv)
     var sec = await collectiongeom.find({ 'geometry.geometry.type': 'Point', '_id': { $in: arrv } }).toArray()
     curs = sec.map(async (elem) => {
+        if(elem.geometry.properties.NFC){
+            ///data injected by script 
+            elem.geometry.properties.status="green"
+        }
         if(elem.geometry.properties?.nfc!=undefined){
             var element=elem.geometry.properties;
+            //elem.geometry.properties.status="red_white"
         await test1(db,ObjectId(element.nfc.NFCPhoto)).then(re => {
             elem.geometry.properties.NFCP = re
         })
@@ -172,51 +177,6 @@ router.get('/clients', verifyToken, async (req, res) => {
 })
 
 
-//*******************Client api************** */
-// Insert User
-// async function InsertClient(client){
-
-//     let collection=db.collection("clients") // collection users
-//     let codeDANON
-//     let codeCOLA
-//     let codeFGD
-//     let codeQR
-
-//     client.codes.forEach(v => {
-//         if(v.nbr===1) codeDANON=v.value
-//         if(v.nbr===2) codeCOLA=v.value
-//         if(v.nbr===3) codeFGD=v.value
-//         if(v.nbr===4) codeQR=v.value
-//     })
-//     var id_pv;
-//     var id_NFC;
-//     await test(db,client.NomPrenom,client.PVPhoto).then(s=>id_pv=s._id,err=>console.log(err))
-//     await test(db,client.NomPrenom,client.NFCPhoto).then(s=>id_NFC=s._id,err=>console.log(err))  //PV photo
-//         console.log(id_NFC)
-//         console.log(id_pv);
-//         console.log("--------------"+client.lat)
-//     await collection.insertOne({
-//             codeDANON:codeDANON,
-//             codeCOLA:codeCOLA,
-//             codeFGD:codeFGD,
-//             codeNFC:client.codeNFC,
-//             codeQR:codeQR,
-//             NFCPhoto:id_NFC,
-//             lat:client.lat,
-//             lon:client.lon,
-//             TypeDPV:client.TypeDPV,
-//             detailType: client.detailType,
-//             userId: client.userId,
-//             userRole:client.userRole,
-//             NomPrenom:client.NomPrenom,
-//             PhoneNumber:client.PhoneNumber,
-//             PVPhoto:id_pv,
-//             status:client.Status
-
-//         })
-//     console.log('Client Inserted by function')
-
-// }
 
 async function InsertClient(client) {
     console.log("/n /n ************************** /n /n")
@@ -249,7 +209,7 @@ async function InsertClient(client) {
             technologies: "NDEF",
             UUID: "2I27KB278LJH2OIYOIY2H2"
         },
-        Code_Secteur_OS: parseInt(client.sector),
+        Code_Secteur_OS: (client.sector!=null)? parseInt(client.sector) : 901011082 ,
         machine: "CMG",
         TypeDPV: client.TypeDPV,
         detailType: client.detailType,
@@ -297,7 +257,7 @@ router.post('/AddClient', async (req, res) => {
     let client = req.body;
     console.log(client)
     await InsertClient(client);
-    res.status(200).send("Client Inserted From Ang")
+    res.status(200).json("added")
 
 })
 
@@ -402,7 +362,6 @@ async function getUser(user) {
         console.log("invalid User")
     }
     return status;
-
 }
 
 /* GET users listing. */
