@@ -80,17 +80,16 @@ export class AddclientComponent implements AfterViewInit {
   }
 
 
-  codeNFC: null;
-  TypeDPV: null;
-  detailType: null;
-  NomPrenom: null;
-  PhoneNumber: null;
-  scan: boolean = false;
-
-  clientInfos = {
-    codes: [], codeNFC: null, NFCPhoto: null, TypeDPV: null, sector: null,
-    NomPrenom: null, detailType: null, userId: null, userRole: null, PhoneNumber: null, PVPhoto: null, Status: "red"
-  }
+  codeNFC:null;
+  TypeDPV:null;
+  detailType:null;
+  NomPrenom:null;
+  PhoneNumber:null;
+  scan:boolean=false;
+  
+  clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,sector:null,
+  NomPrenom:null,detailType:null,userId:null,userRole:null, PhoneNumber:null, PVPhoto:null,Status:"red", created_at:null,updated_at:null
+}
   latclt
   lonclt
 
@@ -457,8 +456,15 @@ export class AddclientComponent implements AfterViewInit {
     else{
       this.clientInfos["Status"]="green"
     }*/
+    this.clientInfos.created_at = Date.now();
+    this.clientInfos.updated_at = Date.now()
     this.clientInfos.Status="red_white"
     console.log(this.clientInfos)
+    this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res))
+    this._router.navigate(['map'])
+    this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,sector:null,
+      NomPrenom:null, PhoneNumber:null, detailType:null,userId:null, userRole:null, PVPhoto:null,Status:"red",created_at:null,updated_at:null}
+    
     this.clientService.SendClient(this.clientInfos).subscribe(res => {
       console.log(res)
       this.index.ClearData();
@@ -489,7 +495,7 @@ export class AddclientComponent implements AfterViewInit {
 
     this.clientInfos = {
       codes: [], codeNFC: null, NFCPhoto: null, TypeDPV: null, sector: null,
-      NomPrenom: null, PhoneNumber: null, detailType: null, userId: null, userRole: null, PVPhoto: null, Status: "red"
+      NomPrenom: null, PhoneNumber: null, detailType: null, userId: null, userRole: null, PVPhoto: null, Status: "red", created_at:null,updated_at:null
     }
 
 

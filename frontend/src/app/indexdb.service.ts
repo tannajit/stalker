@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { NgxIndexedDBModule } from 'ngx-indexed-db'
 import { ClientsService } from './clients.service';
 import * as geojson from 'geojson';
 import * as L from 'leaflet';

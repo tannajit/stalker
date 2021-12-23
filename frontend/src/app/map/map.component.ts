@@ -185,8 +185,8 @@ export class MapComponent implements AfterViewInit {
     this._serviceClient.getAllClient().subscribe(
       res => {
         res.forEach(element => {
-          console.log("@@@@@@@@@@@@@@@@@@@")
-          console.log(element.geometry)
+          // console.log("@@@@@@@@@@@@@@@@@@@")
+          // console.log(element.geometry)
           var geojsonPoint: geojson.Point = element.geometry.geometry
           var marker = L.geoJSON(geojsonPoint, {
             pointToLayer: (point, latlon) => {

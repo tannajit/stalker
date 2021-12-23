@@ -238,7 +238,8 @@ async function InsertClient(client) {
         NomPrenom: client.NomPrenom,
         PhoneNumber: client.PhoneNumber,
         PVPhoto: id_pv,
-        status: client.Status
+        status: client.Status,
+        created_at: client.created_at
     }
     await collection.insertOne(clientinfo)
     ////********* Add in geometries *****************/
@@ -464,35 +465,36 @@ async function getClientBySeller(lat,long){
     console.log(lat)
     // console.log(long)
     let clientCollection = db.collection("clients")
-    var client = await clientCollection.findOne(
+    var client = await clientCollection.find(
         {
+            'userRole':"Seller",
             'lat':parseFloat(lat),
             'lon':parseFloat(long),
-            'userRole':'Seller',
-            'updatedBy':{$exists: false},
+            'updated_at':{$exists: true}
         }
-    )
+    ).sort({'updated_at':-1}).limit(1).toArray()
     var status = { clientOf: "seller", data: null }
-    if (client != null) {
+    if (client.length!=0) {
         console.log("############### Seller ##########")
         console.log(client)
         status.data = {'client': client}
         ///***  */
         //console.log(client)
-        await test1(db,ObjectId(client.nfc.NFCPhoto)).then(re => {
-            client.NFCP = re
+        cli=client[0]
+        await test1(db,ObjectId(cli.nfc.NFCPhoto)).then(re => {
+            cli.NFCP = re
         })
-        await test1(db,ObjectId(client.PVPhoto)).then(re => {
+        await test1(db,ObjectId(cli.PVPhoto)).then(re => {
             console.log("---- zmm3 selllerrrrr  --------")
-            client.PVP = re
+            cli.PVP = re
         })
-
-        status.data = {'client': client}
+        status.data = {'client': cli}
 
         //console.log(status)
     }
-    console.log(client)
-    return client;
+    console.log("############# selleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer ########")
+    console.log(cli)
+    return cli;
 }
 
 async function getClientByAuditor(lat,long){
@@ -527,7 +529,8 @@ async function getClientByAuditor(lat,long){
         al=[];
         return al;
     }
-    //console.log(cli)
+    console.log("############# auditoooooooooooooooooooooooooooooooooor ########")
+    console.log(cli)
     return cli;
 }
 /* GET users listing. */
