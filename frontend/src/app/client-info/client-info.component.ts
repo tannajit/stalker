@@ -26,12 +26,15 @@ export class ClientInfoComponent implements OnInit {
     this.loggedUser = JSON.parse(localStorage.getItem("user"))
     this.clientService.getClientBySeller(this.data.geometry.coordinates[1],this.data.geometry.coordinates[0]).subscribe(res=>{
       this.clientOfSeller = res;
+      console.log("!!!!!!!!!!!!!!!! Seller !!!!!!!!!!!!!!")
       console.log(res)
+      this.clientService.getClientByAuditor(this.data.geometry.coordinates[1],this.data.geometry.coordinates[0]).subscribe(res=>{
+        this.clientOfAuditor = res;
+        console.log("!!!!!!!!!!!!!!!! Auditor !!!!!!!!!!!!!!")
+        console.log(res)
+      })
     })
-    this.clientService.getClientByAuditor(this.data.geometry.coordinates[1],this.data.geometry.coordinates[0]).subscribe(res=>{
-      this.clientOfAuditor = res;
-      console.log(res)
-    })
+    
     // console.log("############################")
     // console.log(this.data.geometry.coordinates[1])
   }
