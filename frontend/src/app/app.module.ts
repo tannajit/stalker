@@ -42,6 +42,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { OfflineComponent } from './offline/offline.component';
 import { SettingsComponent } from './settings/settings.component';
+import { FullImageComponent } from './full-image/full-image.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -55,7 +56,8 @@ import { SettingsComponent } from './settings/settings.component';
     ClientInfoComponent,
     UpdateClientComponent,
     OfflineComponent,
-    SettingsComponent
+    SettingsComponent,
+    FullImageComponent
 
   ],
   imports: [

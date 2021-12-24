@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import {  MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {  MAT_DIALOG_DATA, MatDialogRef, MatDialog} from '@angular/material/dialog';
 import { Inject } from '@angular/core'; 
 import { ClientsService } from '../clients.service';
 import { MapComponent } from '../map/map.component';
 import { Router } from '@angular/router';
+import { FullImageComponent } from '../full-image/full-image.component';
 
 @Component({
   selector: 'app-client-info',
@@ -20,6 +21,8 @@ export class ClientInfoComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private clientService: ClientsService,
     public dialogRef: MatDialogRef<MapComponent>,
+    public dialogRef2: MatDialogRef<FullImageComponent>,
+    public dialog: MatDialog,
     public _router: Router ) { }
 
   ngOnInit(): void {
@@ -44,6 +47,11 @@ export class ClientInfoComponent implements OnInit {
     
     
   }
+
+  openImage(url){
+    this.dialogRef2 = this.dialog.open(FullImageComponent,{data:url})
+  }
+
 
   onUpdateClick(){
     this.clientService.setCurrentClientInfo(this.data)
@@ -71,4 +79,5 @@ export class ClientInfoComponent implements OnInit {
 
     //this._router.navigate(['/map'])
   }
+
 }

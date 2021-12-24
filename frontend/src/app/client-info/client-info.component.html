@@ -1,5 +1,8 @@
 <div *ngIf="loggedUser.role == 'Back Office' || loggedUser.role == 'Admin'">
  {{data.idGeo}}
+ <div *ngIf="data.properties.status=='green'">
+     <span style="color: green;">Client Validated</span>
+ </div>
     <mat-dialog-content>
         <div class="dialog-container">
             <div class="aud-sell-container">
@@ -7,7 +10,7 @@
                     <span>Seller</span>
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="{{clientOfSeller.PVP}}" alt="">
+                            <img src="{{clientOfSeller.PVP}}" alt="" (click)="openImage(clientOfSeller.PVP)">
                         </div>
                         <div class="pdv-info">
                             <label>Sector:</label> 
@@ -29,7 +32,7 @@
                     <span>Auditor</span>
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="{{clientOfAuditor.PVP}}" alt="">
+                            <img src="{{clientOfAuditor.PVP}}" alt="" (click)="openImage(clientOfAuditor.PVP)">
                         </div>
                         <div class="pdv-info">
                             <label>Sector:</label> 
@@ -54,7 +57,7 @@
                 <section class="valid-pdv-container">
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="{{data.properties.PVP}}" alt="">
+                            <img src="{{data.properties.PVP}}" alt="" (click)="openImage(data.properties.PVP)">
                         </div>
                         <div class="pdv-info">
                             <label>Sector:</label> 
@@ -69,7 +72,7 @@
                     </div>
                     <div class="pdv-info-container" >
                         <div class="pdv-img">
-                            <img src="{{data.properties.NFCP}}" alt="">
+                            <img src="{{data.properties.NFCP}}" alt="" (click)="openImage(data.properties.NFCP)">
                         </div>
                         <div class="pdv-info">
                             <label>NFC UUID:</label> 
@@ -98,7 +101,7 @@
         <section fxLayout="column" fxLayoutAlign="center">
             <div class="pdv-info-container">
                 <div class="pdv-img">
-                    <img src="{{data.properties.NFCP}}" alt="">
+                    <img src="{{data.properties.NFCP}}" alt="" (click)="openImage(data.properties.NFCP)">
                 </div>
                 <div class="pdv-info">
                     <label>Sector:</label> 
@@ -113,7 +116,7 @@
             </div>
             <div class="pdv-info-container">
                 <div class="pdv-img">
-                    <img src="{{data.properties.PVP}}" alt="">
+                    <img src="{{data.properties.PVP}}" alt="" (click)="openImage(data.properties.PVP)">
                 </div>
                 <div class="pdv-info">
                     <label>Code NFC:</label>
