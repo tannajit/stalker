@@ -15,6 +15,7 @@ import { SettingsService } from '../settings/settings.service';
 import { IndexdbService } from '../indexdb.service';
 
 
+
 const incr = 1;
 
 @Component({
