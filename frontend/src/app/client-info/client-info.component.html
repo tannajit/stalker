@@ -117,7 +117,7 @@
                 </div>
                 <div class="pdv-info">
                     <label>Code NFC:</label>
-                    <p *ngIf="!data.properties.nfc.codeNFC, else nfc">Doesn't exist</p>
+                    <p *ngIf="!data.properties.nfc.codeNFC, else nfc">null</p>
                     <ng-template #nfc>{{data.properties.nfc.codeNFC}}</ng-template>
                     <label>UUID:</label>
                     <p>{{data.properties.nfc.UUID}}</p>
