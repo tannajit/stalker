@@ -237,8 +237,8 @@ async function InsertClient(client) {
         nfc: {
             NFCPhoto: id_NFC,
             codeNFC: client.codeNFC,
-            technologies: "NDEF",
-            UUID: "2I27KB278LJH2OIYOIY2H2"
+            technologies: null,
+            UUID: null
         },
         Code_Secteur_OS: (client.sector!=null)? parseInt(client.sector) : 901011082 ,
         machine: "CMG",
@@ -328,10 +328,10 @@ async function updateClient(client){
         var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
         console.log(clientGeo)
 
-        // var updated=await geometries.updateOne({"geometry.geometry.coordinates":clientinfo.lat,"geometry.geometry.type":"Point"},
-        // { $set: {"geometry.properties": clientGeo.properties} })
-        // console.log(updated)
-        // console.log("********** geometrie updated ******")
+         var updated=await geometries.updateOne({"geometry.geometry.coordinates":clientinfo.lat,"geometry.geometry.type":"Point"},
+         { $set: {"geometry.properties":clientGeo.properties}},{upsert: true})
+         console.log(updated)
+         console.log("********** geometrie updated ******")
 
     })
 
