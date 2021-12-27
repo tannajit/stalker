@@ -452,7 +452,7 @@ SendSMS(phone){
     this.clientInfo.properties.updated_at = Date.now();
     console.log('########## Updated Client ##########')
     console.log(this.clientInfo)
-    if(this.clientInfo.properties.nfc.codeNFC===null){
+    if(this.clientInfo.properties.codeQR===null){
       this.clientInfo.properties.status="pink"
     }
     else{

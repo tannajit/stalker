@@ -1,8 +1,12 @@
 <div *ngIf="loggedUser.role == 'Back Office' || loggedUser.role == 'Admin'">
  {{data.idGeo}}
- <div *ngIf="data.properties.status=='green'">
+ <div *ngIf="data.properties.status=='green', else refused">
      <span style="color: green;">Client Validated</span>
  </div>
+ <ng-template #refused>
+    <span style="color: red;">Client Not validated</span>
+ </ng-template>
+ 
     <mat-dialog-content>
         <div class="dialog-container">
             <div class="aud-sell-container">
@@ -45,10 +49,11 @@
                             <p>{{ clientOfAuditor.TypeDPV}}, {{clientOfAuditor.detailType}}</p>
                         </div>
                     </div>
-                    <div class="pdv-action-btns">
+                    <div class="pdv-action-btns" *ngIf="data.properties.status !='green'">
                         <button mat-button class="btn-valid" (click)="validate(data.idGeo,'green')">Valid</button>
                         <button mat-button class="btn-refus" (click)="validate(data.idGeo,'black')">Refus</button>
                     </div>
+                    
                 </section>
             </div>
             <div class="validPDV-container">
@@ -101,7 +106,7 @@
         <section fxLayout="column" fxLayoutAlign="center">
             <div class="pdv-info-container">
                 <div class="pdv-img">
-                    <img src="{{data.properties.NFCP}}" alt="" (click)="openImage(data.properties.NFCP)">
+                    <img src="{{data.properties.PVP}}" alt="" (click)="openImage(data.properties.NFCP)">
                 </div>
                 <div class="pdv-info">
                     <label>Sector:</label> 
@@ -116,7 +121,7 @@
             </div>
             <div class="pdv-info-container">
                 <div class="pdv-img">
-                    <img src="{{data.properties.PVP}}" alt="" (click)="openImage(data.properties.PVP)">
+                    <img src="{{data.properties.NPCP}}" alt="" (click)="openImage(data.properties.PVP)">
                 </div>
                 <div class="pdv-info">
                     <label>Code NFC:</label>

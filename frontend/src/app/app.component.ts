@@ -15,6 +15,7 @@ export class AppComponent {
   getLogged(){
     return this._auth.loggedIn()
   }
+  
   getusername(){
     
   }

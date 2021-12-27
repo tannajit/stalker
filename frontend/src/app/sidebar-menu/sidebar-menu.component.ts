@@ -8,14 +8,14 @@ import { AuthenticationService } from '../authentication.service';
 export class SidebarMenuComponent implements OnInit {
 
   sidenavWidth = 15;
-  
+  user
   myname;
   constructor(public _authService: AuthenticationService) {  }
 
   ngOnInit(): void {
-   var user= JSON.parse(localStorage.getItem("user"))
-   console.log(user)
-    this.myname=user.name;
+   this.user= JSON.parse(localStorage.getItem("user"))
+   console.log(this.user)
+    this.myname=this.user.name;
   }
 
 

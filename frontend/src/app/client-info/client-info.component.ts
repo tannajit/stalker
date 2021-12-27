@@ -5,6 +5,7 @@ import { ClientsService } from '../clients.service';
 import { MapComponent } from '../map/map.component';
 import { Router } from '@angular/router';
 import { FullImageComponent } from '../full-image/full-image.component';
+import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-client-info',
@@ -60,24 +61,36 @@ export class ClientInfoComponent implements OnInit {
 
   }
 
-  validateSeller(){
   
-    // this.clientService.validateSellerInfo()
-    // this.dialogRef.close();
-    //this._router.navigate(['/map'])
-  }
-  
-  // validateAuditor(){
-  //   this.clientService.validateAuditorInfo()
-  // }
 
   validate(id, status){
 
     console.log("######## id:"+id)
     this.clientService.validateAuditorInfo({'id':id,'status':status}).subscribe(res=>console.log(res))
+    if(status=='green'){
+      var message="Client Validated, synchronize to see the result."
+      var btn = "OK"
+      this.openAlertDialog(message,btn)
+    }else{
+      var message="Client Refused, synchronize to see the status changed."
+      var btn = "OK"
+      this.openAlertDialog(message,btn)
+    }
+    
     this.dialogRef.close();
 
     //this._router.navigate(['/map'])
   }
 
+  openAlertDialog(msg,btn){
+
+    const dialogRef = this.dialog.open(AlertDialogComponent,{
+      data:{
+        message: msg,
+        buttonText: {
+          ok: btn,
+        }
+      }
+    });
+  }
 }

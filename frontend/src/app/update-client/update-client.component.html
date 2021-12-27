@@ -100,8 +100,8 @@
                         <div *ngFor="let code of ListCodes" class="qr-container">
                             <span *ngIf="code.nbr == 4">{{code.value}}</span>
                         </div>
-                        <span *ngIf="clientInfo.properties.codeNFC==null, else scanned" style="color: red;">Not scanned</span>
-                        <ng-template #scanned>{{clientInfo.properties.codeNFC}}</ng-template>
+                        <span *ngIf="clientInfo.properties.codeQR==null, else scanned" style="color: red;">Not scanned</span>
+                        <ng-template #scanned>{{clientInfo.properties.codeQR}}</ng-template>
                     </div>
                     
                 </div>

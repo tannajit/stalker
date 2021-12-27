@@ -104,7 +104,8 @@ export class LoginComponent implements OnInit {
             console.log("done Adding Sector login")
           };
         });
-        this._router.navigate(['']).then(() => {
+        
+        this._router.navigate(['/map']).then(() => {
           //window.location.reload();
         });
 

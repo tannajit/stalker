@@ -31,7 +31,7 @@ export class AuthenticationService {
     localStorage.removeItem('token')
     this._index.ClearData()
     this._index.ClearDataSector()
-    this._router.navigate(['login']).then(() => {
+    this._router.navigate(['/login']).then(() => {
       window.location.reload();
    });
   }

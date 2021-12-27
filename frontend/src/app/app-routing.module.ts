@@ -24,6 +24,11 @@ const routes: Routes = [
     component:LoginComponent
   },
   {
+    path: 'menu', 
+    component: SidebarMenuComponent,
+    canActivate: [AuthGaurdService]
+  },
+  {
     path: 'map', component: MapComponent,
     canActivate: [AuthGaurdService]
   },
