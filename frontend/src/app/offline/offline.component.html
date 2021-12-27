@@ -1,7 +1,10 @@
 
 <div class="containe-ids">
     <div class="sync">
-        <label >test</label>
-        <button mat-button class="btn-green" >Send</button>
+        <div *ngFor="let uuid for id">
+            <label>{{uuid}}</label>
+            <button mat-button class="btn-green" (click)="send()" >Send</button>
+        </div>
+        
     </div>
 </div>

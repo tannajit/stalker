@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { OnlineOfflineServiceService } from './online-offline-service.service';
 import Dexie from 'dexie';
 import { UUID } from 'angular2-uuid';
+import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 
 @Injectable({
@@ -43,7 +45,7 @@ export class ClientsService {
     return this.http.post<any>(this._addclient,client);
   }
 
-  constructor(private readonly onlineOffline: OnlineOfflineServiceService, private http: HttpClient, private _router: Router) {
+  constructor(private readonly onlineOffline: OnlineOfflineServiceService, private http: HttpClient, private _router: Router,  private dialog: MatDialog) {
     this.registerToEvents(onlineOffline);
     this.createDatabase();
     // this.request = window.indexedDB.open("MyTestDatabase", 1)
@@ -100,15 +102,16 @@ export class ClientsService {
       .then(async () => {
         const allItems: any = await this.db["client"].toArray();
         console.log('saved in DB, DB is now', allItems);
-        // var id=this.getShow(clientt.UUid)
-        // console.log(id)
+        var message = "Data saved successfuly";
+        var btn = "Continue"
+        this.openAlertDialog(message,btn)
       })
       .catch(e => {
         alert('Error: ' + (e.stack || e));
       });
   }
 
-  private async sendItemsFromIndexedDb() {
+   async sendItemsFromIndexedDb() {
     console.log("sending items");
     // const allItems: any[] = await this.db["client"].toArray();
     var db; var transaction; var upgradeDb
@@ -149,9 +152,16 @@ export class ClientsService {
 
   items
 
-  private async getdata() {
-    this.db.table("CartList").get().then(p => this.items = p);
-    console.log(this.items)
+
+  openAlertDialog(msg,btn){
+    const dialogRef = this.dialog.open(AlertDialogComponent,{
+      data:{
+        message: msg,
+        buttonText: {
+          ok: btn,
+        }
+      }
+    });
   }
 
 
@@ -161,10 +171,16 @@ export class ClientsService {
             if (online) {
               console.log('went online');
               console.log('sending all stored items');
+              var message = "went online, sending all stored items";
+              var btn = "Ok"
+              this.openAlertDialog(message,btn)
               this.sendItemsFromIndexedDb();
               // this.getdata()
             } else {
               console.log('went offline, storing in indexdb');
+              var message = "went offline, storing in indexdb";
+              var btn = "Ok"
+              this.openAlertDialog(message,btn)
             }
           });
   }
@@ -185,19 +201,39 @@ export class ClientsService {
   getClientInfo(){
           return this.currentClient;
         }
-  private getShow(id) {
-          var transaction = this.db.transaction(["client"], "readonly");
-          var store = transaction.objectStore("client");
-          var request = store.get(id);
-
-          request.onsuccess = function (e) {
-            console.log("yay")
-            var result = e.target.result;
-            if (result) {
-              console.log(result)
-            }
-          }
-        }
+  
+  getShow() {
+    var list=[]
+    var transaction
+    var request = window.indexedDB.open("MyTestDatabase",10)
+    request.onerror = function (event: Event & { target: { result: IDBDatabase }}) {
+      console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess=(event: Event & { target: { result: IDBDatabase }})=>{
+      this.db=event.target.result;
+      console.log("success")
+      console.log(this.db)
+      transaction=this.db.transaction(['client'], 'readwrite');
+      var objectStore = transaction.objectStore("client");
+      var objectStoreRequest = objectStore.getAll();
+    
+      objectStoreRequest.onsuccess = function(event) {
+        var all=event.target.result
+        all.forEach(element => {
+          console.log("---")
+          var elm = element.UUid
+          console.log(elm)
+          list.push(elm)
+          console.log(list)
+          
+          
+          
+        }); 
+        
+      }  
+    };
+     return list
+  }
 
   updateClient(client:any){
     return this.http.post(this._updateclient, client);
