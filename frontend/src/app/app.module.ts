@@ -44,6 +44,7 @@ import { OfflineComponent } from './offline/offline.component';
 import { SettingsComponent } from './settings/settings.component';
 import { FullImageComponent } from './full-image/full-image.component';
 import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
+import {CommonModule} from '@angular/common';
 @NgModule({
   declarations: [
     AppComponent,
@@ -90,6 +91,7 @@ import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
     CdkTreeModule,
     MatFormFieldModule,
     MatDialogModule,
+    CommonModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: true,
       // Register the ServiceWorker as soon as the app is stable

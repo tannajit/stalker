@@ -19,6 +19,7 @@ import { identifierModuleUrl } from '@angular/compiler';
 
 
 
+
 const incr = 1;
 
 @Component({
@@ -126,15 +127,16 @@ export class AddclientComponent implements AfterViewInit {
     private dialog: MatDialog,
     private _setting: SettingsService) { 
 
-      if(!this.onlineOfflineService.isOnline){
-        var message = "You went offline !";
-        var btn = "Continue"
-        this.openAlertDialog(message,btn)
-      }else{
-        var message = "You'r back online :)!";
-        var btn = "OK"
-        this.openAlertDialog(message,btn)
-      }
+      // if(!this.onlineOfflineService.isOnline){
+      //   var message = "You went offline !";
+      //   var btn = "Continue"
+      //   this.openAlertDialog(message,btn)
+      // }else{
+      //   var message = "You'r back online :)!";
+      //   var btn = "OK"
+      //   this.openAlertDialog(message,btn)
+      // }
+
     }
 
   // ngOnInit(): void {
@@ -243,7 +245,6 @@ export class AddclientComponent implements AfterViewInit {
 
     //this.code={nbr:nbr,value: resultString}
     //this.upsert(this.ListCodes,this.code)
-
   }
 
 
@@ -253,6 +254,7 @@ export class AddclientComponent implements AfterViewInit {
     if (i > -1) array[i] = item; // (2)
     else array.push(item);
   }
+  
   inter;
 
   onCodeResult(resultString: string) {
@@ -268,8 +270,7 @@ export class AddclientComponent implements AfterViewInit {
       this.mySector = params.get('sector')
       console.log("mysector" + this.mySector)
       this.clientInfos.sector = this.mySector
-    }
-    )
+    })
     // this.getLocation()
     // this.getLo();
 
@@ -317,7 +318,7 @@ export class AddclientComponent implements AfterViewInit {
           timeout: 5000,
           maximumAge: 2000
         };
-        console.log(this.percentage)
+        // console.log(this.percentage)
         var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
 
           if (position) {
@@ -372,6 +373,7 @@ export class AddclientComponent implements AfterViewInit {
 
 
   }
+
   getLo() {
     // var marker = L.geoJSON(this.geojsonFeature, {
     //   pointToLayer: (point, latlon) => {
@@ -510,6 +512,7 @@ export class AddclientComponent implements AfterViewInit {
     console.log(this.clientInfos)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodo(this.clientInfos);
+      this._router.navigate(['map'])
     }else{
     this.clientService.SendClient(this.clientInfos).subscribe(res => console.log(res))
     this._router.navigate(['map'])

@@ -33,9 +33,9 @@ export class IndexdbService {
       this.db=event.target.result;
       console.log(this.db) 
     }
-    
-  
   }
+
+
   AddItem() {
     var costumer={'_id':123,Valeur:"hafsa"}
     console.log(costumer)
@@ -76,6 +76,7 @@ export class IndexdbService {
         }  
     } 
   }
+
   ClearDataSector(){
     var request = window.indexedDB.open("off",this.version)
     request.onerror = function (event: Event & { target: { result: IDBDatabase }}) {
@@ -93,6 +94,7 @@ export class IndexdbService {
         }  
     } 
   }
+
    /// ***** Not Used 
   public getDataClient(map,markercluster,icon){
     var request = window.indexedDB.open("off",this.version)
@@ -123,8 +125,7 @@ export class IndexdbService {
           });
           markercluster.addLayer(marker)
           map.addLayer(markercluster);
-        });
-        
+        }); 
       }  
     } 
   }

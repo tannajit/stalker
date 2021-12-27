@@ -16,6 +16,7 @@ var arraValues = [] // this array where we gonna put the document
 var stream = require('stream');
 const bcrypt = require('bcrypt')
 const jwt = require("jsonwebtoken")
+const {param} = require("express/lib/router");
 var salt = 5 //any random value,  the salt value specifies how much time it’s gonna take to hash the password. higher the salt value, more secure the password is and more time it will take for calculation.
 
 // MongoDataBase
@@ -609,6 +610,19 @@ router.post("/settings", async (req, res) => {
     res.status(200).json("SMS time set successfully")
 
 });
+//////////////////////
+router.get("/GetClient/:id",async (req, res) => {
+
+    let geometries = await db.collection("geometries") 
+        console.log("_id"+new ObjectId(req.params.id))
+        const client = await geometries.findOne({_id: new ObjectId(req.params.id) });
+
+        console.log(client);
+        res.status(200).send(client);
+    }
+)
+////////////////////////
+
 router.get("/settings", async (req, res) => {
     console.log("***********get settings**************")
     let collection = await db.collection("settings") // collection 
