@@ -18,26 +18,29 @@ export class ClientsService {
   // for update functionality
   private currentClient;
   uri="localhost:3000";
-  private _clientUrl="http://"+this.uri+"/api1/clients";
+  private  _clientUrl="http://"+this.uri+"/api1/clients";
   private _secteurUrl="http://"+this.uri+"/api1/secteurs";
   private _addclient="http://"+this.uri+"/api1/AddClient";
   private _getclient = "http://"+this.uri+"/api1/addedClients";
   private _updateclient = "http://"+this.uri+"/api1/updateClient";
   private getClientBySell = "http://"+this.uri+"/api1/getClientBySeller";
   private _validate = "http://"+this.uri+"/api1/validate";
+  ////////////////////remplacer par uri après le port
+  private _getClientByID = "http://localhost:4000/api1/GetClient";
 
-  
-   getNFC(){
+
+
+  getNFC(){
     var url="http://localhost:7000/nfc"
     return this.http.post<any>(url,"0633691574")
   }
   getSMS(phone){
     var url="http://localhost:7000/sms"
     return this.http.post<any>(url,phone)
-   
+
   }
 
-  
+
 
   SendClient(client) {
     return this.http.post<any>(this._addclient,client);
@@ -134,7 +137,7 @@ export class ClientsService {
           console.log(element)
           this.SendClient(element).subscribe(res => {
             console.log(res);
-            
+
           })
           console.log("data sent succusfuly")
         })
@@ -169,8 +172,8 @@ export class ClientsService {
           });
   }
 
- 
- 
+
+
 
   getAllSecteurs(){
           return this.http.get<any>(this._secteurUrl)
@@ -181,7 +184,7 @@ export class ClientsService {
         }
 
 
-  
+
   getClientInfo(){
           return this.currentClient;
         }
@@ -209,4 +212,10 @@ export class ClientsService {
     console.log(info)
     return this.http.post<any>(this._validate,info);
   }
+  //////////////////
+  getClientByID(id){
+    console.log('id'+id);
+    return this.http.get(this._getClientByID+ '/' +id);
+  }
+  ///////////////////
 }

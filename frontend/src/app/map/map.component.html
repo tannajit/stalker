@@ -3,7 +3,7 @@
       <div class="buttons-wrapper">
             <div class="my-location-container">
 
-                  <button mat-icon-button  
+                  <button mat-icon-button
                   aria-label="small button" (click)="locate()">
                         <mat-icon>my_location</mat-icon>
                   </button>
@@ -16,13 +16,15 @@
             <!-- <button mat-raised-button class="my-location">
                   <mat-icon>my_location</mat-icon>
             </button>  -->
+            <!--====================  -->
             <div class="element-container">
                   <div class="search-input">
                         <mat-icon>search</mat-icon>
-                        <input type="text" name="search" autocomplete="off">
+                        <input type="text" name="search" autocomplete="off" [(ngModel)]="IDGeomerty" >
                   </div>
-                  <button>Search</button>
+                  <button (click)="Search(IDGeomerty)">Search</button>
             </div>
+            <!-- =============== -->
             <div class="element-container">
                   <div class="select-input">
                         <mat-select panelClass="selectPanel" placeholder="PDV Type">
@@ -39,10 +41,10 @@
                               <mat-option value="">Not Done</mat-option>
                         </mat-select>
                   </div>
-            </div> 
+            </div>
       </div>
 </div>
 
 
-    
+
 
