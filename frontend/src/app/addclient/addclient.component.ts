@@ -13,6 +13,10 @@ import { OnlineOfflineServiceService} from '../online-offline-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { SettingsService } from '../settings/settings.service';
 import { IndexdbService } from '../indexdb.service';
+import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { identifierModuleUrl } from '@angular/compiler';
+
 
 
 const incr = 1;
@@ -113,12 +117,25 @@ export class AddclientComponent implements AfterViewInit {
   markersCluster = new L.MarkerClusterGroup();
 
 
+  
   constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,
     private clientService: ClientsService,
     private _router: Router,
     private aroute: ActivatedRoute,
     private index: IndexdbService,
-    private _setting: SettingsService) { }
+    private dialog: MatDialog,
+    private _setting: SettingsService) { 
+
+      if(!this.onlineOfflineService.isOnline){
+        var message = "You went offline !";
+        var btn = "Continue"
+        this.openAlertDialog(message,btn)
+      }else{
+        var message = "You'r back online :)!";
+        var btn = "OK"
+        this.openAlertDialog(message,btn)
+      }
+    }
 
   // ngOnInit(): void {
   //   setInterval(() => this.manageProgress(), 150 )
@@ -586,5 +603,16 @@ export class AddclientComponent implements AfterViewInit {
     console.info('received webcam image', webcamPDVImage);
     this.webcamPDVImage = webcamPDVImage;
     this.clientInfos.PVPhoto = webcamPDVImage.imageAsDataUrl;
+  }
+
+  openAlertDialog(msg,btn){
+    const dialogRef = this.dialog.open(AlertDialogComponent,{
+      data:{
+        message: msg,
+        buttonText: {
+          ok: btn,
+        }
+      }
+    });
   }
 }

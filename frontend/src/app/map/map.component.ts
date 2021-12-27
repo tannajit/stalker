@@ -12,6 +12,7 @@ import * as turf from '@turf/turf';
 import { IndexdbService } from '../indexdb.service';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import {error} from 'protractor';
+import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 
 
 
@@ -375,6 +376,8 @@ export class MapComponent implements AfterViewInit {
             console.log('done Adding');
           };
         });
+        ///// sycn done popup
+        this.openAlertDialog();
         this.getDataClient();
         // console.log(allclient)
       });
@@ -441,6 +444,7 @@ export class MapComponent implements AfterViewInit {
     }
     return inside;
   }
+
   Insid() {
     this.statusAddClient = false;
     this.AllSecteurs.forEach(elem => {
@@ -465,4 +469,19 @@ export class MapComponent implements AfterViewInit {
 
     });
   }
+
+  openAlertDialog(){
+    const dialogRef = this.dialog.open(AlertDialogComponent,{
+      data:{
+        message: 'Synchronization is Done',
+        buttonText: {
+          ok: 'Ok',
+        }
+      }
+    });
+  }
 }
+
+  
+
+
