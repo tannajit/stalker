@@ -83,7 +83,8 @@ export class UpdateClientComponent implements AfterViewInit {
   NomPrenom:null;
   PhoneNumber:null;
   scan:boolean=false;
-  clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
+  nfcObject={Numero_Serie:null,Technologies:null,Type_card:null,UUID:null,NFCPhoto:null}
+  clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null, nfc:this.nfcObject,
   NomPrenom:null,detailType:null,userId:null,userRole:null, PhoneNumber:null, PVPhoto:null,Status:"red"}
   latclt
   lonclt
@@ -265,7 +266,7 @@ export class UpdateClientComponent implements AfterViewInit {
           this.inter.unsubscribe();
           this.clientInfos["lat"]=this.latclt
           this.clientInfos["lon"]=this.lonclt
-          console.log(this.clientInfos)
+          //console.log(this.clientInfos)
         }
 
         var options = {
@@ -273,12 +274,12 @@ export class UpdateClientComponent implements AfterViewInit {
           timeout: 5000,
           maximumAge: 2000
         };
-        console.log(this.percentage)
+        //console.log(this.percentage)
         var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
 
           if (position) {
-            console.log("Latitude: " + position.coords.latitude +
-              " // Longitude: " + position.coords.longitude);
+            //console.log("Latitude: " + position.coords.latitude +
+             // " // Longitude: " + position.coords.longitude);
               var newlat=position.coords.latitude
               var newLon=position.coords.longitude;
 
@@ -291,19 +292,19 @@ export class UpdateClientComponent implements AfterViewInit {
                 this.lat = newlat
                 this.lon = newLon
                 this.list.push(position)
-                console.log(this.list)
-                console.log("Accuracy:"+position.coords.accuracy)
+                //console.log(this.list)
+                //console.log("Accuracy:"+position.coords.accuracy)
 
                 if (position.coords.accuracy<this.acc){
-                  console.log("********** Accuracy:"+position.coords.accuracy)
+                  //console.log("********** Accuracy:"+position.coords.accuracy)
                   this.acc= position.coords.accuracy
                   this.lat=position.coords.latitude
                   this.lon=position.coords.longitude
                   this.latclt= position.coords.latitude
                   this.lonclt=position.coords.longitude
                 }
-                console.log(this.lat)
-                console.log(this.lon)
+                //console.log(this.lat)
+                //console.log(this.lon)
                 this.map.removeLayer(marker);
                 this.show=false
                 this.Status=true
@@ -368,7 +369,15 @@ export class UpdateClientComponent implements AfterViewInit {
     console.log("read")
     
      this.clientService.getNFC().subscribe(
-        res=> this.clientInfos.codeNFC=res.Numero_Serie
+        res=> {   
+          console.log(res)
+          this.clientInfo.properties.nfc=res;
+          console.log(this.clientInfo)
+          /*this.clientInfo.nfc.Numero_Serie=res.Numero_Serie;
+          this.clientInfo.nfc.Technologies=res.Technologies
+          this.clientInfo.nfc.Type_card=res.Type_card
+          this.clientInfo.nfc.UUID=res.UUID;*/
+  }
       )
 
     

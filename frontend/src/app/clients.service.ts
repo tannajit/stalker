@@ -28,16 +28,16 @@ export class ClientsService {
   private getClientBySell = "http://"+this.uri+"/api1/getClientBySeller";
   private _validate = "http://"+this.uri+"/api1/validate";
   ////////////////////remplacer par uri après le port
-  private _getClientByID = "http://localhost:4000/api1/GetClient";
+  private _getClientByID = "http://localhost:3000/api1/GetClient";
 
 
 
   getNFC(){
-    var url="http://localhost:7000/nfc"
+    var url="http://172.16.12.62:7000/nfc"
     return this.http.post<any>(url,"0633691574")
   }
   getSMS(phone){
-    var url="http://localhost:7000/sms"
+    var url="http://172.16.12.62:7000/sms"
     return this.http.post<any>(url,phone)
 
   }
@@ -239,7 +239,7 @@ export class ClientsService {
   }
 
   updateClient(client:any){
-    return this.http.post(this._updateclient, client);
+    return this.http.post<any>(this._updateclient, client);
   }
 
 

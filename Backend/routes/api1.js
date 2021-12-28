@@ -4,7 +4,7 @@ var router = express.Router();
 var mongo = require('mongodb');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-// var uri= "mongodb://localhost:27017"; 
+//var uri= "mongodb://localhost:27017"; 
 var uri= "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri="mongodb://localhost:27017"
 // uri to your Mongo database
@@ -141,6 +141,8 @@ router.get('/clients', verifyToken, async (req, res) => {
         { $match: { users: ObjectId(userId) } },
         { $project: { points: 1, _id: 0 } }
     ]).toArray();
+    console.log("---------------- values-----------------")
+    console.log(values)
     var arrv = [];
     a = []
     values.forEach(elm => {
@@ -149,6 +151,8 @@ router.get('/clients', verifyToken, async (req, res) => {
     //console.log(arrv)
     var sec = await collectiongeom.find({ 'geometry.geometry.type': 'Point', '_id': { $in: arrv } }).toArray()
     curs = sec.map(async (elem) => {
+        console.log("----------- element ")
+        console.log(elem)
         if(elem.geometry.properties.NFC){
             ///data injected by script 
             elem.geometry.properties.status="green"
@@ -222,11 +226,16 @@ async function InsertClient(client) {
         if (v.nbr === 4) codeQR = v.value
     })
     var id_pv, id_NFC;
+    console.log(client)
     await test(db, client.NomPrenom, client.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
-    await test(db, client.NomPrenom, client.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
+    
+    await test(db, client.NomPrenom, client.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
+    
     console.log(id_NFC)
     console.log(id_pv);
     console.log("-------------- " + client.lat)
+    console.log(client)
+    client.nfc.NFCPhoto=id_NFC
     let clientinfo = {
         UUid:client.UUid,
         codeDANON: codeDANON,
@@ -235,13 +244,8 @@ async function InsertClient(client) {
         codeQR: codeQR,
         lat: client.lat,
         lon: client.lon,
-        nfc: {
-            NFCPhoto: id_NFC,
-            codeNFC: client.codeNFC,
-            technologies: null,
-            UUID: null
-        },
-        Code_Secteur_OS: (client.sector!=null)? parseInt(client.sector) : 901011082 ,
+        nfc: client.nfc,
+        Code_Secteur_OS: (client.sector!=null)? parseInt(client.sector) : 93603636360 ,
         machine: "CMG",
         TypeDPV: client.TypeDPV,
         detailType: client.detailType,
@@ -264,7 +268,8 @@ async function InsertClient(client) {
         console.log(id)
         var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
             { $addToSet: { points: { "point": id, "route": null } } })
-        console.log(up)
+        console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
+            console.log(up)
     }).catch(error => console.log(error))
     console.log("inserted POINT :" + getInsertedId)
     ///Insert into Secteurs*/
@@ -282,21 +287,22 @@ async function updateClient(client){
     if(client.properties.NFCP==null){
         
         await test(db, client.properties.NomPrenom, client.properties.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
-        console.log(id_NFC)
+        console.log("NFC photo id: "+id_NFC)
     }else{
-        id_NFC = client.properties.nfc.NFCPhoto;
+        id_NFC = ObjectId(client.properties.nfc.NFCPhoto);
+        
     }
     if(client.properties.PVP==null){
         
         await test(db, client.properties.NomPrenom, client.properties.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
-        console.log(id_pv);
+        console.log("PV photo id: "+id_pv);
     }else{
-        id_pv = client.properties.PVPhoto;
+        id_pv = ObjectId(client.properties.PVPhoto);
     }
     
     
     console.log("-------------- " + client.lat)
-
+    client.properties.nfc.NFCPhoto=id_NFC
     let clientinfo = {
         codeDANON: client.properties.codeDANON,
         codeCOLA: client.properties.codeCOLA,
@@ -304,12 +310,7 @@ async function updateClient(client){
         codeQR: client.properties.codeQR,
         lat: client.lat,
         lon: client.lon,
-        nfc: {
-            NFCPhoto: id_NFC,
-            codeNFC: client.properties.nfc.codeNFC,
-            technologies: "NDEF",
-            UUID: "2I27KB278LJH2OIYOIY2H2"
-        },
+        nfc: client.properties.nfc,
         Code_Secteur_OS:(client.sector!=null)? parseInt(client.sector) : 93603636360 ,
         machine: "CMG",
         TypeDPV: client.properties.TypeDPV,
@@ -329,8 +330,8 @@ async function updateClient(client){
         var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
         console.log(clientGeo)
 
-         var updated=await geometries.updateOne({"geometry.geometry.coordinates":clientinfo.lat,"geometry.geometry.type":"Point"},
-         { $set: {"geometry.properties":clientGeo.properties}},{upsert: true})
+         var updated=await geometries.updateMany({"geometry.geometry.coordinates":clientinfo.lat,"geometry.geometry.type":"Point"},
+         { $set: {"geometry":clientGeo}})
          console.log(updated)
          console.log("********** geometrie updated ******")
 
