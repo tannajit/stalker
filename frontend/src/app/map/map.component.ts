@@ -11,7 +11,7 @@ import { NgZone } from '@angular/core';
 import * as turf from '@turf/turf';
 import { IndexdbService } from '../indexdb.service';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
-import {error} from 'protractor';
+import { error } from 'protractor';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 
 
@@ -23,8 +23,6 @@ import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 })
 
 export class MapComponent implements AfterViewInit {
-
-
   /// ****** constructor *****/
   constructor(
     private _serviceClient: ClientsService,
@@ -83,11 +81,10 @@ export class MapComponent implements AfterViewInit {
     };
 
     // const zoom = L.control.zoom(zoomOptions);
-    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    const tiles = L.tileLayer('https://map.novatis.tech/hot/{z}/{x}/{y}.png', {
       maxZoom: 30,
       minZoom: 0
     });
-
 
 
     // const locationControl = {
@@ -102,16 +99,14 @@ export class MapComponent implements AfterViewInit {
     // zoom.addTo(this.map);
 
     tiles.addTo(this.map);
-    // this.getClients()
     this.getDataClient();
-    // this.getAllSecteurs()
     this.getDataSector();
     this.map.addLayer(this.markersCluster);
     this.map.addControl(L.control.zoom({ position: 'bottomleft' }));
 
   }
   //////////////
-  Search(IDGeomerty){
+  Search(IDGeomerty) {
     console.log(IDGeomerty);
     // tslint:disable-next-line:no-shadowed-variable
     
@@ -121,16 +116,14 @@ export class MapComponent implements AfterViewInit {
        }
     });
   }
-//////////////////////
+  //////////////////////
   ngAfterViewInit(): void {
     this.getLocation();
     this.initMap();
-    // this.getClient()
   }
 
-  getLocation() {
+   getLocation() {
     // interval(1000).subscribe(x => {
-
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
         if (position) {
@@ -141,9 +134,13 @@ export class MapComponent implements AfterViewInit {
           console.log(this.lat);
           console.log(this.lon);
           this.map.setView(new L.LatLng(this.lat, this.lon), 11, { animation: true });
-          this.myMarker = L.marker([this.lat, this.lon], { icon: this.location_icon });
+          //this.myMarker = L.marker([this.lat, this.lon], { icon: this.location_icon });
+          this.myMarker=L.circleMarker([this.lat,this.lon], {color: "black",
+          //fillColor: "#f03",
+          fillOpacity: 1,
+          radius: 10.0}).addTo(this.map);
           // this.myMarker.bindPopup("my")
-          this.myMarker.addTo(this.map);
+         // this.myMarker.addTo(this.map);
 
         }
       },
@@ -151,15 +148,15 @@ export class MapComponent implements AfterViewInit {
     } else {
       alert('Geolocation is not supported by this browser.');
     }
-
+    
     // });
   }
 
   locate() {
-    this.map.flyTo(new L.LatLng(this.lat, this.lon), 13);
+    //this.getLocation()
+    this.map.flyTo(new L.LatLng(this.lat, this.lon), 15);
     this.Insid();
   }
-
 
 
   getClient() {
@@ -213,7 +210,7 @@ export class MapComponent implements AfterViewInit {
               // return L.circle([latlon.lat,latlon.lng], {color:"green",radius:20}).addTo(this.map);
             }
           });
-          this.markersCluster.addLayer(marker);
+         // this.markersCluster.addLayer(marker);
           if (element.geometry.properties?.nfc != undefined) {
 
             marker.on('click', () => {
@@ -250,7 +247,7 @@ export class MapComponent implements AfterViewInit {
   public getDataClient() {
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
-    request.onerror = function(event: Event & { target: { result: IDBDatabase } }) {
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
       console.log('Why didn\'t you allow my web app to use IndexedDB?!');
     };
     request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
@@ -277,17 +274,20 @@ export class MapComponent implements AfterViewInit {
               // return L.circle([latlon.lat,latlon.lng], {color:"green",radius:20}).addTo(this.map);
             }
           });
-          this.markersCluster.addLayer(marker);
+          
           if (Point.geometry.properties?.nfc != undefined) {
             Point.geometry.idGeo = Point._id;
             marker.on('click', () => {
               this.content = Point.geometry;
               this.zone.run(() => this.openDialog(Point.geometry));
+          
             });
           } else {
+          
             marker.bindPopup('<h1> <b>Client Information</b></h1><p><b>Name:</b> ' + String(Point.geometry.properties.Nom_Client) + '</p><p><b>Sector Name: </b>' + String(Point.geometry.properties.Nom_du_Secteur) + '</p>');
           }
-          marker.addTo(this.map);
+          this.markersCluster.addLayer(marker);
+          //marker.addTo(this.map);
         });
 
       };
@@ -295,12 +295,12 @@ export class MapComponent implements AfterViewInit {
   }
   /// list of icons
   getIcon(statuss) {
-    const green = L.icon({iconUrl: 'assets/green.png', iconSize: [12, 12]});
-    const black = L.icon({iconUrl: 'assets/black.png', iconSize: [12, 12]});
-    const pink = L.icon({iconUrl: 'assets/pink.png', iconSize: [12, 12]});
-    const red_white = L.icon({iconUrl: 'assets/r_white.png', iconSize: [12, 12]});
-    const red = L.icon({iconUrl: 'assets/red.png', iconSize: [12, 12]});
-    const purple = L.icon({iconUrl: 'assets/purple.png', iconSize: [12, 12]});
+    const green = L.icon({ iconUrl: 'assets/green.png', iconSize: [12, 12] });
+    const black = L.icon({ iconUrl: 'assets/black.png', iconSize: [12, 12] });
+    const pink = L.icon({ iconUrl: 'assets/pink.png', iconSize: [12, 12] });
+    const red_white = L.icon({ iconUrl: 'assets/r_white.png', iconSize: [12, 12] });
+    const red = L.icon({ iconUrl: 'assets/red.png', iconSize: [12, 12] });
+    const purple = L.icon({ iconUrl: 'assets/purple.png', iconSize: [12, 12] });
     switch (statuss) {
       case 'green':
         return green;
@@ -317,7 +317,7 @@ export class MapComponent implements AfterViewInit {
       case 'pink':
         return pink;
         break;
-        case 'red':
+      case 'red':
         return red;
         break;
       // code block
@@ -327,7 +327,7 @@ export class MapComponent implements AfterViewInit {
   public getDataSector() {
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
-    request.onerror = function(event: Event & { target: { result: IDBDatabase } }) {
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
       console.log('Why didn\'t you allow my web app to use IndexedDB?!');
     };
     request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
@@ -343,7 +343,7 @@ export class MapComponent implements AfterViewInit {
           console.log('---');
           const elm = JSON.parse(element.Valeur);
           const Point = { _id: element._id, geometry: elm };
-          const marker = L.geoJSON(Point.geometry, { style: { color: 'red' } });
+          const marker = L.geoJSON(Point.geometry, { style: { color: 'yellow',fillOpacity:0.3 } });
           marker.bindPopup(String(Point.geometry.properties.codeRegion));
           marker.addTo(this.map);
           this.markerClusterSector.addLayer(marker);
@@ -353,16 +353,17 @@ export class MapComponent implements AfterViewInit {
     };
   }
   PutData() {
+    this.markersCluster.clearLayers();
+    this.index.ClearData();
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
-    request.onerror = function(event: Event & { target: { result: IDBDatabase } }) {
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
       console.log('Why didn\'t you allow my web app to use IndexedDB?!');
     };
     request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
       db = event.target.result;
       console.log('success Sync');
       const allclient = [];
-
       this._serviceClient.getAllClient().subscribe(res => {
         res.forEach(element => {
           const geo = { _id: element._id, Valeur: JSON.stringify(element.geometry) };
@@ -370,12 +371,11 @@ export class MapComponent implements AfterViewInit {
           transaction = db.transaction(['data'], 'readwrite');
           const objectStore = transaction.objectStore('data');
           const request = objectStore.add(geo);
-          request.onsuccess = function(event) {
+          request.onsuccess = function (event) {
             console.log('done Adding');
           };
         });
-        ///// sycn done popup
-        this.openAlertDialog();
+       
         this.getDataClient();
         // console.log(allclient)
       });
@@ -384,7 +384,7 @@ export class MapComponent implements AfterViewInit {
   PutDataSector() {
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
-    request.onerror = function(event: Event & { target: { result: IDBDatabase } }) {
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
       console.log('Why didn\'t you allow my web app to use IndexedDB?!');
     };
     request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
@@ -400,7 +400,7 @@ export class MapComponent implements AfterViewInit {
           transaction = db.transaction(['sector'], 'readwrite');
           const objectStore = transaction.objectStore('sector');
           const request = objectStore.add(geo);
-          request.onsuccess = function(event) {
+          request.onsuccess = function (event) {
             console.log('done Adding Sector login');
           };
         });
@@ -416,12 +416,13 @@ export class MapComponent implements AfterViewInit {
     /* this._router.navigate(['']).then(() => {
        window.location.reload();
    });*/
-    this.markersCluster.clearLayers();
-    this.index.ClearData();
+    
     // this.index.ClearDataSector()
     this.PutData();
+     ///// sycn done popup
+     this.openAlertDialog();
     // this.PutDataSector()
-    console.log('whya');
+    console.log('Synchronize (Get data from the Database)');
 
     // this.index.getDataClient(this.map, this.markersCluster, this.icon)
 
@@ -452,7 +453,7 @@ export class MapComponent implements AfterViewInit {
       const lon = this.myMarker._latlng.lng;
       const test = turf.point([lon, lat]);
       const poly = turf.polygon(elem.coor[0]);
-      console.log(poly);
+      //console.log(poly);
       // console.log(test)
       // this.isMarkerInsidePolygon(this.myMarker,elem)
 
@@ -460,17 +461,18 @@ export class MapComponent implements AfterViewInit {
         this.statusAddClient = true;
         this.mySector = elem.sector;
         console.log(this.mySector);
+        console.log("In sector ")
       } else {
-        console.log('not in ');
+        //console.log('not in ');
       }
 
 
     });
   }
-
-  openAlertDialog(){
-    const dialogRef = this.dialog.open(AlertDialogComponent,{
-      data:{
+///////********************* Open Dialog *********************////////
+  openAlertDialog() {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
         message: 'Synchronization is Done',
         buttonText: {
           ok: 'Ok',
@@ -478,8 +480,59 @@ export class MapComponent implements AfterViewInit {
       }
     });
   }
+    ///////**************************** Filter Done/Not Done PDV *********************///////////////////////////
+    option_done=""
+    onChange(){
+        console.log(this.option_done)
+        if(this.option_done=="Done"){
+          console.log("Not green not validated should removed")
+          this.markersCluster.eachLayer((layer:any)=>{
+            if(layer.feature.properties.status!="green"){
+              this.markersCluster.removeLayer(layer);
+            }})
+        }else if(this.option_done=="Not_Done"){
+          console.log("validated should be removed")
+          this.markersCluster.eachLayer((layer:any)=>{
+            if(layer.feature.properties.status=="green"){    
+              this.markersCluster.removeLayer(layer);
+            }})
+        }else{
+          console.log("All Data will be showed")
+          this.markersCluster.clearLayers();
+          this.getDataClient();
+        }
+    }
+  
+  //////////////////******************************************/////////////////////////
+
+  //////////////****************Filtrage Retail/AuditRetail ***********/////////////////
+  option_retail=""
+  onChange2(){
+    console.log(this.option_retail)
+    if(this.option_retail=="Audit"){
+      console.log("Gros will be showed")
+      this.markersCluster.eachLayer((layer:any)=>{
+        if(layer.feature.properties?.TypeDPV=="Gros"){
+          console.log(layer)
+          this.markersCluster.removeLayer(layer)
+        }})
+    }else if(this.option_retail=="Audit_Retail"){
+      console.log("Detail will be showed")
+      this.markersCluster.eachLayer((layer:any)=>{
+        if(layer.feature.properties?.TypeDPV=="Detail"){  
+            console.log(layer)  
+            this.markersCluster.removeLayer(layer);
+           
+        }})
+    }else{
+      console.log("All Data will be showed")
+      this.markersCluster.clearLayers();
+      this.getDataClient();
+    }
+  }
+  //////////////////******************************************//////////////////////////
 }
 
-  
+
 
 

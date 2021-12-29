@@ -91,7 +91,12 @@
                 <div class="scan-field">
                     <label class="input-label">NFC card puce : </label>
                     <button mat-button class="btn-green" (click)="Read()">Read</button>
-                    {{clientInfos.codeNFC}}
+                    <div *ngIf="clientInfos.nfc.UUID!= null" class="nfc-div">
+                        <span>UUID:</span><p>{{clientInfos.nfc.UUID}}</p>
+                        <span>Numero_Serie:</span><p>{{clientInfos.nfc.Numero_Serie}}</p>
+                        <span>Type_card:</span><p>{{clientInfos.nfc.Type_card}}</p>
+                        <span>Technologies:</span><p>{{clientInfos.nfc.Technologies}}</p>
+                    </div>
                 </div>
                 <div class="scan-field">
                     <label class="input-label">Qr Code : </label>

@@ -22,7 +22,7 @@ async function run() {
 		console.log(error)
 	}
 }
-run().catch(console.log)
+//run().catch(console.log)
 //// Generate and validate Token
 function verifyToken(req, res, next) {
   if(!req.headers.authorization) {

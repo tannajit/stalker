@@ -387,12 +387,8 @@ export class AddclientComponent implements AfterViewInit {
         return this.getLatLng().distanceTo(latLng) < this.getRadius();
       }
     });
-
     this.map.fitBounds(this.circle.getBounds());
-
   }
-
-
 
   testTimer() {
     this.percentage = 0
@@ -416,13 +412,14 @@ export class AddclientComponent implements AfterViewInit {
   }
 
 
-
+  //UUID_nfc;
   Read() {
     console.log("read")
     //this.clientInfos.codeNFC=12345
     this.clientService.getNFC().subscribe(
       res => {
               this.clientInfos.nfc.Numero_Serie=res.Numero_Serie;
+              //this.UUID_nfc=res.UUID;
               this.clientInfos.nfc.Technologies=res.Technologies
               this.clientInfos.nfc.Type_card=res.Type_card
               this.clientInfos.nfc.UUID=res.UUID;
@@ -525,9 +522,9 @@ export class AddclientComponent implements AfterViewInit {
       NomPrenom:null, PhoneNumber:null, detailType:null,userId:null, userRole:null, PVPhoto:null,Status:"red",created_at:null,updated_at:null}
     */
     this.clientService.SendClient(this.clientInfos).subscribe(res => { console.log("res")});
-      console.log("resss-----")
+      console.log("----------resss-----")
       //console.log(res)
-      console.log("res----")
+      console.log("---------res----")
       this.index.ClearData();
       var db; var transaction
       var request = window.indexedDB.open("off", this.version)
@@ -536,7 +533,7 @@ export class AddclientComponent implements AfterViewInit {
       };
       request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
         db = event.target.result;
-        console.log("$$$$$$$$$$$ success Add client$$$$$$$$$$$$$$$$$$ *******************************")
+        console.log("$$$$$$$$$$$$$$$$ Success Add client $$$$$$$$$$$$$$$$$$")
         var allclient = []
         this.clientService.getAllClient().subscribe(res => {
           console.log(" \n get all element")
