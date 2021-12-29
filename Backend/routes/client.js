@@ -19,7 +19,7 @@ async function run() {
 		console.log(error)
 	}
 }
-run().catch(console.log)
+//run().catch(console.log)
 //// Generate and validate Token
 
 // Insert User

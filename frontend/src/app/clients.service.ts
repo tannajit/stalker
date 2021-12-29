@@ -19,25 +19,25 @@ export class ClientsService {
 
   // for update functionality
   private currentClient;
-  uri="localhost:3000";
-  private  _clientUrl="http://"+this.uri+"/api1/clients";
-  private _secteurUrl="http://"+this.uri+"/api1/secteurs";
-  private _addclient="http://"+this.uri+"/api1/AddClient";
-  private _getclient = "http://"+this.uri+"/api1/addedClients";
-  private _updateclient = "http://"+this.uri+"/api1/updateClient";
-  private getClientBySell = "http://"+this.uri+"/api1/getClientBySeller";
-  private _validate = "http://"+this.uri+"/api1/validate";
+  uri="http://localhost:3000";
+  private  _clientUrl=this.uri+"/api1/clients";
+  private _secteurUrl=this.uri+"/api1/secteurs";
+  private _addclient=this.uri+"/api1/AddClient";
+  private _getclient = this.uri+"/api1/addedClients";
+  private _updateclient =this.uri+"/api1/updateClient";
+  private getClientBySell =this.uri+"/api1/getClientBySeller";
+  private _validate = this.uri+"/api1/validate";
   ////////////////////remplacer par uri après le port
-  private _getClientByID = "http://localhost:3000/api1/GetClient";
+  private _getClientByID = "http://localhost:3000/api1/login/api1/GetClient";
 
 
 
   getNFC(){
-    var url="http://172.16.12.62:7000/nfc"
+    var url="http://localhost:7000/nfc"
     return this.http.post<any>(url,"0633691574")
   }
   getSMS(phone){
-    var url="http://172.16.12.62:7000/sms"
+    var url="http://localhost:7000/sms"
     return this.http.post<any>(url,phone)
 
   }

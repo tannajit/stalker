@@ -10,14 +10,18 @@ var fs = require('fs');
 
 
 
-
-const Port = process.env.PORT || 3000
+const Port = process.env.PORT || 3000 
 var app = express();
 app.use(cors())
 
 
 app.use(bodyParser.json({limit: "50mb"}));
 app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
+app.use(express.static("dist"))
+
+/*app.get('/', (req, res) => {
+    res.sendFile('dist\\index.html',{root:__dirname})
+});*/
 
 ///  
 //var credentials = {key: privateKey, cert: certificate};
@@ -30,7 +34,7 @@ app.use('/api1', api);
 // app.use('/users', users);
 // app.use('/client', client);
 
-var assetlinks = fs.readFileSync(__dirname + '\\assetlinks.json');
+var assetlinks = fs.readFileSync('assetlinks.json');
 app.get('/.well-known/assetlinks.json', function(req, res, next) {
      res.set('Content-Type', 'application/json');
      res.status(200).send(assetlinks);
