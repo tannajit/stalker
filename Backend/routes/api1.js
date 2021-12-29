@@ -20,7 +20,6 @@ const {param} = require("express/lib/router");
 var salt = 5 //any random value,  the salt value specifies how much time it’s gonna take to hash the password. higher the salt value, more secure the password is and more time it will take for calculation.
 
 // MongoDataBase
-
 async function run() {
     try {
         var t = await client.connect();
@@ -258,6 +257,7 @@ async function InsertClient(client) {
         created_at: client.created_at,
         updated_at: client.updated_at
     }
+    
     await collection.insertOne(clientinfo)
     ////********* Add in geometries *****************/
     let getInsertedId; //// put Id inserted

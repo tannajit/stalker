@@ -34,6 +34,27 @@ export class IndexdbService {
       console.log(this.db) 
     }
   }
+  createDatabaseOffline() {
+    var request = window.indexedDB.open("MyTestDatabase",10)
+    request.onerror = function (event: Event & { target: { result: IDBDatabase }}) {
+      console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onupgradeneeded=(event)=>{
+      console.log(event.target)
+      this.db=request.result
+      console.log("upgrade")
+      var objectStore = this.db.createObjectStore("client", { keyPath: 'UUid' });
+      console.log("create Sector ")
+      var objectt=this.db.createObjectStore("update", { keyPath: 'UUid' });
+      console.log(objectt)
+      
+    }
+    request.onsuccess=(event: Event & { target: { result: IDBDatabase }})=>{
+      this.db=event.target.result;
+      console.log(this.db) 
+    }
+  }
+
 
 
   AddItem() {
