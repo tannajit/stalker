@@ -1,18 +1,96 @@
 <div class="clients_container">
-    <button mat-button>
+    <button mat-button routerLink="/filter" *ngIf="loggedUser.role == 'Seller' || loggedUser.role == 'Auditor'">
         <mat-icon>filter_list</mat-icon>
         Filter
     </button>
 
+    <div class="filtrage-container" *ngIf="loggedUser.role == 'Admin' || loggedUser.role == 'Back Office'">
+        <!-- <div class="filter1"> -->
+            <div class="field">
+                <mat-form-field>
+                    <mat-label>Name</mat-label>
+                    <input matInput placeholder="Typing..." [(ngModel)]="NomPrenom"/>
+                </mat-form-field>
+            </div>
+
+            <div class="field">
+                <mat-form-field>
+                    <mat-label>Phone Number</mat-label>
+                    <input matInput placeholder="+212" [(ngModel)]="NomPrenom"/>
+                </mat-form-field>
+            </div>
+
+            <div class="field">
+                <mat-form-field>
+                    <mat-label>Client Code</mat-label>
+                    <input matInput placeholder="Typing..." [(ngModel)]="NomPrenom"/>
+                </mat-form-field>
+            </div>
+
+            <div class="field">
+                <mat-form-field>
+                    <mat-select placeholder="PDV Type" panelClass="selectPanel2" [(ngModel)]="NomPrenom">
+                        <mat-option value="Detail">Detail</mat-option>
+                        <mat-option value="Gros">Gros</mat-option>
+                        <mat-option value="Demi Gros">Demi Gros</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="field">
+                <mat-form-field>
+                    <mat-select placeholder="Sector" panelClass="selectPanel2" [(ngModel)]="NomPrenom">
+                        <mat-option value="Detail">Detail</mat-option>
+                        <mat-option value="Gros">Gros</mat-option>
+                        <mat-option value="Demi Gros">Demi Gros</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            
+            <div class="field">
+                <mat-slide-toggle>NFC</mat-slide-toggle>
+            </div>
+
+            <div class="field">
+                <mat-slide-toggle>NFC Refused</mat-slide-toggle>
+            </div>
+
+        <!-- </div> -->
+
+        <div class="filter1">
+            
+        </div>
+
+        
+
+
+    </div>
+
     <div class="clients-list">
         <!-- *ngFor="let client of clients" -->
-        <mat-card>
-            <img mat-card-image src="assets/images/blank.jpg" alt="" >
-            <mat-card-content class="card-content">
-              <p>Name</p>
-              <p>PDV type</p>
-              <p>Sector</p>
-            </mat-card-content>
-        </mat-card>
+        <div *ngFor="let client of clients.slice().reverse()" class="card-container">
+            <mat-card (click)="openDialog(client.geometry)">
+                <img mat-card-image src="{{client.geometry.properties.PVP}}" alt="" 
+                *ngIf="client.geometry.properties.PVP; else nfcPhoto">
+    
+                <ng-template #nfcPhoto>
+                    <img mat-card-image src="assets/images/blank.jpg" alt="">
+                </ng-template>
+                
+                <mat-card-content class="card-content">
+                  <p><span>Name:</span> {{client.geometry.properties.NomPrenom}}</p>
+                  <p><span>PDV type:</span> {{client.geometry.properties.TypeDPV}}</p>
+                  <p><span>Sector:</span> {{client.geometry.properties.Code_Secteur_OS}}</p>
+                  <div class="nfc">
+                      NFC
+                      <mat-icon *ngIf="!client.geometry.properties.codeQR" [ngStyle]="{'color':'red'}">indeterminate_check_box</mat-icon>
+                      <mat-icon *ngIf="client.geometry.properties.codeQR" [ngStyle]="{'color':'#27AE61'}">check_box</mat-icon>
+                  </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+        
+        
     </div>
 </div>

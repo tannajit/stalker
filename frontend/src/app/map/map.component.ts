@@ -119,9 +119,7 @@ export class MapComponent implements AfterViewInit {
       if(IDGeomerty!=null){
       this.map.setView(new L.LatLng(res["geometry"].geometry.coordinates[1], res["geometry"].geometry.coordinates[0]), 30, { animation: true }).addTo(this.map);
        }
-    }
-    
-      , (error) => {console.log(error); });
+    });
   }
 //////////////////////
   ngAfterViewInit(): void {

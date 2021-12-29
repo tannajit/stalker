@@ -45,6 +45,11 @@ import { SettingsComponent } from './settings/settings.component';
 import { FullImageComponent } from './full-image/full-image.component';
 import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
 import {CommonModule} from '@angular/common';
+import { FilterComponent } from './filter/filter.component';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -60,7 +65,8 @@ import {CommonModule} from '@angular/common';
     OfflineComponent,
     SettingsComponent,
     FullImageComponent,
-    AlertDialogComponent
+    AlertDialogComponent,
+    FilterComponent
 
   ],
   imports: [
@@ -92,6 +98,7 @@ import {CommonModule} from '@angular/common';
     MatFormFieldModule,
     MatDialogModule,
     CommonModule,
+    MatSlideToggleModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: true,
       // Register the ServiceWorker as soon as the app is stable

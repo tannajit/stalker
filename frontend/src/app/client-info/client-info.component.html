@@ -14,7 +14,8 @@
                     <span>Seller</span>
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="{{clientOfSeller.PVP}}" alt="" (click)="openImage(clientOfSeller.PVP)">
+                            <img *ngIf="clientOfSeller.PVP" src="{{clientOfSeller.PVP}}" alt="" (click)="openImage(clientOfSeller.PVP)">
+                            <img *ngIf="!clientOfSeller.PVP" src="assets/images/blank.jpg" alt="" (click)="openImage(clientOfSeller.PVP)">
                         </div>
                         <div class="pdv-info">
                             <label>Sector:</label> 
@@ -36,7 +37,8 @@
                     <span>Auditor</span>
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="{{clientOfAuditor.PVP}}" alt="" (click)="openImage(clientOfAuditor.PVP)">
+                            <img *ngIf="clientOfAuditor.PVP" src="{{clientOfAuditor.PVP}}" alt="" (click)="openImage(clientOfAuditor.PVP)">
+                            <img *ngIf="!clientOfAuditor.PVP" src="assets/images/blank.jpg" alt="" (click)="openImage(clientOfAuditor.PVP)">
                         </div>
                         <div class="pdv-info">
                             <label>Sector:</label> 
@@ -62,7 +64,8 @@
                 <section class="valid-pdv-container">
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="{{data.properties.PVP}}" alt="" (click)="openImage(data.properties.PVP)">
+                            <img *ngIf="data.properties.PVP" src="{{data.properties.PVP}}" alt="" (click)="openImage(data.properties.PVP)">
+                            <img *ngIf="!data.properties.PVP" src="assets/images/blank.jpg" alt="" (click)="openImage(data.properties.PVP)">
                         </div>
                         <div class="pdv-info">
                             <label>Sector:</label> 
@@ -77,7 +80,8 @@
                     </div>
                     <div class="pdv-info-container" >
                         <div class="pdv-img">
-                            <img src="{{data.properties.NFCP}}" alt="" (click)="openImage(data.properties.NFCP)">
+                            <img *ngIf="data.properties.NFCP" src="{{data.properties.NFCP}}" alt="" (click)="openImage(data.properties.NFCP)">
+                            <img *ngIf="!data.properties.NFCP" src="assets/images/blank.jpg" alt="" (click)="openImage(data.properties.NFCP)">
                         </div>
                         <div class="pdv-info">
                             <label>NFC UUID:</label> 
@@ -106,7 +110,8 @@
         <section fxLayout="column" fxLayoutAlign="center">
             <div class="pdv-info-container">
                 <div class="pdv-img">
-                    <img src="{{data.properties.PVP}}" alt="" (click)="openImage(data.properties.NFCP)">
+                    <img *ngIf="data.properties.PVP" src="{{data.properties.PVP}}" alt="" (click)="openImage(data.properties.PVP)">
+                    <img *ngIf="!data.properties.PVP" src="assets/images/blank.jpg" alt="" (click)="openImage(data.properties.PVP)">
                 </div>
                 <div class="pdv-info">
                     <label>Sector:</label> 
@@ -121,7 +126,8 @@
             </div>
             <div class="pdv-info-container">
                 <div class="pdv-img">
-                    <img src="{{data.properties.NFCP}}" alt="" (click)="openImage(data.properties.NFCP)">
+                    <img *ngIf="data.properties.NFCP" src="{{data.properties.NFCP}}" alt="" (click)="openImage(data.properties.NFCP)">
+                    <img *ngIf="!data.properties.NFCP" src="assets/images/blank.jpg" alt="" (click)="openImage(data.properties.NFCP)">
                 </div>
                 <div class="pdv-info">
                     <label>Code NFC:</label>
@@ -129,12 +135,11 @@
                     <ng-template #nfc>{{data.properties.nfc.codeNFC}}</ng-template>
                     <label>UUID:</label>
                     <p>{{data.properties.nfc.UUID}}</p>
-                
                 </div>
             </div>
             
         </section>
-        <!-- <p> {{data.NomPrenom}}</p> -->
+        <!-- <p>{{data.NomPrenom}}</p> -->
     </mat-dialog-content>
 
     <mat-dialog-actions class="action-btns" align="center">

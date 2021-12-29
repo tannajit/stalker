@@ -3,7 +3,7 @@
     display: flex;
     flex-flow: column wrap;
     align-items: center;
-    padding: 8px;
+    padding: 20px;
     background-color: #F6F6F6;
 }
 .clients_container button{
@@ -24,22 +24,83 @@
     align-items: center;
     width: 100%;
     flex-flow: row wrap;
+    gap: 1%;
+    row-gap: 1%;
+    column-gap: 1%;
     
 }
 .clients-list mat-card{
+    cursor: pointer;
     width: 200px;
     height: auto;  
+    box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
 }
 .clients-list mat-card img{
     padding: 8px;
+    height: 250px;
     box-sizing: border-box;
     margin-bottom: 0;
     border-radius: 10px !important;
 }
 
 .card-content{
-    text-align: center;
+    text-align: start;
+    width: 100%;
+
+}
+
+.card-content p span{
+    font-weight: bold;
+    color: #27AE61;
+}
+
+.nfc{
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #27AE61;
+    border-radius: 10px;
+    gap: 1%;
 }
 p{
     margin-bottom: 0;
+}
+.card-container{
+    margin: 8px;
+}
+
+.filtrage-container{
+   
+    
+    margin: 20px;
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
+    gap: 4%;
+    align-items: center;
+    justify-content: flex-start;
+    
+}
+
+.field mat-label{
+    color: #646262;
+}
+
+.field .mat-form-field input{
+    font-size: 12px;
+    color: #313030;
+    width: 200px;
+}
+.field .mat-form-field .mat-select{
+    font-size: 12px;
+    color: #313030;
+}
+
+mat-form-field.mat-focused span.mat-form-field-label-wrapper label {
+color:#27AE61 !important;
+}
+
+.mat-select:focus:not(.mat-select-disabled).mat-primary .mat-select-arrow {
+    color: #63961C;
 }
