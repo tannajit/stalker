@@ -47,7 +47,7 @@ import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
 import {CommonModule} from '@angular/common';
 import { FilterComponent } from './filter/filter.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
 
 @NgModule({
@@ -92,6 +92,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     MatFormFieldModule,
     WebcamModule,
     MatProgressBarModule,
+    Ng2SearchPipeModule,
     MatSelectModule,
     CdkTableModule,
     CdkTreeModule,

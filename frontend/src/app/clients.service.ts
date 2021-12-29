@@ -27,8 +27,9 @@ export class ClientsService {
   private _updateclient =this.uri+"/api1/updateClient";
   private getClientBySell =this.uri+"/api1/getClientBySeller";
   private _validate = this.uri+"/api1/validate";
+  
   ////////////////////remplacer par uri après le port
-  private _getClientByID = "http://localhost:3000/api1/login/api1/GetClient";
+  private _getClientByID = "http://localhost:3000/api1/GetClient";
 
 
 
@@ -381,4 +382,7 @@ export class ClientsService {
     return this.http.get(this._getClientByID+ '/' +id);
   }
   ///////////////////
+
+
+  
 }

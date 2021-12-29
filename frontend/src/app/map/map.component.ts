@@ -4,7 +4,7 @@ import 'leaflet.markercluster';
 import * as geojson from 'geojson';
 import { ClientsService } from '../clients.service';
 import { interval } from 'rxjs';
-import { Router } from '@angular/router';
+import { Router,ActivatedRoute } from '@angular/router';
 import { ClientInfoComponent } from '../client-info/client-info.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { NgZone } from '@angular/core';
@@ -28,6 +28,7 @@ export class MapComponent implements AfterViewInit {
     private _serviceClient: ClientsService,
     private _router: Router,
     private zone: NgZone,
+    private aroute:ActivatedRoute,
     private index: IndexdbService,
     private dialog: MatDialog) { this.index.createDatabase(); }
 
@@ -68,6 +69,9 @@ export class MapComponent implements AfterViewInit {
   MarkerClusterSector;
   version = 6;
 
+  // test faaaaaaaaaaaaadmaaaaaaaa
+  lati;
+  longi;
   private initMap(): void {
     this.map = L.map('map', {
       center: [this.lat, this.lon],
@@ -118,8 +122,20 @@ export class MapComponent implements AfterViewInit {
   }
   //////////////////////
   ngAfterViewInit(): void {
-    this.getLocation();
+
+   
+    //this.getLocation();
     this.initMap();
+    this.aroute.params.subscribe( params =>{
+      console.log("laaaaaaaaaaaaaaaaaaaaaaat: "+params['lat'])
+      console.log("loooooooooooooooong: "+params['long'])
+      var lati = params['lat']
+      var longi= params['long']
+      this.map.flyTo(new L.LatLng(lati,longi),20);
+      // this.map.setView(new L.LatLng(params['lat'], params['long']), 11, { animation: true }); 
+    }    
+  )
+  
   }
 
    getLocation() {
@@ -153,11 +169,10 @@ export class MapComponent implements AfterViewInit {
   }
 
   locate() {
-    //this.getLocation()
+    this.getLocation()
     this.map.flyTo(new L.LatLng(this.lat, this.lon), 15);
     this.Insid();
   }
-
 
   getClient() {
     const client = this._serviceClient.getClient().subscribe(res => {
@@ -279,7 +294,7 @@ export class MapComponent implements AfterViewInit {
             Point.geometry.idGeo = Point._id;
             marker.on('click', () => {
               this.content = Point.geometry;
-              this.zone.run(() => this.openDialog(Point.geometry));
+              this.zone.run(() => this.openDialog(Point));
           
             });
           } else {
@@ -343,7 +358,7 @@ export class MapComponent implements AfterViewInit {
           console.log('---');
           const elm = JSON.parse(element.Valeur);
           const Point = { _id: element._id, geometry: elm };
-          const marker = L.geoJSON(Point.geometry, { style: { color: 'yellow',fillOpacity:0.3 } });
+          const marker = L.geoJSON(Point.geometry, { style: { color: '#CD9575',fillOpacity:0.1 } });
           marker.bindPopup(String(Point.geometry.properties.codeRegion));
           marker.addTo(this.map);
           this.markerClusterSector.addLayer(marker);
@@ -352,6 +367,8 @@ export class MapComponent implements AfterViewInit {
       };
     };
   }
+
+
   PutData() {
     this.markersCluster.clearLayers();
     this.index.ClearData();
@@ -529,6 +546,10 @@ export class MapComponent implements AfterViewInit {
       this.markersCluster.clearLayers();
       this.getDataClient();
     }
+  }
+
+  fly(){
+    this.map.setView(new L.LatLng(this.lati, this.longi), 15);
   }
   //////////////////******************************************//////////////////////////
 }

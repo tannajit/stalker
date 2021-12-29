@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms'
 import { AuthenticationService } from '../authentication.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SidebarMenuComponent } from '../sidebar-menu/sidebar-menu.component';
 import { IndexdbService } from '../indexdb.service';
 import { ClientsService } from '../clients.service';
@@ -17,6 +17,7 @@ export class LoginComponent implements OnInit {
   constructor(private fb: FormBuilder,
     private _auth: AuthenticationService,
     private _router: Router,
+    private aroute: ActivatedRoute,
     private client: ClientsService,
     private index: IndexdbService) { }
 
