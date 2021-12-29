@@ -31,7 +31,7 @@
 }
 .clients-list mat-card{
     cursor: pointer;
-    width: 200px;
+    width: 250px;
     height: auto;  
     box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
 }
@@ -53,6 +53,8 @@
     font-weight: bold;
     color: #27AE61;
 }
+
+
 
 .nfc{
     display: flex;
@@ -103,4 +105,12 @@ color:#27AE61 !important;
 
 .mat-select:focus:not(.mat-select-disabled).mat-primary .mat-select-arrow {
     color: #63961C;
+}
+
+:host ::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
+    background-color: #27AE61 ;
+}
+
+:host ::ng-deep  .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
+    background-color: #27AE61 ;
 }

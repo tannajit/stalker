@@ -33,6 +33,7 @@
     "geojson": "^0.5.0",
     "leaflet": "^1.7.1",
     "leaflet.markercluster": "^1.5.3",
+    "ng2-search-filter": "^0.5.1",
     "ngx-indexed-db": "^9.4.2",
     "ngx-webcam": "^0.4.1",
     "rxjs": "~7.4.0",

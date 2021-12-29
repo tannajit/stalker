@@ -67,6 +67,10 @@ const routes: Routes = [
   {
     path: 'filter', component: FilterComponent,
     canActivate: [AuthGaurdService]
+  },
+  { 
+    path: 'map/:lat/:long', component: MapComponent,
+    canActivate: [AuthGaurdService]
   }
   // {
   //   path: 'upper', component: UpperMenuComponent
