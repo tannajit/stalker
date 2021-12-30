@@ -227,6 +227,7 @@ export class UpdateClientComponent implements AfterViewInit {
     // this.getLo();
 
     this.clientInfo = this.clientService.getClientInfo();
+    console.log(this.clientInfo)
     //this.UpdateIndexDB()
     // console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
     // console.log(this.clientInfo)
@@ -450,10 +451,14 @@ export class UpdateClientComponent implements AfterViewInit {
 
     if (!this.onlineOfflineService.isOnline) {
     this.clientService.addTodoUpdate(this.clientInfo)
-    this._router.navigate(['map'])
+    this.UpdateIndexDB() 
     }else{
-    this.clientService.updateClient(this.clientInfo).subscribe(res => console.log(res))
-    this._router.navigate(['map'])
+     
+      this.UpdateIndexDB() 
+    /*this.clientService.updateClient(this.clientInfo).subscribe(res => {
+        //this.UpdateIndexDB() 
+    })*/
+    
   }
     // this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
     //  NomPrenom:null, PhoneNumber:null, detailType:null,userId:null, userRole:null, PVPhoto:null,Status:"red"}
@@ -473,15 +478,13 @@ export class UpdateClientComponent implements AfterViewInit {
       db = event.target.result;
       transaction = db.transaction(['data'], 'readwrite');
       var objectStore = transaction.objectStore("data");
-      var id = this.clientInfo.idGeo;
-      delete this.clientInfo.idGeo;
-      var objectStoreRequest = objectStore.get(id);
+      var objectStoreRequest = objectStore.get(this.clientInfo._id);
       console.log(this.clientInfo)
       objectStoreRequest.onsuccess = (event) => {
-        //console.log(this.clientInfo)
         var elm = JSON.parse(objectStoreRequest.result.Valeur);
+        console.log("********************element*****************")
         console.log(objectStoreRequest.result._id)
-        var client = { _id: String(objectStoreRequest.result._id), Valeur: JSON.stringify(this.clientInfo) }
+        var client = { _id: String(objectStoreRequest.result._id), Valeur: JSON.stringify(this.clientInfo.geometry) }
         console.log(client)
         var objectStoreRequest1 = objectStore.put(client);
         //objectStoreRequest.put(JSON.stringify(this.clientInfo));

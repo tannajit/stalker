@@ -45,15 +45,11 @@ import { SettingsComponent } from './settings/settings.component';
 import { FullImageComponent } from './full-image/full-image.component';
 import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
 import {CommonModule} from '@angular/common';
-<<<<<<< HEAD
-import { ExtractComponent } from './extract/extract.component';
-=======
 import { FilterComponent } from './filter/filter.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
 
->>>>>>> 563412cf8555df61612e3333780d573f01c95845
 @NgModule({
   declarations: [
     AppComponent,
@@ -70,11 +66,7 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
     SettingsComponent,
     FullImageComponent,
     AlertDialogComponent,
-<<<<<<< HEAD
-    ExtractComponent
-=======
     FilterComponent
->>>>>>> 563412cf8555df61612e3333780d573f01c95845
 
   ],
   imports: [

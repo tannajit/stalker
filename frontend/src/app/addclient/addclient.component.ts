@@ -20,6 +20,7 @@ import { identifierModuleUrl } from '@angular/compiler';
 
 
 
+
 const incr = 1;
 
 @Component({
@@ -515,7 +516,8 @@ export class AddclientComponent implements AfterViewInit {
     console.log(this.clientInfos)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodo(this.clientInfos);
-      this._router.navigate(['map'])
+      this.AddNewClientIndexDB()
+      //this._router.navigate(['map'])
     } else {
       this.clientService.SendClient(this.clientInfos).subscribe((res) => {
         console.log("\n **********Response form API************")
@@ -532,8 +534,8 @@ export class AddclientComponent implements AfterViewInit {
           this.clientService.getAllClient().subscribe((res) => {
             console.log("\n get all element After Adding New Client \n ")
             console.log(res)
-            var i=0;
-            res.forEach((element,index,array) => {
+            var i = 0;
+            res.forEach((element, index, array) => {
               i++;
               console.log("-----------------------------------")
               console.log(element)
@@ -545,35 +547,91 @@ export class AddclientComponent implements AfterViewInit {
               request.onsuccess = (event) => {
                 console.log("****************** done Adding to Database After Adding Client *******************")
               }
-              if(i===array.length){
-                console.log("Array I"+i)
+              if (i === array.length) {
+                console.log("Array I" + i)
                 this._router.navigate(['/map'])
               }
             });
-            
+
           });
-         
+
         }
 
       });
     }
   }
 
-  ///////////////////////
-  // fadma's code
+  AddNewClientIndexDB() {
+    var db, transaction;
+    var request = window.indexedDB.open("off", this.version)
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+      console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
+      var clientGeo = "hhh";
+      var _id = UUID.UUID();
+      var codeSector = this.mySector.slice(0, 3)
+      ///////
+      var geom = {
+        "geometry": {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [this.clientInfos["lon"], this.clientInfos["lat"]]
+          },
+          "properties": {
+            "codeDANON": this.clientInfos.codes[0],
+            "codeCOLA": this.clientInfos.codes[1],
+            "codeFGD": this.clientInfos.codes[2],
+            "codeQR": 0,
+            "nfc": this.nfcObject,
+            "Code_Region": parseInt(codeSector),
+            "Code_Secteur_OS": parseInt(this.mySector),
+            "machine": "CMG",
+            "TypeDPV": this.TypeDPV,
+            "detailType": this.detailType,
+            "userId": 'test',
+            "userRole": "seller",
+            "NomPrenom": this.NomPrenom,
+            "PhoneNumber": this.PhoneNumber,
+            "PVPhoto": this.clientInfos.PVPhoto,
+            "status": "red",
 
-  toggleNFCWebcam() {
-    this.showNFCWebcam = !this.showNFCWebcam;
+          }
+        },
+        "_id": _id
+      }
+      console.log(geom)
+
+      const geo = { _id: geom._id, Valeur: JSON.stringify(geom.geometry) };
+      transaction = db.transaction(['data'], 'readwrite');
+      const objectStore = transaction.objectStore('data');
+      const request = objectStore.add(geo);
+      request.onsuccess =  (event)=> {
+        console.log('done Adding');
+        this._router.navigate(['map'])
+      };
+    
+
+    ////
   }
+}
+///////////////////////
+// fadma's code
+
+toggleNFCWebcam() {
+  this.showNFCWebcam = !this.showNFCWebcam;
+}
 
 
-  displayNFCam() {
-    this.showNFCWebcam = !this.showNFCWebcam;
-  }
+displayNFCam() {
+  this.showNFCWebcam = !this.showNFCWebcam;
+}
 
-  triggerSnapshot(): void {
-    this.trigger.next();
-  }
+triggerSnapshot(): void {
+  this.trigger.next();
+}
 
   // handleImage(webcamImage): void {
   //   console.info('Saved webcam image', webcamImage);
@@ -584,41 +642,41 @@ export class AddclientComponent implements AfterViewInit {
   //   console.log(this.webcamNFCImage.imageAsDataUrl);
   // }
 
-  get triggerObservable(): Observable<void> {
-    return this.trigger.asObservable();
-  }
+  get triggerObservable(): Observable < void> {
+  return this.trigger.asObservable();
+}
 
-  handleNFCImage(webcamNFCImage): void {
-    console.info('received webcam image', webcamNFCImage);
-    this.webcamNFCImage = webcamNFCImage;
-    this.clientInfos.nfc.NFCPhoto = webcamNFCImage.imageAsDataUrl;
-    console.log(this.clientInfos)
+handleNFCImage(webcamNFCImage): void {
+  console.info('received webcam image', webcamNFCImage);
+  this.webcamNFCImage = webcamNFCImage;
+  this.clientInfos.nfc.NFCPhoto = webcamNFCImage.imageAsDataUrl;
+  console.log(this.clientInfos)
 
-  }
+}
 
-  togglePDVWebcam() {
-    this.showPDVWebcam = !this.showPDVWebcam;
-  }
+togglePDVWebcam() {
+  this.showPDVWebcam = !this.showPDVWebcam;
+}
 
 
-  displayPDVcam() {
-    this.showPDVWebcam = !this.showPDVWebcam;
-  }
+displayPDVcam() {
+  this.showPDVWebcam = !this.showPDVWebcam;
+}
 
-  handlePDVImage(webcamPDVImage) {
-    console.info('received webcam image', webcamPDVImage);
-    this.webcamPDVImage = webcamPDVImage;
-    this.clientInfos.PVPhoto = webcamPDVImage.imageAsDataUrl;
-  }
+handlePDVImage(webcamPDVImage) {
+  console.info('received webcam image', webcamPDVImage);
+  this.webcamPDVImage = webcamPDVImage;
+  this.clientInfos.PVPhoto = webcamPDVImage.imageAsDataUrl;
+}
 
-  openAlertDialog(msg, btn) {
-    const dialogRef = this.dialog.open(AlertDialogComponent, {
-      data: {
-        message: msg,
-        buttonText: {
-          ok: btn,
-        }
+openAlertDialog(msg, btn) {
+  const dialogRef = this.dialog.open(AlertDialogComponent, {
+    data: {
+      message: msg,
+      buttonText: {
+        ok: btn,
       }
-    });
-  }
+    }
+  });
+}
 }
