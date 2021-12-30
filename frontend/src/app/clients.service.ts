@@ -28,7 +28,7 @@ export class ClientsService {
   private getClientBySell =this.uri+"/api1/getClientBySeller";
   private _validate = this.uri+"/api1/validate";
   ////////////////////remplacer par uri après le port
-  private _getClientByID = "http://localhost:3000/api1/login/api1/GetClient";
+  private _getClientByID = "http://localhost:3000/api1/GetClient";
 
 
 

@@ -45,6 +45,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { FullImageComponent } from './full-image/full-image.component';
 import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
 import {CommonModule} from '@angular/common';
+import { ExtractComponent } from './extract/extract.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -60,7 +61,8 @@ import {CommonModule} from '@angular/common';
     OfflineComponent,
     SettingsComponent,
     FullImageComponent,
-    AlertDialogComponent
+    AlertDialogComponent,
+    ExtractComponent
 
   ],
   imports: [

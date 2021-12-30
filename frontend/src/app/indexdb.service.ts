@@ -10,10 +10,8 @@ import 'leaflet.markercluster';
 
 export class IndexdbService {
   db;transaction;
-  
    version=6
   constructor(private client:ClientsService) { }
-
   createDatabase() {
     var request = window.indexedDB.open("off",this.version)
     request.onerror = function (event: Event & { target: { result: IDBDatabase }}) {
@@ -39,14 +37,10 @@ export class IndexdbService {
   AddItem() {
     var costumer={'_id':123,Valeur:"hafsa"}
     console.log(costumer)
-    //const trans= this.db.transaction(['data'], 'readwrite');
-    //objectStore.add(costumer)
-    //console.log(objectStore)
     var allclient=[]
     this.client.getAllClient().subscribe(res=>{
       res.forEach(element => {
         var geo={_id:element._id,Valeur:JSON.stringify(element.geometry)}
-        //console.log(geo)
         allclient.push(geo)
         this.transaction=this.db.transaction(['data'], 'readwrite');
         var objectStore =  this.transaction.objectStore("data");
@@ -55,7 +49,6 @@ export class IndexdbService {
           console.log("done Synchronize")
         };
       });
-      //console.log(allclient)
     });
   }
   
@@ -108,13 +101,11 @@ export class IndexdbService {
       this.transaction=this.db.transaction(['data'], 'readwrite');
       var objectStore =  this.transaction.objectStore("data");
       var objectStoreRequest = objectStore.getAll();
-    
       objectStoreRequest.onsuccess = function(event) {
         var all=event.target.result
         all.forEach(element => {
           console.log("---")
           var elm = JSON.parse(element.Valeur);
-         // console.log(elm)
           var Point={_id:element._id,geometry:elm}
           var geojsonPoint: geojson.Point = Point.geometry.geometry
           var marker = L.geoJSON(geojsonPoint, {

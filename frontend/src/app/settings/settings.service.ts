@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class SettingsService {
-  uri = "https://stalker-lite.herokuapp.com/";
+  uri = "http://localhost:3000";
   private _setting =this.uri + "/api1/settings";
 
   constructor(private http: HttpClient) { }

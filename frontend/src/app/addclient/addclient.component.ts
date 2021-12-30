@@ -9,7 +9,7 @@ import * as geojson from 'geojson';
 import { Router } from '@angular/router';
 import { GeoJsonTypes } from 'geojson';
 import { UUID } from 'angular2-uuid';
-import { OnlineOfflineServiceService} from '../online-offline-service.service';
+import { OnlineOfflineServiceService } from '../online-offline-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { SettingsService } from '../settings/settings.service';
 import { IndexdbService } from '../indexdb.service';
@@ -89,18 +89,19 @@ export class AddclientComponent implements AfterViewInit {
   }
 
 
-  codeNFC:null;
-  UUid:null;
+  codeNFC: null;
+  UUid: null;
 
-  TypeDPV:null;
-  detailType:null;
-  NomPrenom:null;
-  PhoneNumber:null;
-  scan:boolean=false;
-  nfcObject={Numero_Serie:null,Technologies:null,Type_card:null,UUID:null,NFCPhoto:null}
-  clientInfos={UUid:null,codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,sector:null,nfc:this.nfcObject,
-  NomPrenom:null,detailType:null,userId:null,userRole:null, PhoneNumber:null, PVPhoto:null,Status:"red", created_at:null,updated_at:null
- }
+  TypeDPV: null;
+  detailType: null;
+  NomPrenom: null;
+  PhoneNumber: null;
+  scan: boolean = false;
+  nfcObject = { Numero_Serie: null, Technologies: null, Type_card: null, UUID: null, NFCPhoto: null }
+  clientInfos = {
+    UUid: null, codes: [], codeNFC: null, NFCPhoto: null, TypeDPV: null, sector: null, nfc: this.nfcObject,
+    NomPrenom: null, detailType: null, userId: null, userRole: null, PhoneNumber: null, PVPhoto: null, Status: "red", created_at: null, updated_at: null
+  }
   latclt
   lonclt
 
@@ -118,26 +119,26 @@ export class AddclientComponent implements AfterViewInit {
   markersCluster = new L.MarkerClusterGroup();
 
 
-  
+
   constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,
     private clientService: ClientsService,
     private _router: Router,
     private aroute: ActivatedRoute,
     private index: IndexdbService,
     private dialog: MatDialog,
-    private _setting: SettingsService) { 
+    private _setting: SettingsService) {
 
-      // if(!this.onlineOfflineService.isOnline){
-      //   var message = "You went offline !";
-      //   var btn = "Continue"
-      //   this.openAlertDialog(message,btn)
-      // }else{
-      //   var message = "You'r back online :)!";
-      //   var btn = "OK"
-      //   this.openAlertDialog(message,btn)
-      // }
+    // if(!this.onlineOfflineService.isOnline){
+    //   var message = "You went offline !";
+    //   var btn = "Continue"
+    //   this.openAlertDialog(message,btn)
+    // }else{
+    //   var message = "You'r back online :)!";
+    //   var btn = "OK"
+    //   this.openAlertDialog(message,btn)
+    // }
 
-    }
+  }
 
   // ngOnInit(): void {
   //   setInterval(() => this.manageProgress(), 150 )
@@ -254,7 +255,7 @@ export class AddclientComponent implements AfterViewInit {
     if (i > -1) array[i] = item; // (2)
     else array.push(item);
   }
-  
+
   inter;
 
   onCodeResult(resultString: string) {
@@ -308,8 +309,8 @@ export class AddclientComponent implements AfterViewInit {
       if (navigator.geolocation) {
         if (this.percentage == 100) {
           this.inter.unsubscribe();
-          this.clientInfos["lat"]=this.latclt
-          this.clientInfos["lon"]=this.lonclt
+          this.clientInfos["lat"] = this.latclt
+          this.clientInfos["lon"] = this.lonclt
           // console.log(this.clientInfos)
         }
 
@@ -323,44 +324,44 @@ export class AddclientComponent implements AfterViewInit {
 
           if (position) {
             // console.log("Latitude: " + position.coords.latitude +
-              // " // Longitude: " + position.coords.longitude);
-              var newlat=position.coords.latitude
-              var newLon=position.coords.longitude;
+            // " // Longitude: " + position.coords.longitude);
+            var newlat = position.coords.latitude
+            var newLon = position.coords.longitude;
 
-              // if (position.coords.accuracy > 10) {
-              //   console.log("The GPS accuracy isn't good enough");
-              // }
-              if(newlat!=this.lat || newLon!=this.lat){
-                //console.log("nmi rah tbdl")
-                // this.percentage=0
-                this.lat = newlat
-                this.lon = newLon
-                this.list.push(position)
-                // console.log(this.list)
-                // console.log("Accuracy:"+position.coords.accuracy)
+            // if (position.coords.accuracy > 10) {
+            //   console.log("The GPS accuracy isn't good enough");
+            // }
+            if (newlat != this.lat || newLon != this.lat) {
+              //console.log("nmi rah tbdl")
+              // this.percentage=0
+              this.lat = newlat
+              this.lon = newLon
+              this.list.push(position)
+              // console.log(this.list)
+              // console.log("Accuracy:"+position.coords.accuracy)
 
-                if (position.coords.accuracy<this.acc){
-                  console.log("********** Accuracy:"+position.coords.accuracy)
-                  this.acc= position.coords.accuracy
-                  this.lat=position.coords.latitude
-                  this.lon=position.coords.longitude
-                  this.latclt= position.coords.latitude
-                  this.lonclt=position.coords.longitude
-                }
-                // console.log(this.lat)
-                // console.log(this.lon)
-                this.map.removeLayer(marker);
-                this.show=false
-                this.Status=true
-                marker = new (L.marker as any)([this.lat,this.lon],{icon:location_icon}).addTo(this.map);
+              if (position.coords.accuracy < this.acc) {
+                console.log("********** Accuracy:" + position.coords.accuracy)
+                this.acc = position.coords.accuracy
+                this.lat = position.coords.latitude
+                this.lon = position.coords.longitude
+                this.latclt = position.coords.latitude
+                this.lonclt = position.coords.longitude
               }
-              console.log(this.lat)
-              console.log(this.lon)
+              // console.log(this.lat)
+              // console.log(this.lon)
               this.map.removeLayer(marker);
               this.show = false
               this.Status = true
               marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
-            
+            }
+            console.log(this.lat)
+            console.log(this.lon)
+            this.map.removeLayer(marker);
+            this.show = false
+            this.Status = true
+            marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
+
           }
         },
           (error: GeolocationPositionError) => console.log(error), options);
@@ -418,11 +419,11 @@ export class AddclientComponent implements AfterViewInit {
     //this.clientInfos.codeNFC=12345
     this.clientService.getNFC().subscribe(
       res => {
-              this.clientInfos.nfc.Numero_Serie=res.Numero_Serie;
-              //this.UUID_nfc=res.UUID;
-              this.clientInfos.nfc.Technologies=res.Technologies
-              this.clientInfos.nfc.Type_card=res.Type_card
-              this.clientInfos.nfc.UUID=res.UUID;
+        this.clientInfos.nfc.Numero_Serie = res.Numero_Serie;
+        //this.UUID_nfc=res.UUID;
+        this.clientInfos.nfc.Technologies = res.Technologies
+        this.clientInfos.nfc.Type_card = res.Type_card
+        this.clientInfos.nfc.UUID = res.UUID;
       }
     )
 
@@ -496,9 +497,9 @@ export class AddclientComponent implements AfterViewInit {
 
   Send() {
     // this.clientInfos.UUid=UUID.UUID();
-    this.clientInfos.PhoneNumber=this.PhoneNumber
-    this.clientInfos.NomPrenom=this.NomPrenom
-    this.clientInfos.TypeDPV=this.TypeDPV;
+    this.clientInfos.PhoneNumber = this.PhoneNumber
+    this.clientInfos.NomPrenom = this.NomPrenom
+    this.clientInfos.TypeDPV = this.TypeDPV;
     this.clientInfos.detailType = this.detailType;
     this.clientInfos.userId = this.user._id;
     this.clientInfos.userRole = this.user.role;
@@ -510,60 +511,52 @@ export class AddclientComponent implements AfterViewInit {
     }*/
     this.clientInfos.created_at = Date.now();
     this.clientInfos.updated_at = Date.now()
-    this.clientInfos.Status="red_white"
+    this.clientInfos.Status = "red_white"
     console.log(this.clientInfos)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodo(this.clientInfos);
       this._router.navigate(['map'])
-    }else{
-   /* this.clientService.SendClient(this.clientInfos).subscribe(res =>{
-      console.log("response from the API "+res)*/
-   /*this.clientInfos={UUid:null,nfc:null,codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,sector:null,
-      NomPrenom:null, PhoneNumber:null, detailType:null,userId:null, userRole:null, PVPhoto:null,Status:"red",created_at:null,updated_at:null}
-    */
-    this.clientService.SendClient(this.clientInfos).subscribe(res => { console.log("res")});
-      console.log("----------resss-----")
-      //console.log(res)
-      console.log("---------res----")
-      this.index.ClearData();
-      var db; var transaction
-      var request = window.indexedDB.open("off", this.version)
-      request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-        console.log("Why didn't you allow my web app to use IndexedDB?!");
-      };
-      request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-        db = event.target.result;
-        console.log("$$$$$$$$$$$$$$$$ Success Add client $$$$$$$$$$$$$$$$$$")
-        var allclient = []
-        this.clientService.getAllClient().subscribe(res => {
-          console.log(" \n get all element")
-          res.forEach(element =>{
-            console.log("----------------------------------------------------------------")
+    } else {
+      this.clientService.SendClient(this.clientInfos).subscribe((res) => {
+        console.log("\n **********Response form API************")
+        console.log(res)
+        this.index.ClearData();
+        var db, transaction;
+        var request = window.indexedDB.open("off", this.version)
+        request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+          console.log("Why didn't you allow my web app to use IndexedDB?!");
+        };
+        request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+          db = event.target.result;
+          console.log("$$$$$$$$$$$$$$$$ Success Add client $$$$$$$$$$$$$$$$$$")
+          this.clientService.getAllClient().subscribe((res) => {
+            console.log("\n get all element After Adding New Client \n ")
             console.log(res)
-            var geo = { _id: element._id, Valeur: JSON.stringify(element.geometry) }
-            allclient.push(geo)
-            transaction = db.transaction(['data'], 'readwrite');
-            var objectStore = transaction.objectStore("data");
-            var request = objectStore.add(geo)
-            request.onsuccess =  (event) => {
-              console.log("****************** done Adding to Database \n Add Client \n *******************")
-              this._router.navigate(['map'])
-              //.then(() => {
-                //window.location.reload();
-             // });
-            };
+            var i=0;
+            res.forEach((element,index,array) => {
+              i++;
+              console.log("-----------------------------------")
+              console.log(element)
+              console.log("-----------------------------------")
+              var geo = { _id: element._id, Valeur: JSON.stringify(element.geometry) }
+              transaction = db.transaction(['data'], 'readwrite');
+              var objectStore = transaction.objectStore("data");
+              var request = objectStore.add(geo)
+              request.onsuccess = (event) => {
+                console.log("****************** done Adding to Database After Adding Client *******************")
+              }
+              if(i===array.length){
+                console.log("Array I"+i)
+                this._router.navigate(['/map'])
+              }
+            });
+            
           });
-        });
-      }
- 
+         
+        }
 
-   /* this.clientInfos = {
-      UUid:null,codes: [], codeNFC: null, NFCPhoto: null, TypeDPV: null, sector: null,
-      NomPrenom: null, PhoneNumber: null, detailType: null, userId: null, userRole: null, PVPhoto: null, Status: "red", created_at:null,updated_at:null
-    }*/
-
-  }
-
+      });
+    }
   }
 
   ///////////////////////
@@ -618,9 +611,9 @@ export class AddclientComponent implements AfterViewInit {
     this.clientInfos.PVPhoto = webcamPDVImage.imageAsDataUrl;
   }
 
-  openAlertDialog(msg,btn){
-    const dialogRef = this.dialog.open(AlertDialogComponent,{
-      data:{
+  openAlertDialog(msg, btn) {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
         message: msg,
         buttonText: {
           ok: btn,

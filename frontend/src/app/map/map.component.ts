@@ -282,7 +282,6 @@ export class MapComponent implements AfterViewInit {
             marker.on('click', () => {
               this.content = Point.geometry;
               this.zone.run(() => this.openDialog(Point.geometry));
-          
             });
           } else {
           
@@ -449,12 +448,14 @@ export class MapComponent implements AfterViewInit {
   Insid() {
     this.statusAddClient = false;
     this.AllSecteurs.forEach(elem => {
+      console.log(elem)
       // console.log(this.myMarker)
       // console.log(this.myMarker._latlng)
       const lat = this.myMarker._latlng.lat;
       const lon = this.myMarker._latlng.lng;
       const test = turf.point([lon, lat]);
       const poly = turf.polygon(elem.coor[0]);
+      
       //console.log(poly);
       // console.log(test)
       // this.isMarkerInsidePolygon(this.myMarker,elem)
