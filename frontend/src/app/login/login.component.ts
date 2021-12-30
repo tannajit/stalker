@@ -23,6 +23,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.index.createDatabase()
+    this.index.createDatabaseOffline();
   }
 
   loginForm: FormGroup = this.fb.group({

@@ -9,6 +9,7 @@ import * as geojson from 'geojson';
 import { Router } from '@angular/router';
 import { GeoJsonTypes } from 'geojson';
 import { ThrowStmt } from '@angular/compiler';
+import { OnlineOfflineServiceService} from '../online-offline-service.service';
 
 
 const incr = 1;
@@ -103,7 +104,7 @@ export class UpdateClientComponent implements AfterViewInit {
   markersCluster = new L.MarkerClusterGroup();
 
 
-  constructor(
+  constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,
     private clientService: ClientsService, 
     private _router: Router) { 
 
@@ -196,14 +197,10 @@ export class UpdateClientComponent implements AfterViewInit {
       this.code={nbr:nbr,value: resultString}
       this.upsert(this.ListCodes,this.code)
       this.qrResultString = null;
-
+      
     }
-
     //this.code={nbr:nbr,value: resultString}
     //this.upsert(this.ListCodes,this.code)
-
-
-
   }
 
 
@@ -213,6 +210,7 @@ export class UpdateClientComponent implements AfterViewInit {
     if (i > -1) array[i] = item; // (2)
     else array.push(item);
   }
+
   inter;
 
   onCodeResult(resultString: string) {
@@ -340,8 +338,6 @@ export class UpdateClientComponent implements AfterViewInit {
 
   }
 
-
-
   testTimer(){
     this.percentage =0
     interval(300).subscribe(x=>{
@@ -467,8 +463,14 @@ SendSMS(phone){
     else{
       this.clientInfo.properties.status="purple"
     }
+
+    if (!this.onlineOfflineService.isOnline) {
+    this.clientService.addTodoUpdate(this.clientInfo)
+    this._router.navigate(['map'])
+    }else{
     this.clientService.updateClient(this.clientInfo).subscribe(res => console.log(res))
     this._router.navigate(['map'])
+  }
     // this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
     //  NomPrenom:null, PhoneNumber:null, detailType:null,userId:null, userRole:null, PVPhoto:null,Status:"red"}
 
