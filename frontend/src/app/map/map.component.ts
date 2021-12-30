@@ -133,8 +133,8 @@ export class MapComponent implements AfterViewInit {
       var longi= params['long']
       this.map.flyTo(new L.LatLng(lati,longi),20);
       // this.map.setView(new L.LatLng(params['lat'], params['long']), 11, { animation: true }); 
-    }    
-  )
+      }    
+    )
   
   }
 
