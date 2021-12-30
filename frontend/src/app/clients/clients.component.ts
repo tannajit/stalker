@@ -14,6 +14,7 @@ export class ClientsComponent implements OnInit {
 
   clients=[];
   version = 6;
+  showFilterage= true
   dialogRef: MatDialogRef<ClientInfoComponent>;
   sectorNames=[];
   // feilds values

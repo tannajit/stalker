@@ -367,7 +367,7 @@ export class UpdateClientComponent implements AfterViewInit {
      this.clientService.getNFC().subscribe(
         res=> {   
           console.log(res)
-          this.clientInfo.properties.nfc=res;
+          this.clientInfo.geometry.properties.nfc=res;
           console.log(this.clientInfo)
           /*this.clientInfo.nfc.Numero_Serie=res.Numero_Serie;
           this.clientInfo.nfc.Technologies=res.Technologies
@@ -428,13 +428,13 @@ SendSMS(phone){
     if(this.ListCodes.length != 0){
       this.ListCodes.forEach(element => {
         if(element.nbr == 1){
-          this.clientInfo.properties.codeDANON = element.value;
+          this.clientInfo.geometry.properties.codeDANON = element.value;
         }else if(element.nbr == 2){
-          this.clientInfo.properties.codeCOLA = element.value
+          this.clientInfo.geometry.properties.codeCOLA = element.value
         }else if(element.nbr == 3){
-          this.clientInfo.properties.codeFGD = element.value
+          this.clientInfo.geometry.properties.codeFGD = element.value
         }else if(element.nbr == 4){
-          this.clientInfo.properties.codeQR = element.value
+          this.clientInfo.geometry.properties.codeQR = element.value
         }
       });
       
@@ -443,25 +443,25 @@ SendSMS(phone){
     }
 
     if(this.clientInfos.NFCPhoto){
-      this.clientInfo.properties.nfc.NFCPhoto = this.clientInfos.NFCPhoto
-      this.clientInfo.properties.NFCP=null
+      this.clientInfo.geometry.properties.nfc.NFCPhoto = this.clientInfos.NFCPhoto
+      this.clientInfo.geometry.properties.NFCP=null
     }
 
     if(this.clientInfos.PVPhoto){
-      this.clientInfo.properties.PVPhoto = this.clientInfos.PVPhoto
-      this.clientInfo.properties.PVP=null
+      this.clientInfo.geometry.properties.PVPhoto = this.clientInfos.PVPhoto
+      this.clientInfo.geometry.properties.PVP=null
     }
     // add user ids
-    this.clientInfo.properties.updatedBy = this.user._id;
-    this.clientInfo.properties.userRole = this.user.role;
-    this.clientInfo.properties.updated_at = Date.now();
+    this.clientInfo.geometry.properties.updatedBy = this.user._id;
+    this.clientInfo.geometry.properties.userRole = this.user.role;
+    this.clientInfo.geometry.properties.updated_at = Date.now();
     console.log('########## Updated Client ##########')
     console.log(this.clientInfo)
-    if(this.clientInfo.properties.codeQR===null){
-      this.clientInfo.properties.status="pink"
+    if(this.clientInfo.geometry.properties.codeQR===null){
+      this.clientInfo.geometry.properties.status="pink"
     }
     else{
-      this.clientInfo.properties.status="purple"
+      this.clientInfo.geometry.properties.status="purple"
     }
 
     if (!this.onlineOfflineService.isOnline) {

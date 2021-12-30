@@ -284,47 +284,45 @@ async function updateClient(client){
     let geometries = db.collection("geometries") /// geometries Collections
     let secteurs = db.collection("secteurs")
     var id_NFC,id_pv;
-    if(client.properties.NFCP==null){
+    if(client.geometry.properties.NFCP==null){
         
-        await test(db, client.properties.NomPrenom, client.properties.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
+        await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
         console.log("NFC photo id: "+id_NFC)
     }else{
-        id_NFC = ObjectId(client.properties.nfc.NFCPhoto);
+        id_NFC = ObjectId(client.geometry.properties.nfc.NFCPhoto);
         
     }
-    if(client.properties.PVP==null){
+    if(client.geometry.properties.PVP==null){
         
-        await test(db, client.properties.NomPrenom, client.properties.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
+        await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
         console.log("PV photo id: "+id_pv);
     }else{
-        id_pv = ObjectId(client.properties.PVPhoto);
+        id_pv = ObjectId(client.geometry.properties.PVPhoto);
     }
     
     
     console.log("-------------- " + client.lat)
-    client.properties.nfc.NFCPhoto=id_NFC
+    client.geometry.properties.nfc.NFCPhoto=id_NFC
     let clientinfo = {
-        codeDANON: client.properties.codeDANON,
-        codeCOLA: client.properties.codeCOLA,
-        codeFGD: client.properties.codeFGD,
-        codeQR: client.properties.codeQR,
-        lat: client.lat,
-        lon: client.lon,
-        nfc: client.properties.nfc,
-        Code_Secteur_OS:(client.sector!=null)? parseInt(client.sector) : 93603636360 ,
+        codeDANON: client.geometry.properties.codeDANON,
+        codeCOLA: client.geometry.properties.codeCOLA,
+        codeFGD: client.geometry.properties.codeFGD,
+        codeQR: client.geometry.properties.codeQR,
+        nfc: client.geometry.properties.nfc,
+        Code_Secteur_OS:(client.geometry.properties.Code_Secteur_OS!=null)? parseInt(client.geometry.properties.Code_Secteur_OS) : 93603636360 ,
         machine: "CMG",
-        TypeDPV: client.properties.TypeDPV,
-        detailType: client.properties.detailType,
-        userId: client.properties.userId,
-        updatedBy: client.properties.updatedBy,
-        userRole: client.properties.userRole,
-        NomPrenom: client.properties.NomPrenom,
-        PhoneNumber: client.properties.PhoneNumber,
+        TypeDPV: client.geometry.properties.TypeDPV,
+        detailType: client.geometry.properties.detailType,
+        userId: client.geometry.properties.userId,
+        updatedBy: client.geometry.properties.updatedBy,
+        userRole: client.geometry.properties.userRole,
+        NomPrenom: client.geometry.properties.NomPrenom,
+        PhoneNumber: client.geometry.properties.PhoneNumber,
         PVPhoto: id_pv,
-        status: client.properties.status,
-        updated_at: client.properties.updated_at,
-        lat: client.geometry.coordinates[1],
-        lon: client.geometry.coordinates[0]
+        status: client.geometry.properties.status,
+        updated_at: client.geometry.properties.updated_at,
+        lat: client.geometry.geometry.coordinates[1],
+        lon: client.geometry.geometry.coordinates[0]
     }
     await collection.insertOne(clientinfo).then(async (result)=> {
         var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson

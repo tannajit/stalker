@@ -1,10 +1,10 @@
 <div class="clients_container">
-    <button mat-button routerLink="/filter" *ngIf="loggedUser.role == 'Seller' || loggedUser.role == 'Auditor'">
+    <button mat-button routerLink="/filter" *ngIf="loggedUser.role == 'Seller' || loggedUser.role == 'Auditor' || showFilterage == false">
         <mat-icon>filter_list</mat-icon>
         Filter
     </button>
 
-    <div class="filtrage-container" *ngIf="loggedUser.role == 'Admin' || loggedUser.role == 'Back Office'" >
+    <div class="filtrage-container" *ngIf="loggedUser.role == 'Admin' || loggedUser.role == 'Back Office' || showFilterage==true" >
         <!-- <div class="filter1"> -->
             <div class="field">
                 <mat-form-field>
