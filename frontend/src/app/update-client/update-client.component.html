@@ -38,8 +38,8 @@
                     <div *ngFor="let code of ListCodes" class="qr-container">
                         <span *ngIf="code.nbr == 1">{{ code.value}}</span>
                     </div>
-                    <span *ngIf="clientInfo.properties.codeDANON==null, else scanned" style="color: red;">Not scanned</span>
-                    <ng-template #scanned>{{clientInfo.properties.codeDANON}}</ng-template>     
+                    <span *ngIf="clientInfo.geometry.properties.codeDANON==null, else scanned" style="color: red;">Not scanned</span>
+                    <ng-template #scanned>{{clientInfo.geometry.properties.codeDANON}}</ng-template>     
                 </div>
 
             </div>
@@ -48,10 +48,10 @@
                 <div>
                     <button mat-button class="btn-green" [disabled]="test" (click)="toggleShow(2,qrResultString)">Scan</button>
                     <div *ngFor="let code of ListCodes" class="qr-container">
-                        <span *ngIf="code.nbr == 2">{{ clientInfo.properties.codeCOLA}}</span>
+                        <span *ngIf="code.nbr == 2">{{ clientInfo.geometry.properties.codeCOLA}}</span>
                     </div>
-                    <span *ngIf="clientInfo.properties.codeCOLA==null, else scanned" style="color: red;">Not scanned</span>
-                    <ng-template #scanned>{{clientInfo.properties.codeCOLA}}</ng-template>
+                    <span *ngIf="clientInfo.geometry.properties.codeCOLA==null, else scanned" style="color: red;">Not scanned</span>
+                    <ng-template #scanned>{{clientInfo.geometry.properties.codeCOLA}}</ng-template>
                 </div>
                 
             </div>
@@ -60,10 +60,10 @@
                 <div>
                     <button mat-button class="btn-green" [disabled]="test" (click)="toggleShow(3,qrResultString)">Scan</button>
                     <div *ngFor="let code of ListCodes" class="qr-container">
-                        <span *ngIf="code.nbr == 3">{{ clientInfo.properties.codeFGD}}</span>
+                        <span *ngIf="code.nbr == 3">{{ clientInfo.geometry.properties.codeFGD}}</span>
                     </div>
-                    <span *ngIf="clientInfo.properties.codeFGD==null, else scanned" style="color: red;">Not scanned</span>
-                    <ng-template #scanned>{{clientInfo.properties.codeFGD}}</ng-template>
+                    <span *ngIf="clientInfo.geometry.properties.codeFGD==null, else scanned" style="color: red;">Not scanned</span>
+                    <ng-template #scanned>{{clientInfo.geometry.properties.codeFGD}}</ng-template>
                 </div>
                 
             </div>
@@ -92,11 +92,11 @@
                     <label class="input-label">NFC card puce : </label>
                     <button mat-button class="btn-green" (click)="Read()">Read</button>  
                 </div>
-                <div *ngIf="clientInfo.properties.nfc.UUID!= null" class="nfc-div">
-                    <span>UUID:</span><p>{{clientInfo.properties.nfc.UUID}}</p>
-                    <span>Numero_Serie:</span><p>{{clientInfo.properties.nfc.Numero_Serie}}</p>
-                    <span>Type_card:</span><p>{{clientInfo.properties.nfc.Type_card}}</p>
-                    <span>Technologies:</span><p>{{clientInfo.properties.nfc.Technologies}}</p>
+                <div *ngIf="clientInfo.geometry.properties.nfc.UUID!= null" class="nfc-div">
+                    <span>UUID:</span><p>{{clientInfo.geometry.properties.nfc.UUID}}</p>
+                    <span>Numero_Serie:</span><p>{{clientInfo.geometry.properties.nfc.Numero_Serie}}</p>
+                    <span>Type_card:</span><p>{{clientInfo.geometry.properties.nfc.Type_card}}</p>
+                    <span>Technologies:</span><p>{{clientInfo.geometry.properties.nfc.Technologies}}</p>
                 </div>
                 <div class="scan-field">
                     <label class="input-label">Qr Code : </label>
@@ -105,8 +105,8 @@
                         <div *ngFor="let code of ListCodes" class="qr-container">
                             <span *ngIf="code.nbr == 4">{{code.value}}</span>
                         </div>
-                        <span *ngIf="clientInfo.properties.codeQR==null, else scanned" style="color: red;">Not scanned</span>
-                        <ng-template #scanned>{{clientInfo.properties.codeQR}}</ng-template>
+                        <span *ngIf="clientInfo.geometry.properties.codeQR==null, else scanned" style="color: red;">Not scanned</span>
+                        <ng-template #scanned>{{clientInfo.geometry.properties.codeQR}}</ng-template>
                     </div>
                     
                 </div>
@@ -146,7 +146,7 @@
                     
                     <ng-template #nfcphoto>
                         <img  [height]="200"
-                           [width]="200" src="{{clientInfo.properties.NFCP}}" style="border-radius: 8px;"/>
+                           [width]="200" src="{{clientInfo.geometry.properties.NFCP}}" style="border-radius: 8px;"/>
                     </ng-template>
                     
                     </div>
@@ -157,7 +157,7 @@
 
                 <div class="field">
                     <mat-form-field>
-                        <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="clientInfo.properties.TypeDPV">
+                        <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="clientInfo.geometry.properties.TypeDPV">
                             <mat-option value="Detail">Detail</mat-option>
                             <mat-option value="Gros">Gros</mat-option>
                             <mat-option value="Demi Gros">Demi Gros</mat-option>
@@ -166,7 +166,7 @@
                 </div>
                 <div class="field" *ngIf="clientInfo.TypeDPV=='Detail'">
                     <mat-form-field>
-                        <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2" [(ngModel)]="clientInfo.properties.detailType">
+                        <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2" [(ngModel)]="clientInfo.geometry.properties.detailType">
                             <mat-option value="Alimentation">Alimentation</mat-option>
                             <mat-option value="Superette">Superette</mat-option>
                             <mat-option value="Aattar">Aattar</mat-option>
@@ -181,7 +181,7 @@
                 <div class="field">
                     <mat-form-field>
                         <mat-label>First & Last Name*</mat-label>
-                        <input matInput placeholder="Typing..." [(ngModel)]="clientInfo.properties.NomPrenom"/>
+                        <input matInput placeholder="Typing..." [(ngModel)]="clientInfo.geometry.properties.NomPrenom"/>
                     </mat-form-field>
                 </div>
                 
@@ -190,7 +190,7 @@
 
                     <mat-form-field>
                         <mat-label>Phone number*</mat-label>
-                        <input matInput placeholder="+212" [(ngModel)]="clientInfo.properties.PhoneNumber"/>
+                        <input matInput placeholder="+212" [(ngModel)]="clientInfo.geometry.properties.PhoneNumber"/>
                     </mat-form-field>
     
                     <button mat-button class="btn-green" (click)="Verify('code'); showVerifCodeInput= true">Verify</button>
@@ -232,7 +232,7 @@
                  
                  <ng-template #pdvphoto>
                      <img  [height]="200"
-                        [width]="200" src="{{clientInfo.properties.PVP}}" style="border-radius: 8px;"/>
+                        [width]="200" src="{{clientInfo.geometry.properties.PVP}}" style="border-radius: 8px;"/>
                  </ng-template>
                     </div>
                   </div>

@@ -27,6 +27,7 @@ export class ClientsService {
   private _updateclient =this.uri+"/api1/updateClient";
   private getClientBySell =this.uri+"/api1/getClientBySeller";
   private _validate = this.uri+"/api1/validate";
+  
   ////////////////////remplacer par uri après le port
   private _getClientByID = "http://localhost:3000/api1/GetClient";
 
@@ -64,7 +65,8 @@ export class ClientsService {
   private createDatabase() {
     this.db = new Dexie('MyTestDatabase');
     this.db.version(1).stores({
-      client: 'UUid'
+      client: 'UUid',
+      update:'UUid'
     });
   }
 
@@ -80,6 +82,20 @@ export class ClientsService {
       });
     }
   }
+
+  addTodoUpdate(client: any) {
+    client["UUid"] = UUID.UUID();
+    if (!this.onlineOffline.isOnline) {
+      this.addToIndexedDbUpdate(client);
+    } else {
+      //post request to mongodb
+      this.updateClient(client).subscribe(res => {
+        console.log(res);
+        console.log("data sent")
+      });
+    }
+  }
+
   getClientBySeller(lat,long){
      var url="http://localhost:3000/api1/getClientBySeller/"+lat+"/"+long+""
     console.log(url)
@@ -96,7 +112,7 @@ export class ClientsService {
   // used for update functionality
   setCurrentClientInfo(client: any) {
     this.currentClient = client;
-    console.log('***************************'+this.currentClient.NomPrenom)
+    console.log('***************************'+this.currentClient.geometry.properties.NomPrenom)
   }
 
   addToIndexedDb(clientt: any) {
@@ -114,7 +130,50 @@ export class ClientsService {
       });
   }
 
-   async sendItemsFromIndexedDb() {
+  addToIndexedDbUpdate(clientt: any) {
+   /* console.log("----db-----")
+    console.log(this.db.update)
+    this.db.update.add(clientt)
+      .then(async () => {
+        const allItems: any = await this.db["update"].toArray();
+        console.log('saved in DB, DB is now', allItems);
+        var message = "Data saved successfuly";
+        var btn = "Continue"
+        this.openAlertDialog(message,btn)
+      })
+      .catch(e => {
+        alert('Error: ' + (e.stack || e));
+      });*/
+
+      //// *** native ***///
+
+    var db; var transaction; var upgradeDb
+    var request = window.indexedDB.open("MyTestDatabase", 10)
+    // upgradeDb.createObjectStore('client');
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+    console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
+      console.log("success")
+      console.log(db)
+      transaction = db.transaction(['update'], 'readwrite');
+      var objectStore = transaction.objectStore("update");
+      //var objectStoreRequest = objectStore.get(id);
+      const request = objectStore.add(clientt);
+      request.onsuccess =  (event)=>{
+        console.log('saved in DB, DB is now');
+        var message = "Data saved successfuly";
+        var btn = "Continue"
+        this.openAlertDialog(message,btn)
+      };
+   
+    }
+
+
+  }
+
+  async sendItemsFromIndexedDb(id) {
     console.log("sending items");
     // const allItems: any[] = await this.db["client"].toArray();
     var db; var transaction; var upgradeDb
@@ -129,29 +188,93 @@ export class ClientsService {
       console.log(db)
       transaction = db.transaction(['client'], 'readwrite');
       var objectStore = transaction.objectStore("client");
-      var objectStoreRequest = objectStore.getAll();
+      var objectStoreRequest = objectStore.get(id);
+      
+      console.log("@@@@@@@@@@"+objectStoreRequest)
       objectStoreRequest.onsuccess = event => {
-        var all = event.target.result
+        var element = event.target.result
         // console.log("------------------------")
-         console.log(all)
+        //  console.log(all)
         // console.log("------------------------")
-        all.forEach(element => {
+      
           // console.log("---")
           console.log(element)
           this.SendClient(element).subscribe(res => {
             console.log(res);
-
-          })
           console.log("data sent succusfuly")
         })
-
-      }
-      this.db.client.clear();
+        var objectStoreRequest1 = objectStore.delete(id);
+        objectStoreRequest1.onsuccess = event => {
+          console.log("item deleted from indexedDb");
+        }
+      };
+      
+      // this.db.client.clear();
       // objectStoreRequest.onerror=event=>{
       //   console.log(event)
       // }
     }
   }
+
+
+  async sendItemsUpdated(id) {
+    console.log("sending items");
+    // const allItems: any[] = await this.db["client"].toArray();
+    var db; var transaction; var upgradeDb
+    var request = window.indexedDB.open("MyTestDatabase", 10)
+    // upgradeDb.createObjectStore('client');
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+    console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
+      console.log("success")
+      console.log(db)
+      transaction = db.transaction(['update'], 'readwrite');
+      var objectStore = transaction.objectStore("update");
+      var objectStoreRequest = objectStore.get(id);
+      
+      console.log("@@@@@@@@@@"+objectStoreRequest)
+      objectStoreRequest.onsuccess = event => {
+        var element = event.target.result
+        // console.log("------------------------")
+        //  console.log(all)
+        // console.log("------------------------")
+      
+          // console.log("---")
+          console.log(element)
+          this.updateClient(element).subscribe(res => {
+            console.log(res);
+          console.log("data sent succusfuly")
+        })
+        var objectStoreRequest1 = objectStore.delete(id);
+        objectStoreRequest1.onsuccess = event => {
+          console.log("item deleted from indexedDb");
+        }
+      };
+      
+      // this.db.client.clear();
+      // objectStoreRequest.onerror=event=>{
+      //   console.log(event)
+      // }
+    }
+  }
+
+
+
+
+
+
+  // delete(id){
+  //   var db;
+  //   var transaction = db.transaction(['client'], 'readwrite');
+  //   var objectStore = transaction.objectStore("client");
+  //   var objectStoreRequest = objectStore.delete(id);
+  //   objectStoreRequest.onsuccess = function(event) {
+  //     console.log("item deleted from indexedDb");
+  //   };
+
+  // }
 
   items
 
@@ -177,7 +300,7 @@ export class ClientsService {
               var message = "went online, sending all stored items";
               var btn = "Ok"
               this.openAlertDialog(message,btn)
-              this.sendItemsFromIndexedDb();
+              // this.sendItemsFromIndexedDb();
               // this.getdata()
             } else {
               console.log('went offline, storing in indexdb');
@@ -227,16 +350,48 @@ export class ClientsService {
           var elm = element.UUid
           console.log(elm)
           list.push(elm)
-          console.log(list)
-          
-          
-          
+          console.log(list)     
         }); 
         
       }  
     };
      return list
   }
+
+  getID() {
+    var list=[]
+    var transaction
+    var request = window.indexedDB.open("MyTestDatabase",10)
+    request.onerror = function (event: Event & { target: { result: IDBDatabase }}) {
+      console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess=(event: Event & { target: { result: IDBDatabase }})=>{
+      this.db=event.target.result;
+      console.log("success")
+      console.log(this.db)
+      transaction=this.db.transaction(['update'], 'readwrite');
+      var objectStore = transaction.objectStore("update");
+      var objectStoreRequest = objectStore.getAll();
+    
+      objectStoreRequest.onsuccess = function(event) {
+        var all=event.target.result
+        all.forEach(element => {
+          console.log("---")
+          var elm = element.UUid
+          console.log(elm)
+          list.push(elm)
+          console.log(list)    
+        }); 
+        
+      }  
+    };
+     return list
+  }
+
+
+
+
+
 
   updateClient(client:any){
     return this.http.post<any>(this._updateclient, client);
@@ -248,10 +403,14 @@ export class ClientsService {
     console.log(info)
     return this.http.post<any>(this._validate,info);
   }
+
   //////////////////
   getClientByID(id){
     console.log('id'+id);
     return this.http.get(this._getClientByID+ '/' +id);
   }
   ///////////////////
+
+
+  
 }

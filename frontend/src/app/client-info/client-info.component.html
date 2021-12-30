@@ -1,6 +1,6 @@
 <div *ngIf="loggedUser.role == 'Back Office' || loggedUser.role == 'Admin'">
- {{data.idGeo}}
- <div *ngIf="data.properties.status=='green', else refused">
+ {{data._id}}
+ <div *ngIf="data.geometry.properties.status=='green', else refused">
      <span style="color: green;">Client Validated</span>
  </div>
  <ng-template #refused>
@@ -14,7 +14,8 @@
                     <span>Seller</span>
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="{{clientOfSeller.PVP}}" alt="" (click)="openImage(clientOfSeller.PVP)">
+                            <img *ngIf="clientOfSeller.PVP" src="{{clientOfSeller.PVP}}" alt="" (click)="openImage(clientOfSeller.PVP)">
+                            <img *ngIf="!clientOfSeller.PVP" src="assets/images/blank.jpg" alt="" (click)="openImage(clientOfSeller.PVP)">
                         </div>
                         <div class="pdv-info">
                             <label>Sector:</label> 
@@ -36,7 +37,8 @@
                     <span>Auditor</span>
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="{{clientOfAuditor.PVP}}" alt="" (click)="openImage(clientOfAuditor.PVP)">
+                            <img *ngIf="clientOfAuditor.PVP" src="{{clientOfAuditor.PVP}}" alt="" (click)="openImage(clientOfAuditor.PVP)">
+                            <img *ngIf="!clientOfAuditor.PVP" src="assets/images/blank.jpg" alt="" (click)="openImage(clientOfAuditor.PVP)">
                         </div>
                         <div class="pdv-info">
                             <label>Sector:</label> 
@@ -49,9 +51,9 @@
                             <p>{{ clientOfAuditor.TypeDPV}}, {{clientOfAuditor.detailType}}</p>
                         </div>
                     </div>
-                    <div class="pdv-action-btns" *ngIf="data.properties.status !='green'">
-                        <button mat-button class="btn-valid" (click)="validate(data.idGeo,'green')">Valid</button>
-                        <button mat-button class="btn-refus" (click)="validate(data.idGeo,'black')">Refus</button>
+                    <div class="pdv-action-btns" *ngIf="data.geometry.properties.status !='green'">
+                        <button mat-button class="btn-valid" (click)="validate(data._id,'green')">Valid</button>
+                        <button mat-button class="btn-refus" (click)="validate(data._id,'black')">Refus</button>
                     </div>
                     
                 </section>
@@ -62,28 +64,30 @@
                 <section class="valid-pdv-container">
                     <div class="pdv-info-container">
                         <div class="pdv-img">
-                            <img src="{{data.properties.PVP}}" alt="" (click)="openImage(data.properties.PVP)">
+                            <img *ngIf="data.geometry.properties.PVP" src="{{data.geometry.properties.PVP}}" alt="" (click)="openImage(data.geometry.properties.PVP)">
+                            <img *ngIf="!data.geometry.properties.PVP" src="assets/images/blank.jpg" alt="" (click)="openImage(data.geometry.properties.PVP)">
                         </div>
                         <div class="pdv-info">
                             <label>Sector:</label> 
-                            <p>{{data.properties.Code_Secteur_OS}}</p>
+                            <p>{{data.geometry.properties.Code_Secteur_OS}}</p>
                             <label>Name:</label> 
-                            <p>{{data.properties.NomPrenom}}</p>
+                            <p>{{data.geometry.properties.NomPrenom}}</p>
                             <label>Phone Number:</label> 
-                            <p>{{data.properties.PhoneNumber}}</p>
+                            <p>{{data.geometry.properties.PhoneNumber}}</p>
                             <label>Type PDV:</label>
-                            <p>{{ data.properties.TypeDPV}}, {{data.properties.detailType}}</p>
+                            <p>{{ data.geometry.properties.TypeDPV}}, {{data.geometry.properties.detailType}}</p>
                         </div>
                     </div>
                     <div class="pdv-info-container" >
                         <div class="pdv-img">
-                            <img src="{{data.properties.NFCP}}" alt="" (click)="openImage(data.properties.NFCP)">
+                            <img *ngIf="data.geometry.properties.NFCP" src="{{data.geometry.properties.NFCP}}" alt="" (click)="openImage(data.geometry.properties.NFCP)">
+                            <img *ngIf="!data.geometry.properties.NFCP" src="assets/images/blank.jpg" alt="" (click)="openImage(data.geometry.properties.NFCP)">
                         </div>
                         <div class="pdv-info">
                             <label>NFC UUID:</label> 
-                            <p>{{data.properties.nfc.UUID}}</p>
+                            <p>{{data.geometry.properties.nfc.UUID}}</p>
                             <label>NFC code Qr:</label> 
-                            <p>{{data.properties.codeQR}}</p>
+                            <p>{{data.geometry.properties.codeQR}}</p>
                         </div>
                     </div>
                 </section>
@@ -96,7 +100,7 @@
     <mat-dialog-actions class="action-btns" align="center">
         <button mat-raised-button color="primary" class="btn-green" (click)="onUpdateClick()" >Update Client</button>
         <button mat-raised-button color="primary" class="btn-red">Delete Client</button>
-        <button mat-raised-button color="primary" class="btn-orange">Navigate to the client</button>
+        <button mat-raised-button color="primary" class="btn-orange" (click)="navigateToMap(data.geometry.geometry.coordinates[1],data.geometry.geometry.coordinates[0])">Navigate to the client</button>
     </mat-dialog-actions>
 
 </div>
@@ -106,35 +110,36 @@
         <section fxLayout="column" fxLayoutAlign="center">
             <div class="pdv-info-container">
                 <div class="pdv-img">
-                    <img src="{{data.properties.PVP}}" alt="" (click)="openImage(data.properties.NFCP)">
+                    <img *ngIf="data.geometry.properties.PVP" src="{{data.geometry.properties.PVP}}" alt="" (click)="openImage(data.geometry.properties.PVP)">
+                    <img *ngIf="!data.geometry.properties.PVP" src="assets/images/blank.jpg" alt="" (click)="openImage(data.geometry.properties.PVP)">
                 </div>
                 <div class="pdv-info">
                     <label>Sector:</label> 
-                    <p>{{data.properties.Code_Secteur_OS}}</p>
+                    <p>{{data.geometry.properties.Code_Secteur_OS}}</p>
                     <label>Name:</label> 
-                    <p>{{data.properties.NomPrenom}}</p>
+                    <p>{{data.geometry.properties.NomPrenom}}</p>
                     <label>Phone Number:</label> 
-                    <p>{{data.properties.PhoneNumber}}</p>
+                    <p>{{data.geometry.properties.PhoneNumber}}</p>
                     <label>Type PDV:</label>
-                    <p>{{ data.properties.TypeDPV}}, {{data.properties.detailType}}</p>
+                    <p>{{ data.geometry.properties.TypeDPV}}, {{data.geometry.properties.detailType}}</p>
                 </div>
             </div>
             <div class="pdv-info-container">
                 <div class="pdv-img">
-                    <img src="{{data.properties.NFCP}}" alt="" (click)="openImage(data.properties.NFCP)">
+                    <img *ngIf="data.geometry.properties.NFCP" src="{{data.geometry.properties.NFCP}}" alt="" (click)="openImage(data.geometry.properties.NFCP)">
+                    <img *ngIf="!data.geometry.properties.NFCP" src="assets/images/blank.jpg" alt="" (click)="openImage(data.geometry.properties.NFCP)">
                 </div>
                 <div class="pdv-info">
                     <label>Code NFC:</label>
-                    <p *ngIf="!data.properties.nfc.codeNFC, else nfc">null</p>
-                    <ng-template #nfc>{{data.properties.nfc.codeNFC}}</ng-template>
+                    <p *ngIf="!data.geometry.properties.nfc.codeNFC, else nfc">null</p>
+                    <ng-template #nfc>{{data.geometry.properties.nfc.codeNFC}}</ng-template>
                     <label>UUID:</label>
-                    <p>{{data.properties.nfc.UUID}}</p>
-                
+                    <p>{{data.geometry.properties.nfc.UUID}}</p>
                 </div>
             </div>
             
         </section>
-        <!-- <p> {{data.NomPrenom}}</p> -->
+        <!-- <p>{{data.NomPrenom}}</p> -->
     </mat-dialog-content>
 
     <mat-dialog-actions class="action-btns" align="center">

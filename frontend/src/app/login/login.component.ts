@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms'
 import { AuthenticationService } from '../authentication.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SidebarMenuComponent } from '../sidebar-menu/sidebar-menu.component';
 import { IndexdbService } from '../indexdb.service';
 import { ClientsService } from '../clients.service';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -16,11 +17,13 @@ export class LoginComponent implements OnInit {
   constructor(private fb: FormBuilder,
     private _auth: AuthenticationService,
     private _router: Router,
+    private route: ActivatedRoute,
     private client: ClientsService,
     private index: IndexdbService) { }
 
   ngOnInit() {
     this.index.createDatabase()
+    this.index.createDatabaseOffline();
   }
 
   loginForm: FormGroup = this.fb.group({
@@ -44,6 +47,7 @@ export class LoginComponent implements OnInit {
         err => console.log(err));
     }
   }
+  
   // Store Token and delegate to Home page
   Response(res) {
     console.log(res)
@@ -83,6 +87,7 @@ export class LoginComponent implements OnInit {
     }
   }
   version=6
+
   PutDataSector() {
     var db; var transaction
     var request = window.indexedDB.open("off", this.version)
@@ -104,7 +109,7 @@ export class LoginComponent implements OnInit {
             console.log("done Adding Sector login")
           };
         });
-        
+
         this._router.navigate(['/map']).then(() => {
           //window.location.reload();
         });

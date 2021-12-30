@@ -12,6 +12,7 @@ import { AddclientComponent } from './addclient/addclient.component';
 import { UpdateClientComponent } from './update-client/update-client.component';
 import { OfflineComponent } from './offline/offline.component';
 import { SettingsComponent } from './settings/settings.component';
+import { FilterComponent } from './filter/filter.component';
 
 
 
@@ -61,6 +62,14 @@ const routes: Routes = [
   },
   {
     path: 'settings', component: SettingsComponent,
+    canActivate: [AuthGaurdService]
+  },
+  {
+    path: 'filter', component: FilterComponent,
+    canActivate: [AuthGaurdService]
+  },
+  { 
+    path: 'map/:lat/:long', component: MapComponent,
     canActivate: [AuthGaurdService]
   }
   // {

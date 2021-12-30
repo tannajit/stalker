@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { GeoJsonTypes } from 'geojson';
 import { ThrowStmt } from '@angular/compiler';
 import { IndexdbService } from '../indexdb.service';
+import { OnlineOfflineServiceService} from '../online-offline-service.service';
 
 
 const incr = 1;
@@ -106,10 +107,9 @@ export class UpdateClientComponent implements AfterViewInit {
   markersCluster = new L.MarkerClusterGroup();
 
 
-  constructor(
-    private clientService: ClientsService,
-    private index: IndexdbService,
-    private _router: Router) {
+  constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,
+    private clientService: ClientsService, 
+    private _router: Router) { 
 
     this.clientInfo = clientService.getClientInfo();
     console.log('@@@@@@@@@@@@@@@@' + this.clientInfo.NomPrenom)
@@ -200,14 +200,10 @@ export class UpdateClientComponent implements AfterViewInit {
       this.code = { nbr: nbr, value: resultString }
       this.upsert(this.ListCodes, this.code)
       this.qrResultString = null;
-
+      
     }
-
     //this.code={nbr:nbr,value: resultString}
     //this.upsert(this.ListCodes,this.code)
-
-
-
   }
 
 
@@ -217,6 +213,7 @@ export class UpdateClientComponent implements AfterViewInit {
     if (i > -1) array[i] = item; // (2)
     else array.push(item);
   }
+
   inter;
 
   onCodeResult(resultString: string) {
@@ -343,15 +340,13 @@ export class UpdateClientComponent implements AfterViewInit {
 
   }
 
-
-
-  testTimer() {
-    this.percentage = 0
-    interval(300).subscribe(x => {
-      if (this.percentage < 100) {
-        this.percentage += 4
-      }
-    });
+  testTimer(){
+    this.percentage =0
+    interval(300).subscribe(x=>{
+        if( this.percentage <100){
+          this.percentage+=4
+            }
+        });
   }
 
   addNewComponent() {
@@ -370,18 +365,26 @@ export class UpdateClientComponent implements AfterViewInit {
   ///////////*****  Read NFC and Verfiy SMS from NanoHTTPD (hafsa'code)**********///////////////
   Read() {
     console.log("read")
-    //this.clientInfo.properties.codeQR="7765353"
-    this.clientService.getNFC().subscribe(
-      res => {
-        console.log(res)
-        this.clientInfo.properties.nfc = res;
-        console.log(this.clientInfo)
-        /*this.clientInfo.nfc.Numero_Serie=res.Numero_Serie;
-        this.clientInfo.nfc.Technologies=res.Technologies
-        this.clientInfo.nfc.Type_card=res.Type_card
-        this.clientInfo.nfc.UUID=res.UUID;*/
-      }
-    )
+    
+     this.clientService.getNFC().subscribe(
+        res=> {   
+          console.log(res)
+          this.clientInfo.geometry.properties.nfc=res;
+          console.log(this.clientInfo)
+          /*this.clientInfo.nfc.Numero_Serie=res.Numero_Serie;
+          this.clientInfo.nfc.Technologies=res.Technologies
+          this.clientInfo.nfc.Type_card=res.Type_card
+          this.clientInfo.nfc.UUID=res.UUID;*/
+  }
+      )
+
+    
+
+
+  }
+
+  getCoordinates(){
+
   }
   verification_code = null; status; codeSMS;
   SendSMS(phone) {
@@ -409,45 +412,52 @@ export class UpdateClientComponent implements AfterViewInit {
     // ***************** scanned codes ************* //
     if (this.ListCodes.length != 0) {
       this.ListCodes.forEach(element => {
-        if (element.nbr == 1) {
-          this.clientInfo.properties.codeDANON = element.value;
-        } else if (element.nbr == 2) {
-          this.clientInfo.properties.codeCOLA = element.value
-        } else if (element.nbr == 3) {
-          this.clientInfo.properties.codeFGD = element.value
-        } else if (element.nbr == 4) {
-          this.clientInfo.properties.codeQR = element.value
+        if(element.nbr == 1){
+          this.clientInfo.geometry.properties.codeDANON = element.value;
+        }else if(element.nbr == 2){
+          this.clientInfo.geometry.properties.codeCOLA = element.value
+        }else if(element.nbr == 3){
+          this.clientInfo.geometry.properties.codeFGD = element.value
+        }else if(element.nbr == 4){
+          this.clientInfo.geometry.properties.codeQR = element.value
         }
       });
       console.log()
       // this.clientInfo.properties.=this.ListCodes
     }
 
-    if (this.clientInfos.NFCPhoto) {
-      this.clientInfo.properties.nfc.NFCPhoto = this.clientInfos.NFCPhoto
-      this.clientInfo.properties.NFCP = null
+    if(this.clientInfos.NFCPhoto){
+      this.clientInfo.geometry.properties.nfc.NFCPhoto = this.clientInfos.NFCPhoto
+      this.clientInfo.geometry.properties.NFCP=null
     }
 
-    if (this.clientInfos.PVPhoto) {
-      this.clientInfo.properties.PVPhoto = this.clientInfos.PVPhoto
-      this.clientInfo.properties.PVP = null
+    if(this.clientInfos.PVPhoto){
+      this.clientInfo.geometry.properties.PVPhoto = this.clientInfos.PVPhoto
+      this.clientInfo.geometry.properties.PVP=null
     }
     // add user ids
-    this.clientInfo.properties.updatedBy = this.user._id;
-    this.clientInfo.properties.userRole = this.user.role;
-    this.clientInfo.properties.updated_at = Date.now();
+    this.clientInfo.geometry.properties.updatedBy = this.user._id;
+    this.clientInfo.geometry.properties.userRole = this.user.role;
+    this.clientInfo.geometry.properties.updated_at = Date.now();
     console.log('########## Updated Client ##########')
     console.log(this.clientInfo)
-    if (this.clientInfo.properties.codeQR === null) {
-      this.clientInfo.properties.status = "pink"
+    if(this.clientInfo.geometry.properties.codeQR===null){
+      this.clientInfo.geometry.properties.status="pink"
     }
-    else {
-      this.clientInfo.properties.status = "purple"
+    else{
+      this.clientInfo.geometry.properties.status="purple"
     }
-    await this.clientService.updateClient(this.clientInfo).subscribe((res) => {
-      console.log(res)
-    })
-    this.UpdateIndexDB()
+
+    if (!this.onlineOfflineService.isOnline) {
+    this.clientService.addTodoUpdate(this.clientInfo)
+    this._router.navigate(['map'])
+    }else{
+    this.clientService.updateClient(this.clientInfo).subscribe(res => console.log(res))
+    this._router.navigate(['map'])
+  }
+    // this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
+    //  NomPrenom:null, PhoneNumber:null, detailType:null,userId:null, userRole:null, PVPhoto:null,Status:"red"}
+
   }
   //////////************  Update the client in IndexedDB (Hafsa's Code) ************/////////////
   version = 6;
