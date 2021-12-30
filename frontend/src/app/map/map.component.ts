@@ -291,7 +291,7 @@ export class MapComponent implements AfterViewInit {
           });
           
           if (Point.geometry.properties?.nfc != undefined) {
-            Point.geometry.idGeo = Point._id;
+            //Point.geometry.idGeo = Point._id;
             marker.on('click', () => {
               this.content = Point.geometry;
               this.zone.run(() => this.openDialog(Point));

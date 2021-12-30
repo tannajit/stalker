@@ -131,8 +131,9 @@ export class ClientsService {
   }
 
   addToIndexedDbUpdate(clientt: any) {
-    this.db.update
-      .add(clientt)
+   /* console.log("----db-----")
+    console.log(this.db.update)
+    this.db.update.add(clientt)
       .then(async () => {
         const allItems: any = await this.db["update"].toArray();
         console.log('saved in DB, DB is now', allItems);
@@ -142,7 +143,34 @@ export class ClientsService {
       })
       .catch(e => {
         alert('Error: ' + (e.stack || e));
-      });
+      });*/
+
+      //// *** native ***///
+
+    var db; var transaction; var upgradeDb
+    var request = window.indexedDB.open("MyTestDatabase", 10)
+    // upgradeDb.createObjectStore('client');
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+    console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
+      console.log("success")
+      console.log(db)
+      transaction = db.transaction(['update'], 'readwrite');
+      var objectStore = transaction.objectStore("update");
+      //var objectStoreRequest = objectStore.get(id);
+      const request = objectStore.add(clientt);
+      request.onsuccess =  (event)=>{
+        console.log('saved in DB, DB is now');
+        var message = "Data saved successfuly";
+        var btn = "Continue"
+        this.openAlertDialog(message,btn)
+      };
+   
+    }
+
+
   }
 
   async sendItemsFromIndexedDb(id) {

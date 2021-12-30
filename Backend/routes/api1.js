@@ -141,10 +141,11 @@ router.get('/clients', verifyToken, async (req, res) => {
         { $project: { points: 1, _id: 0 } }
     ]).toArray();
     console.log("---------------- values-----------------")
-    console.log(values)
+    //console.log(values)
     var arrv = [];
     a = []
     values.forEach(elm => {
+        console.log(elm)
         elm.points.forEach(e => arrv.push(ObjectId(e.point)), err => console.log(err))
     }, err => console.log(err))
     //console.log(arrv)
@@ -328,7 +329,7 @@ async function updateClient(client){
         var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
         console.log(clientGeo)
 
-         var updated=await geometries.updateMany({"geometry.geometry.coordinates":clientinfo.lat,"geometry.geometry.type":"Point"},
+         var updated=await geometries.updateOne({"geometry.geometry.coordinates":clientinfo.lat,"geometry.geometry.type":"Point"},
          { $set: {"geometry":clientGeo}})
          console.log(updated)
          console.log("********** geometrie updated ******")
@@ -387,7 +388,7 @@ router.post('/updateClient', async(req,res) =>{
     let client = req.body;
     console.log(client)
     await updateClient(client);
-    res.status(200).send("Client Inserted From Ang")
+    res.status(200).json("Client Inserted From Ang")
 })
 /// gridFS script 
 function getFileSystemItem(dbo, id) {
