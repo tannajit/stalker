@@ -1,8 +1,0 @@
-.filter_container{
-    margin: 0;
-    display: flex;
-    flex-flow: column wrap;
-    align-items: center;
-    padding: 8px;
-    background-color: #F6F6F6;
-}

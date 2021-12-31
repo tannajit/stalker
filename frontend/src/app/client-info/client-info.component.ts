@@ -31,11 +31,11 @@ export class ClientInfoComponent implements OnInit {
     console.log(this.data)
     this.loggedUser = JSON.parse(localStorage.getItem("user"))
     if(this.loggedUser.role == 'Admin' || this.loggedUser.role == 'Back Office'){
-    this.clientService.getClientBySeller(this.data.geometry.geometry.coordinates[1],this.data.geometry.geometry.coordinates[0]).subscribe(res=>{
-      this.clientOfSeller = res;
+    this.clientService.getClientBySeller(this.data._id).subscribe(res=>{
+      this.clientOfSeller = res; 
       console.log("!!!!!!!!!!!!!!!! Seller !!!!!!!!!!!!!!")
       console.log(res)
-      this.clientService.getClientByAuditor(this.data.geometry.geometry.coordinates[1],this.data.geometry.geometry.coordinates[0]).subscribe(res=>{
+      this.clientService.getClientByAuditor(this.data._id).subscribe(res=>{
         this.clientOfAuditor = res;
         console.log("!!!!!!!!!!!!!!!! Auditor !!!!!!!!!!!!!!")
         console.log(res)

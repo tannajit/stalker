@@ -128,6 +128,7 @@ export class AddclientComponent implements AfterViewInit {
     private dialog: MatDialog,
     private _setting: SettingsService) {
 
+
     // if(!this.onlineOfflineService.isOnline){
     //   var message = "You went offline !";
     //   var btn = "Continue"

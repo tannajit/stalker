@@ -96,14 +96,14 @@ export class ClientsService {
     }
   }
 
-  getClientBySeller(lat,long){
-     var url="http://localhost:3000/api1/getClientBySeller/"+lat+"/"+long+""
+  getClientBySeller(id){
+     var url="http://localhost:3000/api1/getClientBySeller/"+id
     console.log(url)
     return this.http.get<any>(url)
   }
 
-  getClientByAuditor(lat,long){
-    var url="http://localhost:3000/api1/getClientByAuditor/"+lat+"/"+long+""
+  getClientByAuditor(id){
+    var url="http://localhost:3000/api1/getClientByAuditor/"+id
    console.log(url)
    return this.http.get<any>(url)
  }

@@ -182,17 +182,17 @@ router.get('/clients', verifyToken, async (req, res) => {
 })
 
 // get client by seller 
-router.get('/getClientBySeller/:lat/:long', async (req, res) => {
+router.get('/getClientBySeller/:id', async (req, res) => {
 
-    var status = await getClientBySeller(req.params.lat, req.params.long)
+    var status = await getClientBySeller(req.params.id)
     res.json(status)
 
 
 })
 
-router.get('/getClientByAuditor/:lat/:long', async (req, res) => {
+router.get('/getClientByAuditor/:id', async (req, res) => {
 
-    var status = await getClientByAuditor(req.params.lat, req.params.long)
+    var status = await getClientByAuditor(req.params.id)
     //console.log("-------------------- ")
     ////console.log(status)
     res.json(status)
@@ -234,7 +234,10 @@ async function InsertClient(client) {
     //console.log("-------------- " + client.lat)
     //console.log(client)
     client.nfc.NFCPhoto = id_NFC
+    var id=new ObjectId();
+    console.log("=========== id"+id)
     let clientinfo = {
+        idGeometry:id,
         UUid: client.UUid,
         codeDANON: codeDANON,
         codeCOLA: codeCOLA,
@@ -262,7 +265,7 @@ async function InsertClient(client) {
     let getInsertedId; //// put Id inserted
     var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
     //console.log(clientGeo)
-    geometries.insertOne({ geometry: clientGeo }).then(result => {
+    geometries.insertOne({_id:id ,geometry: clientGeo }).then(result => {
         var id = result.insertedId
         //console.log(id)
         var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
@@ -292,17 +295,17 @@ async function updateClient(client) {
         
     }
     if(client.geometry.properties.PVP==null){
-        
         await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
         console.log("PV photo id: "+id_pv);
     }else{
         id_pv = ObjectId(client.geometry.properties.PVPhoto);
     }
     
-    
-    console.log("-------------- " + client.lat)
+
+    console.log(client)
     client.geometry.properties.nfc.NFCPhoto=id_NFC
     let clientinfo = {
+        idGeometry: ObjectId(client._id),
         codeDANON: client.geometry.properties.codeDANON,
         codeCOLA: client.geometry.properties.codeCOLA,
         codeFGD: client.geometry.properties.codeFGD,
@@ -326,8 +329,7 @@ async function updateClient(client) {
     await collection.insertOne(clientinfo).then(async (result) => {
         var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
         //console.log(clientGeo)
-
-         var updated=await geometries.updateOne({"geometry.geometry.coordinates":clientinfo.lat,"geometry.geometry.type":"Point"},
+         var updated=await geometries.updateOne({_id:ObjectId(client._id)},
          { $set: {"geometry":clientGeo}})
          console.log(updated)
          console.log("********** geometrie updated ******")
@@ -478,15 +480,14 @@ async function getUser(user) {
     return status;
 }
 
-async function getClientBySeller(lat, long) {
+async function getClientBySeller(id) {
     //console.log(lat)
-    // //console.log(long)
+console.log(id)
     let clientCollection = db.collection("clients")
     var client = await clientCollection.find(
         {
             'userRole': "Seller",
-            'lat': parseFloat(lat),
-            'lon': parseFloat(long),
+            'idGeometry':ObjectId(id),
             'updated_at': { $exists: true }
         }
     ).sort({ 'updated_at': -1 }).limit(1).toArray()
@@ -512,13 +513,12 @@ async function getClientBySeller(lat, long) {
     return cli;
 }
 
-async function getClientByAuditor(lat, long) {
-
+async function getClientByAuditor(id) {
+    console.log("auditor")
     let clientCollection = db.collection("clients")
     var client = await clientCollection.find(
         {
-            'lat': parseFloat(lat),
-            'lon': parseFloat(long),
+            'idGeometry':ObjectId(id),
             'userRole': 'Auditor',
             'updated_at': { $exists: true }
 
