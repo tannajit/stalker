@@ -1,0 +1,77 @@
+<div class="content-body">
+
+    
+    
+    <ng-container *ngIf="percentage == 100; else elseTemplate">
+        <p>Position Fixed</p>
+    </ng-container>
+    <ng-template #elseTemplate>
+        <p>Fixing Position...</p>
+    </ng-template>
+
+     <div >   
+        <pre>pos collectés: {{list.length}}</pre>
+        <pre>Accuracy: {{acc}}</pre>
+    </div>
+
+    
+
+    <div ng-app ng-controller="ApplicationController" class="progress-cantainer">
+        <mat-progress-bar mode="determinate" [value]="percentage"></mat-progress-bar>
+        <span style="position: absolute; top: 0em;" [ngStyle]="{'left': percentage + '%'}">{{percentage}}%</span>
+    </div>
+
+   
+    <div class="map-container">
+        <div id="map2"></div>
+    </div>
+
+    
+    <div class="action-btns">
+        <button  mat-button class="btn-yellow">Recalculate my position</button>
+        <button mat-button class="btn-yellow" (click)="showcheck()" [disabled]="(percentage!=100) ||  !Status">Next</button>
+    </div>
+<!-- 
+    <button mat-button class="btn-yellow">
+        Recalculate the position
+    </button> -->
+
+    
+    <div class="container" *ngIf="hide">
+        <div class="checkcodes-fields">
+            <div class="scan-field">
+                <label class="input-label">PDV location video : </label>
+                <div>
+                    <button mat-button class="btn-green" *ngIf="!isVideoRecording && !videoBlobUrl" (click)="startVideoRecording()">Record Video</button>
+                    <button class="stop-button" *ngIf="isVideoRecording && !videoBlobUrl" (click)="stopVideoRecording()">Stop Video Recording</button>
+                    <button class="cancel-button" *ngIf="!isVideoRecording && videoBlobUrl" (click)="clearVideoRecordedData()">Clear Video Recording</button>
+                    <button class="download-button" *ngIf="!isVideoRecording && videoBlobUrl" (click)="downloadVideoRecordedData()">Download Video Recording</button>
+                    <div id="videoTimer" *ngIf="isVideoRecording && !videoBlobUrl"> {{ videoRecordedTime }} </div>
+                </div>
+            </div>
+            <div>
+                <video #videoElement>
+                    <source *ngIf="!isVideoRecording && videoBlobUrl" [src]="videoBlobUrl">
+                </video>
+            </div>
+            <div class="scan-field">
+                <label class="input-label">Delete Raison* </label>
+                <mat-form-field>
+                    <mat-select  panelClass="selectPanel2" [(ngModel)]="raison" [(value)]="selected">
+                        <mat-option value="Not exist">Not exist</mat-option>
+                        <mat-option value="Out of category">Out of category</mat-option>
+                        <mat-option value="End of activity">End of activity</mat-option>
+                        <mat-option value="Duplicate">Duplicate</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            
+        </div>
+        
+        <button mat-button class="btn-yellow">Send</button>
+        
+        
+    </div>
+
+    
+</div>

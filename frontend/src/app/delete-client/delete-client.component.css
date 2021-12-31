@@ -1,0 +1,133 @@
+.action-btns{
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.progress-cantainer{
+    position: relative; 
+    width: 500px;
+    margin: auto;
+}
+
+.progress-cantainer span{
+    position: absolute; 
+    top: 0em; 
+    font-size: 12px; 
+    margin: auto;
+}
+
+.mat-progress-bar-fill::after {
+    background-color: #27AE61;
+}
+
+.mat-progress-bar-buffer {
+    background: #fff;
+}
+
+.mat-progress-bar {
+    height: 1em !important;
+    margin-bottom: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    border-radius: 20px;
+}
+.content-body{
+    background-color: #F6F6F6;
+    padding: 20px;
+    text-align: center;
+    margin: auto;
+}
+
+.content-body p{
+    margin-bottom: 10px;
+    color: #646262;
+}
+
+.container{
+    display: flex;
+    padding: 20px;
+    margin: 20px;
+    flex-flow: column wrap ;
+    background-color: #fff;
+    justify-content: center;
+    align-items: center;
+    gap: 10px 20px; 
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+}
+.container button{
+    align-self: flex-end;
+}
+.field{
+    display: flex;
+    flex-flow: row;
+    gap: 10px;
+    align-items: center;
+}
+
+.map-container{ 
+
+    width: 700px;
+    height: 400px;
+    /* margin: 20px ; */
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+    /* display: flex;
+    justify-content: center; */
+    margin: auto;  
+    border-radius: 10px;
+     
+}
+
+#map2 {
+    height: 100%;
+    border-radius: 10px;
+}
+.btn-yellow{
+    margin-top: 8px;
+    background-color: #FACF37;
+    color: #fff;
+    font-size: 13px;
+    line-height: 30px;
+    /* width: 100px !important; */
+    border-radius: 40px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+
+.btn-yellow:disabled{
+    background-color: #C2BEBE;
+    color: #313030;
+}
+
+.btn-green{
+    background-color: #27AE61;
+    color: #fff;
+    margin: auto;
+    font-size: 13px;
+    line-height: 30px;
+    width: 130px !important;
+    border-radius: 20px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+
+.btn-green:disabled{
+    background-color: #C2BEBE;
+    color: #313030;
+}
+
+.checkcodes-fields{
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+    gap: 20px;
+}
+
+.scan-field{
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    gap: 10px;
+}
