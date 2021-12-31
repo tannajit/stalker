@@ -454,10 +454,10 @@ export class UpdateClientComponent implements AfterViewInit {
     this.UpdateIndexDB() 
     }else{
      
+     
+    this.clientService.updateClient(this.clientInfo).subscribe(res => {
       this.UpdateIndexDB() 
-    /*this.clientService.updateClient(this.clientInfo).subscribe(res => {
-        //this.UpdateIndexDB() 
-    })*/
+    })
     
   }
     // this.clientInfos={codes:[],codeNFC:null, NFCPhoto:null, TypeDPV:null,
