@@ -278,15 +278,14 @@ export class MapComponent implements AfterViewInit {
           console.log('---');
           const elm = JSON.parse(element.Valeur);
           const Point = { _id: element._id, geometry: elm };
+          console.log("££££££££££££££££££££ Point ££££££££££££££££££")
           console.log(Point);
           const geojsonPoint: geojson.Point = Point.geometry;
-          // console.log(geojsonPoint)
+          console.log(geojsonPoint)
           const marker = L.geoJSON(geojsonPoint, {
             pointToLayer: (point, latlon) => {
-              // console.log("***")
               console.log(point);
               return L.marker(latlon, { icon: this.getIcon(Point.geometry.properties.status) });
-              // return L.circle([latlon.lat,latlon.lng], {color:"green",radius:20}).addTo(this.map);
             }
           });
           

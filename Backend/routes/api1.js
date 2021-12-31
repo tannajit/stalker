@@ -5,8 +5,8 @@ var mongo = require('mongodb');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
 //var uri= "mongodb://localhost:27017"; 
-var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
-//var uri="mongodb://localhost:27017"
+//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+var uri="mongodb://localhost:27017"
 // uri to your Mongo database
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
@@ -137,12 +137,12 @@ router.get('/clients', verifyToken, async (req, res) => {
         { $match: { users: ObjectId(userId) } },
         { $project: { points: 1, _id: 0 } }
     ]).toArray();
-    console.log("---------------- values-----------------")
+    //console.log("---------------- values-----------------")
     //console.log(values)
     var arrv = [];
     a = []
     values.forEach(elm => {
-        console.log(elm)
+        //console.log(elm)
         elm.points.forEach(e => arrv.push(ObjectId(e.point)), err => console.log(err))
     }, err => console.log(err))
     ////console.log(arrv)
@@ -233,6 +233,8 @@ async function InsertClient(client) {
     //console.log(id_pv);
     //console.log("-------------- " + client.lat)
     //console.log(client)
+    var id=new ObjectId();
+    console.log("=========== id"+id)
     client.nfc.NFCPhoto = id_NFC
     var id=new ObjectId();
     console.log("=========== id"+id)

@@ -45,7 +45,11 @@ import { SettingsComponent } from './settings/settings.component';
 import { FullImageComponent } from './full-image/full-image.component';
 import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
 import {CommonModule} from '@angular/common';
+<<<<<<< HEAD
 import { ExtractComponent } from './extract/extract.component';
+=======
+import { FilterComponent } from './filter/filter.component';
+>>>>>>> 86cd9d4fcb895c5eb154230dbbbb98ea22e9014f
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { DeleteClientComponent } from './delete-client/delete-client.component';
@@ -67,9 +71,13 @@ import { DeleteClientComponent } from './delete-client/delete-client.component';
     SettingsComponent,
     FullImageComponent,
     AlertDialogComponent,
+<<<<<<< HEAD
     ExtractComponent,
     DeleteClientComponent,
     
+=======
+    FilterComponent
+>>>>>>> 86cd9d4fcb895c5eb154230dbbbb98ea22e9014f
 
   ],
   imports: [
