@@ -596,8 +596,7 @@ export class AddclientComponent implements AfterViewInit {
             "NomPrenom": this.NomPrenom,
             "PhoneNumber": this.PhoneNumber,
             "PVPhoto": this.clientInfos.PVPhoto,
-            "status": "red",
-
+            "status": "red"
           }
         },
         "_id": _id
