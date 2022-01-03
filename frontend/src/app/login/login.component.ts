@@ -13,7 +13,10 @@ import { ClientsService } from '../clients.service';
 })
 
 export class LoginComponent implements OnInit {
+
   hide: boolean = false;
+  version = 6
+
   constructor(private fb: FormBuilder,
     private _auth: AuthenticationService,
     private _router: Router,
@@ -48,18 +51,16 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  // Store Token and delegate to Home page
+  ////******* Store Token and delegate to Home page *******////
   Response(res) {
     console.log(res)
     localStorage.setItem('token', res.Data.token)
     localStorage.setItem("user", JSON.stringify(res.Data.user))
     console.log(this._auth.getToken())
     localStorage.setItem("name", res.Data.user.name)
-    //this.index.AddItem();
     ///******* GET DATA  ******/
     this.PutDataClient()
   }
-
 
   PutDataClient() {
     var db; var transaction
@@ -86,7 +87,6 @@ export class LoginComponent implements OnInit {
       });
     }
   }
-  version = 6
 
   PutDataSector() {
     var db; var transaction
@@ -109,14 +109,11 @@ export class LoginComponent implements OnInit {
             console.log("done Adding Sector login")
           };
         });
-
         this._router.navigate(['/map']).then(() => {
-          //window.location.reload();
         });
-
-        //console.log(allclient)
       });
     }
   }
+
 
 }

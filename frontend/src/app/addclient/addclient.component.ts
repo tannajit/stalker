@@ -92,7 +92,7 @@ export class AddclientComponent implements AfterViewInit {
   }
   latclt
   lonclt
-  ////////////////
+
   inter;
   acc = 1222000;
   version = 6
@@ -121,7 +121,7 @@ export class AddclientComponent implements AfterViewInit {
   ///////////////////////////////////////////////////////////////////////////
 
 
-  //////////////************* CONSTRUCTOR ******************///////////////////
+  //////////////**************** CONSTRUCTOR ******************///////////////////
   constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,
     private clientService: ClientsService,
     private _router: Router,
@@ -155,9 +155,7 @@ export class AddclientComponent implements AfterViewInit {
     console.log(nbr);
     console.log(resultString);
     console.log(this.ListCodes);
-
     this.isShown = !this.isShown;
-
     if (nbr === 1) {
       this.code = { nbr: nbr, value: resultString }
       this.upsert(this.ListCodes, this.code)
@@ -180,7 +178,6 @@ export class AddclientComponent implements AfterViewInit {
       this.code = { nbr: nbr, value: resultString }
       this.upsert(this.ListCodes, this.code)
       this.qrResultString = null;
-
     }
   }
 
@@ -205,6 +202,7 @@ export class AddclientComponent implements AfterViewInit {
   triggerSnapshot(): void {
     this.trigger.next();
   }
+
   get triggerObservable(): Observable<void> {
     return this.trigger.asObservable();
   }
@@ -214,13 +212,11 @@ export class AddclientComponent implements AfterViewInit {
     this.webcamNFCImage = webcamNFCImage;
     this.clientInfos.nfc.NFCPhoto = webcamNFCImage.imageAsDataUrl;
     console.log(this.clientInfos)
-
   }
 
   togglePDVWebcam() {
     this.showPDVWebcam = !this.showPDVWebcam;
   }
-
 
   displayPDVcam() {
     this.showPDVWebcam = !this.showPDVWebcam;

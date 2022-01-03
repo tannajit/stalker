@@ -13,7 +13,7 @@
         <pre>pos collectés: {{list.length}}</pre>
         <pre>Accuracy: {{acc}}</pre>
     </div>
-    
+
     <div ng-app ng-controller="ApplicationController" class="progress-cantainer">
         <mat-progress-bar mode="determinate" [value]="percentage"></mat-progress-bar>
         <span style="position: absolute; top: 0em;" [ngStyle]="{'left': percentage + '%'}">{{percentage}}%</span>
