@@ -1,6 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
-var url = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-//var url = "mongodb://localhost:27017";
+//var url = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+var url = "mongodb://localhost:27017";
 var client = new MongoClient(url);
 var name_database = "stalker1"
 var ObjectId = require('mongodb').ObjectID;
@@ -36,6 +36,7 @@ async function run() {
     InsertUser(user3,901010882).catch(console.log)
     InsertUser(user4,901011082).catch(console.log)
     InsertUser(user5,901011082).catch(console.log)
+    InsertUser(user5,93603636360).catch(console.log)
     InsertUser(user6,901011082).catch(console.log)
     InsertUser(user7,901011483).catch(console.log)
     InsertUser(user8,902020481).catch(console.log)

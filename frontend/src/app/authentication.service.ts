@@ -27,6 +27,7 @@ export class AuthenticationService {
     //this._index.ClearData()
     //this._index.ClearDataSector()
     this.ClearData();
+    //ClearDataSector()
   }
   db; ///database
   version = 6; ///version of the database
@@ -62,9 +63,9 @@ export class AuthenticationService {
       var objectStoreRequest = objectStore.clear();
       objectStoreRequest.onsuccess = (event) => {
         console.log("Data Sector Cleared")
-        this._router.navigate(['login']).then(() => {
+        this._router.navigate(['login']).then(()=>{
           window.location.reload();
-        });
+        })
       }
     }
   }

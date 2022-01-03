@@ -8,16 +8,13 @@ var users=require('./routes/users')
 var client=require('./routes/client')
 var fs = require('fs');
 
-
-
 const Port = process.env.PORT || 3000 
 var app = express();
 app.use(cors())
 
-
 app.use(bodyParser.json({limit: "50mb"}));
 app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
-app.use(express.static("dist"))
+//app.use(express.static("dist"))
 
 /*app.get('/', (req, res) => {
     res.sendFile('dist\\index.html',{root:__dirname})
