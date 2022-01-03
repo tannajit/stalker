@@ -65,9 +65,27 @@
             <div class="scan-field" *ngIf="selected=='Out of category' || selected=='End of activity' ">
                 <label class="input-label">PDV photo : </label>
                 <div>
-                    <button mat-button class="btn-green"><mat-icon>camera_alt</mat-icon></button>
+                    <button mat-button class="btn-green" (click)="displayCam()"><mat-icon>camera_alt</mat-icon></button>
                 </div>
             </div> 
+            <div  *ngIf="showWebcam" class="Scan-container">
+                <webcam [height]="200"
+                        [width]="500"
+                        [trigger]="triggerObservable"
+                        (imageCapture)="handleImage($event)">
+                </webcam>
+                <div class="reas-nfc">
+                    <button mat-button class="btn-green"  (click)="triggerSnapshot()">Click Here</button>
+                    <button mat-button class="btn-green"  (click)="toggleWebcam()">Close Camera</button>
+                </div>
+            </div>
+            <div  *ngIf="webcamImage" class="Scan-container">
+        
+                <div class="snapshot">
+                  <img [height]="200"
+                       [width]="200" [src]="webcamImage.imageAsDataUrl"/>
+                </div>
+              </div>
             
         </div>
         

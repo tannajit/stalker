@@ -53,8 +53,7 @@
                     <mat-select placeholder="NFC" panelClass="selectPanel2" [(ngModel)]="validate" >
                         <mat-option value="">Default</mat-option>
                         <mat-option value="purple">Installed</mat-option>
-                        <mat-option value="pink">Refused</mat-option>
-                        <mat-option value="purple">red_white</mat-option>
+                        <mat-option value="pink">NFC Refused</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -75,11 +74,9 @@
                     <mat-select placeholder="Sector" panelClass="selectPanel2" [(ngModel)]="sector">
                         <mat-option value="">All</mat-option>
                        <div *ngFor="let name of sectorNames">
-                        
                         <mat-option value="{{name}}">{{name}}</mat-option>
                        </div>
                     </mat-select>
-            
                 </mat-form-field>
             </div>
 
