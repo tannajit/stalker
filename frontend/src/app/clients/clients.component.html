@@ -1,133 +1,125 @@
 <div class="clients_container">
-    <!-- <button mat-button routerLink="/filter" *ngIf="loggedUser.role == 'Seller' || loggedUser.role == 'Auditor' || showFilterage == false">
-        <mat-icon>filter_list</mat-icon>
-        Filter
-    </button> -->
-
     <div class="filtrage-container">
         <!-- <div class="filter1"> -->
-            <div class="field">
-                <mat-form-field>
-                    <mat-label>Id Client</mat-label>
-                    <input matInput placeholder="Typing..." [(ngModel)]="IdClient"/>
-                </mat-form-field>
-            </div>
-
-            <div class="field">
-                <mat-form-field>
-                    <mat-label>Phone Number</mat-label>
-                    <input matInput placeholder="+212" [(ngModel)]="PhoneNumber"/>
-                </mat-form-field>
-            </div>
-
-
-            <div class="field">
-                <mat-form-field>
-                    <mat-select placeholder="PDV Type" panelClass="selectPanel2" [(ngModel)]="PDVType" [(value)]="typePDVselected">
-                        <mat-option value="">All</mat-option>
-                        <mat-option value="Detail">Detail</mat-option>
-                        <mat-option value="Gros">Gros</mat-option>
-                        <mat-option value="Demi Gros">Demi Gros</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-
-            <div class="field" *ngIf="typePDVselected == 'Detail'">
-                <mat-form-field>
-                    <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2" [(ngModel)]="detailType">
-                        <mat-option value="">All</mat-option>
-                        <mat-option value="Alimentation">Alimentation</mat-option>
-                        <mat-option value="Superette">Superette</mat-option>
-                        <mat-option value="Aattar">Aattar</mat-option>
-                        <mat-option value="Fruits sec">Fruits sec</mat-option>
-                        <mat-option value="Boundif">Boundif</mat-option>
-                        <mat-option value="Parfumerie">Parfumerie</mat-option>
-                        <mat-option value="Kioske">Kioske</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-
-            
-            <div class="field">
-                <mat-form-field>
-                    <mat-select placeholder="NFC" panelClass="selectPanel2" [(ngModel)]="validate" >
-                        <mat-option value="">Default</mat-option>
-                        <mat-option value="purple">Installed</mat-option>
-                        <mat-option value="pink">Refused</mat-option>
-                        <mat-option value="purple">red_white</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-
-            <div class="field">
-                <mat-form-field>
-                    <mat-select placeholder="Back Office Validation" panelClass="selectPanel2" [(ngModel)]="validate" >
-                        <mat-option value="">Default</mat-option>
-                        <mat-option value="green">Validated</mat-option>
-                        <mat-option value="black">Refused</mat-option>
-                        <mat-option value="purple">Waiting</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-
-            <div class="field">
-                <mat-form-field>
-                    <mat-select placeholder="Sector" panelClass="selectPanel2" [(ngModel)]="sector">
-                        <mat-option value="">All</mat-option>
-                       <div *ngFor="let name of sectorNames">
-                        
-                        <mat-option value="{{name}}">{{name}}</mat-option>
-                       </div>
-                    </mat-select>
-            
-                </mat-form-field>
-            </div>
-
-            <div class="field">
-                <mat-form-field>
-                    <mat-select placeholder="Delete" panelClass="selectPanel2" [(ngModel)]="deleteStatus">
-                        <mat-option value="Request Delete">Request Delete</mat-option>
-                        <mat-option value="Deleted">Deleted</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-
-        <!-- </div> -->
-
-        <div class="filter1">
-            
+        <div class="field">
+            <mat-form-field>
+                <mat-label>Id Client</mat-label>
+                <input matInput placeholder="Typing..." [(ngModel)]="IdClient" />
+            </mat-form-field>
         </div>
 
-        
+        <div class="field">
+            <mat-form-field>
+                <mat-label>Phone Number</mat-label>
+                <input matInput placeholder="+212" [(ngModel)]="PhoneNumber" />
+            </mat-form-field>
+        </div>
 
+        <div class="field">
+            <mat-form-field>
+                <mat-select placeholder="PDV Type" panelClass="selectPanel2" [(ngModel)]="PDVType"
+                    [(value)]="typePDVselected">
+                    <mat-option value="">All</mat-option>
+                    <mat-option value="Detail">Detail</mat-option>
+                    <mat-option value="Gros">Gros</mat-option>
+                    <mat-option value="Demi Gros">Demi Gros</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div class="field" *ngIf="typePDVselected == 'Detail'">
+            <mat-form-field>
+                <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2" [(ngModel)]="detailType">
+                    <mat-option value="">All</mat-option>
+                    <mat-option value="Alimentation">Alimentation</mat-option>
+                    <mat-option value="Superette">Superette</mat-option>
+                    <mat-option value="Aattar">Aattar</mat-option>
+                    <mat-option value="Fruits sec">Fruits sec</mat-option>
+                    <mat-option value="Boundif">Boundif</mat-option>
+                    <mat-option value="Parfumerie">Parfumerie</mat-option>
+                    <mat-option value="Kioske">Kioske</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+
+        <div class="field">
+            <mat-form-field>
+                <mat-select placeholder="NFC" panelClass="selectPanel2" [(ngModel)]="validate">
+                    <mat-option value="">Default</mat-option>
+                    <mat-option value="purple">Installed</mat-option>
+                    <mat-option value="pink">Refused</mat-option>
+                    <mat-option value="purple">red_white</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div class="field">
+            <mat-form-field>
+                <mat-select placeholder="Back Office Validation" panelClass="selectPanel2" [(ngModel)]="validate">
+                    <mat-option value="">Default</mat-option>
+                    <mat-option value="green">Validated</mat-option>
+                    <mat-option value="black">Refused</mat-option>
+                    <mat-option value="purple">Waiting</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div class="field">
+            <mat-form-field>
+                <mat-select placeholder="Sector" panelClass="selectPanel2" [(ngModel)]="sector">
+                    <mat-option value="">All</mat-option>
+                    <div *ngFor="let name of sectorNames">
+
+                        <mat-option value="{{name}}">{{name}}</mat-option>
+                    </div>
+                </mat-select>
+
+            </mat-form-field>
+        </div>
+
+        <div class="field">
+            <mat-form-field>
+                <mat-select placeholder="Delete" panelClass="selectPanel2" [(ngModel)]="deleteStatus">
+                    <mat-option value="Request Delete">Request Delete</mat-option>
+                    <mat-option value="Deleted">Deleted</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div class="filter1">
+
+        </div>
 
     </div>
 
     <div class="clients-list">
         <!-- *ngFor="let client of clients" -->
-        <div *ngFor="let client of clients.slice().reverse() | filter: IdClient | filter: PhoneNumber | filter: PDVType | filter: detailType | filter: sector | filter: validate " class="card-container">
+        <div *ngFor="let client of clients.slice().reverse() | filter: IdClient | filter: PhoneNumber | filter: PDVType | filter: detailType | filter: sector | filter: validate "
+            class="card-container">
             <mat-card (click)="openDialog(client)">
-                <img mat-card-image src="{{client.geometry.properties.PVP}}" alt="" 
-                *ngIf="client.geometry.properties.PVP; else nfcPhoto">
-    
+                <img mat-card-image src="{{client.geometry.properties.PVP}}" alt=""
+                    *ngIf="client.geometry.properties.PVP; else nfcPhoto">
+
                 <ng-template #nfcPhoto>
                     <img mat-card-image src="assets/images/blank.jpg" alt="">
                 </ng-template>
-                
+
                 <mat-card-content class="card-content">
-                  <p><span>Id:</span> {{client._id}}</p>
-                  <p><span>Name:</span> {{client.geometry.properties.NomPrenom}}</p>
-                  <p><span>PDV type:</span> {{client.geometry.properties.TypeDPV}}</p>
-                  <p><span>Sector:</span> {{client.geometry.properties.Code_Secteur_OS}}</p>
-                  <div class="nfc">
-                      NFC
-                      <mat-icon *ngIf="!client.geometry.properties.codeQR " [ngStyle]="{'color':'#FACF37'}">indeterminate_check_box</mat-icon>
-                      <mat-icon *ngIf="client.geometry.properties.codeQR " [ngStyle]="{'color':'#27AE61'}">check_box</mat-icon>
-                  </div>
+                    <p><span>Id:</span> {{client._id}}</p>
+                    <p><span>Name:</span> {{client.geometry.properties.NomPrenom}}</p>
+                    <p><span>PDV type:</span> {{client.geometry.properties.TypeDPV}}</p>
+                    <p><span>Sector:</span> {{client.geometry.properties.Code_Secteur_OS}}</p>
+                    <div class="nfc">
+                        NFC
+                        <mat-icon *ngIf="!client.geometry.properties.codeQR " [ngStyle]="{'color':'#FACF37'}">
+                            indeterminate_check_box</mat-icon>
+                        <mat-icon *ngIf="client.geometry.properties.codeQR " [ngStyle]="{'color':'#27AE61'}">check_box
+                        </mat-icon>
+                    </div>
                 </mat-card-content>
             </mat-card>
         </div>
-        
-        
+
     </div>
 </div>

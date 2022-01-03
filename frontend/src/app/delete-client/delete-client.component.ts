@@ -1,4 +1,4 @@
-import { Component, OnInit,AfterViewInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef} from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { Observable, Subject } from "rxjs";
 import { interval } from 'rxjs';
 import * as L from 'leaflet';
@@ -35,7 +35,7 @@ export class DeleteClientComponent implements AfterViewInit {
   map;
   lat = 33.2607691
   lon = -7.6222771
-  clientInfos= null
+  clientInfos = null
   latclt
   lonclt
   show
@@ -43,7 +43,7 @@ export class DeleteClientComponent implements AfterViewInit {
   selected
 
   constructor(
-    
+
   ) {
 
     navigator.mediaDevices
@@ -60,11 +60,11 @@ export class DeleteClientComponent implements AfterViewInit {
         this.videoElement.srcObject = this.stream;
       });
 
-   }
+  }
 
   ngAfterViewInit(): void {
     this.initMap();
-    
+
   }
 
   showcheck() {
@@ -162,13 +162,13 @@ export class DeleteClientComponent implements AfterViewInit {
 
   }
 
-  testTimer(){
-    this.percentage =0
-    interval(300).subscribe(x=>{
-        if( this.percentage <100){
-          this.percentage+=4
-            }
-        });
+  testTimer() {
+    this.percentage = 0
+    interval(300).subscribe(x => {
+      if (this.percentage < 100) {
+        this.percentage += 4
+      }
+    });
   }
 
   startRecording() {
@@ -181,13 +181,13 @@ export class DeleteClientComponent implements AfterViewInit {
       console.log(err);
     }
 
-    if(this.mediaRecorder != null){
+    if (this.mediaRecorder != null) {
       this.mediaRecorder.start(); // collect 100ms of data
       this.isRecording = !this.isRecording;
       this.onDataAvailableEvent();
       this.onStopRecordingEvent();
     }
-    
+
   }
 
   stopRecording() {
@@ -230,6 +230,6 @@ export class DeleteClientComponent implements AfterViewInit {
     }
   }
 
-  
+
 
 }

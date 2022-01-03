@@ -1,5 +1,5 @@
 <mat-sidenav-container fullscreen>
-    
+
     <mat-sidenav #sidenav mode="side" class="example-sidenav" (click)="sidenav.toggle()" opened="false">
         <mat-nav-list>
             <mat-list-item routerLink="map">
@@ -34,7 +34,7 @@
                 </div>
             </mat-list-item>
 
-            
+
             <mat-list-item routerLink="planning" routerLinkActive="active">
                 <mat-icon mat-list-icon>edit_calendar</mat-icon>
                 <div fxFlex="10"></div>
@@ -42,16 +42,16 @@
                     <span>Planning</span>
                 </div>
             </mat-list-item>
-            
-            
+
+
             <mat-list-item routerLink="offline" routerLinkActive="active">
-                    <mat-icon mat-list-icon>refresh</mat-icon>
-                    <div fxFlex="10"></div>
-                    <div *ngIf="sidenavWidth> 6" class="sidenav-item">
-                        <span>Synchronisation</span>
-                    </div>
+                <mat-icon mat-list-icon>refresh</mat-icon>
+                <div fxFlex="10"></div>
+                <div *ngIf="sidenavWidth> 6" class="sidenav-item">
+                    <span>Synchronisation</span>
+                </div>
             </mat-list-item>
-            
+
             <mat-list-item routerLink="settings" routerLinkActive="active" *ngIf="user.role== 'Admin'">
                 <mat-icon mat-list-icon>settings</mat-icon>
                 <div fxFlex="10"></div>
@@ -59,8 +59,8 @@
                     <span>Settings</span>
                 </div>
             </mat-list-item>
-            
-            
+
+
         </mat-nav-list>
     </mat-sidenav>
 

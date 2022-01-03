@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {  MAT_DIALOG_DATA, MatDialogRef, MatDialog} from '@angular/material/dialog';
-import { Inject } from '@angular/core'; 
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
+import { Inject } from '@angular/core';
 
 @Component({
   selector: 'app-full-image',
@@ -14,7 +14,7 @@ export class FullImageComponent implements OnInit {
 
   ngOnInit(): void {
     this.imageURL = this.data;
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~ Image"+this.imageURL)
+    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~ Image" + this.imageURL)
   }
 
 }

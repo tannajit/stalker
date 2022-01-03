@@ -8,14 +8,24 @@ import { SettingsService } from './settings.service';
   styleUrls: ['./settings.component.css']
 })
 export class SettingsComponent implements OnInit {
+
+  ////********* VARIABLE'S DECLARATION *****////////
   time=2;
   Message;
+
+
+  /////******** CONSTRUCTOR *********///////////
   constructor(private _setting:SettingsService,
               private _router:Router) { }
+
+  ////********** INIT FUNCTION ********/////////
 
   ngOnInit(): void {
     this.getSMS()
   }
+
+  ////////****** SEND SMS TIMER *******//////////
+  
   send(){
     this._setting.setTimeSMS(this.time).subscribe(res=>{
       console.log(res)
@@ -23,6 +33,8 @@ export class SettingsComponent implements OnInit {
       this._router.navigate([''])
     })
   }
+  //////********* GET SMS TIMER *******//////////
+
   getSMS(){
     this._setting.getTimeSMS().subscribe(res=>{
       if(res!=null){

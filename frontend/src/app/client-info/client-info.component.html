@@ -1,14 +1,12 @@
 <label>{{data._id}}</label>
 <div *ngIf="loggedUser.role == 'Back Office' || loggedUser.role == 'Admin'">
-    
+
     <div *ngIf="data.geometry.properties.status=='green', else refused">
         <span style="color: green;">Client Validated</span>
     </div>
     <ng-template #refused>
         <span style="color: red;">Client Not validated</span>
     </ng-template>
-
-
 
     <mat-dialog-content>
         <div class="dialog-container">
@@ -63,16 +61,10 @@
                         <button mat-button class="btn-refus" (click)="validate(data._id,'black')">Refus</button>
                     </div>
 
-
-
                 </section>
             </div>
             <div class="validPDV-container">
                 <span>Validated Client</span>
-
-
-
-
 
                 <section class="valid-pdv-container">
                     <div class="pdv-info-container">
@@ -109,18 +101,10 @@
                     </div>
                 </section>
 
-
-
-
-
             </div>
         </div>
         <!-- <p> {{data.NomPrenom}}</p> -->
     </mat-dialog-content>
-
-
-
-
 
     <mat-dialog-actions class="action-btns" align="center">
         <button mat-raised-button color="primary" class="btn-green" (click)="onUpdateClick()">Update Client</button>
@@ -129,11 +113,6 @@
             (click)="navigateToMap(data.geometry.geometry.coordinates[1],data.geometry.geometry.coordinates[0])">Navigate
             to the client</button>
     </mat-dialog-actions>
-
-
-
-
-
 </div>
 <div *ngIf="loggedUser.role == 'Seller' || loggedUser.role == 'Auditor'">
     <mat-dialog-content class="dialog-content">
@@ -173,16 +152,9 @@
                 </div>
             </div>
 
-
-
         </section>
         <!-- <p>{{data.NomPrenom}}</p> -->
     </mat-dialog-content>
-
-
-
-
-
     <mat-dialog-actions class="action-btns" align="center">
         <button mat-raised-button color="primary" class="btn-green" (click)="onUpdateClick()">Update Client</button>
         <button mat-raised-button color="primary" class="btn-red" routerLink="/deleteClient">Delete Client</button>

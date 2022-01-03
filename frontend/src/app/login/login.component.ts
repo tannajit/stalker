@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
         err => console.log(err));
     }
   }
-  
+
   // Store Token and delegate to Home page
   Response(res) {
     console.log(res)
@@ -86,7 +86,7 @@ export class LoginComponent implements OnInit {
       });
     }
   }
-  version=6
+  version = 6
 
   PutDataSector() {
     var db; var transaction
