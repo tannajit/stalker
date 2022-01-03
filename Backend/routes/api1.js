@@ -5,7 +5,6 @@ var mongo = require('mongodb');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
 //var uri= "mongodb://localhost:27017"; 
-const CircularJSON = require('circular-json');
 var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri="mongodb://localhost:27017"
 // uri to your Mongo database
