@@ -1,5 +1,6 @@
+<label>{{data._id}}</label>
 <div *ngIf="loggedUser.role == 'Back Office' || loggedUser.role == 'Admin'">
-    {{data._id}}
+    
     <div *ngIf="data.geometry.properties.status=='green', else refused">
         <span style="color: green;">Client Validated</span>
     </div>

@@ -19,7 +19,7 @@ import { DeleteClientComponent } from './delete-client/delete-client.component';
 
 const routes: Routes = [
 
-  { path: '', redirectTo: '/map', pathMatch: 'full' },
+  { path: '', redirectTo: 'map', pathMatch: 'full' },
   {
     path:'login',
     component:LoginComponent

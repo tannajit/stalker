@@ -11,6 +11,7 @@
             </div>
             <button mat-button class="btn-primary" [disabled]="!statusAddClient" [routerLink]="['/addclient', mySector]">Add PDV</button>
             <button mat-button class="btn-warning" (click)="sync()">Synchronize</button>
+            <button mat-button class="btn-warning" style="background-color:rgb(56, 117, 231)" (click)="exportexcel()"  *ngIf="user.role== 'Admin' || user.role== 'Back Office'">Extract</button>
       </div>
       <div class="map-top-elements">
             <!-- <button mat-raised-button class="my-location">
@@ -22,7 +23,7 @@
                         <mat-icon>search</mat-icon>
                         <input type="text" name="search" autocomplete="off" [(ngModel)]="IDGeomerty" >
                   </div>
-                  <button (click)="Search(IDGeomerty)">Search</button>
+                  <button (click)="SearchIndexDB(IDGeomerty)">Search</button>
             </div>
             <!-- =============== -->
             <div class="element-container">

@@ -5,8 +5,9 @@ var mongo = require('mongodb');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
 //var uri= "mongodb://localhost:27017"; 
-//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
-var uri="mongodb://localhost:27017"
+const CircularJSON = require('circular-json');
+var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+//var uri="mongodb://localhost:27017"
 // uri to your Mongo database
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
@@ -34,7 +35,6 @@ run().catch(console.log)
 
 //verfiy token
 function verifyToken(req, res, next) {
-    ////console.log(req)
     if (!req.headers.authorization) {
         return res.status(401).send('Unauthorized request')
     }
@@ -50,24 +50,6 @@ function verifyToken(req, res, next) {
     next()
 }
 
-function put(value) {
-    arraValues.push(value)
-}
-
-async function getData() {
-    var arrValues = []
-    let collection = db.collection("geometries") // collection 
-    let values = collection.find({ 'geometry.geometry.type': 'Point' })
-    values.forEach(value => { arrValues.push(value) }, error => console.log(error))
-    //console.log(arrValues)
-    return arrValues;
-    ////console.log(arraValues)
-    //return values; 
-}
-
-async function test1(db, id) {
-    return await getFileSystemItem(db, id);
-}
 // get new added clients
 router.get('/addedClients', async function (req, res) {
 
@@ -181,7 +163,7 @@ router.get('/clients', verifyToken, async (req, res) => {
     //res.json(sec)
 })
 
-// get client by seller 
+// get client by seller   (Fadma's code)
 router.get('/getClientBySeller/:id', async (req, res) => {
 
     var status = await getClientBySeller(req.params.id)
@@ -189,7 +171,7 @@ router.get('/getClientBySeller/:id', async (req, res) => {
 
 
 })
-
+/////////// get client by auditor  (Fadma's code)
 router.get('/getClientByAuditor/:id', async (req, res) => {
 
     var status = await getClientByAuditor(req.params.id)
@@ -199,7 +181,7 @@ router.get('/getClientByAuditor/:id', async (req, res) => {
 
 
 })
-
+/////////////////////////////
 router.post('/validate', async (req, res) => {
     let id = req.body.id;
     let status = req.body.status
@@ -233,13 +215,14 @@ async function InsertClient(client) {
     //console.log(id_pv);
     //console.log("-------------- " + client.lat)
     //console.log(client)
-    var id=new ObjectId();
-    console.log("=========== id"+id)
+    var id = new ObjectId();
+    console.log("=========== id" + id)
     client.nfc.NFCPhoto = id_NFC
-    var id=new ObjectId();
-    console.log("=========== id"+id)
+    var id = new ObjectId();
+    console.log("=========== id" + id)
+    var temp_datetime_obj = new Date();
     let clientinfo = {
-        idGeometry:id,
+        idGeometry: id,
         UUid: client.UUid,
         codeDANON: codeDANON,
         codeCOLA: codeCOLA,
@@ -258,16 +241,17 @@ async function InsertClient(client) {
         PhoneNumber: client.PhoneNumber,
         PVPhoto: id_pv,
         status: client.Status,
-        created_at: client.created_at,
-        updated_at: client.updated_at
+        created_at: temp_datetime_obj,
+        updated_at: temp_datetime_obj
     }
-    
+
+
     await collection.insertOne(clientinfo)
     ////********* Add in geometries *****************/
     let getInsertedId; //// put Id inserted
     var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
     //console.log(clientGeo)
-    geometries.insertOne({_id:id ,geometry: clientGeo }).then(result => {
+    geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
         var id = result.insertedId
         //console.log(id)
         var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
@@ -287,25 +271,26 @@ async function updateClient(client) {
     let collection = db.collection("clients") // collection clients
     let geometries = db.collection("geometries") /// geometries Collections
     let secteurs = db.collection("secteurs")
-    var id_NFC,id_pv;
-    if(client.geometry.properties.NFCP==null){
-        
+    var id_NFC, id_pv;
+    if (client.geometry.properties.NFCP == null) {
+
         await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
-        console.log("NFC photo id: "+id_NFC)
-    }else{
+        console.log("NFC photo id: " + id_NFC)
+    } else {
         id_NFC = ObjectId(client.geometry.properties.nfc.NFCPhoto);
-        
+
     }
-    if(client.geometry.properties.PVP==null){
+    if (client.geometry.properties.PVP == null) {
         await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
-        console.log("PV photo id: "+id_pv);
-    }else{
+        console.log("PV photo id: " + id_pv);
+    } else {
         id_pv = ObjectId(client.geometry.properties.PVPhoto);
     }
-    
+
 
     console.log(client)
-    client.geometry.properties.nfc.NFCPhoto=id_NFC
+    client.geometry.properties.nfc.NFCPhoto = id_NFC
+    var temp_datetime_obj = new Date();
     let clientinfo = {
         idGeometry: ObjectId(client._id),
         codeDANON: client.geometry.properties.codeDANON,
@@ -313,37 +298,37 @@ async function updateClient(client) {
         codeFGD: client.geometry.properties.codeFGD,
         codeQR: client.geometry.properties.codeQR,
         nfc: client.geometry.properties.nfc,
-        Code_Secteur_OS:(client.geometry.properties.Code_Secteur_OS!=null)? parseInt(client.geometry.properties.Code_Secteur_OS) : 93603636360 ,
+        Code_Secteur_OS: (client.geometry.properties.Code_Secteur_OS != null) ? parseInt(client.geometry.properties.Code_Secteur_OS) : 93603636360,
         machine: "CMG",
         TypeDPV: client.geometry.properties.TypeDPV,
         detailType: client.geometry.properties.detailType,
-        userId: client.geometry.properties.userId,
-        updatedBy: client.geometry.properties.updatedBy,
+        userId: client.geometry.properties.updatedBy,
         userRole: client.geometry.properties.userRole,
         NomPrenom: client.geometry.properties.NomPrenom,
         PhoneNumber: client.geometry.properties.PhoneNumber,
         PVPhoto: id_pv,
         status: client.geometry.properties.status,
-        updated_at: client.geometry.properties.updated_at,
+        created_at: new Date(client.geometry.properties.created_at),
+        updated_at: temp_datetime_obj,
         lat: client.geometry.geometry.coordinates[1],
         lon: client.geometry.geometry.coordinates[0]
     }
     await collection.insertOne(clientinfo).then(async (result) => {
+        clientinfo.userId = client.geometry.properties.userId
+        clientinfo.updatedBy = client.geometry.properties.updatedBy
+        console.log(clientinfo.userId)
+        console.log(clientinfo.updatedBy)
+        //delete clientinfo.created_at;
         var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
         //console.log(clientGeo)
-         var updated=await geometries.updateOne({_id:ObjectId(client._id)},
-         { $set: {"geometry":clientGeo}})
-         console.log(updated)
-         console.log("********** geometrie updated ******")
+        var updated = await geometries.updateOne({ _id: ObjectId(client._id) },
+            { $set: { "geometry": clientGeo } })
+        console.log(updated)
+        console.log("********** geometrie updated *******")
 
     })
 
     //console.log("************* Client updated in geometry *****************");
-
-
-
-
-
 }
 
 
@@ -425,8 +410,14 @@ function putFileSystemItem(dbo, filename, data) {
     });
 }
 
+///** Store  Image in Gridfs *****/
 async function test(db, filename, data) {
     return putFileSystemItem(db, filename, data)
+}
+
+////** Get Image from Gridfs *****/
+async function test1(db, id) {
+    return await getFileSystemItem(db, id);
 }
 
 /************************** Users API ******************* */
@@ -484,12 +475,12 @@ async function getUser(user) {
 
 async function getClientBySeller(id) {
     //console.log(lat)
-console.log(id)
+    console.log(id)
     let clientCollection = db.collection("clients")
     var client = await clientCollection.find(
         {
             'userRole': "Seller",
-            'idGeometry':ObjectId(id),
+            'idGeometry': ObjectId(id),
             'updated_at': { $exists: true }
         }
     ).sort({ 'updated_at': -1 }).limit(1).toArray()
@@ -520,7 +511,7 @@ async function getClientByAuditor(id) {
     let clientCollection = db.collection("clients")
     var client = await clientCollection.find(
         {
-            'idGeometry':ObjectId(id),
+            'idGeometry': ObjectId(id),
             'userRole': 'Auditor',
             'updated_at': { $exists: true }
 
@@ -578,7 +569,6 @@ async function ValidPassword(passwordG, passwordD) {
     var result = await bcrypt.compare(passwordG, passwordD)
     return (result);
 }
-
 ///////// *************** Settings *************** ///////
 
 router.post("/settings", async (req, res) => {
@@ -597,7 +587,6 @@ router.post("/settings", async (req, res) => {
     res.status(200).json("SMS time set successfully")
 
 });
-//////////////////////
 
 router.get("/settings", async (req, res) => {
     //console.log("***********get settings**************")
@@ -619,20 +608,119 @@ router.get("/GetClient/:id", async (req, res) => {
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////
 router.get("/extract", async (req, res) => {
     let geometries = await db.collection("geometries")
-    let points = geometries.find({ 'geometry.geometry.type': 'Point' }).toArray;
-    points.forEach((elem) => {
-        console.log(elem.geometry.coordinates)
+    let values = await geometries.aggregate([
+        {
+            $match: {
+                $and: [{ "geometry.geometry.type": "Point" }
+                
+                ]
+            }
+        },
+        {
+            $lookup: {
+                from: "clients",
+                localField: "_id",
+                foreignField: "idGeometry",
+                as: "info"
+            }
+        }
 
+    ]).toArray();
+    all1 = []
+
+    var test = values.map((elem) => {
+        //console.log("----")
+        //console.log(elem)
+        //all1=[];
+        //console.log("$$$")
+        elem.info.reverse();
+        audit = false;
+        seller = false;
+        all = elem.info.filter((ele) => {
+            if (ele.userRole == "Auditor" && !audit) {
+                //console.log("auditor")
+                audit = true;
+                return ele;
+            } else if (ele.userRole == "Seller" && !seller) {
+                //console.log("seller")
+                seller = true
+                return ele;
+            }
+        })
+       // console.log(all)
+        elem.info = all
+        return elem;
+
+    });
+
+    DataAll = []
+    //console.log(test)
+    test.forEach(element => {
+        //console.log("element")
+        //console.log(element)
+        Data = {
+            "Identifiant system": element._id,
+            "X": element.geometry.geometry.coordinates[1],
+            "Y": element.geometry.geometry.coordinates[0],
+            "Date_Creation": element.geometry.properties.created_at,
+            "NFC_ID":  (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc.Numero_Serie,
+            "NFC_UUID": (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc.UUID,
+            "Code_Secteur_OS": element.geometry.properties.Code_Secteur_OS,
+            "machine": (element.geometry.properties.machine!=null) ? element.geometry.properties.machine : "",
+            "TypeDPV": (element.geometry.properties.TypeDPV!=null) ? element.geometry.properties.TypeDPV  :"",
+            "NomPrenom": (element.geometry.properties.NomPrenom!=null) ? element.geometry.properties.NomPrenom : element.geometry.properties.Nom_Client,
+            "PhoneNumber": (element.geometry.properties.PhoneNumber!=null) ? element.geometry.properties.PhoneNumber : element.geometry.properties.Telephone_Client,
+            "Passage_Auditeur": "NO", 
+            "Auditeur_ID": "",
+            "Date_Reception_Auditor": "",
+            "Nom_Auditeur": "",
+            "TypeAuditeur": "",
+            "Phone_Auditeur": "",
+            "Valid_Auditeur": "",
+            "Passage_Vendeur": "NO",
+            "SalesPerson_ID": "",
+            "Date_Reception_Vondeur": "",
+            "Nom_Vendeur": "",
+            "Type_Vendeur": "",
+            "Phone_Vendeur": "",
+            "Photo_Vendeur": "",
+            "Valid_Vondeur":""
+        }
+
+        element.info.forEach(info => {
+            if (info.userRole === "Auditor") {
+                Data.Passage_Auditeur = "YES"
+                Data.Auditeur_ID =info.userId
+                Data.Nom_Auditeur =info.NomPrenom
+                Data.Date_Reception_Auditor =info.created_at
+                Data.TypeAuditeur =Data.TypeDPV
+                Data.Phone_Auditeur =info.PhoneNumber
+                if(element.geometry.properties.status=="green"){
+                    Data.Valid_Auditeur ="YES"
+                }else{
+                    Data.Valid_Auditeur ="NO"
+                }
+
+            }else if(info.userRole === "Seller"){
+                Data.Passage_Vendeur="YES"
+                Data.SalesPerson_ID=info.userId
+                Data.Date_Reception_Vondeur=info.created_at
+                Data.Nom_Vendeur=info.NomPrenom
+                Data.Type_Vendeur=info.TypeDPV
+                Data.Phone_Vendeur=info.PhoneNumber
+                if(element.geometry.properties.status=="black"){
+                    Data.Valid_Vondeur ="NO"
+                }else{
+                    Data.Valid_Vondeur ="YES"
+                }
+            }   
+        })
+        DataAll.push(Data)
     })
-
-
+    
+    
+    res.json(DataAll);
 });
-
-async function GetUserInfo(id) {
-    let users = await db.collection("users")
-    let userInfo = await users.find({ _id: id }).toArray();
-    return userInfo[0];
-}
 
 //////////////**********************/////////////////////
 

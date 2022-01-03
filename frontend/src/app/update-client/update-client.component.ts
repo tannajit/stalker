@@ -14,6 +14,7 @@ import { IndexdbService } from '../indexdb.service';
 import { OnlineOfflineServiceService} from '../online-offline-service.service';
 
 
+
 const incr = 1;
 
 @Component({
@@ -424,7 +425,7 @@ export class UpdateClientComponent implements AfterViewInit {
           this.clientInfo.geometry.properties.codeQR = element.value
         }
       });
-      console.log()
+      //console.log()
       // this.clientInfo.properties.=this.ListCodes
     }
 
@@ -440,7 +441,8 @@ export class UpdateClientComponent implements AfterViewInit {
     // add user ids
     this.clientInfo.geometry.properties.updatedBy = this.user._id;
     this.clientInfo.geometry.properties.userRole = this.user.role;
-    this.clientInfo.geometry.properties.updated_at = Date.now();
+    this.clientInfo.geometry.properties.updated_at =new Date();
+    this.clientInfo.geometry.properties.created_at =this.clientInfo.geometry.properties.created_at;
     console.log('########## Updated Client ##########')
     console.log(this.clientInfo)
     if(this.clientInfo.geometry.properties.codeQR===null){

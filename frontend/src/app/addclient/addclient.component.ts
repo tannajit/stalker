@@ -16,6 +16,7 @@ import { IndexdbService } from '../indexdb.service';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { identifierModuleUrl } from '@angular/compiler';
+import { DatePipe } from '@angular/common';
 
 
 
@@ -27,7 +28,7 @@ const incr = 1;
   selector: 'app-addclient',
   templateUrl: './addclient.component.html',
   styleUrls: ['./addclient.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 
 })
 
@@ -511,8 +512,8 @@ export class AddclientComponent implements AfterViewInit {
     else{
       this.clientInfos["Status"]="green"
     }*/
-    this.clientInfos.created_at = Date.now();
-    this.clientInfos.updated_at = Date.now()
+    this.clientInfos.created_at = new Date()
+    this.clientInfos.updated_at =new Date()
     this.clientInfos.Status = "red_white"
     console.log(this.clientInfos)
     if (!this.onlineOfflineService.isOnline) {
@@ -596,7 +597,7 @@ export class AddclientComponent implements AfterViewInit {
             "userRole": "seller",
             "NomPrenom": this.NomPrenom,
             "PhoneNumber": this.PhoneNumber,
-            "PVPhoto": this.clientInfos.PVPhoto,
+            "PVP": this.clientInfos.PVPhoto,
             "status": "red"
           }
         },
