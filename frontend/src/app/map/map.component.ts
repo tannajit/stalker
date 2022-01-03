@@ -326,6 +326,7 @@ export class MapComponent implements AfterViewInit {
     });
   }
   ///////********************* Open Dialog *********************////////
+
   openAlertDialog() {
     const dialogRef = this.dialog.open(AlertDialogComponent, {
       data: {
@@ -336,8 +337,10 @@ export class MapComponent implements AfterViewInit {
       }
     });
   }
+
   ///////***** Filter Done/Not Done PDV **********///////////////////
   option_done = ""
+  
   onChange() {
     console.log(this.option_done)
     if (this.option_done == "Done") {
@@ -360,6 +363,7 @@ export class MapComponent implements AfterViewInit {
       this.getDataClient();
     }
   }
+
   //////////////****************Filtrage Retail/AuditRetail ***********/////////////////
   option_retail = ""
   onChange2() {
@@ -398,6 +402,7 @@ export class MapComponent implements AfterViewInit {
       }
     });
   }
+
   ///////////// Search for the client from indexDB (Hafsa's Code) **////////////////////
   SearchIndexDB(IDGeomerty){
     console.log("Update in IndexedDB")

@@ -28,6 +28,7 @@ export class ClientsService {
   private getClientBySell =this.uri+"/api1/getClientBySeller";
   private _validate = this.uri+"/api1/validate";
   private _extarct=this.uri+"/api1/extract";
+  private _allDeleteRequests = this.uri+"/api1/getAllDeleteRequests";
   
   ////////////////////remplacer par uri après le port
   private _getClientByID = "http://localhost:3000/api1/GetClient";
@@ -313,11 +314,10 @@ export class ClientsService {
   }
 
 
-
-
   getAllSecteurs(){
           return this.http.get<any>(this._secteurUrl)
         }
+
 
   getClient() {
           return this.http.get<any>(this._getclient);
@@ -329,6 +329,7 @@ export class ClientsService {
           return this.currentClient;
         }
   
+
   getShow() {
     var list=[]
     var transaction
@@ -358,6 +359,7 @@ export class ClientsService {
     };
      return list
   }
+
 
   getID() {
     var list=[]
@@ -390,10 +392,6 @@ export class ClientsService {
   }
 
 
-
-
-
-
   updateClient(client:any){
     return this.http.post<any>(this._updateclient, client);
   }
@@ -405,14 +403,21 @@ export class ClientsService {
     return this.http.post<any>(this._validate,info);
   }
 
+
   //////////////////
   getClientByID(id){
     console.log('id'+id);
     return this.http.get(this._getClientByID+ '/' +id);
   }
+
+
   ///////////////////
   extract(){
     return this.http.get<any>(this._extarct);
+  }
+
+  getDeleteRequests(){
+    return this.http.get<any>(this._allDeleteRequests)
   }
 
   
