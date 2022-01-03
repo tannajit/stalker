@@ -60,6 +60,17 @@ export class ClientInfoComponent implements OnInit {
     this._router.navigate(['/updateclient'])
 
   }
+  ActiveTheButton(){
+    //console.log("fjdkfh"+ this.clientService.ActiveTheButton())
+    return this.clientService.ActiveTheButton();
+  }
+  onDeleteClick(){
+
+    this.dialogRef.close();
+    //this._router.navigateByUrl('/deleteClient',{dataClient:this.data})
+    this._router.navigateByUrl('/deleteClient', { state: { dataClient:this.data } });
+    //this.clientService.De
+  }
 
   
 
@@ -82,6 +93,8 @@ export class ClientInfoComponent implements OnInit {
     //this._router.navigate(['/map'])
   }
 
+  
+
   openAlertDialog(msg,btn){
 
     const dialogRef = this.dialog.open(AlertDialogComponent,{
@@ -93,9 +106,12 @@ export class ClientInfoComponent implements OnInit {
       }
     });
   }
+  
 
   navigateToMap(lat,long){
     this._router.navigate(['/map/'+lat+"/"+long])
     this.dialogRef.close();
   }
+
+  
 }

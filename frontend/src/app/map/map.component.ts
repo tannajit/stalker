@@ -36,6 +36,7 @@ export class MapComponent implements AfterViewInit {
   dialogRef: MatDialogRef<ClientInfoComponent>;
   private map;
   public content = null;
+  myCercle;
   mySector = 'hello';
   IDGeomerty;
   icon = L.icon({
@@ -85,6 +86,7 @@ export class MapComponent implements AfterViewInit {
     });
   }
  ///*** get Location */
+ radius=2
   getLocation() {
     // interval(1000).subscribe(x => {
     if (navigator.geolocation) {
@@ -98,6 +100,15 @@ export class MapComponent implements AfterViewInit {
           console.log(this.lon);
           this.map.setView(new L.LatLng(this.lat, this.lon), 18, { animation: true });
           //this.myMarker = L.marker([this.lat, this.lon], { icon: this.location_icon };
+         if(this.myCercle!==undefined){
+          this.map.removeLayer( this.myCercle)
+         }
+          this.myCercle = L.circle([this.lat, this.lon], {color:"blue",fillColor:"#cce6ff",radius:this.radius});
+
+          this.myCercle.addTo(this.map);
+          
+          this._serviceClient.getPosition({"Map":new L.LatLng(this.lat, this.lon),"Raduis":this.radius});
+
           if (this.myMarker != undefined) {
             console.log("remove layer ")
             this.map.removeLayer(this.myMarker)
@@ -155,6 +166,7 @@ export class MapComponent implements AfterViewInit {
           });
           if (Point.geometry.properties?.nfc != undefined) {
             marker.on('click', () => {
+              this._serviceClient.getPosition({"Client":new L.LatLng(Point.geometry.geometry.coordinates[1],Point.geometry.geometry.coordinates[0])});
               this.content = Point.geometry;
               this.zone.run(() => this.openDialog(Point));
             });

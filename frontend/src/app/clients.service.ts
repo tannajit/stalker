@@ -6,6 +6,7 @@ import Dexie from 'dexie';
 import { UUID } from 'angular2-uuid';
 import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import * as L from 'leaflet';
 
 
 @Injectable({
@@ -311,7 +312,60 @@ export class ClientsService {
             }
           });
   }
+  MyPosition;
+  Raduis;
+  PositionClient;
+  Distance;
+  getPosition(position){
+    if(Object.keys(position)[0]==="Map"){
+    this.MyPosition=position.Map;
+    this.Raduis=position.Raduis;
+  };
+    if(Object.keys(position)[0]==="Client"){
+    this.PositionClient=position.Client;
 
+  }
+  if((Object.keys(position)[0]==="MapUp")&&(this.PositionClient!=null)){
+
+    console.log("MyPosition Updated "+ new L.LatLng(position.MapUp[0], position.MapUp[1]));
+
+    this.MyPosition=new L.LatLng(position.MapUp[0], position.MapUp[1]);
+    this.Raduis=position.Raduis;
+    this.Distance=this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
+    console.log("Distance Up :"+this.Distance );
+    console.log("Raduis Up :"+this.Raduis );
+    
+  }
+  if(this.PositionClient!=null){
+console.log("MyPosition "+this.MyPosition);
+
+  console.log("Pointposition "+this.PositionClient);
+
+    this.Distance=this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
+    console.log("Distance :"+this.Distance );
+    console.log("Raduis :"+this.Raduis );
+
+  }
+  
+    // if(this.Distance<=this.Raduis) {
+    // console.log("The point into the cercle")
+    // //this.getDistance();
+    // return this.Distance;
+    //}
+  }
+  ActiveTheButton(){
+    if(this.Distance<=this.Raduis) {
+      //console.log("The point into the cercle")
+      return false;
+    }
+    return true
+  }
+
+  getDistance(){
+    //console.log("Distance2 :"+this.Distance );
+    return this.Distance;
+
+  }
 
 
 
@@ -414,6 +468,7 @@ export class ClientsService {
   extract(){
     return this.http.get<any>(this._extarct);
   }
+
 
   
 }
