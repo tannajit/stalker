@@ -105,6 +105,9 @@ export class ClientInfoComponent implements OnInit {
     this._router.navigate(['/map/' + lat + "/" + long])
     this.dialogRef.close();
   }
-  ////////////////////////////////////////////////
 
+  deleteRequest(){
+    this._router.navigate(['/deleteClient'])
+    this.dialogRef.close();
+  }
 }

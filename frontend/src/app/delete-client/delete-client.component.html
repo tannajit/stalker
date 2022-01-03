@@ -43,8 +43,12 @@
             <div class="scan-field" *ngIf="selected=='Not exist'">
                 <label class="input-label">PDV location video : </label>
                 <div>
+<<<<<<< HEAD
                     <button mat-button class="btn-green" *ngIf="!isRecording" (click)="startRecording()">Record
                         Video</button>
+=======
+                    <button matbutton class="btn-green" *ngIf="!isRecording" (click)="startRecording()">Record Video</button>
+>>>>>>> af342d18b83d9816e0c4178edfeff73f3d5745a7
                 </div>
             </div>
             <div class="scan-field" *ngIf="selected=='Not exist'">
@@ -55,12 +59,37 @@
             <div class="scan-field" *ngIf="selected=='Out of category' || selected=='End of activity' ">
                 <label class="input-label">PDV photo : </label>
                 <div>
+<<<<<<< HEAD
                     <button mat-button class="btn-green">
                         <mat-icon>camera_alt</mat-icon>
                     </button>
                 </div>
             </div>
 
+=======
+                    <button mat-button class="btn-green" (click)="displayCam()"><mat-icon>camera_alt</mat-icon></button>
+                </div>
+            </div> 
+            <div  *ngIf="showWebcam" class="Scan-container">
+                <webcam [height]="200"
+                        [width]="500"
+                        [trigger]="triggerObservable"
+                        (imageCapture)="handleImage($event)">
+                </webcam>
+                <div class="reas-nfc">
+                    <button mat-button class="btn-green"  (click)="triggerSnapshot()">Click Here</button>
+                    <button mat-button class="btn-green"  (click)="toggleWebcam()">Close Camera</button>
+                </div>
+            </div>
+            <div  *ngIf="webcamImage" class="Scan-container">
+        
+                <div class="snapshot">
+                  <img [height]="200"
+                       [width]="200" [src]="webcamImage.imageAsDataUrl"/>
+                </div>
+              </div>
+            
+>>>>>>> af342d18b83d9816e0c4178edfeff73f3d5745a7
         </div>
 
         <button mat-button class="btn-yellow">Send</button>

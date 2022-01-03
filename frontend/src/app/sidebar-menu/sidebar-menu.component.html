@@ -52,6 +52,17 @@
                 </div>
             </mat-list-item>
 
+<<<<<<< HEAD
+=======
+            <mat-list-item routerLink="deleteRequests" routerLinkActive="active" *ngIf="user.role== 'Admin'">
+                <mat-icon mat-list-icon>auto_delete</mat-icon>
+                <div fxFlex="10"></div>
+                <div *ngIf="sidenavWidth> 6" class="sidenav-item">
+                    <span>Delete Requests</span>
+                </div>
+            </mat-list-item>
+            
+>>>>>>> af342d18b83d9816e0c4178edfeff73f3d5745a7
             <mat-list-item routerLink="settings" routerLinkActive="active" *ngIf="user.role== 'Admin'">
                 <mat-icon mat-list-icon>settings</mat-icon>
                 <div fxFlex="10"></div>

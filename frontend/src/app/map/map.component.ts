@@ -159,6 +159,7 @@ export class MapComponent implements AfterViewInit {
               this.zone.run(() => this.openDialog(Point));
             });
           } else {
+            console.log("############# ici"+Point.geometry.properties.Nom_Client)
             marker.bindPopup('<h1> <b>Client Information</b></h1><p><b>Name:</b> ' + String(Point.geometry.properties.Nom_Client) + '</p><p><b>Sector Name: </b>' + String(Point.geometry.properties.Nom_du_Secteur) + '</p>');
           }
           this.markersCluster.addLayer(marker);

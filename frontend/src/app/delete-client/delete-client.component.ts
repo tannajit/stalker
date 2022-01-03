@@ -42,6 +42,12 @@ export class DeleteClientComponent implements AfterViewInit {
   raison
   selected
 
+  // photo
+  showWebcam = false
+  private trigger: Subject<void> = new Subject<void>();
+  public webcamImage = null;
+  PDVImage
+
   constructor(
 
   ) {
@@ -230,6 +236,27 @@ export class DeleteClientComponent implements AfterViewInit {
     }
   }
 
+  displayCam(){
+    this.showWebcam = !this.showWebcam;
+  }
 
+  get triggerObservable(): Observable < void> {
+    return this.trigger.asObservable();
+  }
+
+  handleImage(webcamImage): void {
+    console.info('received webcam image', webcamImage);
+    this.webcamImage = webcamImage;
+    this.PDVImage = webcamImage.imageAsDataUrl;
+  }
+
+  triggerSnapshot(): void {
+    this.trigger.next();
+  }
+
+  toggleWebcam() {
+    this.showWebcam = !this.showWebcam;
+  }
+  
 
 }

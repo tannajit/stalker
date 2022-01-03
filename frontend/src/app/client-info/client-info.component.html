@@ -1,6 +1,11 @@
 <label>{{data._id}}</label>
+<<<<<<< HEAD
 <div *ngIf="loggedUser.role == 'Back Office' || loggedUser.role == 'Admin'">
 
+=======
+<div *ngIf="loggedUser.role == 'Back Office' || loggedUser.role == 'Admin' && data!='yes'">
+    
+>>>>>>> af342d18b83d9816e0c4178edfeff73f3d5745a7
     <div *ngIf="data.geometry.properties.status=='green', else refused">
         <span style="color: green;">Client Validated</span>
     </div>
@@ -114,6 +119,7 @@
             to the client</button>
     </mat-dialog-actions>
 </div>
+
 <div *ngIf="loggedUser.role == 'Seller' || loggedUser.role == 'Auditor'">
     <mat-dialog-content class="dialog-content">
         <h2>Client Information</h2>
@@ -157,6 +163,53 @@
     </mat-dialog-content>
     <mat-dialog-actions class="action-btns" align="center">
         <button mat-raised-button color="primary" class="btn-green" (click)="onUpdateClick()">Update Client</button>
-        <button mat-raised-button color="primary" class="btn-red" routerLink="/deleteClient">Delete Client</button>
+        <button mat-raised-button color="primary" class="btn-red" (click)="deleteRequest()">Delete Client</button>
     </mat-dialog-actions>
 </div>
+
+<div *ngIf="data=='yes'">
+    <mat-dialog-content class="dialog-content">
+        <h2>Client Information</h2>
+        <section fxLayout="column" fxLayoutAlign="center">
+            <div class="pdv-info-container">
+                <div class="pdv-img">
+                    
+                    <img  src="assets/images/blank.jpg" alt=""
+                        (click)="openImage('assets/images/blank.jpg')">
+                </div>
+                <div class="pdv-info">
+                    <label>Sector:</label>
+                    <p>text</p>
+                    <label>Name:</label>
+                    <p>text</p>
+                    <label>Phone Number:</label>
+                    <p>text</p>
+                    <label>Type PDV:</label>
+                    <p>text</p>
+                </div>
+            </div>
+            <div class="pdv-info-container">
+
+                <div class="pdv-img">
+                    
+                    <img  src="assets/images/blank.jpg" alt=""
+                        (click)="openImage('assets/images/blank.jpg')">
+                </div>
+                <div class="pdv-info">
+                    <label>Reason:</label>
+                    <p>null</p>
+                </div>
+            </div>
+
+
+
+        </section>
+        <!-- <p>{{data.NomPrenom}}</p> -->
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="action-btns" align="center">
+        <button mat-raised-button color="primary" class="btn-green" >Validate Supp</button>
+        <button mat-raised-button color="primary" class="btn-red" >Cancel Supp</button>
+    </mat-dialog-actions>
+</div>
+
