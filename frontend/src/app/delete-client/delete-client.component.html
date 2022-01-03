@@ -39,21 +39,7 @@
     
     <div class="container" *ngIf="hide">
         <div class="checkcodes-fields">
-            <div class="scan-field">
-                <label class="input-label">PDV location video : </label>
-                <div>
-                    <button mat-button class="btn-green" *ngIf="!isVideoRecording && !videoBlobUrl" (click)="startVideoRecording()">Record Video</button>
-                    <button class="stop-button" *ngIf="isVideoRecording && !videoBlobUrl" (click)="stopVideoRecording()">Stop Video Recording</button>
-                    <button class="cancel-button" *ngIf="!isVideoRecording && videoBlobUrl" (click)="clearVideoRecordedData()">Clear Video Recording</button>
-                    <button class="download-button" *ngIf="!isVideoRecording && videoBlobUrl" (click)="downloadVideoRecordedData()">Download Video Recording</button>
-                    <div id="videoTimer" *ngIf="isVideoRecording && !videoBlobUrl"> {{ videoRecordedTime }} </div>
-                </div>
-            </div>
-            <div>
-                <video #videoElement>
-                    <source *ngIf="!isVideoRecording && videoBlobUrl" [src]="videoBlobUrl">
-                </video>
-            </div>
+                       
             <div class="scan-field">
                 <label class="input-label">Delete Raison* </label>
                 <mat-form-field>
@@ -65,6 +51,23 @@
                     </mat-select>
                 </mat-form-field>
             </div>
+            <div class="scan-field" *ngIf="selected=='Not exist'">
+                <label class="input-label">PDV location video : </label>
+                <div>
+                    <button mat-button class="btn-green" *ngIf="!isRecording" (click)="startRecording()">Record Video</button>
+                </div>
+            </div>
+            <div class="scan-field" *ngIf="selected=='Not exist'">
+                <video class="video" #video autoplay controls></video>
+                <video class="video" style="width:360 !important;" controls #recordedVideo></video>
+            </div>
+            
+            <div class="scan-field" *ngIf="selected=='Out of category' || selected=='End of activity' ">
+                <label class="input-label">PDV photo : </label>
+                <div>
+                    <button mat-button class="btn-green"><mat-icon>camera_alt</mat-icon></button>
+                </div>
+            </div> 
             
         </div>
         

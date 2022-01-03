@@ -1,10 +1,11 @@
-import { Component, OnInit,AfterViewInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
+import { Component, OnInit,AfterViewInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef} from '@angular/core';
 import { Observable, Subject } from "rxjs";
 import { interval } from 'rxjs';
 import * as L from 'leaflet';
 import { VideoRecordingService } from '../video-recording.service';
 import { DomSanitizer } from '@angular/platform-browser';
 
+declare var MediaRecorder: any;
 @Component({
   selector: 'app-delete-client',
   templateUrl: './delete-client.component.html',
@@ -14,17 +15,16 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class DeleteClientComponent implements AfterViewInit {
 
   // video variables
-  @ViewChild('videoElement') videoElement: any;
-  video: any;
-  isPlaying = false;
-  displayControls = true;
-  isVideoRecording = false;
-  videoBlobUrl;
-  videoStream: MediaStream;
-  videoRecordedTime;
-  videoBlob;
-  videoName;
-  videoConf = { video: { facingMode:"user", width: 320 }, audio: true}
+  @ViewChild('recordedVideo') recordVideoElementRef: ElementRef;
+  @ViewChild('video') videoElementRef: ElementRef;
+
+  videoElement: HTMLVideoElement;
+  recordVideoElement: HTMLVideoElement;
+  mediaRecorder: any;
+  recordedBlobs: Blob[];
+  isRecording: boolean = false;
+  downloadUrl: string;
+  stream: MediaStream;
 
   list = []
   Status;
@@ -43,38 +43,28 @@ export class DeleteClientComponent implements AfterViewInit {
   selected
 
   constructor(
-    private ref: ChangeDetectorRef,
-    private videoRecordingService: VideoRecordingService,
-    private sanitizer: DomSanitizer
+    
   ) {
 
-    this.videoRecordingService.recordingFailed().subscribe(() => {
-      this.isVideoRecording = false;
-      this.ref.detectChanges();
-    });
+    navigator.mediaDevices
+      .getUserMedia({
+        video: {
+          width: 360
+        }
+      })
+      .then(stream => {
+        this.videoElement = this.videoElementRef.nativeElement;
+        this.recordVideoElement = this.recordVideoElementRef.nativeElement;
 
-    this.videoRecordingService.getRecordedTime().subscribe((time) => {
-      this.videoRecordedTime = time;
-      this.ref.detectChanges();
-    });
-
-    this.videoRecordingService.getStream().subscribe((stream) => {
-      this.videoStream = stream;
-      this.ref.detectChanges();
-    });
-
-    this.videoRecordingService.getRecordedBlob().subscribe((data) => {
-      this.videoBlob = data.blob;
-      this.videoName = data.title;
-      this.videoBlobUrl = this.sanitizer.bypassSecurityTrustUrl(data.url);
-      this.ref.detectChanges();
-    });
+        this.stream = stream;
+        this.videoElement.srcObject = this.stream;
+      });
 
    }
 
   ngAfterViewInit(): void {
     this.initMap();
-    this.video = this.videoElement.nativeElement;
+    
   }
 
   showcheck() {
@@ -181,61 +171,65 @@ export class DeleteClientComponent implements AfterViewInit {
         });
   }
 
-  startVideoRecording() {
-    if (!this.isVideoRecording) {
-      this.video.controls = false
-      this.isVideoRecording = true;
-      this.videoRecordingService.startRecording(this.videoConf)
-      .then(stream => {
-        // this.video.src = window.URL.createObjectURL(stream);
-        this.video.srcObject = stream;
-        this.video.play();
-      })
-      .catch(function (err) {
-        console.log(err.name + ": " + err.message);
-      });
+  startRecording() {
+    this.recordedBlobs = [];
+    let options: any = { mimeType: 'video/webm' };
+
+    try {
+      this.mediaRecorder = new MediaRecorder(this.stream, options);
+    } catch (err) {
+      console.log(err);
+    }
+
+    if(this.mediaRecorder != null){
+      this.mediaRecorder.start(); // collect 100ms of data
+      this.isRecording = !this.isRecording;
+      this.onDataAvailableEvent();
+      this.onStopRecordingEvent();
+    }
+    
+  }
+
+  stopRecording() {
+    this.mediaRecorder.stop();
+    this.isRecording = !this.isRecording;
+    console.log('Recorded Blobs: ', this.recordedBlobs);
+  }
+
+  playRecording() {
+    if (!this.recordedBlobs || !this.recordedBlobs.length) {
+      console.log('cannot play.');
+      return;
+    }
+    this.recordVideoElement.play();
+  }
+
+  onDataAvailableEvent() {
+    try {
+      this.mediaRecorder.ondataavailable = (event: any) => {
+        if (event.data && event.data.size > 0) {
+          this.recordedBlobs.push(event.data);
+        }
+      };
+    } catch (error) {
+      console.log(error);
     }
   }
 
-  abortVideoRecording() {
-    if (this.isVideoRecording) {
-      this.isVideoRecording = false;
-      this.videoRecordingService.abortRecording();
-      this.video.controls = false;
+  onStopRecordingEvent() {
+    try {
+      this.mediaRecorder.onstop = (event: Event) => {
+        const videoBuffer = new Blob(this.recordedBlobs, {
+          type: 'video/webm'
+        });
+        this.downloadUrl = window.URL.createObjectURL(videoBuffer); // you can download with <a> tag
+        this.recordVideoElement.src = this.downloadUrl;
+      };
+    } catch (error) {
+      console.log(error);
     }
   }
 
-  stopVideoRecording() {
-    if (this.isVideoRecording) {
-      this.videoRecordingService.stopRecording();
-      this.video.srcObject = this.videoBlobUrl;
-      this.isVideoRecording = false;
-      this.video.controls = true;
-    }
-  }
-
-  clearVideoRecordedData() {
-    this.videoBlobUrl = null;
-    this.video.srcObject = null;
-    this.video.controls = false;
-    this.ref.detectChanges();
-  }
-
-  downloadVideoRecordedData() {
-    this._downloadFile(this.videoBlob, 'video/mp4', this.videoName);
-  }
-
-  _downloadFile(data: any, type: string, filename: string): any {
-    const blob = new Blob([data], { type: type });
-    const url = window.URL.createObjectURL(blob);
-    //this.video.srcObject = stream;
-    //const url = data;
-    const anchor = document.createElement('a');
-    anchor.download = filename;
-    anchor.href = url;
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
-  }
+  
 
 }
