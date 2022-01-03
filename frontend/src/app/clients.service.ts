@@ -28,6 +28,7 @@ export class ClientsService {
   private _validate = this.uri + "/api1/validate";
   private _extarct = this.uri + "/api1/extract";
   private _getClientByID = this.uri + "/api1/GetClient";
+  private _allDeleteRequests = this.uri+"/api1/getAllDeleteRequests";
 
   ////////*************** API *****************////////
 
@@ -75,6 +76,10 @@ export class ClientsService {
 
   extract() {
     return this.http.get<any>(this._extarct);
+  }
+
+  getDeleteRequests(){
+    return this.http.get<any>(this._allDeleteRequests)
   }
 
   //////////////////////////////////////////////////////////
@@ -262,7 +267,9 @@ export class ClientsService {
       }
     });
   }
-   ////************ GET DATA BY ID FROM INDEXEDB (ADD CLIENT) *********///////
+////************ GET DATA BY ID FROM INDEXEDB (ADD CLIENT) *********///////
+  
+
   getShow() {
     var list = []
     var transaction
@@ -324,7 +331,9 @@ export class ClientsService {
   }
 //////********** VALIDATE AUDIT INFO BACKOFFICE *******////////
 
-  validateAuditorInfo(info) {
+
+
+  validateAuditorInfo(info){
     console.log("#############################")
     console.log(info)
     return this.http.post<any>(this._validate, info);
@@ -332,10 +341,7 @@ export class ClientsService {
 
 ////////////////////////////////////////////////////////
 
-  getClientByID(id) {
-    console.log('id' + id);
-    return this.http.get(this._getClientByID + '/' + id);
-  }
+ 
 
   setCurrentClientInfo(client: any) {
     this.currentClient = client;
@@ -346,4 +352,18 @@ export class ClientsService {
     return this.currentClient;
   }
  
+
+  //////////////////
+  getClientByID(id){
+    console.log('id'+id);
+    return this.http.get(this._getClientByID+ '/' +id);
+  }
+  
+
+
+  
+
+  
+
+  
 }

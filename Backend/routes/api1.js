@@ -93,6 +93,23 @@ router.get('/secteurss', async (req, res) => {
 });
 
 
+router.get('/getAllDeleteRequests', async(req, res) =>{
+
+    let delReq = await db.collection("DeleteRequest") 
+    var values = await delReq.aggregate([
+    {
+        $lookup: {
+            from: "geometries",
+            localField: "_id",
+            foreignField: "_id",
+            as: "PDV"
+        }
+    }]).toArray();
+
+    res.json(values)
+})
+
+
 /* GET Sectors Based on User */
 router.get('/secteurs', verifyToken, async (req, res) => {
     var userId = req.userId;
