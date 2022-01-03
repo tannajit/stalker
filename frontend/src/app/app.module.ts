@@ -49,6 +49,10 @@ import { ExtractComponent } from './extract/extract.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { DeleteClientComponent } from './delete-client/delete-client.component';
+import { DeleteRequestsComponent } from './delete-requests/delete-requests.component';
+import {MatSortModule} from '@angular/material/sort';
+import {MatTableModule} from '@angular/material/table'
+
 
 
 @NgModule({
@@ -69,6 +73,8 @@ import { DeleteClientComponent } from './delete-client/delete-client.component';
     AlertDialogComponent,
     ExtractComponent,
     DeleteClientComponent,
+    DeleteRequestsComponent,
+    
 
   ],
   imports: [
@@ -101,6 +107,8 @@ import { DeleteClientComponent } from './delete-client/delete-client.component';
     MatFormFieldModule,
     MatDialogModule,
     CommonModule,
+    MatSortModule,
+    MatTableModule,
     MatSlideToggleModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: true,
