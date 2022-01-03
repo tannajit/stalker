@@ -431,7 +431,7 @@ export class MapComponent implements AfterViewInit {
   }
   //////////////////////////////////////////////////////////////////////////////////
 
-  /////////////*********** EXTARCT DATA ******/////////////////
+  /////////////*********** EXTRACT DATA ******/////////////////
   exportexcel() {
     this._serviceClient.extract().subscribe(res => {
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(res)
