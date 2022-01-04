@@ -21,7 +21,7 @@ import { MatListModule } from '@angular/material/list';
 import { MapComponent } from './map/map.component';
 import { ClientsComponent } from './clients/clients.component';
 import { RoutesComponent } from './routes/routes.component';
-import { PlanningComponent } from './planning/planning.component';
+import { PlanningComponent } from './admin/planning/planning.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthenticationService } from './authentication.service';
 import { AuthGaurdService } from './auth-gaurd.service';
@@ -49,7 +49,7 @@ import { ExtractComponent } from './extract/extract.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { DeleteClientComponent } from './delete-client/delete-client.component';
-import { DeleteRequestsComponent } from './delete-requests/delete-requests.component';
+import { DeleteRequestsComponent } from './admin/delete-requests/delete-requests.component';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table'
 

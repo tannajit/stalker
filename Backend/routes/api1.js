@@ -95,6 +95,7 @@ router.get('/secteurss', async (req, res) => {
 
 router.get('/getAllDeleteRequests', async(req, res) =>{
 
+    list=[]
     let delReq = await db.collection("DeleteRequest") 
     var values = await delReq.aggregate([
     {
@@ -106,7 +107,42 @@ router.get('/getAllDeleteRequests', async(req, res) =>{
         }
     }]).toArray();
 
-    res.json(values)
+    curs = values.map(async (elem) => {
+        //console.log("----------- element ")
+        //console.log(elem)
+        
+        ////console.log(elem)
+        if (elem.PDV[0].geometry.properties?.nfc != undefined) {
+            var element = elem.PDV[0].geometry.properties;
+            //elem.geometry.properties.status="red_white"
+            await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
+                //console.log("hna 1")
+                elem.PDV[0].geometry.properties.NFCP = re
+            })
+
+            await test1(db, ObjectId(element.PVPhoto)).then(re => {
+                //console.log("hna 2")
+                elem.PDV[0].geometry.properties.PVP = re
+            })
+            //a.add(elem)
+        }
+        if(elem.Photo != undefined){
+            await test1(db, ObjectId(elem.Photo)).then(re => {
+                //console.log("hna 1")
+                elem.PhotoURL = re
+            })
+        }
+
+        list.push(elem)
+
+    })
+    ////console.log(a.length)
+    Promise.all(curs).then(ee => {
+        ////console.log(a.length)
+        res.json(list)
+    });
+
+    // res.json(values)
 })
 
 
@@ -620,6 +656,7 @@ router.get("/GetClient/:id", async (req, res) => {
     res.status(200).send(client);
 }
 )
+
 router.post("/DeleteRequest", async (req, res) => {
     console.log("get client : ")
     dataclient=req.body.data
