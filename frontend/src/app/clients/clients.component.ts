@@ -36,7 +36,7 @@ export class ClientsComponent implements OnInit {
   }
   //////////////////////////////////////////////////
 
-  ////********* INIT FUNCTION *********///////
+  ///////********* INIT FUNCTION *********///////
 
   ngOnInit(): void {
     this.getDataSector()

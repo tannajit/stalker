@@ -1,11 +1,6 @@
 <label>{{data._id}}</label>
-<<<<<<< HEAD
-<div *ngIf="loggedUser.role == 'Back Office' || loggedUser.role == 'Admin'">
-
-=======
 <div *ngIf="loggedUser.role == 'Back Office' || loggedUser.role == 'Admin' && data!='yes'">
     
->>>>>>> af342d18b83d9816e0c4178edfeff73f3d5745a7
     <div *ngIf="data.geometry.properties.status=='green', else refused">
         <span style="color: green;">Client Validated</span>
     </div>
@@ -37,8 +32,6 @@
                         </div>
                     </div>
                     <div class="pdv-action-btns">
-                        <!-- <button mat-button class="btn-valid" (click)="validateSeller()">Valid</button>
-    <button mat-button class="btn-refus">Refus</button> -->
                     </div>
                 </section>
                 <section class="aud-container">
@@ -200,9 +193,6 @@
                     <p>null</p>
                 </div>
             </div>
-
-
-
         </section>
         <!-- <p>{{data.NomPrenom}}</p> -->
     </mat-dialog-content>
