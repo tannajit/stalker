@@ -298,6 +298,7 @@ export class MapComponent implements AfterViewInit {
       });
     };
   }
+  /////////////////////////////////////////////////////////////////
 
   /////////////// ********* Synchronize Action **********/////////////////////////
   async sync() {
@@ -305,11 +306,12 @@ export class MapComponent implements AfterViewInit {
     this.openAlertDialog();
     console.log('Synchronize (Get data from the Database)');
   }
+  /////////////////////////////////////////////////////////////////
+
 //////////********  Check if location inside Sector ***********//////////
   isMarkerInsidePolygon(marker, poly) {
     const polyPoints = poly.getLatLngs();
     const x = marker.getLatLng().lat, y = marker.getLatLng().lng;
-
     let inside = false;
     for (let i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
       const xi = polyPoints[i].lat, yi = polyPoints[i].lng;
@@ -321,12 +323,11 @@ export class MapComponent implements AfterViewInit {
     }
     return inside;
   }
+
   Insid() {
     this.statusAddClient = false;
     this.AllSecteurs.forEach(elem => {
       console.log(elem)
-      // console.log(this.myMarker)
-      // console.log(this.myMarker._latlng)
       const lat = this.myMarker._latlng.lat;
       const lon = this.myMarker._latlng.lng;
       const test = turf.point([lon, lat]);
@@ -339,7 +340,10 @@ export class MapComponent implements AfterViewInit {
       } 
     });
   }
+  //////////////////////////////////////////////////////////////////
+
   ///////********************* Open Dialog *********************////////
+
   openAlertDialog() {
     const dialogRef = this.dialog.open(AlertDialogComponent, {
       data: {
@@ -350,8 +354,11 @@ export class MapComponent implements AfterViewInit {
       }
     });
   }
+  ////////////////////////////////////////////////////////////////////
+
   ///////***** Filter Done/Not Done PDV **********///////////////////
   option_done = ""
+  
   onChange() {
     console.log(this.option_done)
     if (this.option_done == "Done") {
@@ -374,6 +381,8 @@ export class MapComponent implements AfterViewInit {
       this.getDataClient();
     }
   }
+  ////////////////////////////////////////////////////////////////////////
+
   //////////////****************Filtrage Retail/AuditRetail ***********/////////////////
   option_retail = ""
   onChange2() {
@@ -392,7 +401,6 @@ export class MapComponent implements AfterViewInit {
         if (layer.feature.properties?.TypeDPV == "Detail") {
           console.log(layer)
           this.markersCluster.removeLayer(layer);
-
         }
       })
     } else {
@@ -401,8 +409,9 @@ export class MapComponent implements AfterViewInit {
       this.getDataClient();
     }
   }
+  ///////////////////////////////////////////////////////////////
 
-  ////////////// Search for a client By id /////////////////
+  ///////******** Search for a client By id ***********///////////
   Search(IDGeomerty) {
     console.log(IDGeomerty);
     //tslint:disable-next-line:no-shadowed-variable
@@ -412,7 +421,9 @@ export class MapComponent implements AfterViewInit {
       }
     });
   }
-  ///////////// Search for the client from indexDB (Hafsa's Code) **////////////////////
+  /////////////////////////////////////////////////////////
+
+  ///////************** Search for the client from indexDB ***********////////////
   SearchIndexDB(IDGeomerty){
     console.log("Update in IndexedDB")
     var db, transaction;
@@ -432,8 +443,9 @@ export class MapComponent implements AfterViewInit {
       }
     }
   }
+  //////////////////////////////////////////////////////////////////////////////////
 
-  /////////////////////////***** Extract Data  (hafsa's Code) ******/////////////////
+  /////////////*********** EXTRACT DATA ******/////////////////
   exportexcel() {
     this._serviceClient.extract().subscribe(res => {
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(res)
@@ -444,6 +456,7 @@ export class MapComponent implements AfterViewInit {
       XLSX.writeFile(wb, "Data_Extraction.xlsx");
     });
   }
+  ////////////////////////////////////////////////////////////
 
 }
 

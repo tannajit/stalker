@@ -2,7 +2,6 @@ import { Injectable, NgZone } from '@angular/core';
 import RecordRTC from 'recordrtc';
 import moment from 'moment';
 import { Observable, Subject } from 'rxjs';
-import { isNullOrUndefined } from 'util';
 
 interface RecordedVideoOutput {
   blob: Blob;

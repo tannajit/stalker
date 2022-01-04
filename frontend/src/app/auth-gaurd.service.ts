@@ -5,7 +5,7 @@ import { AuthenticationService } from './authentication.service';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGaurdService  implements CanActivate {
+export class AuthGaurdService implements CanActivate {
 
   constructor(private _authService: AuthenticationService,
     private _router: Router) { }
@@ -15,10 +15,10 @@ export class AuthGaurdService  implements CanActivate {
       console.log('true')
       return true
     } else {
-      console.log('false')            
+      console.log('false')
       this._router.navigate(['/login']).then(() => {
         window.location.reload();
-     });
+      });
       return false
     }
   }

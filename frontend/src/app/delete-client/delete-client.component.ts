@@ -1,4 +1,4 @@
-import { Component,OnInit,AfterViewInit, ViewChild, ChangeDetectionStrategy, ElementRef} from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { Observable, Subject } from "rxjs";
 import { interval } from 'rxjs';
 import * as L from 'leaflet';
@@ -38,7 +38,7 @@ export class DeleteClientComponent implements AfterViewInit {
   map;
   lat = 33.2607691
   lon = -7.6222771
-  clientInfos= null
+  clientInfos = null
   latclt
   lonclt
   show
@@ -136,16 +136,7 @@ dataV;
     }
   }
 
-  ngAfterViewInit(): void {
-    this.initMap();
-    
-  }
-
-
-  showcheck() {
-    this.Status = true
-    this.hide = !this.hide;
-  }
+  
 
   displayVideo(){
     this.showVideo = true
@@ -162,6 +153,17 @@ dataV;
         this.stream = stream;
         this.videoElement.srcObject = this.stream;
       });
+
+  }
+
+  ngAfterViewInit(): void {
+    this.initMap();
+
+  }
+
+  showcheck() {
+    this.Status = true
+    this.hide = !this.hide;
   }
 
   private initMap(): void {
@@ -254,13 +256,13 @@ dataV;
 
   }
 
-  testTimer(){
-    this.percentage =0
-    interval(300).subscribe(x=>{
-        if( this.percentage <100){
-          this.percentage+=4
-            }
-        });
+  testTimer() {
+    this.percentage = 0
+    interval(300).subscribe(x => {
+      if (this.percentage < 100) {
+        this.percentage += 4
+      }
+    });
   }
 
   
@@ -279,8 +281,6 @@ dataV;
     console.info('received webcam image', webcamImage);
     this.webcamImage = webcamImage;
     this.PDVImage = webcamImage.imageAsDataUrl;
-    
-  
   }
 
   triggerSnapshot(): void {

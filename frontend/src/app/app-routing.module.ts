@@ -13,6 +13,7 @@ import { UpdateClientComponent } from './update-client/update-client.component';
 import { OfflineComponent } from './offline/offline.component';
 import { SettingsComponent } from './settings/settings.component';
 import { DeleteClientComponent } from './delete-client/delete-client.component';
+import { DeleteRequestsComponent } from './delete-requests/delete-requests.component';
 
 
 
@@ -70,6 +71,10 @@ const routes: Routes = [
   },
   {
     path: 'deleteClient', component: DeleteClientComponent,
+    canActivate: [AuthGaurdService]
+  },
+  {
+    path: 'deleteRequests', component: DeleteRequestsComponent,
     canActivate: [AuthGaurdService]
   }
   // {

@@ -1,8 +1,5 @@
-import { ThrowStmt } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
-import { MatDialog , MatDialogRef} from '@angular/material/dialog';
-import * as L from 'leaflet';
-import { element } from 'protractor';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ClientInfoComponent } from '../client-info/client-info.component';
 import { ClientsService } from '../clients.service';
 @Component({
@@ -12,12 +9,12 @@ import { ClientsService } from '../clients.service';
 })
 export class ClientsComponent implements OnInit {
 
-  clients=[];
+  ////**********VARIABLE'S DECLARATION ******/////
+  clients = [];
   version = 6;
-  showFilterage= true
+  showFilterage = true
   dialogRef: MatDialogRef<ClientInfoComponent>;
-  sectorNames=[];
-  // feilds values
+  sectorNames = [];
   loggedUser;
   NomPrenom;
   typePDVselected;
@@ -30,29 +27,33 @@ export class ClientsComponent implements OnInit {
   validate;
   nfc;
 
+  ////*********** CONSTRUCTOR ********///////////// 
 
-  constructor(
-    private _serviceClient: ClientsService,
+  constructor(private _serviceClient: ClientsService,
     private dialog: MatDialog
-  ){ 
-
+  ) {
     this.loggedUser = JSON.parse(localStorage.getItem("user"))
-    
   }
+  //////////////////////////////////////////////////
+
+  ///////********* INIT FUNCTION *********///////
 
   ngOnInit(): void {
     this.getDataSector()
     console.log("############# sectors names########")
     console.log(this.sectorNames)
-    
+
     this.getAllClients()
     console.log(this.clients)
   }
 
+  //////////////////////////////////////////////
+
+  ////*********** GET CLIENTS INFOS ***********/////
   public getAllClients() {
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
-    request.onerror = function(event: Event & { target: { result: IDBDatabase } }) {
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
       console.log('Why didn\'t you allow my web app to use IndexedDB?!');
     };
     request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
@@ -70,17 +71,15 @@ export class ClientsComponent implements OnInit {
           const Point = { _id: element._id, geometry: elm };
           this.clients.push(Point);
           console.log(Point);
-          
+
         });
 
       };
     };
   }
+  //////////////////////////////////////////////////////////
 
-  openDialog(content) {
-    // console.log(content)
-    this.dialogRef = this.dialog.open(ClientInfoComponent, { data: content });
-  }
+  ///////*********** GET SECTOR'S DATE *****************///////
 
   public getDataSector() {
     let db; let transaction;
@@ -106,9 +105,10 @@ export class ClientsComponent implements OnInit {
       };
     };
   }
+  /////////////////////////////////////////////////////////////////
 
-  onValidationSelect(){
-    
-      
+  openDialog(content) {
+    this.dialogRef = this.dialog.open(ClientInfoComponent, { data: content });
   }
+
 }

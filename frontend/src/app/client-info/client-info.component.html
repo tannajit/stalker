@@ -1,5 +1,5 @@
 <label>{{data._id}}</label>
-<div *ngIf="loggedUser.role == 'Back Office' || loggedUser.role == 'Admin'">
+<div *ngIf="loggedUser.role == 'Back Office' || loggedUser.role == 'Admin' && data!='yes'">
     
     <div *ngIf="data.geometry.properties.status=='green', else refused">
         <span style="color: green;">Client Validated</span>
@@ -7,8 +7,6 @@
     <ng-template #refused>
         <span style="color: red;">Client Not validated</span>
     </ng-template>
-
-
 
     <mat-dialog-content>
         <div class="dialog-container">
@@ -34,8 +32,6 @@
                         </div>
                     </div>
                     <div class="pdv-action-btns">
-                        <!-- <button mat-button class="btn-valid" (click)="validateSeller()">Valid</button>
-    <button mat-button class="btn-refus">Refus</button> -->
                     </div>
                 </section>
                 <section class="aud-container">
@@ -63,16 +59,10 @@
                         <button mat-button class="btn-refus" (click)="validate(data._id,'black')">Refus</button>
                     </div>
 
-
-
                 </section>
             </div>
             <div class="validPDV-container">
                 <span>Validated Client</span>
-
-
-
-
 
                 <section class="valid-pdv-container">
                     <div class="pdv-info-container">
@@ -109,18 +99,10 @@
                     </div>
                 </section>
 
-
-
-
-
             </div>
         </div>
         <!-- <p> {{data.NomPrenom}}</p> -->
     </mat-dialog-content>
-
-
-
-
 
     <mat-dialog-actions class="action-btns" align="center">
         <button mat-raised-button color="primary" class="btn-green" (click)="onUpdateClick()">Update Client</button>
@@ -129,12 +111,8 @@
             (click)="navigateToMap(data.geometry.geometry.coordinates[1],data.geometry.geometry.coordinates[0])">Navigate
             to the client</button>
     </mat-dialog-actions>
-
-
-
-
-
 </div>
+
 <div *ngIf="loggedUser.role == 'Seller' || loggedUser.role == 'Auditor'">
     <mat-dialog-content class="dialog-content">
         <h2>Client Information</h2>
@@ -173,18 +151,55 @@
                 </div>
             </div>
 
-
-
         </section>
         <!-- <p>{{data.NomPrenom}}</p> -->
     </mat-dialog-content>
-
-
-
-
-
     <mat-dialog-actions class="action-btns" align="center">
         <button mat-raised-button color="primary" [disabled]="ActiveTheButton()" class="btn-green" (click)="onUpdateClick()">Update Client</button>
         <button mat-raised-button color="primary" [disabled]="ActiveTheButton()" class="btn-red" (click)="deleteRequest()">Delete Client</button>
     </mat-dialog-actions>
 </div>
+
+<div *ngIf="data=='yes'">
+    <mat-dialog-content class="dialog-content">
+        <h2>Client Information</h2>
+        <section fxLayout="column" fxLayoutAlign="center">
+            <div class="pdv-info-container">
+                <div class="pdv-img">
+                    
+                    <img  src="assets/images/blank.jpg" alt=""
+                        (click)="openImage('assets/images/blank.jpg')">
+                </div>
+                <div class="pdv-info">
+                    <label>Sector:</label>
+                    <p>text</p>
+                    <label>Name:</label>
+                    <p>text</p>
+                    <label>Phone Number:</label>
+                    <p>text</p>
+                    <label>Type PDV:</label>
+                    <p>text</p>
+                </div>
+            </div>
+            <div class="pdv-info-container">
+
+                <div class="pdv-img">
+                    
+                    <img  src="assets/images/blank.jpg" alt=""
+                        (click)="openImage('assets/images/blank.jpg')">
+                </div>
+                <div class="pdv-info">
+                    <label>Reason:</label>
+                    <p>null</p>
+                </div>
+            </div>
+        </section>
+        <!-- <p>{{data.NomPrenom}}</p> -->
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="action-btns" align="center">
+        <button mat-raised-button color="primary" class="btn-green" >Validate Supp</button>
+        <button mat-raised-button color="primary" class="btn-red" >Cancel Supp</button>
+    </mat-dialog-actions>
+</div>
+

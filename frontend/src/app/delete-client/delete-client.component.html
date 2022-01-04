@@ -1,7 +1,11 @@
+<<<<<<< HEAD
  <div class="content-body">
 
     
     
+=======
+<div class="content-body">
+>>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
     <ng-container *ngIf="percentage == 100; else elseTemplate">
         <p>Position Fixed</p>
     </ng-container>
@@ -9,39 +13,44 @@
         <p>Fixing Position...</p>
     </ng-template>
 
-     <div >   
+    <div>
         <pre>pos collectés: {{list.length}}</pre>
         <pre>Accuracy: {{acc}}</pre>
     </div>
-
-    
 
     <div ng-app ng-controller="ApplicationController" class="progress-cantainer">
         <mat-progress-bar mode="determinate" [value]="percentage"></mat-progress-bar>
         <span style="position: absolute; top: 0em;" [ngStyle]="{'left': percentage + '%'}">{{percentage}}%</span>
     </div>
 
+<<<<<<< HEAD
   
+=======
+>>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
     <div class="map-container">
         <div id="map2"></div>
     </div>
 
-    
     <div class="action-btns">
-        <button  mat-button class="btn-yellow">Recalculate my position</button>
-        <button mat-button class="btn-yellow" (click)="showcheck()" [disabled]="(percentage!=100) ||  !Status">Next</button>
+        <button mat-button class="btn-yellow">Recalculate my position</button>
+        <button mat-button class="btn-yellow" (click)="showcheck()"
+            [disabled]="(percentage!=100) ||  !Status">Next</button>
     </div>
 
+<<<<<<< HEAD
     
 
     
      <div class="container" *ngIf="hide">
+=======
+    <div class="container" *ngIf="hide">
+>>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
         <div class="checkcodes-fields">
-                       
+
             <div class="scan-field">
                 <label class="input-label">Delete Raison* </label>
                 <mat-form-field>
-                    <mat-select  panelClass="selectPanel2" [(ngModel)]="raison" [(value)]="selected">
+                    <mat-select panelClass="selectPanel2" [(ngModel)]="raison" [(value)]="selected">
                         <mat-option value="Not exist">Not exist</mat-option>
                         <mat-option value="Out of category">Out of category</mat-option>
                         <mat-option value="End of activity">End of activity</mat-option>
@@ -54,12 +63,22 @@
             <div class="scan-field" *ngIf="selected=='Not exist'">
                 <label class="input-label">PDV location video : </label>
                 <div>
+<<<<<<< HEAD
 
                     <button mat-button class="btn-green" *ngIf="!isRecording" (click)="displayVideo()">Record Video</button>
 
                 </div>
             </div>
             
+=======
+                    <button matbutton class="btn-green" *ngIf="!isRecording" (click)="startRecording()">Record Video</button>
+                </div>
+            </div>
+            <div class="scan-field" *ngIf="selected=='Not exist'">
+                <video class="video" #video autoplay controls></video>
+                <video class="video" style="width:360 !important;" controls #recordedVideo></video>
+            </div>
+>>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
 
             <div class="scan-field" *ngIf="selected=='Out of category' || selected=='End of activity' ">
                 <label class="input-label">PDV photo : </label>
@@ -99,6 +118,7 @@
                 <button class="btn btn-warning btn-lg" *ngIf="isRecording" (click)="stopRecording()">Stop Recording</button>
             </div>
         </div>
+<<<<<<< HEAD
          
 
         
@@ -112,3 +132,10 @@
 
 
 
+=======
+
+        <button mat-button class="btn-yellow">Send</button>
+    </div>
+
+</div>
+>>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
