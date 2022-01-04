@@ -64,7 +64,7 @@ export class ClientInfoComponent implements OnInit {
     //console.log("fjdkfh"+ this.clientService.ActiveTheButton())
     return this.clientService.ActiveTheButton();
   }
-  onDeleteClick(){
+  deleteRequest(){
 
     this.dialogRef.close();
     //this._router.navigateByUrl('/deleteClient',{dataClient:this.data})
@@ -113,5 +113,5 @@ export class ClientInfoComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  
+ 
 }

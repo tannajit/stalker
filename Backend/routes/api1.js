@@ -205,7 +205,7 @@ async function InsertClient(client) {
         if (v.nbr === 4) codeQR = v.value
     })
     var id_pv, id_NFC;
-    //console.log(client)
+    console.log("PhotoofClient"+client.PVPhoto)
     await test(db, client.NomPrenom, client.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
 
     await test(db, client.NomPrenom, client.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
@@ -602,6 +602,66 @@ router.get("/GetClient/:id", async (req, res) => {
     const client = await geometries.findOne({ _id: new ObjectId(req.params.id) });
     //console.log(client);
     res.status(200).send(client);
+}
+)
+router.post("/DeleteRequest", async (req, res) => {
+    console.log("get client : ")
+    dataclient=req.body.data
+    console.log(req.body)
+    photo=req.body.Photo._imageAsDataUrl
+    client={}
+    var id_Photo;
+     DeleteRequest = await db.collection("DeleteRequest")
+ 
+
+
+    // // //console.log("_id"+new ObjectId(req.params.id))
+    // //resp = await DeleteRequest.insertOne(client);
+    if(photo!=null){
+        await test(db,dataclient._id,photo).then(res=>id_Photo=res._id,err=>console.log(err))
+    }
+    //await test(db,"video1",req.body.video).then(res=>console.log(res),err=>console.log(err))
+
+    console.log("video "+req.body.video)
+    client["_id"]= ObjectId(dataclient._id);
+    client["NomPrenom"]=dataclient.geometry.properties.NomPrenom;
+    client["Code_Secteur_OS"]=dataclient.geometry.properties.Code_Secteur_OS;
+    client["Video"]=req.body.video;
+    client["Raison"]=req.body.raison;
+    client["Photo"]=id_Photo;
+    client["Coordinates"]=dataclient.geometry.geometry.coordinates;
+
+    
+    console.log(client)
+
+    //video = await test1(db,ObjectId("61d31ed620a355f29dc89afd"))
+
+    await DeleteRequest.insertOne(client);
+    //console.log("video "+video);
+    //res.status(200).send(video);
+}
+)
+
+router.get("/ReadVideo", async (req, res) => {
+    console.log("red video: ")
+   
+    
+    video = await test1(db,ObjectId("61d31ed620a355f29dc89afd"))
+
+    //await DeleteRequest.insertOne(client);
+
+    console.log("video "+video);
+
+
+    // // //console.log("_id"+new ObjectId(req.params.id))
+    // //resp = await DeleteRequest.insertOne(client);
+    //await test(db,dataclient._id,photo).then(res=>id_Photo=res._id,err=>console.log(err))
+
+    
+    //console.log(client)
+    //await DeleteRequest.insertOne(client);
+    // console.log(resp);
+    res.json(video)
 }
 )
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////

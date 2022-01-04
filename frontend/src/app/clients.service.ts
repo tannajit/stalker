@@ -32,6 +32,7 @@ export class ClientsService {
   
   ////////////////////remplacer par uri après le port
   private _getClientByID = "http://localhost:3000/api1/GetClient";
+  private _Delete = "http://localhost:3000/api1/";
 
 
 
@@ -467,6 +468,19 @@ console.log("MyPosition "+this.MyPosition);
   ///////////////////
   extract(){
     return this.http.get<any>(this._extarct);
+  }
+
+  ///////////////////
+  DeleteClientByID(id){
+    console.log("DeleteClientByID"+id);
+    return this.http.get(this._Delete+"DeleteClient/"+id);
+  }
+  DeleteRequest(data){
+    console.log("DeleteClientByID"+data.video);
+    return this.http.post(this._Delete+"DeleteRequest",data);
+  }
+  ReadV(){
+    return this.http.get(this._Delete+"ReadVideo");
   }
 
 

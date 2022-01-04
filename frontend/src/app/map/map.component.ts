@@ -103,7 +103,7 @@ export class MapComponent implements AfterViewInit {
          if(this.myCercle!==undefined){
           this.map.removeLayer( this.myCercle)
          }
-          this.myCercle = L.circle([this.lat, this.lon], {color:"blue",fillColor:"#cce6ff",radius:this.radius});
+         this.myCercle = L.circle([this.lat, this.lon], {color:"blue",fillColor:"#cce6ff",radius:this.radius});
 
           this.myCercle.addTo(this.map);
           
@@ -119,6 +119,8 @@ export class MapComponent implements AfterViewInit {
             fillOpacity: 1,
             radius: 8.0
           }).addTo(this.map);
+          
+
         }
       },
         (error: GeolocationPositionError) => console.log(error));
@@ -171,6 +173,7 @@ export class MapComponent implements AfterViewInit {
               this.zone.run(() => this.openDialog(Point));
             });
           } else {
+            console.log("############# ici"+Point.geometry.properties.Nom_Client)
             marker.bindPopup('<h1> <b>Client Information</b></h1><p><b>Name:</b> ' + String(Point.geometry.properties.Nom_Client) + '</p><p><b>Sector Name: </b>' + String(Point.geometry.properties.Nom_du_Secteur) + '</p>');
           }
           this.markersCluster.addLayer(marker);

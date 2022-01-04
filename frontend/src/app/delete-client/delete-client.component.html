@@ -1,4 +1,4 @@
-<div class="content-body">
+ <div class="content-body">
 
     
     
@@ -21,7 +21,7 @@
         <span style="position: absolute; top: 0em;" [ngStyle]="{'left': percentage + '%'}">{{percentage}}%</span>
     </div>
 
-   
+  
     <div class="map-container">
         <div id="map2"></div>
     </div>
@@ -31,13 +31,11 @@
         <button  mat-button class="btn-yellow">Recalculate my position</button>
         <button mat-button class="btn-yellow" (click)="showcheck()" [disabled]="(percentage!=100) ||  !Status">Next</button>
     </div>
-<!-- 
-    <button mat-button class="btn-yellow">
-        Recalculate the position
-    </button> -->
 
     
-    <div class="container" *ngIf="hide">
+
+    
+     <div class="container" *ngIf="hide">
         <div class="checkcodes-fields">
                        
             <div class="scan-field">
@@ -51,30 +49,66 @@
                     </mat-select>
                 </mat-form-field>
             </div>
+            
+
             <div class="scan-field" *ngIf="selected=='Not exist'">
                 <label class="input-label">PDV location video : </label>
                 <div>
-                    <button mat-button class="btn-green" *ngIf="!isRecording" (click)="startRecording()">Record Video</button>
+
+                    <button mat-button class="btn-green" *ngIf="!isRecording" (click)="displayVideo()">Record Video</button>
+
                 </div>
             </div>
-            <div class="scan-field" *ngIf="selected=='Not exist'">
-                <video class="video" #video autoplay controls></video>
-                <video class="video" style="width:360 !important;" controls #recordedVideo></video>
-            </div>
             
+
             <div class="scan-field" *ngIf="selected=='Out of category' || selected=='End of activity' ">
                 <label class="input-label">PDV photo : </label>
                 <div>
-                    <button mat-button class="btn-green"><mat-icon>camera_alt</mat-icon></button>
+                    <button mat-button class="btn-green" (click)="displayCam()"><mat-icon>camera_alt</mat-icon></button>
                 </div>
             </div> 
+            <div  *ngIf="showWebcam" class="Scan-container">
+                <webcam [height]="200"
+                        [width]="500"
+                        [trigger]="triggerObservable"
+                        (imageCapture)="handleImage($event)">
+                </webcam>
+                <div class="reas-nfc">
+                    <button mat-button class="btn-green"  (click)="triggerSnapshot()">Click Here</button>
+                    <button mat-button class="btn-green"  (click)="toggleWebcam()">Close Camera</button>
+                </div>
+            </div>
+            <div  *ngIf="webcamImage" class="Scan-container">
+        
+                <div class="snapshot">
+                  <img [height]="200"
+                       [width]="200" [src]="webcamImage.imageAsDataUrl"/>
+                </div>
+              </div> 
             
+        </div> 
+        
+        <div class="scan-field" *ngIf="showVideo"> 
+            <label class="input-label">PDV location video : </label>
+            <div style="text-align:center">
+                <video class="video" #video autoplay controls></video>
+                <span class="m-1"></span>
+                <video class="video" style="width:360 !important;" controls #recordedVideo></video>
+                <br>
+                <button class="btn btn-primary btn-lg" *ngIf="!isRecording" (click)="startRecording()">Start Recording</button>
+                <button class="btn btn-warning btn-lg" *ngIf="isRecording" (click)="stopRecording()">Stop Recording</button>
+            </div>
         </div>
+         
+
         
-        <button mat-button class="btn-yellow">Send</button>
+        <button mat-button class="btn-yellow" (click)="Send()">Send</button>
         
         
-    </div>
+    </div> 
 
     
-</div>
+</div>  
+
+
+
