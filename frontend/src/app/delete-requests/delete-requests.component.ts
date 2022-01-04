@@ -8,8 +8,6 @@ import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import { ClientInfoComponent } from '../client-info/client-info.component';
 
 
-
-
 @Component({
   selector: 'app-delete-requests',
   templateUrl: './delete-requests.component.html',

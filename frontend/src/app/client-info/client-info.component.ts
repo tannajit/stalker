@@ -62,21 +62,17 @@ export class ClientInfoComponent implements OnInit {
     this._router.navigate(['/updateclient'])
 
   }
-<<<<<<< HEAD
   ActiveTheButton(){
     //console.log("fjdkfh"+ this.clientService.ActiveTheButton())
     return this.clientService.ActiveTheButton();
   }
+  
   deleteRequest(){
-
     this.dialogRef.close();
     //this._router.navigateByUrl('/deleteClient',{dataClient:this.data})
     this._router.navigateByUrl('/deleteClient', { state: { dataClient:this.data } });
     //this.clientService.De
   }
-=======
-  /////////////////////////////////////////////
->>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
 
  ////**********VALIDATE FUNCTION ***********////
 
@@ -93,7 +89,6 @@ export class ClientInfoComponent implements OnInit {
       this.openAlertDialog(message, btn)
     }
     this.dialogRef.close();
-
   }
   ///////////////////////////////////////////////////////
 
@@ -103,14 +98,7 @@ export class ClientInfoComponent implements OnInit {
     this.dialogRef2 = this.dialog.open(FullImageComponent, { data: url })
   }
 
-<<<<<<< HEAD
-  
-
-  openAlertDialog(msg,btn){
-=======
   openAlertDialog(msg, btn) {
->>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
-
     const dialogRef = this.dialog.open(AlertDialogComponent, {
       data: {
         message: msg,
@@ -121,11 +109,9 @@ export class ClientInfoComponent implements OnInit {
     });
   }
   
-
   navigateToMap(lat, long) {
     this._router.navigate(['/map/' + lat + "/" + long])
     this.dialogRef.close();
   }
 
- 
 }
