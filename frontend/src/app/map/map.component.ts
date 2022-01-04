@@ -173,7 +173,7 @@ export class MapComponent implements AfterViewInit {
               this.zone.run(() => this.openDialog(Point));
             });
           } else {
-            console.log("############# ici"+Point.geometry.properties.Nom_Client)
+            //console.log("############# ici"+Point.geometry.properties.Nom_Client)
             marker.bindPopup('<h1> <b>Client Information</b></h1><p><b>Name:</b> ' + String(Point.geometry.properties.Nom_Client) + '</p><p><b>Sector Name: </b>' + String(Point.geometry.properties.Nom_du_Secteur) + '</p>');
           }
           this.markersCluster.addLayer(marker);
@@ -358,7 +358,7 @@ export class MapComponent implements AfterViewInit {
 
   ///////***** Filter Done/Not Done PDV **********///////////////////
   option_done = ""
-  
+
   onChange() {
     console.log(this.option_done)
     if (this.option_done == "Done") {

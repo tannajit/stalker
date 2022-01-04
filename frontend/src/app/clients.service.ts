@@ -15,13 +15,12 @@ import * as L from 'leaflet';
 export class ClientsService {
 
   /////********* VARIABLE'S DECLARATION ******//////////
-
-  private db: any;
-  items
   MyPosition;
   Raduis;
   PositionClient;
   Distance;
+  private db: any;
+  items
   private currentClient;
   uri = "http://localhost:3000";
   private _clientUrl = this.uri + "/api1/clients";
@@ -359,8 +358,6 @@ export class ClientsService {
     });
   }
   ////************ GET DATA BY ID FROM INDEXEDB (ADD CLIENT) *********///////
-
-
   getShow() {
     var list = []
     var transaction
@@ -529,8 +526,6 @@ export class ClientsService {
     return this.Distance;
 
   }
-
-
 
 
 }

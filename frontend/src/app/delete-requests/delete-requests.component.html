@@ -13,7 +13,7 @@
                 <mat-icon class="sort-icon"></mat-icon>
               </button> -->
             </th>
-            <td mat-cell *matCellDef="let request">{{request.id}}</td>
+            <td mat-cell *matCellDef="let request">{{request._id}}</td>
           </ng-container>
           
           <ng-container matColumnDef="Sector">
@@ -23,7 +23,7 @@
                 <mat-icon class="sort-icon" ></mat-icon>
               </button> -->
             </th>
-            <td mat-cell *matCellDef="let request">{{request.sector}}</td>
+            <td mat-cell *matCellDef="let request">{{request.Code_Secteur_OS}}</td>
           </ng-container>
       
           <ng-container matColumnDef="PDV Type">
@@ -33,7 +33,7 @@
                 <mat-icon class="sort-icon" ></mat-icon>
               </button> -->
             </th>
-            <td mat-cell *matCellDef="let request">{{request.type}}</td>
+            <td mat-cell *matCellDef="let request">{{request.PDV[0].geometry.properties.TypeDPV}}</td>
           </ng-container>
           
           <ng-container matColumnDef="Reason">
@@ -43,7 +43,7 @@
                 <mat-icon class="sort-icon" ></mat-icon>
               </button> -->
             </th>
-            <td mat-cell *matCellDef="let request">{{request.reason}}</td>
+            <td mat-cell *matCellDef="let request">{{request.Raison}}</td>
           </ng-container>
             
           <ng-container matColumnDef="Location">
@@ -54,7 +54,7 @@
               </button> -->
             </th>
             <td mat-cell *matCellDef="let request">
-                <button mat-icon-button><mat-icon class="location-icon">location_on</mat-icon></button>
+                <button mat-icon-button (click)="navigateToMap(request.PDV[0].geometry.geometry.coordinates[1],request.PDV[0].geometry.geometry.coordinates[0])"><mat-icon class="location-icon">location_on</mat-icon></button>
             </td>
           </ng-container>
       

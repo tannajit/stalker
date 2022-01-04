@@ -6,6 +6,8 @@ import { DomSanitizer } from "@angular/platform-browser";
 import { MatDialog , MatDialogRef} from '@angular/material/dialog';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import { ClientInfoComponent } from '../client-info/client-info.component';
+import { ClientsService } from '../clients.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -31,18 +33,23 @@ export class DeleteRequestsComponent implements OnInit {
     
   ];
 
-  dataSource = new MatTableDataSource(this.REQUESTS);
+  dataSource;
   columnsToDisplay = ['Id', 'Sector', 'PDV Type','Reason', 'Location', 'Actions'];
   dataSubject = new BehaviorSubject<Element[]>([]);
 
   constructor(
     private domSanitizer: DomSanitizer,
-    private dialog: MatDialog) {
-    this.dataSource.data = this.REQUESTS;
+    private dialog: MatDialog,
+    private clientService: ClientsService,
+    private _router: Router) {
+    
+    
+    console.log('########')
+    console.log(this.dataSource)
    }
 
   ngOnInit(): void {
-    this.dataSource.sort = this.sort;
+    this.getDeleteRequests();
   }
 
   validateDelete(){
@@ -75,6 +82,20 @@ export class DeleteRequestsComponent implements OnInit {
     this.dialogRef = this.dialog.open(ClientInfoComponent, { data: content });
   }
 
-  
+  getDeleteRequests(){
+    this.clientService.getDeleteRequests().subscribe(res=>{
+      console.log("---")
+      console.log(res)
+      this.deleteRequests = res
+      this.dataSource = new MatTableDataSource(this.deleteRequests);
+      this.dataSource.data = this.deleteRequests;
+      this.dataSource.sort = this.sort;
+    })
+  }
+
+  navigateToMap(lat,long){
+    this._router.navigate(['/map/'+lat+"/"+long])
+    this.dialogRef.close();
+  }
 
 }
