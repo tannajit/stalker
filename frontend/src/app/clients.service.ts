@@ -15,11 +15,13 @@ import * as L from 'leaflet';
 export class ClientsService {
 
   /////********* VARIABLE'S DECLARATION ******//////////
-
+  MyPosition;
+  Raduis;
+  PositionClient;
+  Distance;
   private db: any;
   items
   private currentClient;
-<<<<<<< HEAD
   uri="http://localhost:3000";
   private  _clientUrl=this.uri+"/api1/clients";
   private _secteurUrl=this.uri+"/api1/secteurs";
@@ -33,19 +35,7 @@ export class ClientsService {
   ////////////////////remplacer par uri après le port
   private _getClientByID = "http://localhost:3000/api1/GetClient";
   private _Delete = "http://localhost:3000/api1/";
-=======
-  uri = "http://localhost:3000";
-  private _clientUrl = this.uri + "/api1/clients";
-  private _secteurUrl = this.uri + "/api1/secteurs";
-  private _addclient = this.uri + "/api1/AddClient";
-  private _getclient = this.uri + "/api1/addedClients";
-  private _updateclient = this.uri + "/api1/updateClient";
-  private getClientBySell = this.uri + "/api1/getClientBySeller";
-  private _validate = this.uri + "/api1/validate";
-  private _extarct = this.uri + "/api1/extract";
-  private _getClientByID = this.uri + "/api1/GetClient";
   private _allDeleteRequests = this.uri+"/api1/getAllDeleteRequests";
->>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
 
   ////////*************** API *****************////////
 
@@ -284,101 +274,7 @@ export class ClientsService {
       }
     });
   }
-<<<<<<< HEAD
-
-
-  private registerToEvents(onlineOffline: OnlineOfflineServiceService) {
-          onlineOffline.connectionChanged.subscribe(online => {
-            console.log(online);
-            if (online) {
-              console.log('went online');
-              console.log('sending all stored items');
-              var message = "went online, sending all stored items";
-              var btn = "Ok"
-              this.openAlertDialog(message,btn)
-              // this.sendItemsFromIndexedDb();
-              // this.getdata()
-            } else {
-              console.log('went offline, storing in indexdb');
-              var message = "went offline, storing in indexdb";
-              var btn = "Ok"
-              this.openAlertDialog(message,btn)
-            }
-          });
-  }
-  MyPosition;
-  Raduis;
-  PositionClient;
-  Distance;
-  getPosition(position){
-    if(Object.keys(position)[0]==="Map"){
-    this.MyPosition=position.Map;
-    this.Raduis=position.Raduis;
-  };
-    if(Object.keys(position)[0]==="Client"){
-    this.PositionClient=position.Client;
-
-  }
-  if((Object.keys(position)[0]==="MapUp")&&(this.PositionClient!=null)){
-
-    console.log("MyPosition Updated "+ new L.LatLng(position.MapUp[0], position.MapUp[1]));
-
-    this.MyPosition=new L.LatLng(position.MapUp[0], position.MapUp[1]);
-    this.Raduis=position.Raduis;
-    this.Distance=this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
-    console.log("Distance Up :"+this.Distance );
-    console.log("Raduis Up :"+this.Raduis );
-    
-  }
-  if(this.PositionClient!=null){
-console.log("MyPosition "+this.MyPosition);
-
-  console.log("Pointposition "+this.PositionClient);
-
-    this.Distance=this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
-    console.log("Distance :"+this.Distance );
-    console.log("Raduis :"+this.Raduis );
-
-  }
-  
-    // if(this.Distance<=this.Raduis) {
-    // console.log("The point into the cercle")
-    // //this.getDistance();
-    // return this.Distance;
-    //}
-  }
-  ActiveTheButton(){
-    if(this.Distance<=this.Raduis) {
-      //console.log("The point into the cercle")
-      return false;
-    }
-    return true
-  }
-
-  getDistance(){
-    //console.log("Distance2 :"+this.Distance );
-    return this.Distance;
-
-  }
-
-
-
-  getAllSecteurs(){
-          return this.http.get<any>(this._secteurUrl)
-        }
-
-  getClient() {
-          return this.http.get<any>(this._getclient);
-        }
-
-
-
-  getClientInfo(){
-          return this.currentClient;
-        }
-=======
 ////************ GET DATA BY ID FROM INDEXEDB (ADD CLIENT) *********///////
->>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
   
 
   getShow() {
@@ -489,6 +385,55 @@ console.log("MyPosition "+this.MyPosition);
     return this.http.get(this._Delete+"ReadVideo");
   }
 
+  getPosition(position){
+    if(Object.keys(position)[0]==="Map"){
+    this.MyPosition=position.Map;
+    this.Raduis=position.Raduis;
+  };
+    if(Object.keys(position)[0]==="Client"){
+    this.PositionClient=position.Client;
 
+  }
+  if((Object.keys(position)[0]==="MapUp")&&(this.PositionClient!=null)){
+
+    console.log("MyPosition Updated "+ new L.LatLng(position.MapUp[0], position.MapUp[1]));
+
+    this.MyPosition=new L.LatLng(position.MapUp[0], position.MapUp[1]);
+    this.Raduis=position.Raduis;
+    this.Distance=this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
+    console.log("Distance Up :"+this.Distance );
+    console.log("Raduis Up :"+this.Raduis );
+    
+  }
+  if(this.PositionClient!=null){
+console.log("MyPosition "+this.MyPosition);
+
+  console.log("Pointposition "+this.PositionClient);
+
+    this.Distance=this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
+    console.log("Distance :"+this.Distance );
+    console.log("Raduis :"+this.Raduis );
+
+  }
+  
+    // if(this.Distance<=this.Raduis) {
+    // console.log("The point into the cercle")
+    // //this.getDistance();
+    // return this.Distance;
+    //}
+  }
+  ActiveTheButton(){
+    if(this.Distance<=this.Raduis) {
+      //console.log("The point into the cercle")
+      return false;
+    }
+    return true
+  }
+
+  getDistance(){
+    //console.log("Distance2 :"+this.Distance );
+    return this.Distance;
+
+  }
   
 }

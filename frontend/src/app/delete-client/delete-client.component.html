@@ -1,11 +1,4 @@
-<<<<<<< HEAD
- <div class="content-body">
-
-    
-    
-=======
 <div class="content-body">
->>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
     <ng-container *ngIf="percentage == 100; else elseTemplate">
         <p>Position Fixed</p>
     </ng-container>
@@ -23,10 +16,6 @@
         <span style="position: absolute; top: 0em;" [ngStyle]="{'left': percentage + '%'}">{{percentage}}%</span>
     </div>
 
-<<<<<<< HEAD
-  
-=======
->>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
     <div class="map-container">
         <div id="map2"></div>
     </div>
@@ -37,14 +26,7 @@
             [disabled]="(percentage!=100) ||  !Status">Next</button>
     </div>
 
-<<<<<<< HEAD
-    
-
-    
-     <div class="container" *ngIf="hide">
-=======
     <div class="container" *ngIf="hide">
->>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
         <div class="checkcodes-fields">
 
             <div class="scan-field">
@@ -63,14 +45,6 @@
             <div class="scan-field" *ngIf="selected=='Not exist'">
                 <label class="input-label">PDV location video : </label>
                 <div>
-<<<<<<< HEAD
-
-                    <button mat-button class="btn-green" *ngIf="!isRecording" (click)="displayVideo()">Record Video</button>
-
-                </div>
-            </div>
-            
-=======
                     <button matbutton class="btn-green" *ngIf="!isRecording" (click)="startRecording()">Record Video</button>
                 </div>
             </div>
@@ -78,7 +52,6 @@
                 <video class="video" #video autoplay controls></video>
                 <video class="video" style="width:360 !important;" controls #recordedVideo></video>
             </div>
->>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
 
             <div class="scan-field" *ngIf="selected=='Out of category' || selected=='End of activity' ">
                 <label class="input-label">PDV photo : </label>
@@ -118,24 +91,8 @@
                 <button class="btn btn-warning btn-lg" *ngIf="isRecording" (click)="stopRecording()">Stop Recording</button>
             </div>
         </div>
-<<<<<<< HEAD
-         
-
-        
-        <button mat-button class="btn-yellow" (click)="Send()">Send</button>
-        
-        
-    </div> 
-
-    
-</div>  
-
-
-
-=======
 
         <button mat-button class="btn-yellow">Send</button>
     </div>
 
 </div>
->>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932

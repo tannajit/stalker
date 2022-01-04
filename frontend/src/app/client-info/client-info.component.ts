@@ -62,7 +62,6 @@ export class ClientInfoComponent implements OnInit {
     this._router.navigate(['/updateclient'])
 
   }
-<<<<<<< HEAD
   ActiveTheButton(){
     //console.log("fjdkfh"+ this.clientService.ActiveTheButton())
     return this.clientService.ActiveTheButton();
@@ -74,9 +73,6 @@ export class ClientInfoComponent implements OnInit {
     this._router.navigateByUrl('/deleteClient', { state: { dataClient:this.data } });
     //this.clientService.De
   }
-=======
-  /////////////////////////////////////////////
->>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
 
  ////**********VALIDATE FUNCTION ***********////
 
@@ -103,13 +99,7 @@ export class ClientInfoComponent implements OnInit {
     this.dialogRef2 = this.dialog.open(FullImageComponent, { data: url })
   }
 
-<<<<<<< HEAD
-  
-
-  openAlertDialog(msg,btn){
-=======
   openAlertDialog(msg, btn) {
->>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
 
     const dialogRef = this.dialog.open(AlertDialogComponent, {
       data: {
