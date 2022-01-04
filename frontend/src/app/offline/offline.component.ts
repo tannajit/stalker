@@ -14,6 +14,7 @@ export class OfflineComponent implements OnInit {
   /////*********** VARIABLE'S DECLARATION ********/////////////
   id = [];
   idsupdates = [];
+  idsdeletes = []
   ///////////////////////////////////////////////////////////
 
   /////************* CONSTRUCTOR ************///////////
@@ -23,6 +24,7 @@ export class OfflineComponent implements OnInit {
     private dialog: MatDialog) {
     this.getid()
     this.getidsup()
+    this.getidsDel()
   }
   /////////////////////////////////////////////////////
 
@@ -37,6 +39,12 @@ export class OfflineComponent implements OnInit {
   getidsup() {
     this.idsupdates = this.clientService.getID()
     console.log(this.idsupdates)
+  }
+  ////////////////////////////////////////////////////
+   ////*********** GetID FOR DELETE CLIENT *********////////
+  getidsDel() {
+    this.idsdeletes = this.clientService.getIDdelete()
+    console.log(this.idsdeletes)
   }
   ////////////////////////////////////////////////////
 
@@ -68,6 +76,26 @@ export class OfflineComponent implements OnInit {
     if (this.onlineOfflineService.isOnline) {
       this.clientService.sendItemsUpdated(id)
       var index = this.idsupdates.indexOf(id);
+      if (index > -1) {
+        this.idsupdates.splice(index, 1);
+      }
+      var message = "data sent successfuly";
+      var btn = "Continue"
+      this.openAlertDialog(message, btn)
+
+    } else {
+      var message = "You are still offline !";
+      var btn = "Continue"
+      this.openAlertDialog(message, btn)
+    }
+  }
+  //////////////////////////////////////////////////////////
+  /////********** SYNCHRONISE DELETE CLIENT*********/////////
+  senddelete(id) {
+    console.log(id)
+    if (this.onlineOfflineService.isOnline) {
+      this.clientService.sendItemsDeleted(id)
+      var index = this.idsdeletes.indexOf(id);
       if (index > -1) {
         this.idsupdates.splice(index, 1);
       }

@@ -76,8 +76,7 @@
                   <img [height]="200"
                        [width]="200" [src]="webcamImage.imageAsDataUrl"/>
                 </div>
-              </div> 
-            
+              </div>     
         </div> 
         
         <div class="scan-field" *ngIf="showVideo"> 
@@ -92,7 +91,7 @@
             </div>
         </div>
 
-        <button mat-button class="btn-yellow">Send</button>
+        <button mat-button class="btn-yellow" (click)="Send()">Send</button>
     </div>
 
 </div>

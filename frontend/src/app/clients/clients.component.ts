@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ClientInfoComponent } from '../client-info/client-info.component';
 import { ClientsService } from '../clients.service';
+
 @Component({
   selector: 'app-clients',
   templateUrl: './clients.component.html',
   styleUrls: ['./clients.component.css']
 })
+
 export class ClientsComponent implements OnInit {
 
   ////**********VARIABLE'S DECLARATION ******/////

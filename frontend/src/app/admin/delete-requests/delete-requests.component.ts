@@ -10,8 +10,6 @@ import { ClientsService } from '../../clients.service';
 import { Router } from '@angular/router';
 
 
-
-
 @Component({
   selector: 'app-delete-requests',
   templateUrl: './delete-requests.component.html',

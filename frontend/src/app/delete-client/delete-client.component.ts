@@ -6,6 +6,7 @@ import { VideoRecordingService } from '../video-recording.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { ClientsService } from '../clients.service';
+import { OnlineOfflineServiceService } from '../online-offline-service.service';
 
 declare var MediaRecorder: any;
 @Component({
@@ -52,13 +53,13 @@ export class DeleteClientComponent implements AfterViewInit {
   PDVImage
 
   constructor(
-    
-    private router :Router,
-    private clientService :ClientsService
-  ) {}
+    private readonly onlineOfflineService: OnlineOfflineServiceService,
+    private router: Router,
+    private clientService: ClientsService
+  ) { }
 
   async ngOnInit() {
-    
+
   }
 
   startRecording() {
@@ -76,17 +77,17 @@ export class DeleteClientComponent implements AfterViewInit {
     this.onDataAvailableEvent();
     this.onStopRecordingEvent();
   }
-thestream;
+  thestream;
   stopRecording() {
     this.mediaRecorder.stop();
-  //   console.log("Strem:"+ this.stream.getTracks()[0].stop())
-  //   console.log("blobs:"+ this.recordedBlobs)
+    //   console.log("Strem:"+ this.stream.getTracks()[0].stop())
+    //   console.log("blobs:"+ this.recordedBlobs)
 
-  //   this.thestream=this.stream.getTracks()[0].stop()
-  //   var blob = new Blob(this.recordedBlobs, {type: "video/webm"});
-  // var url = (window.URL || window.webkitURL).createObjectURL(blob);
-  // console.log("!!!"+url)
-  // console.log("!!!"+blob)
+    //   this.thestream=this.stream.getTracks()[0].stop()
+    //   var blob = new Blob(this.recordedBlobs, {type: "video/webm"});
+    // var url = (window.URL || window.webkitURL).createObjectURL(blob);
+    // console.log("!!!"+url)
+    // console.log("!!!"+blob)
 
     this.isRecording = !this.isRecording;
     console.log('Recorded Blobs: ', this.recordedBlobs);
@@ -99,7 +100,7 @@ thestream;
     }
     this.recordVideoElement.play();
   }
-dataV;
+  dataV;
   onDataAvailableEvent() {
     try {
       this.mediaRecorder.ondataavailable = (event: any) => {
@@ -108,7 +109,7 @@ dataV;
           // console.log("puch blobs:"+ this.recordedBlobs)
           // console.log("Strem:"+ this.stream.getTracks()[0].stop())
           // console.log("blobs:"+ this.recordedBlobs)
-      
+
           // this.thestream=this.stream.getTracks()[0].stop()
           // this.dataV = new Blob(this.recordedBlobs, {type: "video/webm"});
 
@@ -122,13 +123,13 @@ dataV;
   onStopRecordingEvent() {
     try {
       this.mediaRecorder.onstop = (event: Event) => {
-         const videoBuffer = new Blob(this.recordedBlobs, {
+        const videoBuffer = new Blob(this.recordedBlobs, {
           type: 'video/webm'
         });
-        console.log("videoBuffer"+videoBuffer)
-        this.Video=videoBuffer;
+        console.log("videoBuffer" + videoBuffer)
+        this.Video = videoBuffer;
         this.downloadUrl = window.URL.createObjectURL(videoBuffer); // you can download with <a> tag
-        console.log("this.downloadUrl "+this.downloadUrl);
+        console.log("this.downloadUrl " + this.downloadUrl);
         this.recordVideoElement.src = this.downloadUrl;
       };
     } catch (error) {
@@ -136,9 +137,7 @@ dataV;
     }
   }
 
-  
-
-  displayVideo(){
+  displayVideo() {
     this.showVideo = true
     navigator.mediaDevices
       .getUserMedia({
@@ -189,9 +188,6 @@ dataV;
       iconSize: [30, 30]
     });
     var marker = L.marker([this.lat, this.lon], { icon: location_icon })
-
-
-
     this.inter = interval(1000).subscribe(x => {
 
       if (navigator.geolocation) {
@@ -252,8 +248,6 @@ dataV;
         alert("Geolocation is not supported by this browser.");
       }
     });
-
-
   }
 
   testTimer() {
@@ -265,15 +259,15 @@ dataV;
     });
   }
 
-  
 
-  
 
-  displayCam(){
+
+
+  displayCam() {
     this.showWebcam = !this.showWebcam;
   }
 
-  get triggerObservable(): Observable < void> {
+  get triggerObservable(): Observable<void> {
     return this.trigger.asObservable();
   }
 
@@ -291,8 +285,9 @@ dataV;
     this.showWebcam = !this.showWebcam;
   }
 
-  data =this.router.getCurrentNavigation().extras.state.dataClient
-  Send(){
+  data = this.router.getCurrentNavigation().extras.state.dataClient
+
+  Send() {
     // console.log("dataV:"+ this.dataV )
     // console.log("video:"+ this.recordVideoElement.src)
     // console.log("video 2:"+Object.keys(this.mediaRecorder))
@@ -300,12 +295,17 @@ dataV;
     // console.log("data :"+this.data._id)
     // console.log("videoBuffer:"+this.Video)
     //this.clientService.DeleteClientByID(this.data._id).subscribe(res=>{console.log(res)})
-    this.checkInfos={"data": this.data,"raison":this.raison,"video":this.stream,"Photo":this.webcamImage}
-    this.clientService.DeleteRequest(this.checkInfos).subscribe(res=>{console.log(res)})
-  }
-  ReadV(){
-    console.log(this.clientService.ReadV().subscribe(res=>this.recordVideoElement.src=res.toString()))
+    this.checkInfos = { "data": this.data, "raison": this.raison, "video": this.stream, "Photo": this.webcamImage }
+    if (!this.onlineOfflineService.isOnline) {
+      this.clientService.addTodoDelete(this.checkInfos)
+    } else {
+      this.clientService.DeleteRequest(this.checkInfos).subscribe(res => { console.log(res) })
+    }
   }
   
+  ReadV() {
+    console.log(this.clientService.ReadV().subscribe(res => this.recordVideoElement.src = res.toString()))
+  }
+
 
 }

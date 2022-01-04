@@ -72,8 +72,8 @@ export class ClientInfoComponent implements OnInit {
     //console.log("fjdkfh"+ this.clientService.ActiveTheButton())
     return this.clientService.ActiveTheButton();
   }
+  
   deleteRequest(){
-
     this.dialogRef.close();
     //this._router.navigateByUrl('/deleteClient',{dataClient:this.data})
     this._router.navigateByUrl('/deleteClient', { state: { dataClient:this.data } });
@@ -95,7 +95,6 @@ export class ClientInfoComponent implements OnInit {
       this.openAlertDialog(message, btn)
     }
     this.dialogRef.close();
-
   }
   ///////////////////////////////////////////////////////
 
@@ -106,7 +105,6 @@ export class ClientInfoComponent implements OnInit {
   }
 
   openAlertDialog(msg, btn) {
-
     const dialogRef = this.dialog.open(AlertDialogComponent, {
       data: {
         message: msg,
@@ -117,11 +115,9 @@ export class ClientInfoComponent implements OnInit {
     });
   }
   
-
   navigateToMap(lat, long) {
     this._router.navigate(['/map/' + lat + "/" + long])
     this.dialogRef.close();
   }
 
- 
 }

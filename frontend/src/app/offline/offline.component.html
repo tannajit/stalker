@@ -18,3 +18,13 @@
 
     </div>
 </div>
+<div class="containe-ids">
+    <p>Clients deleted waiting for sync</p>
+    <div class="sync">
+        <div *ngFor="let uuuidd of idsdeletes" class="clients-div">
+            <label>{{uuuidd}}</label>
+            <button mat-button class="btn-green" (click)="senddelete(uuuidd)">Send</button>
+        </div>
+
+    </div>
+</div>
