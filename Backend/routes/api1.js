@@ -1,4 +1,3 @@
-//const { json } = require('express');
 var express = require('express');
 var router = express.Router();
 var mongo = require('mongodb');
@@ -222,7 +221,7 @@ async function InsertClient(client) {
         if (v.nbr === 4) codeQR = v.value
     })
     var id_pv, id_NFC;
-    //console.log(client)
+    console.log("PhotoofClient"+client.PVPhoto)
     await test(db, client.NomPrenom, client.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
 
     await test(db, client.NomPrenom, client.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
@@ -621,6 +620,66 @@ router.get("/GetClient/:id", async (req, res) => {
     res.status(200).send(client);
 }
 )
+router.post("/DeleteRequest", async (req, res) => {
+    console.log("get client : ")
+    dataclient=req.body.data
+    console.log(req.body)
+    photo=req.body.Photo._imageAsDataUrl
+    client={}
+    var id_Photo;
+     DeleteRequest = await db.collection("DeleteRequest")
+ 
+
+
+    // // //console.log("_id"+new ObjectId(req.params.id))
+    // //resp = await DeleteRequest.insertOne(client);
+    if(photo!=null){
+        await test(db,dataclient._id,photo).then(res=>id_Photo=res._id,err=>console.log(err))
+    }
+    //await test(db,"video1",req.body.video).then(res=>console.log(res),err=>console.log(err))
+
+    console.log("video "+req.body.video)
+    client["_id"]= ObjectId(dataclient._id);
+    client["NomPrenom"]=dataclient.geometry.properties.NomPrenom;
+    client["Code_Secteur_OS"]=dataclient.geometry.properties.Code_Secteur_OS;
+    client["Video"]=req.body.video;
+    client["Raison"]=req.body.raison;
+    client["Photo"]=id_Photo;
+    client["Coordinates"]=dataclient.geometry.geometry.coordinates;
+
+    
+    console.log(client)
+
+    //video = await test1(db,ObjectId("61d31ed620a355f29dc89afd"))
+
+    await DeleteRequest.insertOne(client);
+    //console.log("video "+video);
+    //res.status(200).send(video);
+}
+)
+
+router.get("/ReadVideo", async (req, res) => {
+    console.log("red video: ")
+   
+    
+    video = await test1(db,ObjectId("61d31ed620a355f29dc89afd"))
+
+    //await DeleteRequest.insertOne(client);
+
+    console.log("video "+video);
+
+
+    // // //console.log("_id"+new ObjectId(req.params.id))
+    // //resp = await DeleteRequest.insertOne(client);
+    //await test(db,dataclient._id,photo).then(res=>id_Photo=res._id,err=>console.log(err))
+
+    
+    //console.log(client)
+    //await DeleteRequest.insertOne(client);
+    // console.log(resp);
+    res.json(video)
+}
+)
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////
 router.get("/extract", async (req, res) => {
     let geometries = await db.collection("geometries")
@@ -628,7 +687,7 @@ router.get("/extract", async (req, res) => {
         {
             $match: {
                 $and: [{ "geometry.geometry.type": "Point" }
-                
+
                 ]
             }
         },
@@ -663,7 +722,7 @@ router.get("/extract", async (req, res) => {
                 return ele;
             }
         })
-       // console.log(all)
+        // console.log(all)
         elem.info = all
         return elem;
 
@@ -679,14 +738,14 @@ router.get("/extract", async (req, res) => {
             "X": element.geometry.geometry.coordinates[1],
             "Y": element.geometry.geometry.coordinates[0],
             "Date_Creation": element.geometry.properties.created_at,
-            "NFC_ID":  (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc.Numero_Serie,
+            "NFC_ID": (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc.Numero_Serie,
             "NFC_UUID": (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc.UUID,
             "Code_Secteur_OS": element.geometry.properties.Code_Secteur_OS,
-            "machine": (element.geometry.properties.machine!=null) ? element.geometry.properties.machine : "",
-            "TypeDPV": (element.geometry.properties.TypeDPV!=null) ? element.geometry.properties.TypeDPV  :"",
-            "NomPrenom": (element.geometry.properties.NomPrenom!=null) ? element.geometry.properties.NomPrenom : element.geometry.properties.Nom_Client,
-            "PhoneNumber": (element.geometry.properties.PhoneNumber!=null) ? element.geometry.properties.PhoneNumber : element.geometry.properties.Telephone_Client,
-            "Passage_Auditeur": "NO", 
+            "machine": (element.geometry.properties.machine != null) ? element.geometry.properties.machine : "",
+            "TypeDPV": (element.geometry.properties.TypeDPV != null) ? element.geometry.properties.TypeDPV : "",
+            "NomPrenom": (element.geometry.properties.NomPrenom != null) ? element.geometry.properties.NomPrenom : element.geometry.properties.Nom_Client,
+            "PhoneNumber": (element.geometry.properties.PhoneNumber != null) ? element.geometry.properties.PhoneNumber : element.geometry.properties.Telephone_Client,
+            "Passage_Auditeur": "NO",
             "Auditeur_ID": "",
             "Date_Reception_Auditor": "",
             "Nom_Auditeur": "",
@@ -700,41 +759,41 @@ router.get("/extract", async (req, res) => {
             "Type_Vendeur": "",
             "Phone_Vendeur": "",
             "Photo_Vendeur": "",
-            "Valid_Vondeur":""
+            "Valid_Vondeur": ""
         }
 
         element.info.forEach(info => {
             if (info.userRole === "Auditor") {
                 Data.Passage_Auditeur = "YES"
-                Data.Auditeur_ID =info.userId
-                Data.Nom_Auditeur =info.NomPrenom
-                Data.Date_Reception_Auditor =info.created_at
-                Data.TypeAuditeur =Data.TypeDPV
-                Data.Phone_Auditeur =info.PhoneNumber
-                if(element.geometry.properties.status=="green"){
-                    Data.Valid_Auditeur ="YES"
-                }else{
-                    Data.Valid_Auditeur ="NO"
+                Data.Auditeur_ID = info.userId
+                Data.Nom_Auditeur = info.NomPrenom
+                Data.Date_Reception_Auditor = info.created_at
+                Data.TypeAuditeur = Data.TypeDPV
+                Data.Phone_Auditeur = info.PhoneNumber
+                if (element.geometry.properties.status == "green") {
+                    Data.Valid_Auditeur = "YES"
+                } else {
+                    Data.Valid_Auditeur = "NO"
                 }
 
-            }else if(info.userRole === "Seller"){
-                Data.Passage_Vendeur="YES"
-                Data.SalesPerson_ID=info.userId
-                Data.Date_Reception_Vondeur=info.created_at
-                Data.Nom_Vendeur=info.NomPrenom
-                Data.Type_Vendeur=info.TypeDPV
-                Data.Phone_Vendeur=info.PhoneNumber
-                if(element.geometry.properties.status=="black"){
-                    Data.Valid_Vondeur ="NO"
-                }else{
-                    Data.Valid_Vondeur ="YES"
+            } else if (info.userRole === "Seller") {
+                Data.Passage_Vendeur = "YES"
+                Data.SalesPerson_ID = info.userId
+                Data.Date_Reception_Vondeur = info.created_at
+                Data.Nom_Vendeur = info.NomPrenom
+                Data.Type_Vendeur = info.TypeDPV
+                Data.Phone_Vendeur = info.PhoneNumber
+                if (element.geometry.properties.status == "black") {
+                    Data.Valid_Vondeur = "NO"
+                } else {
+                    Data.Valid_Vondeur = "YES"
                 }
-            }   
+            }
         })
         DataAll.push(Data)
     })
-    
-    
+
+
     res.json(DataAll);
 });
 

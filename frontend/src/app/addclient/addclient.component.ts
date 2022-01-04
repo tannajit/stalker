@@ -15,12 +15,6 @@ import { SettingsService } from '../settings/settings.service';
 import { IndexdbService } from '../indexdb.service';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { identifierModuleUrl } from '@angular/compiler';
-import { DatePipe } from '@angular/common';
-
-
-
-
 
 const incr = 1;
 
@@ -33,11 +27,12 @@ const incr = 1;
 })
 
 export class AddclientComponent implements AfterViewInit {
+
+  //////////////// VARIABLE'S DECLARATION /////////////////////////
   mySector = "test";
   progress = 0;
   selected = null;
   user = JSON.parse(localStorage.getItem("user"));
-  //from hajar
   ListCodes = [];
   code = { nbr: null, value: null }
   qrResultString: string;
@@ -46,7 +41,6 @@ export class AddclientComponent implements AfterViewInit {
   hide: boolean = false;// hidden by default
   test: boolean = false;
   map;
-
   loggedUser;
   lat = 33.2607691
   lon = -7.6222771
@@ -75,25 +69,17 @@ export class AddclientComponent implements AfterViewInit {
     }
   };
 
-
-  // fadma's variables
   showVerifCodeInput = false
   showNFCWebcam: boolean = false;
   showPDVWebcam: boolean = false;
   public webcamNFCImage = null;
   public webcamPDVImage = null;
   private trigger: Subject<void> = new Subject<void>();
+
+  //*clients info*//
   popupService: any;
-
-  showcheck() {
-    this.Status = true
-    this.hide = !this.hide;
-  }
-
-
   codeNFC: null;
   UUid: null;
-
   TypeDPV: null;
   detailType: null;
   NomPrenom: null;
@@ -107,7 +93,11 @@ export class AddclientComponent implements AfterViewInit {
   latclt
   lonclt
 
-  // map
+  inter;
+  acc = 1222000;
+  version = 6
+
+  //* map*//
 
   icon = L.icon({
     iconUrl: "assets/green.png",
@@ -120,8 +110,18 @@ export class AddclientComponent implements AfterViewInit {
   });
   markersCluster = new L.MarkerClusterGroup();
 
+  //*SMS VARIABLES *//
+  disbale_sms = false;
+  verification_code = null;
+  timeLeft: number = 5;
+  interval_validation;
+  status;
+  display;
+  codeSMS
+  ///////////////////////////////////////////////////////////////////////////
 
 
+  //////////////**************** CONSTRUCTOR ******************///////////////////
   constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,
     private clientService: ClientsService,
     private _router: Router,
@@ -130,78 +130,14 @@ export class AddclientComponent implements AfterViewInit {
     private dialog: MatDialog,
     private _setting: SettingsService) {
 
-
-    // if(!this.onlineOfflineService.isOnline){
-    //   var message = "You went offline !";
-    //   var btn = "Continue"
-    //   this.openAlertDialog(message,btn)
-    // }else{
-    //   var message = "You'r back online :)!";
-    //   var btn = "OK"
-    //   this.openAlertDialog(message,btn)
-    // }
-
   }
+  ////////////////////////////////////////////////////////////////
 
-  // ngOnInit(): void {
-  //   setInterval(() => this.manageProgress(), 150 )
-  //   this.initMap()
-  // }
-
-
-  // ngAfterViewInit(): void {
-  //   setInterval(() => this.manageProgress(), 150 )
-  //   this.initMap()
-
-  // }
-
-  // private initMap(): void {
-
-  //   this.map = L.map('map2', {
-  //     center: [this.lat, this.lon],
-  //     zoom: 15,
-  //     zoomControl: false
-  //   });
-
-  //   const zoomOptions = {
-  //     zoomInText: '+',
-  //     zoomOutText: '-',
-  //   };
-
-  //   // const zoom = L.control.zoom(zoomOptions);
-
-
-  //   const tiles = L.tileLayer('https://map.novatis.tech/hot/{z}/{x}/{y}.png', {
-  //     maxZoom: 30,
-  //     minZoom: 0
-  //   });
-
-
-
-  //   // const lc = L.control.locate(locationControl)
-
-  //   // lc.addTo(this.map);
-  //   // zoom.addTo(this.map);
-  //   tiles.addTo(this.map);
-  //   this.map.addLayer(this.markersCluster);
-  //   this.map.addControl(L.control.zoom({ position: 'bottomleft' }))
-
-  // }
-
-
-  //  AlertOffOn(){
-  //    if (!this.onlineOfflineService.isOnline){
-  //     let popup = this.popupService.showPopupOverlay("Saved successfully");
-  //     setTimeout(() => {
-  //       popup.hide();
-  //     }, 2500);
-  //    }else{
-  //     let popup = this.popupService.showPopupOverlay("Saved successfully");
-  //     setTimeout(() => {
-  //       popup.hide();
-  //     }, 2500);
-  //    }
-  //  }
+  //////////////*************** INTERFACE FUNCTIONS *****************//////////
+  showcheck() {
+    this.Status = true
+    this.hide = !this.hide;
+  }
 
   manageProgress() {
     if (this.progress === 100) {
@@ -219,9 +155,7 @@ export class AddclientComponent implements AfterViewInit {
     console.log(nbr);
     console.log(resultString);
     console.log(this.ListCodes);
-
     this.isShown = !this.isShown;
-
     if (nbr === 1) {
       this.code = { nbr: nbr, value: resultString }
       this.upsert(this.ListCodes, this.code)
@@ -244,14 +178,8 @@ export class AddclientComponent implements AfterViewInit {
       this.code = { nbr: nbr, value: resultString }
       this.upsert(this.ListCodes, this.code)
       this.qrResultString = null;
-
     }
-
-    //this.code={nbr:nbr,value: resultString}
-    //this.upsert(this.ListCodes,this.code)
   }
-
-
 
   upsert(array, item) { // (1)
     const i = array.findIndex(_item => _item.nbr === item.nbr);
@@ -259,14 +187,74 @@ export class AddclientComponent implements AfterViewInit {
     else array.push(item);
   }
 
-  inter;
-
   onCodeResult(resultString: string) {
     this.qrResultString = resultString;
   }
 
+  toggleNFCWebcam() {
+    this.showNFCWebcam = !this.showNFCWebcam;
+  }
+
+  displayNFCam() {
+    this.showNFCWebcam = !this.showNFCWebcam;
+  }
+
+  triggerSnapshot(): void {
+    this.trigger.next();
+  }
+
+  get triggerObservable(): Observable<void> {
+    return this.trigger.asObservable();
+  }
+
+  handleNFCImage(webcamNFCImage): void {
+    console.info('received webcam image', webcamNFCImage);
+    this.webcamNFCImage = webcamNFCImage;
+    this.clientInfos.nfc.NFCPhoto = webcamNFCImage.imageAsDataUrl;
+    console.log(this.clientInfos)
+  }
+
+  togglePDVWebcam() {
+    this.showPDVWebcam = !this.showPDVWebcam;
+  }
+
+  displayPDVcam() {
+    this.showPDVWebcam = !this.showPDVWebcam;
+  }
+
+  handlePDVImage(webcamPDVImage) {
+    console.info('received webcam image', webcamPDVImage);
+    this.webcamPDVImage = webcamPDVImage;
+    this.clientInfos.PVPhoto = webcamPDVImage.imageAsDataUrl;
+  }
+
+  openAlertDialog(msg, btn) {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        message: msg,
+        buttonText: {
+          ok: btn,
+        }
+      }
+    });
+  }
+
+  addNewComponent() {
+    this.show = true
+    this.Status = false
+  }
+
+  CheckCodes() {
+    this.nfcShown = !this.nfcShown;
+    this.test = true;
+    console.log(this.ListCodes)
+    this.clientInfos.codes = this.ListCodes
+  }
+  /////////////////////////////////////////////////////////////////
+
+  ///////////////////****** INIT FUNCTION *********//////////////////
+
   ngAfterViewInit(): void {
-    // setInterval(() => this.manageProgress(), 150)
     this.loggedUser = JSON.parse(localStorage.getItem("user"));
     this.initMap();
     this._setting.getTimeSMS().subscribe(res => this.timeLeft = res.details.time)
@@ -275,14 +263,10 @@ export class AddclientComponent implements AfterViewInit {
       console.log("mysector" + this.mySector)
       this.clientInfos.sector = this.mySector
     })
-    // this.getLocation()
-    // this.getLo();
-
   }
-  acc = 1222000;
 
+  ///////////////////////////// MAP FUNCTION /////////////////////////////
   private initMap(): void {
-
     this.Status = true
     this.testTimer()
 
@@ -304,9 +288,6 @@ export class AddclientComponent implements AfterViewInit {
       iconSize: [30, 30]
     });
     var marker = L.marker([this.lat, this.lon], { icon: location_icon })
-
-
-
     this.inter = interval(1000).subscribe(x => {
 
       if (navigator.geolocation) {
@@ -314,7 +295,6 @@ export class AddclientComponent implements AfterViewInit {
           this.inter.unsubscribe();
           this.clientInfos["lat"] = this.latclt
           this.clientInfos["lon"] = this.lonclt
-          // console.log(this.clientInfos)
         }
 
         var options = {
@@ -322,27 +302,15 @@ export class AddclientComponent implements AfterViewInit {
           timeout: 5000,
           maximumAge: 2000
         };
-        // console.log(this.percentage)
         var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
 
           if (position) {
-            // console.log("Latitude: " + position.coords.latitude +
-            // " // Longitude: " + position.coords.longitude);
             var newlat = position.coords.latitude
             var newLon = position.coords.longitude;
-
-            // if (position.coords.accuracy > 10) {
-            //   console.log("The GPS accuracy isn't good enough");
-            // }
             if (newlat != this.lat || newLon != this.lat) {
-              //console.log("nmi rah tbdl")
-              // this.percentage=0
               this.lat = newlat
               this.lon = newLon
               this.list.push(position)
-              // console.log(this.list)
-              // console.log("Accuracy:"+position.coords.accuracy)
-
               if (position.coords.accuracy < this.acc) {
                 console.log("********** Accuracy:" + position.coords.accuracy)
                 this.acc = position.coords.accuracy
@@ -351,8 +319,6 @@ export class AddclientComponent implements AfterViewInit {
                 this.latclt = position.coords.latitude
                 this.lonclt = position.coords.longitude
               }
-              // console.log(this.lat)
-              // console.log(this.lon)
               this.map.removeLayer(marker);
               this.show = false
               this.Status = true
@@ -364,36 +330,17 @@ export class AddclientComponent implements AfterViewInit {
             this.show = false
             this.Status = true
             marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
-
           }
         },
           (error: GeolocationPositionError) => console.log(error), options);
-        // console.log('Clear watch called');
-        // window.navigator.geolocation.clearWatch(geoId);
       } else {
         alert("Geolocation is not supported by this browser.");
       }
     });
-
-
   }
+  //////////////////////////////////////////////////////////////////////
 
-  getLo() {
-    // var marker = L.geoJSON(this.geojsonFeature, {
-    //   pointToLayer: (point, latlon) => {
-    //     return L.marker(latlon, { icon: this.icone })
-    //   }
-    // });
-    // marker.addTo(this.map)
-    this.circle = L.circle([this.lat, this.lon], 20).addTo(this.map);
-    L.Circle.include({
-      contains: function (latLng) {
-        return this.getLatLng().distanceTo(latLng) < this.getRadius();
-      }
-    });
-    this.map.fitBounds(this.circle.getBounds());
-  }
-
+  /////////////******** TIMER FOR FIX POSITION ********////////////////
   testTimer() {
     this.percentage = 0
     interval(300).subscribe(x => {
@@ -403,27 +350,14 @@ export class AddclientComponent implements AfterViewInit {
     });
   }
 
-  addNewComponent() {
-    this.show = true
-    this.Status = false
-  }
+  ///////////////////////// NFC FUNCTION READ ////////////////////////////
 
-  CheckCodes() {
-    this.nfcShown = !this.nfcShown;
-    this.test = true;
-    console.log(this.ListCodes)
-    this.clientInfos.codes = this.ListCodes
-  }
-
-
-  //UUID_nfc;
   Read() {
     console.log("read")
-    //this.clientInfos.codeNFC=12345
+
     this.clientService.getNFC().subscribe(
       res => {
         this.clientInfos.nfc.Numero_Serie = res.Numero_Serie;
-        //this.UUID_nfc=res.UUID;
         this.clientInfos.nfc.Technologies = res.Technologies
         this.clientInfos.nfc.Type_card = res.Type_card
         this.clientInfos.nfc.UUID = res.UUID;
@@ -431,19 +365,10 @@ export class AddclientComponent implements AfterViewInit {
     )
 
   }
+  ////////////////////////////////////////////////////////////////////
 
-  getCoordinates() {
+  /////////////*********** SMS VERIFICATION **********/////////////////
 
-  }
-
-  ///******************* SMS vars (hafsa) *********************//////////
-  disbale_sms = false;
-  verification_code = null;
-  timeLeft: number = 5;
-  interval_validation;
-  status;
-  display;
-  codeSMS
   ///send sms (Nano)
   SendSMS(phone) {
     this.clientService.getSMS(phone).subscribe(
@@ -495,9 +420,9 @@ export class AddclientComponent implements AfterViewInit {
       }
     }, 1000);
   }
-  /////////////////////////*******************///////////////////////////////////////
-  version = 6
+  //////////////////////////////////////////////////////////////
 
+  /////////////*********  SEND CLIENT INFOS ************////////////
   Send() {
     // this.clientInfos.UUid=UUID.UUID();
     this.clientInfos.PhoneNumber = this.PhoneNumber
@@ -506,20 +431,13 @@ export class AddclientComponent implements AfterViewInit {
     this.clientInfos.detailType = this.detailType;
     this.clientInfos.userId = this.user._id;
     this.clientInfos.userRole = this.user.role;
-    /*if(this.clientInfos.codeNFC===null){
-      this.clientInfos["Status"]="red"
-    }
-    else{
-      this.clientInfos["Status"]="green"
-    }*/
     this.clientInfos.created_at = new Date()
-    this.clientInfos.updated_at =new Date()
+    this.clientInfos.updated_at = new Date()
     this.clientInfos.Status = "red_white"
     console.log(this.clientInfos)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodo(this.clientInfos);
       this.AddNewClientIndexDB()
-      //this._router.navigate(['map'])
     } else {
       this.clientService.SendClient(this.clientInfos).subscribe((res) => {
         console.log("\n **********Response form API************")
@@ -562,7 +480,9 @@ export class AddclientComponent implements AfterViewInit {
       });
     }
   }
+  ////////////////////////////////////////////////////////////////
 
+  ////////////********** ADD CLIENT IN OFFLINE MODE **************/////////////////
   AddNewClientIndexDB() {
     var db, transaction;
     var request = window.indexedDB.open("off", this.version)
@@ -609,75 +529,13 @@ export class AddclientComponent implements AfterViewInit {
       transaction = db.transaction(['data'], 'readwrite');
       const objectStore = transaction.objectStore('data');
       const request = objectStore.add(geo);
-      request.onsuccess =  (event)=> {
+      request.onsuccess = (event) => {
         console.log('done Adding');
         this._router.navigate(['map'])
       };
-    
-
-    ////
-  }
-}
-///////////////////////
-// fadma's code
-
-toggleNFCWebcam() {
-  this.showNFCWebcam = !this.showNFCWebcam;
-}
-
-
-displayNFCam() {
-  this.showNFCWebcam = !this.showNFCWebcam;
-}
-
-triggerSnapshot(): void {
-  this.trigger.next();
-}
-
-  // handleImage(webcamImage): void {
-  //   console.info('Saved webcam image', webcamImage);
-  //   this.webcamImage = webcamImage;
-  //   if(this.camera1) {this.clientInfos.NFCPhoto= webcamImage}
-  //   if(this.camera2) {this.clientInfos.PVPhoto = webcamImage}
-
-  //   console.log(this.webcamNFCImage.imageAsDataUrl);
-  // }
-
-  get triggerObservable(): Observable < void> {
-  return this.trigger.asObservable();
-}
-
-handleNFCImage(webcamNFCImage): void {
-  console.info('received webcam image', webcamNFCImage);
-  this.webcamNFCImage = webcamNFCImage;
-  this.clientInfos.nfc.NFCPhoto = webcamNFCImage.imageAsDataUrl;
-  console.log(this.clientInfos)
-
-}
-
-togglePDVWebcam() {
-  this.showPDVWebcam = !this.showPDVWebcam;
-}
-
-
-displayPDVcam() {
-  this.showPDVWebcam = !this.showPDVWebcam;
-}
-
-handlePDVImage(webcamPDVImage) {
-  console.info('received webcam image', webcamPDVImage);
-  this.webcamPDVImage = webcamPDVImage;
-  this.clientInfos.PVPhoto = webcamPDVImage.imageAsDataUrl;
-}
-
-openAlertDialog(msg, btn) {
-  const dialogRef = this.dialog.open(AlertDialogComponent, {
-    data: {
-      message: msg,
-      buttonText: {
-        ok: btn,
-      }
     }
-  });
-}
+  }
+  ///////////////////////////////////////////////////////////////////////////////
+
+
 }

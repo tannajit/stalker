@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {  MAT_DIALOG_DATA, MatDialogRef, MatDialog} from '@angular/material/dialog';
-import { Inject } from '@angular/core'; 
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
+import { Inject } from '@angular/core';
 import { ClientsService } from '../clients.service';
 import { MapComponent } from '../map/map.component';
 import { Router } from '@angular/router';
@@ -14,78 +14,105 @@ import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 })
 export class ClientInfoComponent implements OnInit {
 
-
+  ////******* VARIABLES DECLARATIONS ******/////
   loggedUser;
   clientOfSeller;
   clientOfAuditor;
+  //////////////////////////////////////////////
+
+  ////********* CONSTRUCTOR ******///////////////
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private clientService: ClientsService,
     public dialogRef: MatDialogRef<MapComponent>,
     public dialogRef2: MatDialogRef<FullImageComponent>,
     public dialog: MatDialog,
-    public _router: Router ) { }
+    public _router: Router) { }
+
+  ///////////////////////////////////////////////
+
+  ////********** INIT FUNCTIONC **********/////
 
   ngOnInit(): void {
     console.log("############################ Wa client")
     console.log(this.data)
     this.loggedUser = JSON.parse(localStorage.getItem("user"))
-    if(this.loggedUser.role == 'Admin' || this.loggedUser.role == 'Back Office'){
-    this.clientService.getClientBySeller(this.data._id).subscribe(res=>{
-      this.clientOfSeller = res; 
-      console.log("!!!!!!!!!!!!!!!! Seller !!!!!!!!!!!!!!")
-      console.log(res)
-      this.clientService.getClientByAuditor(this.data._id).subscribe(res=>{
-        this.clientOfAuditor = res;
-        console.log("!!!!!!!!!!!!!!!! Auditor !!!!!!!!!!!!!!")
+    if (this.loggedUser.role == 'Admin' || this.loggedUser.role == 'Back Office') {
+      this.clientService.getClientBySeller(this.data._id).subscribe(res => {
+        this.clientOfSeller = res;
+        console.log("!!!!!!!!!!!!!!!! Seller !!!!!!!!!!!!!!")
         console.log(res)
+        this.clientService.getClientByAuditor(this.data._id).subscribe(res => {
+          this.clientOfAuditor = res;
+          console.log("!!!!!!!!!!!!!!!! Auditor !!!!!!!!!!!!!!")
+          console.log(res)
+        })
       })
-    })
-  }else{
-    console.log("############################ Wa client")
-    console.log(this.data)
+    } else {
+      console.log("############################ Wa client")
+      console.log(this.data)
+    }
   }
-    
-    
-  }
+  //////////////////////////////////////////////////////////
 
-  openImage(url){
-    this.dialogRef2 = this.dialog.open(FullImageComponent,{data:url})
-  }
-
-
-  onUpdateClick(){
+  ////*********UPDATE CLIENT INFOS *********/////
+  onUpdateClick() {
     this.clientService.setCurrentClientInfo(this.data)
     this.dialogRef.close();
     this._router.navigate(['/updateclient'])
 
   }
+<<<<<<< HEAD
+  ActiveTheButton(){
+    //console.log("fjdkfh"+ this.clientService.ActiveTheButton())
+    return this.clientService.ActiveTheButton();
+  }
+  deleteRequest(){
 
-  
+    this.dialogRef.close();
+    //this._router.navigateByUrl('/deleteClient',{dataClient:this.data})
+    this._router.navigateByUrl('/deleteClient', { state: { dataClient:this.data } });
+    //this.clientService.De
+  }
+=======
+  /////////////////////////////////////////////
+>>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
 
-  validate(id, status){
+ ////**********VALIDATE FUNCTION ***********////
 
-    console.log("######## id:"+id)
-    this.clientService.validateAuditorInfo({'id':id,'status':status}).subscribe(res=>console.log(res))
-    if(status=='green'){
-      var message="Client Validated, synchronize to see the result."
+  validate(id, status) {
+    console.log("######## id:" + id)
+    this.clientService.validateAuditorInfo({ 'id': id, 'status': status }).subscribe(res => console.log(res))
+    if (status == 'green') {
+      var message = "Client Validated, synchronize to see the result."
       var btn = "OK"
-      this.openAlertDialog(message,btn)
-    }else{
-      var message="Client Refused, synchronize to see the status changed."
+      this.openAlertDialog(message, btn)
+    } else {
+      var message = "Client Refused, synchronize to see the status changed."
       var btn = "OK"
-      this.openAlertDialog(message,btn)
+      this.openAlertDialog(message, btn)
     }
-    
     this.dialogRef.close();
 
-    //this._router.navigate(['/map'])
+  }
+  ///////////////////////////////////////////////////////
+
+  ////********INTERFCE FUNCTIONS ******/////
+
+  openImage(url) {
+    this.dialogRef2 = this.dialog.open(FullImageComponent, { data: url })
   }
 
-  openAlertDialog(msg,btn){
+<<<<<<< HEAD
+  
 
-    const dialogRef = this.dialog.open(AlertDialogComponent,{
-      data:{
+  openAlertDialog(msg,btn){
+=======
+  openAlertDialog(msg, btn) {
+>>>>>>> 17b1d2a1926d29206fa963c92bd1b99e76d5b932
+
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
         message: msg,
         buttonText: {
           ok: btn,
@@ -93,14 +120,12 @@ export class ClientInfoComponent implements OnInit {
       }
     });
   }
+  
 
-  navigateToMap(lat,long){
-    this._router.navigate(['/map/'+lat+"/"+long])
+  navigateToMap(lat, long) {
+    this._router.navigate(['/map/' + lat + "/" + long])
     this.dialogRef.close();
   }
 
-  deleteRequest(){
-    this._router.navigate(['/deleteClient'])
-    this.dialogRef.close();
-  }
+ 
 }

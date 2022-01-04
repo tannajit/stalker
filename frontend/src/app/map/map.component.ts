@@ -36,6 +36,7 @@ export class MapComponent implements AfterViewInit {
   dialogRef: MatDialogRef<ClientInfoComponent>;
   private map;
   public content = null;
+  myCercle;
   mySector = 'hello';
   IDGeomerty;
   icon = L.icon({
@@ -85,6 +86,7 @@ export class MapComponent implements AfterViewInit {
     });
   }
  ///*** get Location */
+ radius=2
   getLocation() {
     // interval(1000).subscribe(x => {
     if (navigator.geolocation) {
@@ -98,6 +100,15 @@ export class MapComponent implements AfterViewInit {
           console.log(this.lon);
           this.map.setView(new L.LatLng(this.lat, this.lon), 18, { animation: true });
           //this.myMarker = L.marker([this.lat, this.lon], { icon: this.location_icon };
+         if(this.myCercle!==undefined){
+          this.map.removeLayer( this.myCercle)
+         }
+         this.myCercle = L.circle([this.lat, this.lon], {color:"blue",fillColor:"#cce6ff",radius:this.radius});
+
+          this.myCercle.addTo(this.map);
+          
+          this._serviceClient.getPosition({"Map":new L.LatLng(this.lat, this.lon),"Raduis":this.radius});
+
           if (this.myMarker != undefined) {
             console.log("remove layer ")
             this.map.removeLayer(this.myMarker)
@@ -108,6 +119,8 @@ export class MapComponent implements AfterViewInit {
             fillOpacity: 1,
             radius: 8.0
           }).addTo(this.map);
+          
+
         }
       },
         (error: GeolocationPositionError) => console.log(error));
@@ -155,6 +168,7 @@ export class MapComponent implements AfterViewInit {
           });
           if (Point.geometry.properties?.nfc != undefined) {
             marker.on('click', () => {
+              this._serviceClient.getPosition({"Client":new L.LatLng(Point.geometry.geometry.coordinates[1],Point.geometry.geometry.coordinates[0])});
               this.content = Point.geometry;
               this.zone.run(() => this.openDialog(Point));
             });
@@ -284,6 +298,7 @@ export class MapComponent implements AfterViewInit {
       });
     };
   }
+  /////////////////////////////////////////////////////////////////
 
   /////////////// ********* Synchronize Action **********/////////////////////////
   async sync() {
@@ -291,11 +306,12 @@ export class MapComponent implements AfterViewInit {
     this.openAlertDialog();
     console.log('Synchronize (Get data from the Database)');
   }
+  /////////////////////////////////////////////////////////////////
+
 //////////********  Check if location inside Sector ***********//////////
   isMarkerInsidePolygon(marker, poly) {
     const polyPoints = poly.getLatLngs();
     const x = marker.getLatLng().lat, y = marker.getLatLng().lng;
-
     let inside = false;
     for (let i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
       const xi = polyPoints[i].lat, yi = polyPoints[i].lng;
@@ -307,12 +323,11 @@ export class MapComponent implements AfterViewInit {
     }
     return inside;
   }
+
   Insid() {
     this.statusAddClient = false;
     this.AllSecteurs.forEach(elem => {
       console.log(elem)
-      // console.log(this.myMarker)
-      // console.log(this.myMarker._latlng)
       const lat = this.myMarker._latlng.lat;
       const lon = this.myMarker._latlng.lng;
       const test = turf.point([lon, lat]);
@@ -325,6 +340,8 @@ export class MapComponent implements AfterViewInit {
       } 
     });
   }
+  //////////////////////////////////////////////////////////////////
+
   ///////********************* Open Dialog *********************////////
 
   openAlertDialog() {
@@ -337,6 +354,7 @@ export class MapComponent implements AfterViewInit {
       }
     });
   }
+  ////////////////////////////////////////////////////////////////////
 
   ///////***** Filter Done/Not Done PDV **********///////////////////
   option_done = ""
@@ -363,6 +381,7 @@ export class MapComponent implements AfterViewInit {
       this.getDataClient();
     }
   }
+  ////////////////////////////////////////////////////////////////////////
 
   //////////////****************Filtrage Retail/AuditRetail ***********/////////////////
   option_retail = ""
@@ -382,7 +401,6 @@ export class MapComponent implements AfterViewInit {
         if (layer.feature.properties?.TypeDPV == "Detail") {
           console.log(layer)
           this.markersCluster.removeLayer(layer);
-
         }
       })
     } else {
@@ -391,8 +409,9 @@ export class MapComponent implements AfterViewInit {
       this.getDataClient();
     }
   }
+  ///////////////////////////////////////////////////////////////
 
-  ////////////// Search for a client By id /////////////////
+  ///////******** Search for a client By id ***********///////////
   Search(IDGeomerty) {
     console.log(IDGeomerty);
     //tslint:disable-next-line:no-shadowed-variable
@@ -402,8 +421,9 @@ export class MapComponent implements AfterViewInit {
       }
     });
   }
+  /////////////////////////////////////////////////////////
 
-  ///////////// Search for the client from indexDB (Hafsa's Code) **////////////////////
+  ///////************** Search for the client from indexDB ***********////////////
   SearchIndexDB(IDGeomerty){
     console.log("Update in IndexedDB")
     var db, transaction;
@@ -423,8 +443,9 @@ export class MapComponent implements AfterViewInit {
       }
     }
   }
+  //////////////////////////////////////////////////////////////////////////////////
 
-  /////////////////////////***** Extract Data  (hafsa's Code) ******/////////////////
+  /////////////*********** EXTRACT DATA ******/////////////////
   exportexcel() {
     this._serviceClient.extract().subscribe(res => {
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(res)
@@ -435,6 +456,7 @@ export class MapComponent implements AfterViewInit {
       XLSX.writeFile(wb, "Data_Extraction.xlsx");
     });
   }
+  ////////////////////////////////////////////////////////////
 
 }
 

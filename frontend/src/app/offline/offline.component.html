@@ -1,21 +1,20 @@
-
 <div class="containe-ids">
     <p>Clients added waiting for sync</p>
     <div class="sync">
         <div *ngFor="let uuid of id" class="clients-div">
             <label>{{uuid}}</label>
-            <button mat-button class="btn-green" (click)="send(uuid)" >Send</button>
+            <button mat-button class="btn-green" (click)="send(uuid)">Send</button>
         </div>
-        
-    </div>   
+
+    </div>
 </div>
 <div class="containe-ids">
     <p>Clients updated waiting for sync</p>
     <div class="sync">
         <div *ngFor="let uuidd of idsupdates" class="clients-div">
             <label>{{uuidd}}</label>
-            <button mat-button class="btn-green" (click)="sendupdate(uuidd)" >Send</button>
+            <button mat-button class="btn-green" (click)="sendupdate(uuidd)">Send</button>
         </div>
-        
-    </div>   
+
+    </div>
 </div>

@@ -6,10 +6,12 @@ import { AuthenticationService } from '../authentication.service';
   styleUrls: ['./sidebar-menu.component.css']
 })
 export class SidebarMenuComponent implements OnInit {
-
+   
+  /////********** VARIABLE'S DECLARATION **********///////
   sidenavWidth = 15;
   user
   myname;
+
   constructor(public _authService: AuthenticationService) {  }
 
   ngOnInit(): void {
@@ -18,17 +20,8 @@ export class SidebarMenuComponent implements OnInit {
     this.myname=this.user.name;
   }
 
-
   getLogged(){
     return this._authService.loggedIn()
   }
  
-  // increase() {
-	// 	this.sidenavWidth = 15;
-	// 	console.log('increase sidenav width');
-	// }
-	// decrease() {
-	// 	this.sidenavWidth = 4;
-	// 	console.log('decrease sidenav width');
-	// }
 }

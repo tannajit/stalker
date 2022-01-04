@@ -8,8 +8,6 @@
         <span style="color: red;">Client Not validated</span>
     </ng-template>
 
-
-
     <mat-dialog-content>
         <div class="dialog-container">
             <div class="aud-sell-container">
@@ -34,8 +32,6 @@
                         </div>
                     </div>
                     <div class="pdv-action-btns">
-                        <!-- <button mat-button class="btn-valid" (click)="validateSeller()">Valid</button>
-    <button mat-button class="btn-refus">Refus</button> -->
                     </div>
                 </section>
                 <section class="aud-container">
@@ -63,16 +59,10 @@
                         <button mat-button class="btn-refus" (click)="validate(data._id,'black')">Refus</button>
                     </div>
 
-
-
                 </section>
             </div>
             <div class="validPDV-container">
                 <span>Validated Client</span>
-
-
-
-
 
                 <section class="valid-pdv-container">
                     <div class="pdv-info-container">
@@ -109,18 +99,10 @@
                     </div>
                 </section>
 
-
-
-
-
             </div>
         </div>
         <!-- <p> {{data.NomPrenom}}</p> -->
     </mat-dialog-content>
-
-
-
-
 
     <mat-dialog-actions class="action-btns" align="center">
         <button mat-raised-button color="primary" class="btn-green" (click)="onUpdateClick()">Update Client</button>
@@ -129,11 +111,6 @@
             (click)="navigateToMap(data.geometry.geometry.coordinates[1],data.geometry.geometry.coordinates[0])">Navigate
             to the client</button>
     </mat-dialog-actions>
-
-
-
-
-
 </div>
 
 <div *ngIf="loggedUser.role == 'Seller' || loggedUser.role == 'Auditor'">
@@ -174,19 +151,12 @@
                 </div>
             </div>
 
-
-
         </section>
         <!-- <p>{{data.NomPrenom}}</p> -->
     </mat-dialog-content>
-
-
-
-
-
     <mat-dialog-actions class="action-btns" align="center">
-        <button mat-raised-button color="primary" class="btn-green" (click)="onUpdateClick()">Update Client</button>
-        <button mat-raised-button color="primary" class="btn-red" (click)="deleteRequest()">Delete Client</button>
+        <button mat-raised-button color="primary" [disabled]="ActiveTheButton()" class="btn-green" (click)="onUpdateClick()">Update Client</button>
+        <button mat-raised-button color="primary" [disabled]="ActiveTheButton()" class="btn-red" (click)="deleteRequest()">Delete Client</button>
     </mat-dialog-actions>
 </div>
 
@@ -223,9 +193,6 @@
                     <p>null</p>
                 </div>
             </div>
-
-
-
         </section>
         <!-- <p>{{data.NomPrenom}}</p> -->
     </mat-dialog-content>
