@@ -51,7 +51,8 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { DeleteClientComponent } from './delete-client/delete-client.component';
 import { DeleteRequestsComponent } from './admin/delete-requests/delete-requests.component';
 import {MatSortModule} from '@angular/material/sort';
-import {MatTableModule} from '@angular/material/table'
+import {MatTableModule} from '@angular/material/table';
+import { AddUserComponent } from './admin/add-user/add-user.component'
 
 
 
@@ -74,6 +75,7 @@ import {MatTableModule} from '@angular/material/table'
     ExtractComponent,
     DeleteClientComponent,
     DeleteRequestsComponent,
+    AddUserComponent,
     
 
   ],
