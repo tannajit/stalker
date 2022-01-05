@@ -1,0 +1,76 @@
+<div class="adduser-container">
+    <div class="holder">
+        <div class="title-holder">
+          <h1 class="title">Add New User</h1>
+        </div>
+        <div class="add-form">
+            <div class="field">
+                <label>Id User :</label>
+                <button mat-button disabled class="matricule">000128</button>
+                <button mat-button class="gen-btn">Generate</button>
+            </div>
+            <div class="field">
+                <label>Name :</label>
+                <mat-form-field>
+                    <!-- <mat-label>Id User</mat-label> -->
+                    <input matInput />
+                </mat-form-field>
+            </div>
+            <div class="field">
+                <label>CIN :</label>
+                <mat-form-field>
+                    <!-- <mat-label>Id User</mat-label> -->
+                    <input matInput />
+                </mat-form-field>
+            </div>
+            <div class="field">
+                <label>Phone Number :</label>
+                <mat-form-field>
+                    <!-- <mat-label>Id User</mat-label> -->
+                    <input matInput />
+                </mat-form-field>
+            </div>
+            <div class="field">
+                <label>Email :</label>
+                <mat-form-field>
+                    <!-- <mat-label>Id User</mat-label> -->
+                    <input matInput type="email"/>
+                </mat-form-field>
+            </div>
+            <div class="field">
+                <label>Password :</label>
+                <mat-form-field>
+                    <!-- <mat-label>Id User</mat-label> -->
+                    <input matInput type="password"/>
+                    
+                </mat-form-field>
+                <button mat-button class="gen-btn">Generate</button>
+            </div>
+            <div class="field">
+                <label>Role :</label>
+                <mat-form-field>
+                    <mat-select placeholder="select" panelClass="selectPanel2" >
+                        <mat-option value="Seller">Seller</mat-option>
+                        <mat-option value="Auditor">Auditor</mat-option>
+                        <mat-option value="Supervisor">Supervisor</mat-option>
+                        <mat-option value="Back Office">Back Office</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="field">
+                <label>Sector :</label>
+                <mat-form-field>
+                    <mat-select placeholder="select" panelClass="selectPanel2" >
+                        <mat-option value="Seller">Seller</mat-option>
+                        <mat-option value="Auditor">Auditor</mat-option>
+                        <mat-option value="Supervisor">Supervisor</mat-option>
+                        <mat-option value="Back Office">Back Office</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <button class="btn-green" mat-button>Add</button>
+        </div>
+        
+    </div>
+    
+</div>
