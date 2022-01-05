@@ -13,36 +13,35 @@
                 <label>Name :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput />
+                    <input placeholder="Type the name..." matInput />
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>CIN :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput />
+                    <input placeholder="Type the CIN..." matInput/>
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>Phone Number :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput />
+                    <input placeholder="Type the phone number..." matInput/>
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>Email :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput type="email"/>
+                    <input matInput placeholder="Type the email" type="email"/>
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>Password :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput type="password"/>
-                    
+                    <input matInput placeholder="Generate the password..." type="password"/>
                 </mat-form-field>
                 <button mat-button class="gen-btn">Generate</button>
             </div>
@@ -68,7 +67,10 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-            <button class="btn-green" mat-button>Add</button>
+            <div class="btns">
+                <button class="btn-red" mat-button routerLink="/users">Cancel</button>
+                <button class="btn-green" mat-button>Add</button>
+            </div>
         </div>
         
     </div>

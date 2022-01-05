@@ -23,16 +23,7 @@ export class DeleteRequestsComponent implements OnInit {
 
   deleteRequests;
 
-  REQUESTS = [
-    {id : '61cdd88db18f726d8e0581c9', sector: '93603636360', type: "Demi Gros",reason: "not exist", location: 'Draft'},
-    {id : '61cdd88db18f726d8e0581c9', sector: '93603636360', type: "Demi Gros",reason: "not exist", location: 'Draft'},
-    {id : '61cdd88db18f726d8e0581c9', sector: '93603636360', type: "Demi Gros",reason: "not exist", location: 'Draft'},
-    {id : '61cdd88db18f726d8e0581c9', sector: '93603636360', type: "Demi Gros",reason: "not exist", location: 'Draft'},
-    {id : '61cdd88db18f726d8e0581c9', sector: '93603636360', type: "Demi Gros",reason: "not exist", location: 'Draft'},
-    {id : '61cdd88db18f726d8e0581c9', sector: '93603636360', type: "Demi Gros",reason: "not exist", location: 'Draft'},
-    
-  ];
-
+  
   dataSource;
   columnsToDisplay = ['Id', 'Sector', 'PDV Type','Reason', 'Location', 'Actions'];
   dataSubject = new BehaviorSubject<Element[]>([]);
@@ -42,10 +33,6 @@ export class DeleteRequestsComponent implements OnInit {
     private dialog: MatDialog,
     private clientService: ClientsService,
     private _router: Router) {
-    
-    
-    console.log('########')
-    console.log(this.dataSource)
    }
 
   ngOnInit(): void {
