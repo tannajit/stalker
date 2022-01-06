@@ -266,7 +266,7 @@ router.post('/restoreUser', async(req,res) =>{
     let user = req.body;
     let userColl = db.collection("users")
     var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
-            { $set: { "status": "active" } })
+            { $set: { "status": "Active" } })
         console.log(updated)
 })
 
@@ -667,7 +667,7 @@ async function AddUserToSector(id,sec_name){
     console.log("|*********** User affected to sector: "+sec_name+" **********************|")
     let collection=db.collection("secteurs");
     await collection.updateMany({
-      nameSecteur: sec_name
+      nameSecteur: Number(sec_name)
     },
     {
       $addToSet: {"users": id}
