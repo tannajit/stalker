@@ -503,13 +503,30 @@ async function getUser(user) {
             //console.log("invalid password")
         }
     } else {
-        status.value = 401
+        status.value = 403
         status.data = "invalid User"
         //console.log("invalid User")
     }
     return status;
 }
 
+//***  Login */
+router.post('/login', async (req, res) => {
+
+    //console.log(JSON.stringify(req.headers));
+    let user = req.body;
+    //console.log(user)
+    var status = await getUser(user)
+    res.status(status.value).send({ 'Data': status.data })
+})
+
+router.get('/GeEmail',async(req,res)=>{
+    console.log("****** get All Email *****")
+    let collection = db.collection("users")
+    var FindUser = await collection.find({}).project({ _id:0,email:1}).toArray()
+    res.json(FindUser)  
+})
+////
 async function getClientBySeller(id) {
     //console.log(lat)
     console.log(id)
@@ -583,14 +600,7 @@ async function getClientByAuditor(id) {
 //     res.json("hey");
 //   });
 
-router.post('/login', async (req, res) => {
 
-    //console.log(JSON.stringify(req.headers));
-    let user = req.body;
-    //console.log(user)
-    var status = await getUser(user)
-    res.status(status.value).send({ 'Data': status.data })
-})
 ////////////// Create New User
 
 router.post('/register', async (req, res) => {
@@ -598,6 +608,9 @@ router.post('/register', async (req, res) => {
     await AddNewUser(user).then(ress=>{
         
         res.status(200).json("User inserted/Updated")
+    }).catch(err=>{
+        console.log(err);
+        res.status(401).json("Not inserted")
     });
     
 })
@@ -628,7 +641,7 @@ async function AddUserToSector(id,sec_name){
 
     console.log("|*********** User affected to sector: "+sec_name+" **********************|")
     let collection=db.collection("secteurs");
-    await collection.updateOne({
+    await collection.updateMany({
       nameSecteur: sec_name
     },
     {

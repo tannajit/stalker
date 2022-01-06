@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SidebarMenuComponent } from '../sidebar-menu/sidebar-menu.component';
 import { IndexdbService } from '../indexdb.service';
 import { ClientsService } from '../clients.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -45,15 +46,20 @@ export class LoginComponent implements OnInit {
         'email': email,
         'password': password
       }
-      this._auth.getUserLogin(user).subscribe(
-        res => this.Response(res),
-        err => console.log(err));
+      this._auth.getUserLogin(user,this.httpOptions).subscribe(
+        res => {
+          console.log("--------")
+          console.log(res.status)
+          //console.log(res.status)
+          this.Response(res)
+        }
+       );
     }
   }
-
+  httpOptions = { headers: new HttpHeaders({ 'Content-Type': 'application/json'}), observe: 'response'}
   ////******* Store Token and delegate to Home page *******////
   Response(res) {
-    console.log(res)
+    //console.log(res)
     localStorage.setItem('token', res.Data.token)
     localStorage.setItem("user", JSON.stringify(res.Data.user))
     console.log(this._auth.getToken())
