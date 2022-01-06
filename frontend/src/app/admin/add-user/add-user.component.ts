@@ -126,10 +126,8 @@ export class AddUserComponent implements OnInit {
   /////
  
   ///
-  SendUser(){
-    this.openAlertDialog()
-  }
-  SendUser1() {
+  
+  SendUser() {
    
     if(this.role=='Seller' || this.role =='Auditor' || this.role =='Supervisor'){
       this.SectorAffacted=this.SelectedSector
@@ -152,7 +150,7 @@ export class AddUserComponent implements OnInit {
     }
     this._setting.CreateUser(this.UserInfo).subscribe(res=>{
       console.log(res)
-
+      this.openAlertDialog()
     })
   }
    ///////********************* Open Dialog *********************////////
