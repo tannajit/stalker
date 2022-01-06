@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ClientsService } from 'src/app/clients.service';
 import { SettingsService } from 'src/app/settings/settings.service';
-
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ClientInfoComponent } from 'src/app/client-info/client-info.component';
+import { AlertDialogComponent } from 'src/app/alert-dialog/alert-dialog.component';
 @Component({
   selector: 'app-add-user',
   templateUrl: './add-user.component.html',
@@ -9,9 +11,10 @@ import { SettingsService } from 'src/app/settings/settings.service';
 })
 export class AddUserComponent implements OnInit {
 
-  constructor(private _setting: SettingsService, private _client: ClientsService) { }
+  constructor(private _setting: SettingsService, private _client: ClientsService,private dialog:MatDialog) { }
   Roles = []
   Sectors = []
+  AllEmail=[]
   AllSectors=[]
   role;
   FirstName = "";
@@ -25,8 +28,10 @@ export class AddUserComponent implements OnInit {
   Password = "0000";
   SelectedSector=[];
   SectorAffacted=[];
-
+  dialogRef: MatDialogRef<ClientInfoComponent>;
   ngOnInit(): void {
+    /// get All Email from Database to prevenet Email duplication
+    this.CheckEmail()
     /// get Roles available
     this._setting.getSettings('param=role').subscribe(res => {
       this.Roles = res.details.roles
@@ -89,11 +94,31 @@ export class AddUserComponent implements OnInit {
 
   //////////
   ///* Generate Email *///
-  GenerateEmail() {
+
+ async  GenerateEmail() {
+    var i=0;
+    console.log(this.AllEmail)
     var last = this.LastName.replace(" ", '.')
     var l1 = this.FirstName.toLowerCase().slice(0, 1)
-    this.Email = (l1 + "." + last.toLowerCase() + "@fgddistrib.com").replace(/\s/g, '');
-    console.log(this.Email)
+    var email = (l1 + "." + last.toLowerCase() + "@fgddistrib.com").replace(/\s/g, '');
+    while(this.AllEmail.includes(email)){
+      i++;
+      email = (l1 + "." + last.toLowerCase()+String(i)+ "@fgddistrib.com").replace(/\s/g, '');
+      console.log(email)
+    }
+    this.Email=email
+
+
+  }
+
+  //// get All Emails
+  async CheckEmail(){
+     this._setting.CheckEmail().subscribe(res=>{
+        res.forEach(element => {
+            this.AllEmail.push(element.email)
+        });
+     })
+     
   }
   
   //** Generate password */
@@ -104,6 +129,7 @@ export class AddUserComponent implements OnInit {
   /////
  
   ///
+  
   SendUser() {
    
     if(this.role=='Seller' || this.role =='Auditor' || this.role =='Supervisor'){
@@ -125,7 +151,22 @@ export class AddUserComponent implements OnInit {
       },
       Sectors: this.SectorAffacted
     }
-    this._setting.CreateUser(this.UserInfo).subscribe(res=>console.log(res))
+    this._setting.CreateUser(this.UserInfo).subscribe(res=>{
+      console.log(res)
+      this.openAlertDialog()
+    })
   }
+   ///////********************* Open Dialog *********************////////
 
+   openAlertDialog() {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        message:"Please Copy this credentials and send them to the User before Exit \n " +"[Email:"+this.Email +"-"+"Password:"+this.Password+"]",
+        buttonText: {
+          ok: 'Ok',
+        }
+      }
+    });
+  }
+  ////////////////////////////////////////////////////////////////////
 }

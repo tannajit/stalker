@@ -9,6 +9,7 @@ export class SettingsService {
   uri = "http://localhost:3000";
   private _setting =this.uri + "/api1/settings";
   private _user=this.uri+"/api1/register"
+  private _user_email=this.uri+"/api1/GeEmail"
 
   constructor(private http: HttpClient) { }
   setTimeSMS(time) {
@@ -20,6 +21,9 @@ export class SettingsService {
   }
   CreateUser(user){
     return this.http.post<any>(this._user,user)
+  }
+  CheckEmail(){
+      return this.http.get<any>(this._user_email)
   }
   
 }

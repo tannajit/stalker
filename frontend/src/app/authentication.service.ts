@@ -12,7 +12,7 @@ export class AuthenticationService {
   constructor(private http: HttpClient,
     private _router: Router,
     private _index: IndexdbService) { }
-  getUserLogin(data) {
+  getUserLogin(data,httpOptions) {
     return this.http.post<any>(this._UsersUrl, data)
   }
   getToken() {
