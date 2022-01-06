@@ -3,8 +3,8 @@ var router = express.Router();
 var mongo = require('mongodb');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-var uri= "mongodb://localhost:27017"; 
-//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+
+var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri="mongodb://localhost:27017"
 // uri to your Mongo database
 var client = new MongoClient(uri);
@@ -258,7 +258,15 @@ router.post('/deleteUser', async(req,res) =>{
     let user = req.body;
     let userColl = db.collection("users")
     var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
-            { $set: { "status": "deleted" } })
+            { $set: { "status": "out of work" } })
+        console.log(updated)
+})
+
+router.post('/restoreUser', async(req,res) =>{
+    let user = req.body;
+    let userColl = db.collection("users")
+    var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
+            { $set: { "status": "active" } })
         console.log(updated)
 })
 
