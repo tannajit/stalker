@@ -647,7 +647,7 @@ async function AddNewUser(user){
     
     }).then(result=>{
         console.log(result.insertedId)
-        var id=ObjectId(result.insertedId)
+        var id=result.insertedId
         user.Sectors.forEach(sector=>{
             AddUserToSector(id,sector)
         })
@@ -655,11 +655,11 @@ async function AddNewUser(user){
 
 }
 async function AddUserToSector(id,sec_name){
-
+    console.log(id)
     console.log("|*********** User affected to sector: "+sec_name+" **********************|")
     let collection=db.collection("secteurs");
     await collection.updateMany({
-      nameSecteur: sec_name
+      nameSecteur: Number(sec_name)
     },
     {
       $addToSet: {"users": id}
@@ -829,10 +829,6 @@ router.get("/extract", async (req, res) => {
     all1 = []
 
     var test = values.map((elem) => {
-        //console.log("----")
-        //console.log(elem)
-        //all1=[];
-        //console.log("$$$")
         elem.info.reverse();
         audit = false;
         seller = false;
