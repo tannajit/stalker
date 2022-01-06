@@ -34,7 +34,7 @@
                 <mat-icon class="sort-icon" ></mat-icon>
               </button> -->
             </th>
-            <td mat-cell *matCellDef="let request">{{request.cin}}</td>
+            <td mat-cell *matCellDef="let request">{{request.CIN}}</td>
           </ng-container>
           
           <ng-container matColumnDef="Phone Number">
@@ -67,15 +67,23 @@
             <td mat-cell *matCellDef="let request">{{request.role}}</td>
           </ng-container>
 
-          <ng-container matColumnDef="Sectors">
-            <th class="header sectors-column" mat-header-cell *matHeaderCellDef>
-              <span>Sectors</span>
+          <ng-container matColumnDef="Status">
+            <th class="header role-column" mat-header-cell *matHeaderCellDef>
+              <span>Status</span>
               <!-- <button mat-button  class="float-right btn-icon">
                 <mat-icon class="sort-icon" ></mat-icon>
               </button> -->
             </th>
-            <td mat-cell *matCellDef="let request">{{request.sectors}}</td>
+            <ng-container *matCellDef="let request" >
+              <td mat-cell *ngIf="request.status=='out of work'"><span style="background-color: #AE5827; padding: 3px; color: #fff; border-radius: 3px;">{{request.status}}</span></td>
+            </ng-container>
+            <ng-container *matCellDef="let request" >
+              <td mat-cell *ngIf="request.status=='active'"><span style="background-color: #27AE61; padding: 3px; color: #fff; border-radius: 3px;">{{request.status}}</span></td>
+            </ng-container>
+          
           </ng-container>
+
+          
       
           <ng-container matColumnDef="Actions">
             <th class="header actions-column" mat-header-cell *matHeaderCellDef>
@@ -85,8 +93,8 @@
               </button> -->
             </th>
             <td mat-cell *matCellDef="let request">
-                <button mat-icon-button ><mat-icon class="valid-icon">edit</mat-icon></button>
-                <button mat-icon-button ><mat-icon class="refus-icon">delete</mat-icon></button>
+                <button mat-icon-button (click)="updateUser(request)"><mat-icon class="valid-icon">edit</mat-icon></button>
+                <button mat-icon-button (click)="deleteUser(request)"><mat-icon class="refus-icon">delete</mat-icon></button>
                 <button mat-icon-button ><mat-icon class="detail-icon">remove_red_eye</mat-icon></button>
             </td>
           </ng-container>
