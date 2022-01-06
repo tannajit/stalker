@@ -6,69 +6,76 @@
         <div class="add-form">
             <div class="field">
                 <label>Id User :</label>
-                <button mat-button disabled class="matricule">000128</button>
-                <button mat-button class="gen-btn">Generate</button>
+                <button mat-button disabled class="matricule">{{UserID}}</button>
+                
             </div>
             <div class="field">
-                <label>Name :</label>
+                <label>First Name :</label>
+                <mat-form-field >
+                    <!-- <mat-label>Id User</mat-label> -->
+                    <input matInput [(ngModel)]="FirstName" />
+                </mat-form-field>
+            </div>
+            <div class="field">
+                <label>Last Name :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput />
+                    <input matInput  [(ngModel)]="LastName" />
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>CIN :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput />
+                    <input matInput [(ngModel)]="CIN" />
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>Phone Number :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput />
+                    <input matInput [(ngModel)]="phoneNumber" />
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>Email :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput type="email"/>
+                    <input matInput type="email" [(ngModel)]="Email" disabled/>
                 </mat-form-field>
+                <button mat-button class="gen-btn" (click)="GenerateEmail()">Generate Email</button>
             </div>
             <div class="field">
                 <label>Password :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput type="password"/>
+                    <input matInput type="text" value="{{Password}}" disabled/>
                     
                 </mat-form-field>
-                <button mat-button class="gen-btn">Generate</button>
+                <button mat-button class="gen-btn" (click)="GeneratePassword()">Generate Password</button>
             </div>
             <div class="field">
                 <label>Role :</label>
                 <mat-form-field>
-                    <mat-select placeholder="select" panelClass="selectPanel2" >
-                        <mat-option value="Seller">Seller</mat-option>
-                        <mat-option value="Auditor">Auditor</mat-option>
-                        <mat-option value="Supervisor">Supervisor</mat-option>
-                        <mat-option value="Back Office">Back Office</mat-option>
+                    <mat-select placeholder="select" panelClass="selectPanel2"   (selectionChange)="onChange()" [(value)]="role">
+                        
+                        <div *ngFor="let rol of Roles">
+                            <mat-option value="{{rol}}">{{rol}}</mat-option>
+                            </div>
                     </mat-select>
                 </mat-form-field>
             </div>
-            <div class="field">
+            <div class="field" *ngIf="RoleActive()">
                 <label>Sector :</label>
-                <mat-form-field>
-                    <mat-select placeholder="select" panelClass="selectPanel2" >
-                        <mat-option value="Seller">Seller</mat-option>
-                        <mat-option value="Auditor">Auditor</mat-option>
-                        <mat-option value="Supervisor">Supervisor</mat-option>
-                        <mat-option value="Back Office">Back Office</mat-option>
+                <mat-form-field >
+                    <mat-select placeholder="select" multiple  panelClass="selectPanel2" value="SelectedSector" [(ngModel)]="SelectedSector">
+                        <div *ngFor="let sector of Sectors">
+                            <mat-option value="{{sector.id}}">{{sector.detail}}</mat-option>
+                            </div>
                     </mat-select>
                 </mat-form-field>
             </div>
-            <button class="btn-green" mat-button>Add</button>
+            <button class="btn-green" mat-button (click)="SendUser()">Add</button>
         </div>
         
     </div>

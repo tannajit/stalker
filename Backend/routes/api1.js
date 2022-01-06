@@ -3,8 +3,8 @@ var router = express.Router();
 var mongo = require('mongodb');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-//var uri= "mongodb://localhost:27017"; 
-var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+var uri= "mongodb://localhost:27017"; 
+//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri="mongodb://localhost:27017"
 // uri to your Mongo database
 var client = new MongoClient(uri);
@@ -91,6 +91,7 @@ router.get('/secteurss', async (req, res) => {
     res.json(values)
 
 });
+
 
 
 router.get('/getAllDeleteRequests', async(req, res) =>{
@@ -475,22 +476,7 @@ async function test1(db, id) {
 
 //// Generate and validate Token
 
-// Insert User 
-async function InsertUser(user) {
-    user.password = await GenerateHashPassword(user.password)
-    //console.log(user)
-    let collection = db.collection("users") // collection users 
-    await collection.update({ name: user.name }, {
-        $setOnInsert: {
-            phone: user.phone,
-            CIN: user.CIN,
-            role: user.role,
-            email: user.email,
-            password: user.password
-        }
-    }, { upsert: true })
-    //console.log('User inserted/Updated')
-}
+
 /// Generate Password
 async function GenerateHashPassword(password) {
     let salt_value = await bcrypt.genSalt(salt);
@@ -605,12 +591,69 @@ router.post('/login', async (req, res) => {
     var status = await getUser(user)
     res.status(status.value).send({ 'Data': status.data })
 })
+////////////// Create New User
 
 router.post('/register', async (req, res) => {
     let user = req.body;
-    await InsertUser(user);
-    res.status(200).send("User inserted/Updated")
+    await AddNewUser(user).then(ress=>{
+        
+        res.status(200).json("User inserted/Updated")
+    });
+    
 })
+
+async function AddNewUser(user){
+    user.userinfo.password = await GenerateHashPassword(user.userinfo.password)
+    let collection = db.collection("users") // collection users 
+    await collection.insertOne( {
+            UserID: user.userinfo.UserID,
+            name:user.userinfo.name,
+            phone: user.userinfo.phone,
+            CIN: user.userinfo.CIN,
+            role: user.userinfo.role,
+            email: user.userinfo.email,
+            password: user.userinfo.password,
+            status:user.userinfo.status
+    
+    }).then(result=>{
+        console.log(result.insertedId)
+        var id=ObjectId(result.insertedId)
+        user.Sectors.forEach(sector=>{
+            AddUserToSector(id,sector)
+        })
+    })
+
+}
+async function AddUserToSector(id,sec_name){
+
+    console.log("|*********** User affected to sector: "+sec_name+" **********************|")
+    let collection=db.collection("secteurs");
+    await collection.updateOne({
+      nameSecteur: sec_name
+    },
+    {
+      $addToSet: {"users": id}
+    });
+  
+    
+}
+// Insert User 
+async function InsertUser(user) {
+    user.password = await GenerateHashPassword(user.password)
+    //console.log(user)
+    let collection = db.collection("users") // collection users 
+    await collection.update({ name: user.name }, {
+        $setOnInsert: {
+            phone: user.phone,
+            CIN: user.CIN,
+            role: user.role,
+            email: user.email,
+            password: user.password
+        }
+    }, { upsert: true })
+    //console.log('User inserted/Updated')
+}
+/////////////////
 
 router.get('/client', async (req, res) => {
     //console.log("client info")
@@ -621,6 +664,7 @@ async function ValidPassword(passwordG, passwordD) {
     return (result);
 }
 ///////// *************** Settings *************** ///////
+///////// *************** Settings hafsa's code *************** ///////
 
 router.post("/settings", async (req, res) => {
     //console.log("**************set settings in the dataBase******************")
@@ -640,12 +684,26 @@ router.post("/settings", async (req, res) => {
 });
 
 router.get("/settings", async (req, res) => {
-    //console.log("***********get settings**************")
+   var obj=req.query
+   
+   response=""
+   console.log(obj) 
+   if(obj?.user=="CountUser"){
+    let users=await db.collection("users")
+    var RoleCount=obj.role
+    let values=await users.find({ "role": RoleCount }).toArray()
+    response=values.length
+   }else{
+    var proprety=obj.param;
     let collection = await db.collection("settings") // collection 
-    var values = await collection.find({ "proprety": 'sms' }).toArray()
+    var values = await collection.find({ "proprety": proprety }).toArray()
+    response=values[0]
+   }
     //console.log(values[0])
-    res.json(values[0])
+    res.json(response)
+
 })
+//////////***********************************////////////////////////
 //////////***********************************////////////////////////
 router.get("/GetClient/:id", async (req, res) => {
     console.log("get client")
