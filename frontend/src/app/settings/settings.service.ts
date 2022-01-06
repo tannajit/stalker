@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class SettingsService {
+  
   uri = "http://localhost:3000";
   private _setting =this.uri + "/api1/settings";
   private _user=this.uri+"/api1/register"

@@ -90,11 +90,13 @@ export class AddUserComponent implements OnInit {
       this.UserID = this.role.slice(0, 2) + String(this.pad(Number(this.CountUser), 7))
     })
   }
+
   pad(a, b) {
     console.log(a)
     console.log(b)
     return (1e15 + a + '').slice(-b);
   }
+
   //////////
   ///* Generate Email *///
 
@@ -123,6 +125,7 @@ export class AddUserComponent implements OnInit {
      })
      
   }
+  
   //** Generate password */
   GeneratePassword() {
     this.Password = (Math.random() + 1).toString(36).substring(2);

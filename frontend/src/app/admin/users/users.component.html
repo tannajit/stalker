@@ -76,9 +76,8 @@
             </th>
             <ng-container *matCellDef="let request" >
               <td mat-cell *ngIf="request.status=='out of work'"><span style="background-color: #AE5827; padding: 3px; color: #fff; border-radius: 3px;">{{request.status}}</span></td>
-            </ng-container>
-            <ng-container *matCellDef="let request" >
-              <td mat-cell *ngIf="request.status=='active'"><span style="background-color: #27AE61; padding: 3px; color: #fff; border-radius: 3px;">{{request.status}}</span></td>
+            
+              <td mat-cell *ngIf="request.status=='Active'"><span style="background-color: #27AE61; padding: 3px; color: #fff; border-radius: 3px;">{{request.status}}</span></td>
             </ng-container>
           
           </ng-container>
@@ -93,9 +92,14 @@
               </button> -->
             </th>
             <td mat-cell *matCellDef="let request">
-                <button mat-icon-button (click)="updateUser(request)"><mat-icon class="valid-icon">edit</mat-icon></button>
-                <button mat-icon-button (click)="deleteUser(request)"><mat-icon class="refus-icon">delete</mat-icon></button>
-                <button mat-icon-button ><mat-icon class="detail-icon">remove_red_eye</mat-icon></button>
+                <button mat-icon-button (click)="updateUser(request)" title="Update user"><mat-icon class="valid-icon">edit</mat-icon></button>
+                <button mat-icon-button (click)="deleteUser(request)" title="Delete user" *ngIf="request.status=='Active'">
+                  <mat-icon class="refus-icon" >delete</mat-icon>
+                </button>
+                <button mat-icon-button (click)="restoreUser(request)" title="Bring back this user" *ngIf="request.status=='out of work'">
+                  <mat-icon class="restore-icon" >restore_from_trash</mat-icon>
+                </button>
+                <button mat-icon-button ><mat-icon class="detail-icon" title="Click to view user details.">remove_red_eye</mat-icon></button>
             </td>
           </ng-container>
           
@@ -104,6 +108,8 @@
           <tr mat-row *matRowDef="let request; columns: columnsToDisplay"></tr>
       
         </table>
+
+        <mat-paginator [pageSizeOptions]="[ 5, 10]" showFirstLastButtons></mat-paginator>
       
     </div>
 </div>

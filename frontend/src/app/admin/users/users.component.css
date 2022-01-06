@@ -97,6 +97,7 @@
     width: 17px;
     color: white;
   }
+
   
   ::ng-deep .mat-sort-header-arrow {
     position: relative;
@@ -179,4 +180,7 @@
   }
   .detail-icon{
     color: #4d4c4a;
+  }
+  .restore-icon{
+    color: #ac8808;
   }

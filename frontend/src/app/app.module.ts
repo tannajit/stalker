@@ -56,6 +56,7 @@ import { AddUserComponent } from './admin/add-user/add-user.component';
 import { UsersComponent } from './admin/users/users.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { UpdateUserComponent } from './admin/update-user/update-user.component'
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 
 
@@ -117,6 +118,7 @@ import { UpdateUserComponent } from './admin/update-user/update-user.component'
     CommonModule,
     MatSortModule,
     MatTableModule,
+    MatPaginatorModule,
     MatSlideToggleModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: true,
