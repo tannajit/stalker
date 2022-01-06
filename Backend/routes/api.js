@@ -7,6 +7,8 @@ const MongoClient = require("mongodb").MongoClient;
  var uri= "mongodb://localhost:27017"; // uri to your Mongo database
 var client = new MongoClient(uri);
 var db; // database 
+
+
 var name_database="stalker1"
 const jwt=require("jsonwebtoken")
 var arraValues=[] // this array where we gonna put the document 

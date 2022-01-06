@@ -6,6 +6,7 @@ import { VideoRecordingService } from '../video-recording.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { ClientsService } from '../clients.service';
+import { ThrowStmt } from '@angular/compiler';
 
 declare var MediaRecorder: any;
 @Component({
@@ -23,11 +24,13 @@ export class DeleteClientComponent implements AfterViewInit {
   videoElement: HTMLVideoElement;
   recordVideoElement: HTMLVideoElement;
   mediaRecorder: any;
-  recordedBlobs: Blob[];
+  recordedBlobs=[]
   isRecording: boolean = false;
   downloadUrl: string;
   stream: MediaStream;
   showVideo = false
+
+  
 
   list = []
   Status;
@@ -61,7 +64,7 @@ export class DeleteClientComponent implements AfterViewInit {
     
   }
 
-  startRecording() {
+  startRecording2() {
     this.recordedBlobs = [];
     let options: any = { mimeType: 'video/webm' };
 
@@ -77,14 +80,14 @@ export class DeleteClientComponent implements AfterViewInit {
     this.onStopRecordingEvent();
   }
 thestream;
-  stopRecording() {
+  stopRecording2() {
     this.mediaRecorder.stop();
-  //   console.log("Strem:"+ this.stream.getTracks()[0].stop())
-  //   console.log("blobs:"+ this.recordedBlobs)
+    console.log("Strem:"+ this.stream.getTracks()[0].stop())
+    console.log("blobs:"+ this.recordedBlobs)
 
-  //   this.thestream=this.stream.getTracks()[0].stop()
-  //   var blob = new Blob(this.recordedBlobs, {type: "video/webm"});
-  // var url = (window.URL || window.webkitURL).createObjectURL(blob);
+    this.thestream=this.stream
+    var blob = new Blob(this.recordedBlobs, {type: "video/webm"});
+    var url = (window.URL || window.webkitURL).createObjectURL(blob);
   // console.log("!!!"+url)
   // console.log("!!!"+blob)
 
@@ -100,17 +103,14 @@ thestream;
     this.recordVideoElement.play();
   }
 dataV;
+text;
+
   onDataAvailableEvent() {
     try {
       this.mediaRecorder.ondataavailable = (event: any) => {
         if (event.data && event.data.size > 0) {
           this.recordedBlobs.push(event.data);
-          // console.log("puch blobs:"+ this.recordedBlobs)
-          // console.log("Strem:"+ this.stream.getTracks()[0].stop())
-          // console.log("blobs:"+ this.recordedBlobs)
       
-          // this.thestream=this.stream.getTracks()[0].stop()
-          // this.dataV = new Blob(this.recordedBlobs, {type: "video/webm"});
 
         }
       };
@@ -119,17 +119,41 @@ dataV;
     }
   }
   Video;
+  fd;
   onStopRecordingEvent() {
     try {
-      this.mediaRecorder.onstop = (event: Event) => {
+       this.mediaRecorder.onstop = async (event: Event) => {
          const videoBuffer = new Blob(this.recordedBlobs, {
           type: 'video/webm'
         });
-        console.log("videoBuffer"+videoBuffer)
-        this.Video=videoBuffer;
-        this.downloadUrl = window.URL.createObjectURL(videoBuffer); // you can download with <a> tag
-        console.log("this.downloadUrl "+this.downloadUrl);
-        this.recordVideoElement.src = this.downloadUrl;
+        console.log("==========================")
+        console.log(videoBuffer.size)
+        console.log(this.recordedBlobs)
+        console.log("==========================")
+
+        console.log(this.recordedBlobs.length)
+
+        this.Video=await videoBuffer.arrayBuffer();
+        console.log("==========================")
+        // const reader = new FileReader();
+        //  reader.addEventListener('loadend', () => {
+        //      //reader.result //contains the contents of blob as a typed array
+        //      console.log("ééééééééé")
+        //      console.log(reader.result)
+        //      //this.Video1={"buffer":reader.result}
+        //  });
+        //  reader.readAsArrayBuffer(videoBuffer)
+
+        //console.log(this.Video)
+
+        console.log("lllll")
+        //console.log(uri)
+       this.downloadUrl = window.URL.createObjectURL(videoBuffer); // you can download with <a> tag
+
+        console.log("this.downloadUrl ")
+        console.log(this.downloadUrl);
+        this.recordVideoElement.src =this.downloadUrl;
+
       };
     } catch (error) {
       console.log(error);
@@ -260,7 +284,7 @@ dataV;
     this.percentage = 0
     interval(300).subscribe(x => {
       if (this.percentage < 100) {
-        this.percentage += 4
+        this.percentage += 50
       }
     });
   }
@@ -292,20 +316,77 @@ dataV;
   }
 
   data =this.router.getCurrentNavigation().extras.state.dataClient
+  Video1;
+
   Send(){
-    // console.log("dataV:"+ this.dataV )
-    // console.log("video:"+ this.recordVideoElement.src)
-    // console.log("video 2:"+Object.keys(this.mediaRecorder))
-    // console.log("raison :"+this.raison)
-    // console.log("data :"+this.data._id)
-    // console.log("videoBuffer:"+this.Video)
-    //this.clientService.DeleteClientByID(this.data._id).subscribe(res=>{console.log(res)})
-    this.checkInfos={"data": this.data,"raison":this.raison,"video":this.stream,"Photo":this.webcamImage}
-    this.clientService.DeleteRequest(this.checkInfos).subscribe(res=>{console.log(res)})
+
+     //console.log("dataV:"+ this.Video )
+    //  const reader = new FileReader();
+    //  reader.addEventListener('loadend', () => {
+    //      //reader.result //contains the contents of blob as a typed array
+    //      console.log("ééééééééé")
+    //      console.log(reader.result)
+    //      //this.Video1={"buffer":reader.result}
+    //  });
+    //  reader.readAsArrayBuffer(this.Video);
+     //reader.readAsText(this.Video);
+
+     
+
+    var photo;
+
+    var binary = new Uint8Array(2)
+    binary[0] = 65
+    binary[1] = 66
+
+    var fd = new FormData()
+    fd.append('json_data', JSON.stringify({a: 1, b: 2}))
+    fd.append('binary_data', new Blob([binary.buffer]))
+    console.log("dzddfefefe")
+    console.log(fd)
+
+    fetch('http://localhost:3000/api1/ReadVideo', {
+      method: 'POST',
+      body: fd
+    }).then(console.log)
+
+    
+    //  fetch(this.downloadUrl, {
+    //     "headers": {},
+    //     "method": "GET"
+    //   }). then(async function(resp) {
+    //       console.log("data")
+    //       console.log( await resp.blob())
+    //       //return resp.blob();
+    //   })
+
+
+    if(this.webcamImage==null) {photo=""}else{photo=this.webcamImage}
+    var test=new Uint8Array(this.Video1  as ArrayBuffer)
+    this.checkInfos={"data": this.data,"raison":this.raison,"video": this.downloadUrl,"Photo":photo,"test":test,"test2":this.text}
+    this.clientService.DeleteRequest( this.checkInfos).subscribe(res=>{console.log(res)})
+    console.log("uuuuuuuuuuuuuuu")
+    //this.ReadV()
   }
+  content;
   ReadV(){
-    console.log(this.clientService.ReadV().subscribe(res=>this.recordVideoElement.src=res.toString()))
+    const str2blob = txt => new Blob([txt]);
+    this.clientService.ReadV().subscribe(res=>
+      this.content=str2blob(res)
+      //console.log(str2blob(res))
+      )
+      let uri =window.URL.createObjectURL(this.content)
+      //console.log(str2blob("Poopcode"))
+
+    //  let  blob = this.content.blob()
+     console.log(uri)
   }
   
+   recorderOnDataAvailable(event) {
+    if (event.data.size == 0) return;
+    this.recordedBlobs.push(event.data);
+  }
+
+
 
 }

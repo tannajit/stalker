@@ -1,4 +1,5 @@
 var express = require('express');
+var app = express();
 var router = express.Router();
 var mongo = require('mongodb');
 var ObjectId = require('mongodb').ObjectId;
@@ -17,7 +18,13 @@ const bcrypt = require('bcrypt')
 const jwt = require("jsonwebtoken")
 const { param } = require("express/lib/router");
 var salt = 5 //any random value,  the salt value specifies how much time it’s gonna take to hash the password. higher the salt value, more secure the password is and more time it will take for calculation.
+let multer = require('multer');
+let upload = multer();
 
+app.use(upload.array()); 
+app.use(express.static('public'));
+
+var type = upload.single('upl');
 // MongoDataBase
 async function run() {
     try {
@@ -611,6 +618,7 @@ router.get("/settings", async (req, res) => {
     res.json(values[0])
 })
 //////////***********************************////////////////////////
+
 router.get("/GetClient/:id", async (req, res) => {
     console.log("get client")
     let geometries = await db.collection("geometries")
@@ -618,66 +626,54 @@ router.get("/GetClient/:id", async (req, res) => {
     const client = await geometries.findOne({ _id: new ObjectId(req.params.id) });
     //console.log(client);
     res.status(200).send(client);
-}
-)
+})
+
 router.post("/DeleteRequest", async (req, res) => {
     console.log("get client : ")
-    dataclient=req.body.data
-    console.log(req.body)
-    photo=req.body.Photo._imageAsDataUrl
+    //dataclient=req.body.data
+    console.log(req.body.video)
+
     client={}
     var id_Photo;
+    var id_Video;
+
      DeleteRequest = await db.collection("DeleteRequest")
- 
+
+     
+
+    //resp = await DeleteRequest.insertOne(client);
+
+    // if(req.body.Photo._imageAsDataUrl!=null){
+    //     photo=req.body.Photo._imageAsDataUrl
+    //     await test(db,dataclient._id,photo).then(res=>id_Photo=res._id,err=>console.log(err))
+    // }
+  
+    // if(req.body.video!=null){
+    //     await test(db,"video2",req.body.video).then(res=>{id_Video=res._id;console.log(res)},err=>console.log(err))
+    // }
 
 
-    // // //console.log("_id"+new ObjectId(req.params.id))
-    // //resp = await DeleteRequest.insertOne(client);
-    if(photo!=null){
-        await test(db,dataclient._id,photo).then(res=>id_Photo=res._id,err=>console.log(err))
-    }
-    //await test(db,"video1",req.body.video).then(res=>console.log(res),err=>console.log(err))
+    // client["_id"]= ObjectId(dataclient._id);
+    // client["NomPrenom"]=dataclient.geometry.properties.NomPrenom;
+    // client["Code_Secteur_OS"]=dataclient.geometry.properties.Code_Secteur_OS;
+    // client["Video"]="id_Video";
+    // client["Raison"]=req.body.raison;
+    // client["Photo"]=id_Photo;
+    // client["Coordinates"]=dataclient.geometry.geometry.coordinates;
 
-    console.log("video "+req.body.video)
-    client["_id"]= ObjectId(dataclient._id);
-    client["NomPrenom"]=dataclient.geometry.properties.NomPrenom;
-    client["Code_Secteur_OS"]=dataclient.geometry.properties.Code_Secteur_OS;
-    client["Video"]=req.body.video;
-    client["Raison"]=req.body.raison;
-    client["Photo"]=id_Photo;
-    client["Coordinates"]=dataclient.geometry.geometry.coordinates;
 
-    
-    console.log(client)
+     // await DeleteRequest.insertOne(client); 
 
-    //video = await test1(db,ObjectId("61d31ed620a355f29dc89afd"))
-
-    await DeleteRequest.insertOne(client);
-    //console.log("video "+video);
-    //res.status(200).send(video);
 }
 )
 
-router.get("/ReadVideo", async (req, res) => {
-    console.log("red video: ")
-   
-    
-    video = await test1(db,ObjectId("61d31ed620a355f29dc89afd"))
-
-    //await DeleteRequest.insertOne(client);
-
-    console.log("video "+video);
+router.post("/ReadVideo", async (req, res) => {
 
 
-    // // //console.log("_id"+new ObjectId(req.params.id))
-    // //resp = await DeleteRequest.insertOne(client);
-    //await test(db,dataclient._id,photo).then(res=>id_Photo=res._id,err=>console.log(err))
+    console.log("wiliwlwi ");
+    console.log(req.body);
 
-    
-    //console.log(client)
-    //await DeleteRequest.insertOne(client);
-    // console.log(resp);
-    res.json(video)
+    res.json("fef")
 }
 )
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////
