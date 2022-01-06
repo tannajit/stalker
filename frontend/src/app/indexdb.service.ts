@@ -15,6 +15,7 @@ export class IndexdbService {
 
   /////************* CONSTRUCTOR ***********////////
   constructor(private client: ClientsService) { }
+   //////////********* CREATE INDEXEDDB DATABASES  ********///////////
   createDatabase() {
     var request = window.indexedDB.open("off", this.version)
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
@@ -35,7 +36,6 @@ export class IndexdbService {
     }
   }
 
-  //////////********* CREATE INDEXEDDB DATABASES ********///////////
   createDatabaseOffline() {
     var request = window.indexedDB.open("MyTestDatabase", 10)
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
@@ -46,9 +46,13 @@ export class IndexdbService {
       this.db = request.result
       console.log("upgrade")
       var objectStore = this.db.createObjectStore("client", { keyPath: 'UUid' });
-      console.log("create Sector ")
+      console.log("create client ")
       var objectt = this.db.createObjectStore("update", { keyPath: 'UUid' });
       console.log(objectt)
+      console.log("create update ")
+      var objectt = this.db.createObjectStore("delete", { keyPath: 'UUid' });
+      console.log(objectt)
+      console.log("create delete ")
     }
     request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
       this.db = event.target.result;

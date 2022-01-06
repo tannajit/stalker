@@ -15,13 +15,13 @@ import * as L from 'leaflet';
 export class ClientsService {
 
   /////********* VARIABLE'S DECLARATION ******//////////
-
-  private db: any;
-  items
   MyPosition;
   Raduis;
   PositionClient;
   Distance;
+  private db: any;
+  items
+
   private currentClient;
   uri = "http://localhost:3000";
   private _clientUrl = this.uri + "/api1/clients";
@@ -85,9 +85,24 @@ export class ClientsService {
     return this.http.get<any>(this._extarct);
   }
 
-  getDeleteRequests(){
+  getDeleteRequests() {
     return this.http.get<any>(this._allDeleteRequests)
   }
+
+  DeleteClientByID(id) {
+    console.log("DeleteClientByID" + id);
+    return this.http.get(this._Delete + "DeleteClient/" + id);
+  }
+
+  // DeleteRequest(data) {
+  //   console.log("DeleteClientByID" + data.video);
+  //   return this.http.post(this._Delete + "DeleteRequest", data);
+  // }
+
+  // ReadV() {
+  //   return this.http.get(this._Delete + "ReadVideo");
+  // }
+
 
   //////////////////////////////////////////////////////////
 
@@ -179,6 +194,44 @@ export class ClientsService {
   }
   ////////////////////////////////////////////////////////////////////////
 
+  /////*********** DELETE CLIENT OFFLINE MODE *********///////
+  addTodoDelete(client: any) {
+    client["UUid"] = UUID.UUID();
+    if (!this.onlineOffline.isOnline) {
+      this.addToIndexedDbDelete(client);
+    } else {
+      //post request to mongodb
+      this.DeleteRequest(client).subscribe(res => {
+        console.log(res);
+        console.log("data sent")
+      });
+    }
+  }
+
+  addToIndexedDbDelete(clientt: any) {
+    var db; var transaction; var upgradeDb
+    var request = window.indexedDB.open("MyTestDatabase", 10)
+    // upgradeDb.createObjectStore('client');
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+      console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
+      console.log("success")
+      console.log(db)
+      transaction = db.transaction(['delete'], 'readwrite');
+      var objectStore = transaction.objectStore("delete");
+      //var objectStoreRequest = objectStore.get(id);
+      const request = objectStore.add(clientt);
+      request.onsuccess = (event) => {
+        console.log('saved in DB, DB is now');
+        var message = "Data saved successfuly";
+        var btn = "Continue"
+        this.openAlertDialog(message, btn)
+      };
+
+    }
+  }
 
   /////********** SEND CLIENT INFO FROM INDEXEDB TO MONGODB (ADD CLIENT) *********** //////
   async sendItemsFromIndexedDb(id) {
@@ -244,7 +297,37 @@ export class ClientsService {
       };
     }
   }
-//////************** CHECK IF THE NAVIGATOR IS ONLINE OR OFFLINE *********///////
+  /////********** SEND CLIENT INFO FROM INDEXEDB TO MONGODB (DELETE CLIENT) *********** //////
+  async sendItemsDeleted(id) {
+    console.log("sending items");
+    var db; var transaction; var upgradeDb
+    var request = window.indexedDB.open("MyTestDatabase", 10)
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+      console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
+      console.log("success")
+      console.log(db)
+      transaction = db.transaction(['delete'], 'readwrite');
+      var objectStore = transaction.objectStore("delete");
+      var objectStoreRequest = objectStore.get(id);
+      console.log("@@@@@@@@@@" + objectStoreRequest)
+      objectStoreRequest.onsuccess = event => {
+        var element = event.target.result
+        console.log(element)
+        this.DeleteRequest(element).subscribe(res => {
+          console.log(res);
+          console.log("data sent succusfuly")
+        })
+        var objectStoreRequest1 = objectStore.delete(id);
+        objectStoreRequest1.onsuccess = event => {
+          console.log("item deleted from indexedDb");
+        }
+      };
+    }
+  }
+  //////************** CHECK IF THE NAVIGATOR IS ONLINE OR OFFLINE *********///////
   private registerToEvents(onlineOffline: OnlineOfflineServiceService) {
     onlineOffline.connectionChanged.subscribe(online => {
       console.log(online);
@@ -262,7 +345,7 @@ export class ClientsService {
       }
     });
   }
- /////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
 
   openAlertDialog(msg, btn) {
     const dialogRef = this.dialog.open(AlertDialogComponent, {
@@ -274,9 +357,7 @@ export class ClientsService {
       }
     });
   }
-////************ GET DATA BY ID FROM INDEXEDB (ADD CLIENT) *********///////
-  
-
+  ////************ GET DATA BY ID FROM INDEXEDB (ADD CLIENT) *********///////
   getShow() {
     var list = []
     var transaction
@@ -336,19 +417,45 @@ export class ClientsService {
     };
     return list
   }
-//////********** VALIDATE AUDIT INFO BACKOFFICE *******////////
+  ////************ GET DATA BY ID FROM INDEXEDB (DELETE CLIENT) *********///////
+  getIDdelete() {
+    var list = []
+    var transaction
+    var request = window.indexedDB.open("MyTestDatabase", 10)
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+      console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      this.db = event.target.result;
+      console.log("success")
+      console.log(this.db)
+      transaction = this.db.transaction(['delete'], 'readwrite');
+      var objectStore = transaction.objectStore("delete");
+      var objectStoreRequest = objectStore.getAll();
 
+      objectStoreRequest.onsuccess = function (event) {
+        var all = event.target.result
+        all.forEach(element => {
+          console.log("---")
+          var elm = element.UUid
+          console.log(elm)
+          list.push(elm)
+          console.log(list)
+        });
 
+      }
+    };
+    return list
+  }
+  //////********** VALIDATE AUDIT INFO BACKOFFICE *******////////
 
-  validateAuditorInfo(info){
+  validateAuditorInfo(info) {
     console.log("#############################")
     console.log(info)
     return this.http.post<any>(this._validate, info);
   }
 
-////////////////////////////////////////////////////////
-
- 
+  ////////////////////////////////////////////////////////
 
   setCurrentClientInfo(client: any) {
     this.currentClient = client;
@@ -358,24 +465,53 @@ export class ClientsService {
   getClientInfo() {
     return this.currentClient;
   }
- 
+
 
   //////////////////
-  getClientByID(id){
-    console.log('id'+id);
-    return this.http.get(this._getClientByID+ '/' +id);
+  getClientByID(id) {
+    console.log('id' + id);
+    return this.http.get(this._getClientByID + '/' + id);
   }
-  
 
-
-  
-
-  
 
   ///////////////////
-  DeleteClientByID(id){
-    console.log("DeleteClientByID"+id);
-    return this.http.get(this._Delete+"DeleteClient/"+id);
+
+  getPosition(position) {
+    if (Object.keys(position)[0] === "Map") {
+      this.MyPosition = position.Map;
+      this.Raduis = position.Raduis;
+    };
+    if (Object.keys(position)[0] === "Client") {
+      this.PositionClient = position.Client;
+
+    }
+    if ((Object.keys(position)[0] === "MapUp") && (this.PositionClient != null)) {
+
+      console.log("MyPosition Updated " + new L.LatLng(position.MapUp[0], position.MapUp[1]));
+
+      this.MyPosition = new L.LatLng(position.MapUp[0], position.MapUp[1]);
+      this.Raduis = position.Raduis;
+      this.Distance = this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
+      console.log("Distance Up :" + this.Distance);
+      console.log("Raduis Up :" + this.Raduis);
+
+    }
+    if (this.PositionClient != null) {
+      console.log("MyPosition " + this.MyPosition);
+
+      console.log("Pointposition " + this.PositionClient);
+
+      this.Distance = this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
+      console.log("Distance :" + this.Distance);
+      console.log("Raduis :" + this.Raduis);
+
+    }
+
+    // if(this.Distance<=this.Raduis) {
+    // console.log("The point into the cercle")
+    // //this.getDistance();
+    // return this.Distance;
+    //}
   }
 
   DeleteRequest(data){
@@ -391,43 +527,43 @@ export class ClientsService {
     return this.http.get(this._Delete+"ReadVideo");
   }
 
-  getPosition(position){
-    if(Object.keys(position)[0]==="Map"){
-    this.MyPosition=position.Map;
-    this.Raduis=position.Raduis;
-  };
-    if(Object.keys(position)[0]==="Client"){
-    this.PositionClient=position.Client;
+//   getPosition(position){
+//     if(Object.keys(position)[0]==="Map"){
+//     this.MyPosition=position.Map;
+//     this.Raduis=position.Raduis;
+//   };
+//     if(Object.keys(position)[0]==="Client"){
+//     this.PositionClient=position.Client;
 
-  }
-  if((Object.keys(position)[0]==="MapUp")&&(this.PositionClient!=null)){
+//   }
+//   if((Object.keys(position)[0]==="MapUp")&&(this.PositionClient!=null)){
 
-    console.log("MyPosition Updated "+ new L.LatLng(position.MapUp[0], position.MapUp[1]));
+//     console.log("MyPosition Updated "+ new L.LatLng(position.MapUp[0], position.MapUp[1]));
 
-    this.MyPosition=new L.LatLng(position.MapUp[0], position.MapUp[1]);
-    this.Raduis=position.Raduis;
-    this.Distance=this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
-    console.log("Distance Up :"+this.Distance );
-    console.log("Raduis Up :"+this.Raduis );
+//     this.MyPosition=new L.LatLng(position.MapUp[0], position.MapUp[1]);
+//     this.Raduis=position.Raduis;
+//     this.Distance=this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
+//     console.log("Distance Up :"+this.Distance );
+//     console.log("Raduis Up :"+this.Raduis );
     
-  }
-  if(this.PositionClient!=null){
-console.log("MyPosition "+this.MyPosition);
+//   }
+//   if(this.PositionClient!=null){
+// console.log("MyPosition "+this.MyPosition);
 
-  console.log("Pointposition "+this.PositionClient);
+//   console.log("Pointposition "+this.PositionClient);
 
-    this.Distance=this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
-    console.log("Distance :"+this.Distance );
-    console.log("Raduis :"+this.Raduis );
+//     this.Distance=this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
+//     console.log("Distance :"+this.Distance );
+//     console.log("Raduis :"+this.Raduis );
 
-  }
+//   }
   
-    // if(this.Distance<=this.Raduis) {
-    // console.log("The point into the cercle")
-    // //this.getDistance();
-    // return this.Distance;
-    //}
-  }
+//     // if(this.Distance<=this.Raduis) {
+//     // console.log("The point into the cercle")
+//     // //this.getDistance();
+//     // return this.Distance;
+//     //}
+//   }
   ActiveTheButton(){
     if(this.Distance<=this.Raduis) {
       //console.log("The point into the cercle")
@@ -445,5 +581,4 @@ console.log("MyPosition "+this.MyPosition);
 
 
 
-  
 }

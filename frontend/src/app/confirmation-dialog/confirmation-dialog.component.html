@@ -1,0 +1,12 @@
+
+
+<mat-dialog-content>
+	<p>
+		{{confirmMessage}}
+	</p>
+</mat-dialog-content>
+<mat-dialog-actions align="center">
+	<button mat-raised-button (click)="dialogRef.close(false)">Cancel</button>
+	<button mat-raised-button style="background-color:#27AE61; color: white;" (click)="dialogRef.close(true)"
+		tabindex="1">Confirm</button>
+</mat-dialog-actions>

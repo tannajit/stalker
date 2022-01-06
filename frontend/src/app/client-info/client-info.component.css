@@ -71,6 +71,11 @@
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
     cursor: pointer;
 }
+
+.pdv-img video{
+    width: 100px;
+    height: 200px;
+}
 .pdv-info p{
     margin: 2px;
     font-size: 10px;
@@ -193,3 +198,9 @@
 .pdv-info{
     width: 300px;
 }
+
+.section{
+    display: flex;
+    flex-flow: row wrap;
+}
+

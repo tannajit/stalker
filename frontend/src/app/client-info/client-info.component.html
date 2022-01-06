@@ -1,5 +1,5 @@
-<label>{{data._id}}</label>
-<div *ngIf="loggedUser.role == 'Back Office' || loggedUser.role == 'Admin' && data!='yes'">
+<label style="font-weight: bold; color: green;">Id Client: </label><p>{{data._id}}</p>
+<div *ngIf="(loggedUser.role == 'Back Office' || loggedUser.role == 'Admin' ) && !data?.Raison">
     
     <div *ngIf="data.geometry.properties.status=='green', else refused">
         <span style="color: green;">Client Validated</span>
@@ -160,37 +160,59 @@
     </mat-dialog-actions>
 </div>
 
-<div *ngIf="data=='yes'">
+<div *ngIf="data?.Raison">
     <mat-dialog-content class="dialog-content">
-        <h2>Client Information</h2>
-        <section fxLayout="column" fxLayoutAlign="center">
+        <section class="section">
             <div class="pdv-info-container">
                 <div class="pdv-img">
-                    
-                    <img  src="assets/images/blank.jpg" alt=""
-                        (click)="openImage('assets/images/blank.jpg')">
+                    <img *ngIf="data.PDV[0].geometry.properties?.PVP" src="{{data.PDV[0].geometry.properties?.PVP}}" alt=""
+                                (click)="openImage(data.PDV[0].geometry.properties?.PVP)">
+                    <img *ngIf="!data.PDV[0].geometry.properties?.PVP" src="assets/images/blank.jpg" alt=""
+                                (click)="openImage('assets/images/blank.jpg')">
                 </div>
                 <div class="pdv-info">
                     <label>Sector:</label>
-                    <p>text</p>
+                    <p>{{data.PDV[0].geometry.properties.Code_Secteur_OS}}</p>
                     <label>Name:</label>
-                    <p>text</p>
+                    <p>{{data.PDV[0].geometry.properties.NomPrenom}}</p>
                     <label>Phone Number:</label>
-                    <p>text</p>
+                    <p>{{data.PDV[0].geometry.properties.PhoneNumber}}</p>
                     <label>Type PDV:</label>
-                    <p>text</p>
+                    <p>{{data.PDV[0].geometry.properties.TypeDPV}}</p>
                 </div>
             </div>
             <div class="pdv-info-container">
 
                 <div class="pdv-img">
-                    
-                    <img  src="assets/images/blank.jpg" alt=""
-                        (click)="openImage('assets/images/blank.jpg')">
+                    <img *ngIf="data.PDV[0].geometry.properties?.NFCP" src="{{data.PDV[0].geometry.properties?.NFCP}}" alt=""
+                    (click)="openImage(data.PDV[0].geometry.properties?.NFCP)">
+                    <img *ngIf="!data.PDV[0].geometry.properties?.NFCP" src="assets/images/blank.jpg" alt=""
+                    (click)="openImage('assets/images/blank.jpg')">
+                </div>
+                <div class="pdv-info">
+                    <label>Code QR:</label>
+                    <p>{{data.PDV[0].geometry.properties.codeQR}}</p>
+                    <label>UUID:</label>
+                    <p>{{data.PDV[0].geometry.properties.nfc.UUID}}</p>
+                </div>
+            </div>
+
+            
+        </section>
+        <section class="section">
+            <div class="pdv-info-container">
+
+                <div class="pdv-img">
+                    <img *ngIf="data.Photo!=null" src="{{data.PhotoURL}}" alt=""
+                    (click)="openImage(data.PhotoURL)">
+                    <video *ngIf="data.Video!=null" src="assets/videos/video.mp4"  controls>
+                        
+                    </video>
                 </div>
                 <div class="pdv-info">
                     <label>Reason:</label>
-                    <p>null</p>
+                    <p>{{data.Raison}}</p>
+                    
                 </div>
             </div>
         </section>

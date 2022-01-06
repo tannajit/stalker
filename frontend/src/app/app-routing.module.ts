@@ -6,14 +6,17 @@ import { LoginComponent } from './login/login.component';
 import { MapComponent } from './map/map.component';
 import { ClientsComponent } from './clients/clients.component';
 import { RoutesComponent } from './routes/routes.component';
-import { PlanningComponent } from './planning/planning.component';
+import { PlanningComponent } from './admin/planning/planning.component';
 import { AuthGaurdService } from './auth-gaurd.service';
 import { AddclientComponent } from './addclient/addclient.component';
 import { UpdateClientComponent } from './update-client/update-client.component';
 import { OfflineComponent } from './offline/offline.component';
 import { SettingsComponent } from './settings/settings.component';
 import { DeleteClientComponent } from './delete-client/delete-client.component';
-import { DeleteRequestsComponent } from './delete-requests/delete-requests.component';
+import { DeleteRequestsComponent } from './admin/delete-requests/delete-requests.component';
+import { AddUserComponent } from './admin/add-user/add-user.component';
+import { UsersComponent } from './admin/users/users.component';
+import { UpdateUserComponent } from './admin/update-user/update-user.component';
 
 
 
@@ -75,6 +78,18 @@ const routes: Routes = [
   },
   {
     path: 'deleteRequests', component: DeleteRequestsComponent,
+    canActivate: [AuthGaurdService]
+  },
+  {
+    path: 'addUser', component: AddUserComponent,
+    canActivate: [AuthGaurdService]
+  },
+  {
+    path: 'users', component: UsersComponent,
+    canActivate: [AuthGaurdService]
+  },
+  {
+    path: 'updateUser', component: UpdateUserComponent,
     canActivate: [AuthGaurdService]
   }
   // {

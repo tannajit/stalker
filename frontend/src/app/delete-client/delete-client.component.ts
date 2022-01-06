@@ -2,11 +2,11 @@ import { Component, OnInit, AfterViewInit, ViewChild, ChangeDetectionStrategy, C
 import { Observable, Subject } from "rxjs";
 import { interval } from 'rxjs';
 import * as L from 'leaflet';
-import { VideoRecordingService } from '../video-recording.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { ClientsService } from '../clients.service';
 import { ThrowStmt } from '@angular/compiler';
+import { OnlineOfflineServiceService } from '../online-offline-service.service';
 
 declare var MediaRecorder: any;
 @Component({
@@ -55,16 +55,16 @@ export class DeleteClientComponent implements AfterViewInit {
   PDVImage
 
   constructor(
-    
-    private router :Router,
-    private clientService :ClientsService
-  ) {}
+    private readonly onlineOfflineService: OnlineOfflineServiceService,
+    private router: Router,
+    private clientService: ClientsService
+  ) { }
 
   async ngOnInit() {
-    
+
   }
 
-  startRecording2() {
+  startRecording() {
     this.recordedBlobs = [];
     let options: any = { mimeType: 'video/webm' };
 
@@ -80,16 +80,17 @@ export class DeleteClientComponent implements AfterViewInit {
     this.onStopRecordingEvent();
   }
 thestream;
-  stopRecording2() {
-    this.mediaRecorder.stop();
-    console.log("Strem:"+ this.stream.getTracks()[0].stop())
-    console.log("blobs:"+ this.recordedBlobs)
 
-    this.thestream=this.stream
-    var blob = new Blob(this.recordedBlobs, {type: "video/webm"});
-    var url = (window.URL || window.webkitURL).createObjectURL(blob);
-  // console.log("!!!"+url)
-  // console.log("!!!"+blob)
+  stopRecording() {
+    this.mediaRecorder.stop();
+    //   console.log("Strem:"+ this.stream.getTracks()[0].stop())
+    //   console.log("blobs:"+ this.recordedBlobs)
+
+    //   this.thestream=this.stream.getTracks()[0].stop()
+    //   var blob = new Blob(this.recordedBlobs, {type: "video/webm"});
+    // var url = (window.URL || window.webkitURL).createObjectURL(blob);
+    // console.log("!!!"+url)
+    // console.log("!!!"+blob)
 
     this.isRecording = !this.isRecording;
     console.log('Recorded Blobs: ', this.recordedBlobs);
@@ -160,9 +161,7 @@ text;
     }
   }
 
-  
-
-  displayVideo(){
+  displayVideo() {
     this.showVideo = true
     navigator.mediaDevices
       .getUserMedia({
@@ -213,9 +212,6 @@ text;
       iconSize: [30, 30]
     });
     var marker = L.marker([this.lat, this.lon], { icon: location_icon })
-
-
-
     this.inter = interval(1000).subscribe(x => {
 
       if (navigator.geolocation) {
@@ -276,8 +272,6 @@ text;
         alert("Geolocation is not supported by this browser.");
       }
     });
-
-
   }
 
   testTimer() {
@@ -289,15 +283,15 @@ text;
     });
   }
 
-  
 
-  
 
-  displayCam(){
+
+
+  displayCam() {
     this.showWebcam = !this.showWebcam;
   }
 
-  get triggerObservable(): Observable < void> {
+  get triggerObservable(): Observable<void> {
     return this.trigger.asObservable();
   }
 
@@ -362,9 +356,14 @@ text;
 
 
     if(this.webcamImage==null) {photo=""}else{photo=this.webcamImage}
-    var test=new Uint8Array(this.Video1  as ArrayBuffer)
-    this.checkInfos={"data": this.data,"raison":this.raison,"video": this.downloadUrl,"Photo":photo,"test":test,"test2":this.text}
-    this.clientService.DeleteRequest( this.checkInfos).subscribe(res=>{console.log(res)})
+    this.checkInfos={"data": this.data,"raison":this.raison,"video": this.downloadUrl,"Photo":photo}
+
+    //var test=new Uint8Array(this.Video1  as ArrayBuffer)
+    if (!this.onlineOfflineService.isOnline) {
+      this.clientService.addTodoDelete(this.checkInfos)
+    } else {
+      this.clientService.DeleteRequest(this.checkInfos).subscribe(res => { console.log(res) })
+    }
     console.log("uuuuuuuuuuuuuuu")
     //this.ReadV()
   }
@@ -387,6 +386,28 @@ text;
     this.recordedBlobs.push(event.data);
   }
 
+
+  // data = this.router.getCurrentNavigation().extras.state.dataClient
+
+  // Send() {
+  //   // console.log("dataV:"+ this.dataV )
+  //   // console.log("video:"+ this.recordVideoElement.src)
+  //   // console.log("video 2:"+Object.keys(this.mediaRecorder))
+  //   // console.log("raison :"+this.raison)
+  //   // console.log("data :"+this.data._id)
+  //   // console.log("videoBuffer:"+this.Video)
+  //   //this.clientService.DeleteClientByID(this.data._id).subscribe(res=>{console.log(res)})
+  //   this.checkInfos = { "data": this.data, "raison": this.raison, "video": this.stream, "Photo": this.webcamImage }
+  //   if (!this.onlineOfflineService.isOnline) {
+  //     this.clientService.addTodoDelete(this.checkInfos)
+  //   } else {
+  //     this.clientService.DeleteRequest(this.checkInfos).subscribe(res => { console.log(res) })
+  //   }
+  // }
+  
+  // ReadV() {
+  //   console.log(this.clientService.ReadV().subscribe(res => this.recordVideoElement.src = res.toString()))
+  // }
 
 
 }
