@@ -18,4 +18,9 @@ export class UpdateUserComponent implements OnInit {
     this.userInfo = this.adminService.getUserInfo()
   }
 
+  UpdateUser(){
+    console.log("sfjldkfjdkfjdlsk") 
+    console.log(this.userInfo)
+  }
+
 }
