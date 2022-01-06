@@ -36,7 +36,7 @@ export class SettingsComponent implements OnInit {
   //////********* GET SMS TIMER *******//////////
 
   getSMS(){
-    this._setting.getTimeSMS().subscribe(res=>{
+    this._setting.getSettings('sms').subscribe(res=>{
       if(res!=null){
         this.time=res.details.time
       }
