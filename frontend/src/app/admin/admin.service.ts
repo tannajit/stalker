@@ -10,6 +10,8 @@ export class AdminService {
   uri = "http://localhost:3000";
   private getUsersURL = this.uri+"/api1/getAllUsers"
   private deleteUserURL = this.uri+"/api1/deleteUser"
+  private restoreUserURL = this.uri+"/api1/restoreUser"
+
   currentUser;
 
 
@@ -24,6 +26,10 @@ export class AdminService {
 
   deleteUser(user){
     return this.http.post<any>(this.deleteUserURL,user)
+  }
+
+  restoreUser(user){
+    return this.http.post<any>(this.restoreUserURL,user)
   }
 
   setUserInfo(user){
