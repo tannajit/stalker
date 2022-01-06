@@ -2,7 +2,6 @@ import { Component, OnInit, AfterViewInit, ViewChild, ChangeDetectionStrategy, C
 import { Observable, Subject } from "rxjs";
 import { interval } from 'rxjs';
 import * as L from 'leaflet';
-import { VideoRecordingService } from '../video-recording.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { ClientsService } from '../clients.service';

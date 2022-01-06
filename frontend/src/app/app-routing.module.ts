@@ -16,6 +16,7 @@ import { DeleteClientComponent } from './delete-client/delete-client.component';
 import { DeleteRequestsComponent } from './admin/delete-requests/delete-requests.component';
 import { AddUserComponent } from './admin/add-user/add-user.component';
 import { UsersComponent } from './admin/users/users.component';
+import { UpdateUserComponent } from './admin/update-user/update-user.component';
 
 
 
@@ -85,6 +86,10 @@ const routes: Routes = [
   },
   {
     path: 'users', component: UsersComponent,
+    canActivate: [AuthGaurdService]
+  },
+  {
+    path: 'updateUser', component: UpdateUserComponent,
     canActivate: [AuthGaurdService]
   }
   // {

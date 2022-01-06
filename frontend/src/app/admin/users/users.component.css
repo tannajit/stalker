@@ -1,6 +1,8 @@
 
 .requests-container{
     margin-top: 20px;
+    margin-bottom: 45px !important;
+    padding-bottom: 50px;
 }
 /* Page title */
 /* ---------------------------------------------------------- */
@@ -23,12 +25,14 @@
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
 }
   .table-holder {
+    
     background-color: white;
     padding: 15px;
     padding-top: 5px;
     border-radius: 5px;
     margin-left: 45px;
     margin-right: 45px;
+    margin-bottom: 40px;
     box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
   }
   .list-title {

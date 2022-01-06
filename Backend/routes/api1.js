@@ -3,8 +3,8 @@ var router = express.Router();
 var mongo = require('mongodb');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-//var uri= "mongodb://localhost:27017"; 
-var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+var uri= "mongodb://localhost:27017"; 
+//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri="mongodb://localhost:27017"
 // uri to your Mongo database
 var client = new MongoClient(uri);
@@ -74,6 +74,15 @@ router.get('/addedClients', async function (req, res) {
 
 });
 /* GET . */
+
+router.get('/getAllUsers', async(req,res)=>{
+    let userColl = await db.collection("users")
+    var values = await userColl.find({}).toArray()
+
+    res.json(values)
+})
+
+
 router.get('/clientss', async (req, res) => {
 
     let collection = await db.collection("geometries") // collection 
@@ -243,6 +252,14 @@ router.post('/validate', async (req, res) => {
 
 })
 
+router.post('/deleteUser', async(req,res) =>{
+    
+    let user = req.body;
+    let userColl = db.collection("users")
+    var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
+            { $set: { "status": "deleted" } })
+        console.log(updated)
+})
 
 async function InsertClient(client) {
     //console.log("/n /n ************************** /n /n")
