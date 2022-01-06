@@ -25,10 +25,10 @@
 .add-form{
     margin-left: 10%;
     display: flex;
-    flex-flow: column wrap;
+    flex-flow: column;
     align-items: flex-start;
     justify-content: flex-start;
-    gap: 5%;
+    padding: 5px;
 }
 .field{
     display: flex;
@@ -36,6 +36,14 @@
     justify-content: center;
     align-items: center;
     gap: 3%;
+    margin: 5px;
+}
+.field mat-form-field{
+    width:300px !important;
+}
+
+.field mat-form-field input::placeholder{
+    font-size: 9px !important;
 }
 .field label{
     font-size: 15px;
@@ -43,6 +51,7 @@
     width:200px;
     display: inline-block;
 }
+
 .matricule{
     background-color: rgb(206, 204, 204);
 }
@@ -55,6 +64,7 @@
 }
 
 .btn-green{
+    margin-top: 20px;
     align-self: flex-end;
     background-color: #27AE61;
     color: #fff;
@@ -64,4 +74,22 @@
     border-radius: 20px;
     text-align: center !important;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+
+.btn-red{
+    margin-top: 20px;
+    margin-right: 10px;
+    align-self: flex-end;
+    background-color: #AE5827;
+    color: #fff;
+    font-size: 13px;
+    line-height: 30px;
+    width: 100px !important;
+    border-radius: 20px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+
+.btns{
+    align-self: flex-end;
 }

@@ -20,28 +20,28 @@
                 <label>Last Name :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput  [(ngModel)]="LastName" />
+                    <input placeholder="Type the name..." matInput [(ngModel)]="LastName" />
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>CIN :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput [(ngModel)]="CIN" />
+                    <input placeholder="Type the CIN..." matInput [(ngModel)]="CIN" />
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>Phone Number :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput [(ngModel)]="phoneNumber" />
+                    <input placeholder="Type the phone number..." matInput [(ngModel)]="phoneNumber" />
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>Email :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput type="email" [(ngModel)]="Email" disabled/>
+                    <input matInput placeholder="Type the email" type="email" [(ngModel)]="Email" disabled/>
                 </mat-form-field>
                 <button mat-button class="gen-btn" (click)="GenerateEmail()">Generate Email</button>
             </div>
@@ -49,8 +49,7 @@
                 <label>Password :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput type="text" value="{{Password}}" disabled/>
-                    
+                    <input matInput placeholder="Generate the password..." type="text" value="{{Password}}" disabled/>
                 </mat-form-field>
                 <button mat-button class="gen-btn" (click)="GeneratePassword()">Generate Password</button>
             </div>
@@ -75,7 +74,10 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-            <button class="btn-green" mat-button (click)="SendUser()">Add</button>
+            <div class="btns">
+                <button class="btn-red" mat-button routerLink="/users">Cancel</button>
+                <button class="btn-green" mat-button (click)="SendUser()">Add</button>
+            </div>
         </div>
         
     </div>
