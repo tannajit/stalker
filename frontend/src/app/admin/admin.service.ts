@@ -11,6 +11,9 @@ export class AdminService {
   private getUsersURL = this.uri+"/api1/getAllUsers"
   private deleteUserURL = this.uri+"/api1/deleteUser"
   private restoreUserURL = this.uri+"/api1/restoreUser"
+  private _user=this.uri+"/api1/register"
+  private _user_email=this.uri+"/api1/GeEmail"
+  private _setting =this.uri + "/api1/settings";
 
   currentUser;
 
@@ -35,9 +38,19 @@ export class AdminService {
   setUserInfo(user){
     this.currentUser = user
   }
-
-
   getUserInfo() {
     return this.currentUser;
   }
+  /////////////***** Add User (Hafsa's code) ***////////////////
+  CreateUser(user){
+    return this.http.post<any>(this._user,user)
+  }
+  CheckEmail(){
+      return this.http.get<any>(this._user_email)
+  }
+  getSettings(params) {
+    console.log(params)
+    return this.http.get<any>(this._setting+"?"+params);
+  }
+  //////
 }

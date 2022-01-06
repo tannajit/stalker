@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ClientsService } from 'src/app/clients.service';
-import { SettingsService } from 'src/app/settings/settings.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ClientInfoComponent } from 'src/app/client-info/client-info.component';
 import { AlertDialogComponent } from 'src/app/alert-dialog/alert-dialog.component';
 import { Router } from '@angular/router';
+import { AdminService } from '../admin.service';
 @Component({
   selector: 'app-add-user',
   templateUrl: './add-user.component.html',
@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 })
 export class AddUserComponent implements OnInit {
 
-  constructor(private _setting: SettingsService, 
+  constructor(private _setting: AdminService, 
     private _client: ClientsService,
     private dialog:MatDialog,
     private _router:Router) { }
@@ -150,7 +150,7 @@ export class AddUserComponent implements OnInit {
         role: this.role,
         email: this.Email,
         password:this.Password,
-        status:"Active"
+        status:"active"
       },
       Sectors: this.SectorAffacted
     }

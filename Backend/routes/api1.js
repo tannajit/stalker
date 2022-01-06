@@ -3,9 +3,8 @@ var router = express.Router();
 var mongo = require('mongodb');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-
-var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
-//var uri="mongodb://localhost:27017"
+//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+var uri="mongodb://localhost:27017"
 // uri to your Mongo database
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
@@ -511,9 +510,11 @@ async function GenerateHashPassword(password) {
 /// get User from database 
 async function getUser(user) {
     var FindUser;
+    console.log("find user")
     let collection = db.collection("users")
     var status = { value: 401, data: null }
-    var FindUser = await collection.findOne({ email: user.email })
+    var FindUser = await collection.findOne({email:user.email,status:"active"})
+    console.log(FindUser)
     if (FindUser != null) {
         //console.log('find')
         var valid = await ValidPassword(user.password, FindUser.password)
