@@ -45,13 +45,12 @@
             <div class="scan-field" *ngIf="selected=='Not exist'">
                 <label class="input-label">PDV location video : </label>
                 <div>
-                    <button matbutton class="btn-green" *ngIf="!isRecording" (click)="startRecording()">Record Video</button>
+
+                    <button mat-button class="btn-green" *ngIf="!isRecording" (click)="displayVideo()">Record Video</button>
+
                 </div>
             </div>
-            <div class="scan-field" *ngIf="selected=='Not exist'">
-                <video class="video" #video autoplay controls></video>
-                <video class="video" style="width:360 !important;" controls #recordedVideo></video>
-            </div>
+            
 
             <div class="scan-field" *ngIf="selected=='Out of category' || selected=='End of activity' ">
                 <label class="input-label">PDV photo : </label>
@@ -91,6 +90,23 @@
             </div>
         </div>
         <button mat-button class="btn-yellow" (click)="Send()">Send</button>
-    </div>
 
-</div>
+        <button mat-button class="btn-yellow" (click)="ReadVideo()">Read</button>
+
+        
+        
+    <!-- </div> 
+    <label class="input-label">PDV location video2 : </label>
+    <div style="text-align:center">
+        <video class="video" #video autoplay controls></video>
+        <span class="m-1"></span>
+        <video class="video" style="width:360 !important;" controls #recordedVideo></video>
+        <br>
+        <button class="btn btn-primary btn-lg" *ngIf="!isRecording2" (click)="startRecording2()">Start Recording</button>
+        <button class="btn btn-warning btn-lg" *ngIf="isRecording2" (click)="stopRecording2()">Stop Recording</button>
+    </div>  -->
+    
+</div>  
+
+
+

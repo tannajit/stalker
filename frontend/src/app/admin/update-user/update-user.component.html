@@ -1,3 +1,4 @@
+
 <div class="adduser-container">
     <div class="holder">
         <div class="title-holder">
@@ -6,70 +7,76 @@
         <div class="add-form">
             <div class="field">
                 <label>Id User :</label>
-                <button mat-button disabled class="matricule">000128</button>
-                <button mat-button class="gen-btn">Generate</button>
+                <button mat-button disabled class="matricule">{{userInfo.UserID}}</button>
             </div>
             <div class="field">
-                <label>Name :</label>
+                <label>First Name :</label>
+                <mat-form-field >
+                    <!-- <mat-label>Id User</mat-label> -->
+                    <input placeholder="Type the First name..." matInput [(ngModel)]="FirstName" />
+                </mat-form-field>
+            </div>
+            <div class="field">
+                <label>Last Name :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input placeholder="Type the name..." matInput [(ngModel)]="userInfo.name"/>
+                    <input placeholder="Type the Last name..." matInput [(ngModel)]="LastName" />
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>CIN :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input placeholder="Type the CIN..." matInput [(ngModel)]="userInfo.CIN"/>
+                    <input placeholder="Type the CIN..." matInput [(ngModel)]="userInfo.CIN" />
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>Phone Number :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input placeholder="Type the phone number..." matInput [(ngModel)]=" userInfo.phone "/>
+                    <input placeholder="Type the phone number..." matInput [(ngModel)]="userInfo.phone" />
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>Email :</label>
                 <mat-form-field>
-                    <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput placeholder="Type the email" type="email" [(ngModel)]=" userInfo.email"/>
+                     <mat-label>Id User</mat-label>
+                    <input matInput placeholder="Type the email" type="email" [(ngModel)]="userInfo.email" disabled/>
                 </mat-form-field>
+                <button mat-button class="gen-btn" (click)="GenerateEmail()">Generate Email</button>
             </div>
             <div class="field">
                 <label>Password :</label>
                 <mat-form-field>
-                    <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput placeholder="Generate the password..." type="password" [(ngModel)]="userInfo.password"/>
+                     <mat-label>Id User</mat-label> 
+                     <input matInput placeholder="Generate the password..." type="password" value="{{userInfo.password}}" disabled/>
                 </mat-form-field>
-                <button mat-button class="gen-btn">Generate</button>
-            </div>
-            <div class="field">
-                <label>Role :</label>
+                <button mat-button class="gen-btn" (click)="GeneratePassword()">Generate Password</button>
+            </div>  
+            <div class="field"> 
+                 <label>Role :</label>
                 <mat-form-field>
-                    <mat-select placeholder="select" panelClass="selectPanel2" [(ngModel)]="userInfo.role">
-                        <mat-option value="Seller">Seller</mat-option>
-                        <mat-option value="Auditor">Auditor</mat-option>
-                        <mat-option value="Supervisor">Supervisor</mat-option>
-                        <mat-option value="Back Office">Back Office</mat-option>
+                    <mat-select  panelClass="selectPanel2"   (selectionChange)="onChange()" [(value)]="userInfo.role">
+                        
+                        <div *ngFor="let rol of Roles" >
+                            <mat-option  value="{{rol}}">{{rol}}</mat-option>
+                            </div>
                     </mat-select>
                 </mat-form-field>
             </div>
-            <div class="field">
+            <div class="field" *ngIf="RoleActive()">
                 <label>Sector :</label>
-                <mat-form-field>
-                    <mat-select placeholder="select" panelClass="selectPanel2" [(ngModel)]="userInfo.sector" >
-                        <mat-option value="Seller">Seller</mat-option>
-                        <mat-option value="Auditor">Auditor</mat-option>
-                        <mat-option value="Supervisor">Supervisor</mat-option>
-                        <mat-option value="Back Office">Back Office</mat-option>
+                <mat-form-field >
+                    <mat-select placeholder="select" multiple  panelClass="selectPanel2" value="SelectedSector" [(ngModel)]="SelectedSector">
+                        <div *ngFor="let sector of Sectors">
+                            <mat-option value="{{sector.id}}">{{sector.detail}}</mat-option>
+                            </div>
                     </mat-select>
                 </mat-form-field>
             </div>
             <div class="btns">
                 <button class="btn-red" mat-button routerLink="/users">Cancel</button>
-                <button class="btn-green" mat-button>Update</button>
+                <button class="btn-green" mat-button (click)="UpdateUser()">Update</button>
             </div>
         </div>
         

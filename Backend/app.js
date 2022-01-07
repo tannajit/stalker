@@ -12,8 +12,8 @@ const Port = process.env.PORT || 3000
 var app = express();
 app.use(cors())
 
-app.use(bodyParser.json({limit: "50mb"}));
-app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
+app.use(bodyParser.json({limit: "5000mb"}));
+app.use(bodyParser.urlencoded({limit: "5000mb", extended: true, parameterLimit:50000000}));
 //app.use(express.static("dist"))
 
 /*app.get('/', (req, res) => {
