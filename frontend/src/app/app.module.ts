@@ -51,7 +51,11 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { DeleteClientComponent } from './delete-client/delete-client.component';
 import { DeleteRequestsComponent } from './delete-requests/delete-requests.component';
 import {MatSortModule} from '@angular/material/sort';
-import {MatTableModule} from '@angular/material/table'
+import {MatTableModule} from '@angular/material/table';
+import { InjectionComponent } from './injection/injection.component'
+import { FileUploadModule } from "ng2-file-upload";
+
+
 
 
 
@@ -74,6 +78,7 @@ import {MatTableModule} from '@angular/material/table'
     ExtractComponent,
     DeleteClientComponent,
     DeleteRequestsComponent,
+    InjectionComponent,
     
 
   ],
@@ -110,6 +115,7 @@ import {MatTableModule} from '@angular/material/table'
     MatSortModule,
     MatTableModule,
     MatSlideToggleModule,
+    FileUploadModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: true,
       // Register the ServiceWorker as soon as the app is stable

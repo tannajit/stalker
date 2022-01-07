@@ -9,6 +9,7 @@ var uri="mongodb://localhost:27017"
 var client = new MongoClient(uri);
 var name_database="stalker1"
 
+
 async function run() {
 	try {
 		var t=await client.connect();

@@ -14,6 +14,7 @@ import { OfflineComponent } from './offline/offline.component';
 import { SettingsComponent } from './settings/settings.component';
 import { DeleteClientComponent } from './delete-client/delete-client.component';
 import { DeleteRequestsComponent } from './delete-requests/delete-requests.component';
+import { InjectionComponent } from './injection/injection.component';
 
 
 
@@ -75,6 +76,10 @@ const routes: Routes = [
   },
   {
     path: 'deleteRequests', component: DeleteRequestsComponent,
+    canActivate: [AuthGaurdService]
+  },
+  {
+    path: 'injection', component: InjectionComponent,
     canActivate: [AuthGaurdService]
   }
   // {

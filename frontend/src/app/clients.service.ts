@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { OnlineOfflineServiceService } from './online-offline-service.service';
 import Dexie from 'dexie';
@@ -7,6 +7,7 @@ import { UUID } from 'angular2-uuid';
 import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import * as L from 'leaflet';
+import { Observable } from 'rxjs';
 
 
 @Injectable({
@@ -412,11 +413,11 @@ export class ClientsService {
           list.push(elm)
           console.log(list)
         });
-
       }
     };
     return list
   }
+
   ////************ GET DATA BY ID FROM INDEXEDB (DELETE CLIENT) *********///////
   getIDdelete() {
     var list = []
@@ -432,7 +433,6 @@ export class ClientsService {
       transaction = this.db.transaction(['delete'], 'readwrite');
       var objectStore = transaction.objectStore("delete");
       var objectStoreRequest = objectStore.getAll();
-
       objectStoreRequest.onsuccess = function (event) {
         var all = event.target.result
         all.forEach(element => {
@@ -442,7 +442,6 @@ export class ClientsService {
           list.push(elm)
           console.log(list)
         });
-
       }
     };
     return list
@@ -466,14 +465,12 @@ export class ClientsService {
     return this.currentClient;
   }
 
-
   //////////////////
   getClientByID(id) {
     console.log('id' + id);
     return this.http.get(this._getClientByID + '/' + id);
   }
-
-
+  
   ///////////////////
 
   getPosition(position) {
@@ -506,12 +503,6 @@ export class ClientsService {
       console.log("Raduis :" + this.Raduis);
 
     }
-
-    // if(this.Distance<=this.Raduis) {
-    // console.log("The point into the cercle")
-    // //this.getDistance();
-    // return this.Distance;
-    //}
   }
   ActiveTheButton() {
     if (this.Distance <= this.Raduis) {
@@ -526,6 +517,37 @@ export class ClientsService {
     return this.Distance;
 
   }
+
+  /////////////////////////////////////////////////////////////////
+
+  private baseUrl = 'http://localhost:3000/api1';
+  
+  upload(file: File): Observable<HttpEvent<any>> {
+    const formData: FormData = new FormData();
+
+    formData.append('file', file);
+    console.log(formData)
+
+    const req = new HttpRequest('POST', `${this.baseUrl}/upload`, formData, {
+      reportProgress: true,
+      responseType: 'json'
+    });
+    console.log(req)
+
+    return this.http.request(req);
+   
+  }
+
+  getFiles(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/files`);
+  }
+
+  deleteFiles(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/deletefile`);
+  }
+
+  //****************************** */
+
 
 
 }
