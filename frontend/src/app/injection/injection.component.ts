@@ -5,8 +5,6 @@ import { FileSelectDirective, FileUploader } from 'ng2-file-upload';
 import { saveAs } from 'file-saver';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 
-
-
 @Component({
   selector: 'app-injection',
   templateUrl: './injection.component.html',
