@@ -137,6 +137,15 @@ router.get('/addedClients', async function (req, res) {
 });
 
 /* GET . */
+
+router.get('/getAllUsers', async(req,res)=>{
+    let userColl = await db.collection("users")
+    var values = await userColl.find({}).toArray()
+
+    res.json(values)
+})
+
+
 router.get('/clientss', async (req, res) => {
 
     let collection = await db.collection("geometries") // collection 
@@ -154,8 +163,12 @@ router.get('/secteurss', async (req, res) => {
 
 });
 
-router.get('/getAllDeleteRequests', async (req, res) => {
-    let delReq = await db.collection("DeleteRequest")
+
+
+router.get('/getAllDeleteRequests', async(req, res) =>{
+
+    list=[]
+    let delReq = await db.collection("DeleteRequest") 
     var values = await delReq.aggregate([
         {
             $lookup: {
@@ -166,7 +179,42 @@ router.get('/getAllDeleteRequests', async (req, res) => {
             }
         }]).toArray();
 
-    res.json(values)
+    curs = values.map(async (elem) => {
+        //console.log("----------- element ")
+        //console.log(elem)
+        
+        ////console.log(elem)
+        if (elem.PDV[0].geometry.properties?.nfc != undefined) {
+            var element = elem.PDV[0].geometry.properties;
+            //elem.geometry.properties.status="red_white"
+            await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
+                //console.log("hna 1")
+                elem.PDV[0].geometry.properties.NFCP = re
+            })
+
+            await test1(db, ObjectId(element.PVPhoto)).then(re => {
+                //console.log("hna 2")
+                elem.PDV[0].geometry.properties.PVP = re
+            })
+            //a.add(elem)
+        }
+        if(elem.Photo != undefined){
+            await test1(db, ObjectId(elem.Photo)).then(re => {
+                //console.log("hna 1")
+                elem.PhotoURL = re
+            })
+        }
+
+        list.push(elem)
+
+    })
+    ////console.log(a.length)
+    Promise.all(curs).then(ee => {
+        ////console.log(a.length)
+        res.json(list)
+    });
+
+    // res.json(values)
 })
 
 /* GET Sectors Based on User */
@@ -238,6 +286,23 @@ router.post('/validate', async (req, res) => {
     await validateData(id, status);
     res.status(200).json("client insterted from ANg")
 
+})
+
+router.post('/deleteUser', async(req,res) =>{
+    
+    let user = req.body;
+    let userColl = db.collection("users")
+    var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
+            { $set: { "status": "out of work" } })
+        console.log(updated)
+})
+
+router.post('/restoreUser', async(req,res) =>{
+    let user = req.body;
+    let userColl = db.collection("users")
+    var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
+            { $set: { "status": "Active" } })
+        console.log(updated)
 })
 
 async function InsertClient(client) {
@@ -472,9 +537,11 @@ async function GenerateHashPassword(password) {
 /// get User from database 
 async function getUser(user) {
     var FindUser;
+    console.log("find user")
     let collection = db.collection("users")
     var status = { value: 401, data: null }
-    var FindUser = await collection.findOne({ email: user.email })
+    var FindUser = await collection.findOne({email:user.email,status:"active"})
+    console.log(FindUser)
     if (FindUser != null) {
         var valid = await ValidPassword(user.password, FindUser.password)
         if (valid) {
@@ -487,12 +554,29 @@ async function getUser(user) {
             status.data = "invalid password"
         }
     } else {
-        status.value = 401
+        status.value = 403
         status.data = "invalid User"
     }
     return status;
 }
 
+//***  Login */
+router.post('/login', async (req, res) => {
+
+    //console.log(JSON.stringify(req.headers));
+    let user = req.body;
+    //console.log(user)
+    var status = await getUser(user)
+    res.status(status.value).send({ 'Data': status.data })
+})
+
+router.get('/GeEmail',async(req,res)=>{
+    console.log("****** get All Email *****")
+    let collection = db.collection("users")
+    var FindUser = await collection.find({}).project({ _id:0,email:1}).toArray()
+    res.json(FindUser)  
+})
+////
 async function getClientBySeller(id) {
     console.log(id)
     let clientCollection = db.collection("clients")
@@ -556,9 +640,68 @@ router.post('/login', async (req, res) => {
 
 router.post('/register', async (req, res) => {
     let user = req.body;
-    await InsertUser(user);
-    res.status(200).send("User inserted/Updated")
+    await AddNewUser(user).then(ress=>{
+        
+        res.status(200).json("User inserted/Updated")
+    }).catch(err=>{
+        console.log(err);
+        res.status(401).json("Not inserted")
+    });
+    
 })
+
+async function AddNewUser(user){
+    user.userinfo.password = await GenerateHashPassword(user.userinfo.password)
+    let collection = db.collection("users") // collection users 
+    await collection.insertOne( {
+            UserID: user.userinfo.UserID,
+            name:user.userinfo.name,
+            phone: user.userinfo.phone,
+            CIN: user.userinfo.CIN,
+            role: user.userinfo.role,
+            email: user.userinfo.email,
+            password: user.userinfo.password,
+            status:user.userinfo.status
+    
+    }).then(result=>{
+        console.log(result.insertedId)
+        var id=result.insertedId
+        user.Sectors.forEach(sector=>{
+            AddUserToSector(id,sector)
+        })
+    })
+
+}
+async function AddUserToSector(id,sec_name){
+    console.log(id)
+    console.log("|*********** User affected to sector: "+sec_name+" **********************|")
+    let collection=db.collection("secteurs");
+    await collection.updateMany({
+      nameSecteur: Number(sec_name)
+    },
+    {
+      $addToSet: {"users": id}
+    });
+  
+    
+}
+// Insert User 
+async function InsertUser(user) {
+    user.password = await GenerateHashPassword(user.password)
+    //console.log(user)
+    let collection = db.collection("users") // collection users 
+    await collection.update({ name: user.name }, {
+        $setOnInsert: {
+            phone: user.phone,
+            CIN: user.CIN,
+            role: user.role,
+            email: user.email,
+            password: user.password
+        }
+    }, { upsert: true })
+    //console.log('User inserted/Updated')
+}
+/////////////////
 
 router.get('/client', async (req, res) => {
 
@@ -569,6 +712,7 @@ async function ValidPassword(passwordG, passwordD) {
     return (result);
 }
 ///////// *************** Settings *************** ///////
+///////// *************** Settings hafsa's code *************** ///////
 
 router.post("/settings", async (req, res) => {
     //console.log("**************set settings in the dataBase******************")
@@ -587,12 +731,26 @@ router.post("/settings", async (req, res) => {
 });
 
 router.get("/settings", async (req, res) => {
-    //console.log("***********get settings**************")
+   var obj=req.query
+   
+   response=""
+   console.log(obj) 
+   if(obj?.user=="CountUser"){
+    let users=await db.collection("users")
+    var RoleCount=obj.role
+    let values=await users.find({ "role": RoleCount }).toArray()
+    response=values.length
+   }else{
+    var proprety=obj.param;
     let collection = await db.collection("settings") // collection 
-    var values = await collection.find({ "proprety": 'sms' }).toArray()
+    var values = await collection.find({ "proprety": proprety }).toArray()
+    response=values[0]
+   }
     //console.log(values[0])
-    res.json(values[0])
+    res.json(response)
+
 })
+//////////***********************************////////////////////////
 //////////***********************************////////////////////////
 router.get("/GetClient/:id", async (req, res) => {
     console.log("get client")
@@ -687,10 +845,6 @@ router.get("/extract", async (req, res) => {
     all1 = []
 
     var test = values.map((elem) => {
-        //console.log("----")
-        //console.log(elem)
-        //all1=[];
-        //console.log("$$$")
         elem.info.reverse();
         audit = false;
         seller = false;

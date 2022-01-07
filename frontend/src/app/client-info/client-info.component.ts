@@ -6,6 +6,7 @@ import { MapComponent } from '../map/map.component';
 import { Router } from '@angular/router';
 import { FullImageComponent } from '../full-image/full-image.component';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-client-info',
@@ -18,6 +19,8 @@ export class ClientInfoComponent implements OnInit {
   loggedUser;
   clientOfSeller;
   clientOfAuditor;
+  safeURL;
+  videoURL: "https://www.youtube.com/watch?v=iloN8k4zdgE&ab_channel=MRUTaste"
   //////////////////////////////////////////////
 
   ////********* CONSTRUCTOR ******///////////////
@@ -27,7 +30,10 @@ export class ClientInfoComponent implements OnInit {
     public dialogRef: MatDialogRef<MapComponent>,
     public dialogRef2: MatDialogRef<FullImageComponent>,
     public dialog: MatDialog,
-    public _router: Router) { }
+    public _router: Router,
+    private _sanitizer: DomSanitizer) {
+      this.safeURL = this._sanitizer.bypassSecurityTrustResourceUrl(this.videoURL);
+     }
 
   ///////////////////////////////////////////////
 

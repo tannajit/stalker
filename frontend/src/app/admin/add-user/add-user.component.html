@@ -1,0 +1,84 @@
+<div class="adduser-container">
+    <div class="holder">
+        <div class="title-holder">
+          <h1 class="title">Add New User</h1>
+        </div>
+        <div class="add-form">
+            <div class="field">
+                <label>Id User :</label>
+                <button mat-button disabled class="matricule">{{UserID}}</button>
+            </div>
+            <div class="field">
+                <label>First Name :</label>
+                <mat-form-field >
+                    <!-- <mat-label>Id User</mat-label> -->
+                    <input placeholder="Type the First name..." matInput [(ngModel)]="FirstName" />
+                </mat-form-field>
+            </div>
+            <div class="field">
+                <label>Last Name :</label>
+                <mat-form-field>
+                    <!-- <mat-label>Id User</mat-label> -->
+                    <input placeholder="Type the Last name..." matInput [(ngModel)]="LastName" />
+                </mat-form-field>
+            </div>
+            <div class="field">
+                <label>CIN :</label>
+                <mat-form-field>
+                    <!-- <mat-label>Id User</mat-label> -->
+                    <input placeholder="Type the CIN..." matInput [(ngModel)]="CIN" />
+                </mat-form-field>
+            </div>
+            <div class="field">
+                <label>Phone Number :</label>
+                <mat-form-field>
+                    <!-- <mat-label>Id User</mat-label> -->
+                    <input pattern="[0]{1}[0-9]{9}" placeholder="Type the phone number..." matInput [(ngModel)]="phoneNumber" />
+                </mat-form-field>
+            </div>
+            <div class="field">
+                <label>Email :</label>
+                <mat-form-field>
+                    <!-- <mat-label>Id User</mat-label> -->
+                    <input matInput placeholder="Type the email" type="email" [(ngModel)]="Email" disabled/>
+                </mat-form-field>
+                <button mat-button class="gen-btn" (click)="GenerateEmail()">Generate Email</button>
+            </div>
+            <div class="field">
+                <label>Password :</label>
+                <mat-form-field>
+                    <!-- <mat-label>Id User</mat-label> -->
+                    <input matInput placeholder="Generate the password..." type="text" value="{{Password}}" disabled/>
+                </mat-form-field>
+                <button mat-button class="gen-btn" (click)="GeneratePassword()">Generate Password</button>
+            </div>
+            <div class="field">
+                <label>Role :</label>
+                <mat-form-field>
+                    <mat-select placeholder="select" panelClass="selectPanel2"   (selectionChange)="onChange()" [(value)]="role">
+                        
+                        <div *ngFor="let rol of Roles">
+                            <mat-option value="{{rol}}">{{rol}}</mat-option>
+                            </div>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="field" *ngIf="RoleActive()">
+                <label>Sector :</label>
+                <mat-form-field >
+                    <mat-select placeholder="select" multiple  panelClass="selectPanel2" value="SelectedSector" [(ngModel)]="SelectedSector">
+                        <div *ngFor="let sector of Sectors">
+                            <mat-option value="{{sector.id}}">{{sector.detail}}</mat-option>
+                            </div>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="btns">
+                <button class="btn-red" mat-button routerLink="/users" >Cancel</button>
+                <button class="btn-green" mat-button (click)="SendUser()" >Add</button>
+            </div>
+        </div>
+        
+    </div>
+    
+</div>

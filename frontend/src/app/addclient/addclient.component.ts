@@ -256,7 +256,7 @@ export class AddclientComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.loggedUser = JSON.parse(localStorage.getItem("user"));
     this.initMap();
-    this._setting.getTimeSMS().subscribe(res => this.timeLeft = res.details.time)
+    this._setting.getSettings("sms").subscribe(res => this.timeLeft = res.details.time)
     this.aroute.paramMap.subscribe(params => {
       this.mySector = params.get('sector')
       console.log("mysector" + this.mySector)
