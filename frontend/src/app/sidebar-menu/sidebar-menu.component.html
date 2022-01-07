@@ -75,22 +75,22 @@
                 </div>
             </mat-list-item>
 
-
+            <mat-list-item routerLink="injection" routerLinkActive="active" *ngIf="user.role== 'Admin'">
+                <mat-icon mat-list-icon>file_download</mat-icon>
+                <div fxFlex="10"></div>
+                <div *ngIf="sidenavWidth> 6" class="sidenav-item">
+                    <span>Injection</span>
+                </div>
+            </mat-list-item>
         </mat-nav-list>
     </mat-sidenav>
 
     <div class="example-sidenav-content">
-
-
         <mat-toolbar class="tool" fxLayout fxLayoutGap="16px">
             <button mat-icon-button>
                 <mat-icon (click)="sidenav.toggle()" class="sidebar-toggle">menu</mat-icon>
             </button>
-            <!-- 
-                <a mat-icon-button>
-                    <mat-icon>arrow_back</mat-icon>
-                </a> 
-            -->
+
             <div fxFlex="100%" class="flexExpand"></div>
             <span style="font-size: 12px; color: #444242;">{{myname}}</span>
             <button mat-icon-button [matMenuTriggerFor]="logout" #menuTrigger="matMenuTrigger"

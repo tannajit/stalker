@@ -66,8 +66,8 @@ export class ClientInfoComponent implements OnInit {
     this.clientService.setCurrentClientInfo(this.data)
     this.dialogRef.close();
     this._router.navigate(['/updateclient'])
-
   }
+  
   ActiveTheButton(){
     //console.log("fjdkfh"+ this.clientService.ActiveTheButton())
     return this.clientService.ActiveTheButton();
@@ -81,7 +81,6 @@ export class ClientInfoComponent implements OnInit {
   }
 
  ////**********VALIDATE FUNCTION ***********////
-
   validate(id, status) {
     console.log("######## id:" + id)
     this.clientService.validateAuditorInfo({ 'id': id, 'status': status }).subscribe(res => console.log(res))
