@@ -22,6 +22,7 @@ export class ClientsService {
   Distance;
   private db: any;
   items
+
   private currentClient;
   uri = "http://localhost:3000";
   private _clientUrl = this.uri + "/api1/clients";
@@ -32,11 +33,13 @@ export class ClientsService {
   private getClientBySell = this.uri + "/api1/getClientBySeller";
   private _validate = this.uri + "/api1/validate";
   private _extarct = this.uri + "/api1/extract";
-  private _allDeleteRequests = this.uri + "/api1/getAllDeleteRequests";
-
+  private _getClientByID = this.uri + "/api1/GetClient";
+  private _allDeleteRequests = this.uri+"/api1/getAllDeleteRequests";
   ////////////////////remplacer par uri après le port
-  private _getClientByID = "http://localhost:3000/api1/GetClient";
-  private _Delete = "http://localhost:3000/api1/";
+  //private _getClientByID = "http://localhost:3000/api1/GetClient";
+  //private _Delete = "http://localhost:3000/api1/";
+  private _Delete = this.uri+"/api1/";
+
   ////////*************** API *****************////////
   getNFC() {
     var url = "http://localhost:7000/nfc"
@@ -85,14 +88,14 @@ export class ClientsService {
     return this.http.get(this._Delete + "DeleteClient/" + id);
   }
 
-  DeleteRequest(data) {
-    console.log("DeleteClientByID" + data.video);
-    return this.http.post(this._Delete + "DeleteRequest", data);
-  }
+  // DeleteRequest(data) {
+  //   console.log("DeleteClientByID" + data.video);
+  //   return this.http.post(this._Delete + "DeleteRequest", data);
+  // }
 
-  ReadV() {
-    return this.http.get(this._Delete + "ReadVideo");
-  }
+  // ReadV() {
+  //   return this.http.get(this._Delete + "ReadVideo");
+  // }
 
   myDelete(info){
     return this.http.post<any>("http://localhost:3000/api1/deleteo",info)
@@ -496,15 +499,68 @@ export class ClientsService {
 
     }
   }
-  ActiveTheButton() {
-    if (this.Distance <= this.Raduis) {
+
+  DeleteRequest(data){
+    console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    
+
+    console.log(data)
+    console.log("DeleteClientByID"+data);
+    return this.http.post(this._Delete+"DeleteRequest",data);
+  }
+
+  ReadVideo(id){
+  console.log("DeleteClientByID"+id);
+
+  return this.http.get(this._Delete+"ReadVideo/"+id);
+  }
+
+//   getPosition(position){
+//     if(Object.keys(position)[0]==="Map"){
+//     this.MyPosition=position.Map;
+//     this.Raduis=position.Raduis;
+//   };
+//     if(Object.keys(position)[0]==="Client"){
+//     this.PositionClient=position.Client;
+
+//   }
+//   if((Object.keys(position)[0]==="MapUp")&&(this.PositionClient!=null)){
+
+//     console.log("MyPosition Updated "+ new L.LatLng(position.MapUp[0], position.MapUp[1]));
+
+//     this.MyPosition=new L.LatLng(position.MapUp[0], position.MapUp[1]);
+//     this.Raduis=position.Raduis;
+//     this.Distance=this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
+//     console.log("Distance Up :"+this.Distance );
+//     console.log("Raduis Up :"+this.Raduis );
+    
+//   }
+//   if(this.PositionClient!=null){
+// console.log("MyPosition "+this.MyPosition);
+
+//   console.log("Pointposition "+this.PositionClient);
+
+//     this.Distance=this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
+//     console.log("Distance :"+this.Distance );
+//     console.log("Raduis :"+this.Raduis );
+
+//   }
+  
+//     // if(this.Distance<=this.Raduis) {
+//     // console.log("The point into the cercle")
+//     // //this.getDistance();
+//     // return this.Distance;
+//     //}
+//   }
+  ActiveTheButton(){
+    if(this.Distance<=this.Raduis) {
       //console.log("The point into the cercle")
       return false;
     }
     return true
   }
 
-  getDistance() {
+  getDistance(){
     //console.log("Distance2 :"+this.Distance );
     return this.Distance;
 
@@ -539,6 +595,8 @@ export class ClientsService {
   }
 
   //****************************** */
+
+
 
 
 
