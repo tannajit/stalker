@@ -12,6 +12,14 @@ const Port = process.env.PORT || 3000
 var app = express();
 app.use(cors())
 
+app.use(function(req, res, next) {
+    //set headers to allow cross origin request.
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        next();
+ });
+
 app.use(bodyParser.json({limit: "50mb"}));
 app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
 //app.use(express.static("dist"))

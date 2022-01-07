@@ -86,7 +86,7 @@ export class MapComponent implements AfterViewInit {
     });
   }
  ///*** get Location */
- radius=2
+ radius=20000
   getLocation() {
     // interval(1000).subscribe(x => {
     if (navigator.geolocation) {
@@ -232,7 +232,7 @@ export class MapComponent implements AfterViewInit {
           console.log('---');
           const elm = JSON.parse(element.Valeur);
           const Point = { _id: element._id, geometry: elm };
-          const marker = L.geoJSON(Point.geometry, { style: { color: '#DE8B28', fillOpacity: 0.1 } });
+          const marker = L.geoJSON(Point.geometry, { style: { color: '#CD9575', fillOpacity: 0.1 } });
           marker.bindPopup(String(Point.geometry.properties.codeRegion));
           marker.addTo(this.map);
           this.markerClusterSector.addLayer(marker);

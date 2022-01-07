@@ -14,9 +14,8 @@ var arraValues = [] // this array where we gonna put the document
 var stream = require('stream');
 const bcrypt = require('bcrypt')
 const jwt = require("jsonwebtoken")
-const { param } = require("express/lib/router");
-var salt = 5 //any random value,  the salt value specifies how much time it’s gonna take to hash the password. higher the salt value, more secure the password is and more time it will take for calculation.
 
+var salt = 5 //any random value,  the salt value specifies how much time it’s gonna take to hash the password. higher the salt value, more secure the password is and more time it will take for calculation.
 // MongoDataBase
 async function run() {
     try {
@@ -513,7 +512,7 @@ async function getUser(user) {
     console.log("find user")
     let collection = db.collection("users")
     var status = { value: 401, data: null }
-    var FindUser = await collection.findOne({email:user.email,status:"active"})
+    var FindUser = await collection.findOne({email:user.email})
     console.log(FindUser)
     if (FindUser != null) {
         //console.log('find')
@@ -927,6 +926,29 @@ router.get("/extract", async (req, res) => {
     res.json(DataAll);
 });
 
+////////
+
+
+
+
+
+router.post('/deleteo', function(req, res, next) {
+    console.log(req.body); // see what got uploaded
+    //console.log(req.file);
+   // let uploadLocation ='/uploads/'+"test.txt" // where to save the file to. make sure the incoming name has a .wav extension
+    //fs.writeFileSync(uploadLocation,Buffer.from(new Uint8Array(req.file.buffer))); // write the blob to the server as a file
+    
+    let collection=db.collection("testVideo")
+    collection.insertOne(req.body)
+    res.status(200).json("test"); //send back that everything went ok
+}); 
+
+router.get("/VideoReadHafsa",async (req,res)=>{
+    console.log("hhhhhhhh")
+    let collection = db.collection("testVideo")
+    var Values = await collection.find({}).toArray()
+    res.json(Values[0])
+})
 //////////////**********************/////////////////////
 
 module.exports = router;
