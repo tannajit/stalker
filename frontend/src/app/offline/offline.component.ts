@@ -82,7 +82,6 @@ export class OfflineComponent implements OnInit {
       var message = "data sent successfuly";
       var btn = "Continue"
       this.openAlertDialog(message, btn)
-
     } else {
       var message = "You are still offline !";
       var btn = "Continue"
@@ -102,7 +101,6 @@ export class OfflineComponent implements OnInit {
       var message = "data sent successfuly";
       var btn = "Continue"
       this.openAlertDialog(message, btn)
-
     } else {
       var message = "You are still offline !";
       var btn = "Continue"

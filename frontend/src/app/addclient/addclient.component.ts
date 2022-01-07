@@ -120,7 +120,6 @@ export class AddclientComponent implements AfterViewInit {
   codeSMS
   ///////////////////////////////////////////////////////////////////////////
 
-
   //////////////**************** CONSTRUCTOR ******************///////////////////
   constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,
     private clientService: ClientsService,

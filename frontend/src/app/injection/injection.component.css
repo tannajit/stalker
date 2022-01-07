@@ -1,0 +1,50 @@
+.btn-red{
+    background-color: rgb(103, 164, 243);
+    color: #fff;
+    margin: auto;
+    font-size: 13px;
+    line-height: 30px;
+    width: 130px !important;
+    border-radius: 20px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+.btn-success{
+    background-color: #27AE61;
+    color: #fff;
+    margin: auto;
+    font-size: 13px;
+    line-height: 30px;
+    width: 130px !important;
+    border-radius: 20px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+
+.btn-clear{
+    background-color: red;
+    color: #fff;
+    margin: auto;
+    font-size: 13px;
+    line-height: 30px;
+    width: 130px !important;
+    border-radius: 20px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+.containe-ids{
+    /* display: flex; */
+    padding: 20px;
+    margin: 20px;
+    flex-flow: column wrap ;
+    background-color: #fff;
+    justify-content: center ;
+    align-items: flex-start;
+    gap: 10px 20px; 
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+}
+
+.progress{
+    width: 50%;
+}

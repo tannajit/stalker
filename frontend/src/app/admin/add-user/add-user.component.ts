@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ClientsService } from 'src/app/clients.service';
-import { SettingsService } from 'src/app/settings/settings.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ClientInfoComponent } from 'src/app/client-info/client-info.component';
 import { AlertDialogComponent } from 'src/app/alert-dialog/alert-dialog.component';
+import { Router } from '@angular/router';
+import { AdminService } from '../admin.service';
 @Component({
   selector: 'app-add-user',
   templateUrl: './add-user.component.html',
@@ -11,7 +12,10 @@ import { AlertDialogComponent } from 'src/app/alert-dialog/alert-dialog.componen
 })
 export class AddUserComponent implements OnInit {
 
-  constructor(private _setting: SettingsService, private _client: ClientsService,private dialog:MatDialog) { }
+  constructor(private _setting: AdminService, 
+    private _client: ClientsService,
+    private dialog:MatDialog,
+    private _router:Router) { }
   Roles = []
   Sectors = []
   AllEmail=[]
@@ -28,6 +32,7 @@ export class AddUserComponent implements OnInit {
   Password = "0000";
   SelectedSector=[];
   SectorAffacted=[];
+  DisableSend=true;
   dialogRef: MatDialogRef<ClientInfoComponent>;
   ngOnInit(): void {
     /// get All Email from Database to prevenet Email duplication
@@ -127,9 +132,7 @@ export class AddUserComponent implements OnInit {
     console.log("random", this.Password);
   }
   /////
- 
   ///
-  
   SendUser() {
    
     if(this.role=='Seller' || this.role =='Auditor' || this.role =='Supervisor'){
@@ -147,12 +150,11 @@ export class AddUserComponent implements OnInit {
         role: this.role,
         email: this.Email,
         password:this.Password,
-        status:"Active"
+        status:"active"
       },
       Sectors: this.SectorAffacted
     }
     this._setting.CreateUser(this.UserInfo).subscribe(res=>{
-      console.log(res)
       this.openAlertDialog()
     })
   }
@@ -167,6 +169,9 @@ export class AddUserComponent implements OnInit {
         }
       }
     });
+    dialogRef.afterClosed().subscribe(res=>{
+      this._router.navigate(['/users'])
+    })
   }
   ////////////////////////////////////////////////////////////////////
 }
