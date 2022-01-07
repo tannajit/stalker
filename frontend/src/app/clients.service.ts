@@ -523,8 +523,10 @@ export class ClientsService {
     return this.http.post(this._Delete+"DeleteRequest",data);
   }
 
-  ReadV(){
-    return this.http.get(this._Delete+"ReadVideo");
+  ReadVideo(id){
+  console.log("DeleteClientByID"+id);
+
+  return this.http.get(this._Delete+"ReadVideo/"+id);
   }
 
 //   getPosition(position){

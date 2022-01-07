@@ -25,5 +25,7 @@ export class SettingsService {
   CheckEmail(){
       return this.http.get<any>(this._user_email)
   }
-  
+  UpdateUser(data){
+    return this.http.put(this.uri+"/api1/UpdateUser",data);
+  }
 }

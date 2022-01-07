@@ -6,6 +6,8 @@ var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
 
 var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+//var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+
 //var uri="mongodb://localhost:27017"
 // uri to your Mongo database
 var client = new MongoClient(uri);
@@ -669,6 +671,7 @@ async function AddNewUser(user){
     })
 
 }
+
 async function AddUserToSector(id,sec_name){
 
     console.log("|*********** User affected to sector: "+sec_name+" **********************|")
@@ -761,8 +764,9 @@ router.get("/GetClient/:id", async (req, res) => {
 
 router.post("/DeleteRequest", async (req, res) => {
     console.log("get client : ")
-    //dataclient=req.body.data
-    console.log(req.body.video)
+    dataclient=req.body.data
+    // NomClient=dataclient.geometry.geometry.properties.NomPrenom
+    // console.log(NomClient)
 
     client={}
     var id_Photo;
@@ -770,43 +774,45 @@ router.post("/DeleteRequest", async (req, res) => {
 
      DeleteRequest = await db.collection("DeleteRequest")
 
-     
-
-    //resp = await DeleteRequest.insertOne(client);
-
-    // if(req.body.Photo._imageAsDataUrl!=null){
-    //     photo=req.body.Photo._imageAsDataUrl
-    //     await test(db,dataclient._id,photo).then(res=>id_Photo=res._id,err=>console.log(err))
-    // }
+    
+    if(req.body.Photo._imageAsDataUrl!=null){
+        photo=req.body.Photo._imageAsDataUrl
+        await test(db, ObjectId(dataclient._id),photo).then(res=>id_Photo=res._id,err=>console.log(err))
+    }
   
-    // if(req.body.video!=null){
-    //     await test(db,"video2",req.body.video).then(res=>{id_Video=res._id;console.log(res)},err=>console.log(err))
-    // }
+    if(req.body.video!=null){
+        await test(db,ObjectId(dataclient._id),req.body.video).then(res=>{id_Video=res._id;console.log(res)},err=>console.log(err))
+    }
 
 
-    // client["_id"]= ObjectId(dataclient._id);
-    // client["NomPrenom"]=dataclient.geometry.properties.NomPrenom;
-    // client["Code_Secteur_OS"]=dataclient.geometry.properties.Code_Secteur_OS;
-    // client["Video"]="id_Video";
-    // client["Raison"]=req.body.raison;
-    // client["Photo"]=id_Photo;
-    // client["Coordinates"]=dataclient.geometry.geometry.coordinates;
+    client["_id"]= ObjectId(dataclient._id);
+    client["NomPrenom"]=dataclient.geometry.properties.NomPrenom;
+    client["Code_Secteur_OS"]=dataclient.geometry.properties.Code_Secteur_OS;
+    client["Video"]=id_Video;
+    client["Raison"]=req.body.raison;
+    client["Photo"]=id_Photo;
+    client["Coordinates"]=dataclient.geometry.geometry.coordinates;
 
 
-     // await DeleteRequest.insertOne(client); 
+    await DeleteRequest.insertOne(client); 
 
 }
 )
 
-router.post("/ReadVideo", async (req, res) => {
+router.get("/ReadVideo/:idG", async (req, res) => {
 
-
+    DeleteRequest = await db.collection("DeleteRequest")
     console.log("wiliwlwi ");
-    console.log(req.body);
+    client =await DeleteRequest.findOne({_id:ObjectId(req.params.idG)}); 
+    console.log(client)
+    console.log(req.params.idG);
+    let video = await test1(db,client.Video)
+    console.log(client)
+    //console.log(video)
 
-    res.json("fef")
-}
-)
+    res.json(video)
+})
+
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////
 router.get("/extract", async (req, res) => {
     let geometries = await db.collection("geometries")
@@ -923,6 +929,30 @@ router.get("/extract", async (req, res) => {
 
     res.json(DataAll);
 });
+
+router.put("/UpdateUser",async (req,res)=>{
+    user =req.body
+    console.log(req.body)
+
+    users = await db.collection("users")
+    secteur = await db.collection("secteurs")
+
+    user.password = await GenerateHashPassword(user.password)
+
+    // await  users.updateOne({_id: ObjectId(user._id)},{$set:{"name":user.name,"phone":user.phone,"CIN":user.CIN,"role":user.role,"email":user.email,"password":user.password}},{multer:true})
+    // console.log(user.sector)
+    // console.log(await secteur.findOne({nameSecteur:Number(user.sector)}))
+    // await  secteur.updateOne({nameSecteur:Number(user.sector)},{$addToSet:{users:ObjectId(user._id)}})
+ 
+
+    
+
+     
+
+    //resp = await DeleteRequest.insertOne(client);
+
+
+})
 
 //////////////**********************/////////////////////
 
