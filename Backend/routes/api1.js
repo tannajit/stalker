@@ -11,7 +11,7 @@ var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?r
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker2"
+var name_database = "stalker1"
 var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
@@ -539,7 +539,7 @@ async function getUser(user) {
     console.log("find user")
     let collection = db.collection("users")
     var status = { value: 401, data: null }
-    var FindUser = await collection.findOne({email:user.email,status:"active"})
+    var FindUser = await collection.findOne({email:user.email})
     console.log(FindUser)
     if (FindUser != null) {
         var valid = await ValidPassword(user.password, FindUser.password)
