@@ -5,13 +5,13 @@ var multer = require('multer');
 var path = require('path');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-var uri = "mongodb://localhost:27017";
-// var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+// var uri = "mongodb://localhost:27017";
+var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 // uri to your Mongo database
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker1"
+var name_database = "stalker2"
 var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
@@ -116,7 +116,6 @@ function verifyToken(req, res, next) {
 
 // get new added clients
 router.get('/addedClients', async function (req, res) {
-
     cursor = await db.collection("clients").find({}).toArray();
     if ((db.collection("clients").find({}).count()) === 0) {
     } else {
