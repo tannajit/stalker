@@ -39,6 +39,7 @@ export class AdminService {
     this.currentUser = user
   }
   getUserInfo() {
+    
     return this.currentUser;
   }
   /////////////***** Add User (Hafsa's code) ***////////////////

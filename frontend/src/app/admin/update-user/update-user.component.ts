@@ -8,14 +8,15 @@ import { AdminService } from '../admin.service';
 })
 export class UpdateUserComponent implements OnInit {
 
-  userInfo
-
+  userInfo;
   constructor(
     private adminService: AdminService
   ) { }
 
   ngOnInit(): void {
+   
     this.userInfo = this.adminService.getUserInfo()
+    console.log(this.userInfo)
   }
 
 }

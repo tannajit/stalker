@@ -3,8 +3,8 @@ var router = express.Router();
 var mongo = require('mongodb');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
-var uri="mongodb://localhost:27017"
+var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+//var uri="mongodb://localhost:27017"
 // uri to your Mongo database
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
@@ -268,7 +268,7 @@ router.post('/restoreUser', async(req,res) =>{
         console.log(updated)
 })
 
-async function InsertClient(client) {
+async function InsertClient(client,res) {
     //console.log("/n /n ************************** /n /n")
     let collection = db.collection("clients") // collection clients
     let geometries = db.collection("geometries") /// geometries Collections
@@ -281,7 +281,7 @@ async function InsertClient(client) {
         if (v.nbr === 4) codeQR = v.value
     })
     var id_pv, id_NFC;
-    console.log("PhotoofClient"+client.PVPhoto)
+    //console.log("PhotoofClient"+client.PVPhoto)
     await test(db, client.NomPrenom, client.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
 
     await test(db, client.NomPrenom, client.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
@@ -290,11 +290,11 @@ async function InsertClient(client) {
     //console.log(id_pv);
     //console.log("-------------- " + client.lat)
     //console.log(client)
-    var id = new ObjectId();
-    console.log("=========== id" + id)
+    //var id = new ObjectId();
+    //console.log("=========== id" + id)
     client.nfc.NFCPhoto = id_NFC
     var id = new ObjectId();
-    console.log("=========== id" + id)
+    //console.log("=========== id" + id)
     var temp_datetime_obj = new Date();
     let clientinfo = {
         idGeometry: id,
@@ -306,7 +306,7 @@ async function InsertClient(client) {
         lat: client.lat,
         lon: client.lon,
         nfc: client.nfc,
-        Code_Secteur_OS: (client.sector != null) ? parseInt(client.sector) : 901010181,
+        Code_Secteur_OS: (client.sector != null) ? parseInt(client.sector) : 901011082,
         machine: "CMG",
         TypeDPV: client.TypeDPV,
         detailType: client.detailType,
@@ -324,13 +324,16 @@ async function InsertClient(client) {
     await collection.insertOne(clientinfo)
     ////********* Add in geometries *****************/
     let getInsertedId; //// put Id inserted
+    delete clientinfo.idGeometry;
     var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
     //console.log(clientGeo)
     geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
         var id = result.insertedId
         //console.log(id)
         var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
-            { $addToSet: { points: { "point": id, "route": null } } })
+            { $addToSet: { points: { "point": id, "route": null } } }).then(ss=>{
+                res.status(200).json("Done")
+            })
         //console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
         //console.log(up)
     }).catch(error => console.log(error))
@@ -428,8 +431,8 @@ async function validateData(id, status) {
 router.post('/AddClient', async (req, res) => {
     let client = req.body;
     //console.log(client)
-    await InsertClient(client);
-    res.status(200).json("added")
+    await InsertClient(client,res);
+    //res.status(200).json("added")
 
 })
 
