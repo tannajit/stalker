@@ -3,7 +3,7 @@
         <!-- <div class="filter1"> -->
             <div class="field">
                 <mat-form-field>
-                    <mat-label>Id Client</mat-label>
+                    <mat-label>Id Client</mat-label> 
                     <input matInput placeholder="Typing..." [(ngModel)]="IdClient"/>
                 </mat-form-field>
             </div>
@@ -100,7 +100,7 @@
                 </ng-template>
 
                 <mat-card-content class="card-content">
-                    <p><span>Id:</span> {{client._id}}</p>
+                    <p><span>Id:</span> {{client._id}}</p> <label *ngIf="client.geometry.properties.status=='deleted'" style="background-color: #ee5f54;">Deleted</label>
                     <p><span>Name:</span> {{client.geometry.properties.NomPrenom}}</p>
                     <p><span>PDV type:</span> {{client.geometry.properties.TypeDPV}}</p>
                     <p><span>Sector:</span> {{client.geometry.properties.Code_Secteur_OS}}</p>
