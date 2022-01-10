@@ -309,12 +309,12 @@ export class UsersComponent implements OnInit {
           if(item.role.toLowerCase() ==  $event.value.toLowerCase()){
                 filtered.push(item)
             }
-        }if(this.selectedStatus && (!this.selectedSector || this.selectedSector=='all')){
+        }if(this.selectedStatus && (!this.selectedSector || this.selectedSector=='all') && this.selectedStatus!='all'){
           // when we select a role knowing that only the status is selected already
           if((item.role.toLowerCase() ==  $event.value.toLowerCase()) && item.status==this.selectedStatus){
               filtered.push(item)
           }
-        }if(this.selectedSector && (!this.selectedStatus || this.selectedStatus=='all')){
+        }if(this.selectedSector && (!this.selectedStatus || this.selectedStatus=='all') && this.selectedSector!='all'){
           // if we select a role knowing that only the sector is selected already
           item.sectors.forEach(element =>{
             if(item.role.toLowerCase() ==  $event.value.toLowerCase() && element.nameSecteur == String(this.selectedSector)){
@@ -323,7 +323,7 @@ export class UsersComponent implements OnInit {
             }
           })
           
-        }if(this.selectedStatus && this.selectedSector){
+        }if(this.selectedStatus && this.selectedSector && this.selectedStatus!= 'all' && this.selectedSector!= 'all'){
           // if we select a role and the status and the sector ar both selected
           item.sectors.forEach(element =>{
             if(item.role.toLowerCase() ==  $event.value.toLowerCase() && item.status==this.selectedStatus && element.nameSecteur == String(this.selectedSector)){
@@ -368,9 +368,9 @@ export class UsersComponent implements OnInit {
             filtered.push(item)
           }
           
-        }if(this.selectedStatus && (!this.selectedRole || this.selectedRole=='all')){
+        }if(this.selectedRole && (!this.selectedStatus || this.selectedStatus=='all') && this.selectedRole != 'all'){
           // if we select all for sector knowing that only the status is selected already
-          if(item.status==this.selectedStatus){
+          if(item.role==this.selectedRole){
             filtered.push(item)
           }
           
@@ -391,7 +391,7 @@ export class UsersComponent implements OnInit {
                 // console.log("#####")
               }
             })
-        }if(this.selectedStatus && (!this.selectedRole || this.selectedRole=='all')){
+        }if(this.selectedStatus && (!this.selectedRole || this.selectedRole=='all') && this.selectedStatus!= 'all'){
           // when we select a sector knowing that only the status is selected already
           item.sectors.forEach(element =>{
             if(item.status == this.selectedStatus && element.nameSecteur == String($event.value)){
@@ -400,7 +400,7 @@ export class UsersComponent implements OnInit {
             }
           })
           
-        }if(this.selectedRole && (!this.selectedStatus || this.selectedStatus=='all')){
+        }if(this.selectedRole && (!this.selectedStatus || this.selectedStatus=='all') && this.selectedRole != 'all'){
           // if we select a sector knowing that only the role is selected already
           item.sectors.forEach(element =>{
             if(item.role == this.selectedRole && element.nameSecteur == String($event.value)){
@@ -409,7 +409,7 @@ export class UsersComponent implements OnInit {
             }
           })
           
-        }if(this.selectedStatus && this.selectedRole){
+        }if(this.selectedStatus && this.selectedRole && this.selectedStatus!= 'all' && this.selectedRole!= 'all'){
           // if we select a sector and the status and the role ar both selected
           item.sectors.forEach(element =>{
             if(item.role == this.selectedRole && item.status==this.selectedStatus && element.nameSecteur == String($event.value)){
