@@ -33,7 +33,7 @@ export class AddUserComponent implements OnInit {
   SelectedSector=[];
   SectorAffacted=[];
   DisableSend=true;
-  dialogRef: MatDialogRef<ClientInfoComponent>;
+  //dialogRef: MatDialogRef<ClientInfoComponent>;
   ngOnInit(): void {
     /// get All Email from Database to prevenet Email duplication
     this.CheckEmail()

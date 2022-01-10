@@ -86,7 +86,7 @@ export class MapComponent implements AfterViewInit {
     });
   }
  ///*** get Location */
- radius=10
+ radius=3
   getLocation() {
     // interval(1000).subscribe(x => {
     if (navigator.geolocation) {

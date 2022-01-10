@@ -11,6 +11,7 @@ import { GeoJsonTypes } from 'geojson';
 import { ThrowStmt } from '@angular/compiler';
 import { IndexdbService } from '../indexdb.service';
 import { OnlineOfflineServiceService } from '../online-offline-service.service';
+import { AdminService } from '../admin/admin.service';
 
 const incr = 1;
 
@@ -100,7 +101,7 @@ export class UpdateClientComponent implements AfterViewInit {
 
   ////********* CONSTUCTOR **********/////////
   constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,
-    private clientService: ClientsService,
+    private clientService: ClientsService,private adminService: AdminService,
     private _router: Router) {
 
     this.clientInfo = clientService.getClientInfo();
@@ -287,6 +288,36 @@ export class UpdateClientComponent implements AfterViewInit {
       }
     });
   }
+
+  // distance;
+  getDistance(){
+    //console.log("Distance2 :"+this.Distance );
+    return this.clientService.getDistance();
+  }
+  getLocation(){
+
+    interval(1000).subscribe(x => {
+    console.log("yesssss")
+    if (navigator.geolocation) {
+      let raduis =3;
+      this.map.setView(new L.LatLng(this.latclt, this.lonclt), 11, { animation: true });
+      L.circle([this.latclt, this.lonclt], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
+  
+        console.log('LatitudeOfUpadate: ' + this.latclt +
+          ' LongitudeOfUpadate: ' + this.lonclt);
+      this.clientService.getPosition({"MapUp":[this.latclt, this.lonclt],"Raduis":raduis});
+
+      }
+    })
+
+  }
+  
+  SessionTerminate=false;
+  ValidatePosition(){
+
+    return this.clientService.ActiveTheButton();
+  }
+  
   ////////////////////////////////////////////////////////////////////
 
   /////*********** TIMER FUNCTION *******/////////

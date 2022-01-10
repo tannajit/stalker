@@ -15,7 +15,7 @@ var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?r
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker2"
+var name_database = "stalker1"
 var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
@@ -141,12 +141,12 @@ router.get('/addedClients', async function (req, res) {
 
 /* GET . */
 
-router.get('/getAllUsers', async(req,res)=>{
-    let userColl = await db.collection("users")
-    var values = await userColl.find({}).toArray()
+// router.get('/getAllUsers', async(req,res)=>{
+//     let userColl = await db.collection("users")
+//     var values = await userColl.find({}).toArray()
 
-    res.json(values)
-})
+//     res.json(values)
+// })
 
 
 router.get('/clientss', async (req, res) => {
@@ -308,7 +308,7 @@ router.post('/restoreUser', async(req,res) =>{
         console.log(updated)
 })
 
-async function InsertClient(client) {
+async function InsertClient(client,res) {
     //console.log("/n /n ************************** /n /n")
     let collection = db.collection("clients") // collection clients
     let geometries = db.collection("geometries") /// geometries Collections
@@ -364,7 +364,9 @@ async function InsertClient(client) {
     geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
         var id = result.insertedId
         var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
-            { $addToSet: { points: { "point": id, "route": null } } })
+            { $addToSet: { points: { "point": id, "route": null } } }).then(s=>{
+                res.status(200).json("added")
+            })
     }).catch(error => console.log(error))
 }
 
@@ -442,8 +444,8 @@ async function validateData(id, status) {
 router.post('/AddClient', async (req, res) => {
     let client = req.body;
     //console.log(client)
-    await InsertClient(client);
-    res.status(200).json("added")
+    await InsertClient(client,res);
+    
 
 })
 
@@ -543,7 +545,7 @@ async function getUser(user) {
     console.log("find user")
     let collection = db.collection("users")
     var status = { value: 401, data: null }
-    var FindUser = await collection.findOne({email:user.email,status:"active"})
+    var FindUser = await collection.findOne({email:user.email})
     console.log(FindUser)
     if (FindUser != null) {
         var valid = await ValidPassword(user.password, FindUser.password)
@@ -775,7 +777,41 @@ router.get("/GetClient/:id", async (req, res) => {
 
 // })
 //////////////////////////////////////////////////////////////
+router.get('/getAllUsers', async(req,res)=>{
 
+
+
+    list=[]
+
+    let usersColl = await db.collection("users")
+
+    var values = await usersColl.aggregate([
+
+    {
+
+        $lookup: {
+
+            from: "secteurs",
+
+            localField: "_id",
+
+            foreignField: "users",
+
+            as: "sectors"
+
+        }
+
+    }]).toArray();
+
+
+
+    // let userColl = await db.collection("users")
+
+    // var values = await userColl.find({}).toArray()
+
+    res.json(values)
+
+})
 router.post("/DeleteRequest", async (req, res) => {
 
     console.log("get client : ")
@@ -946,14 +982,27 @@ router.put("/UpdateUser",async (req,res)=>{
     console.log(req.body)
 
     users = await db.collection("users")
-    secteur = await db.collection("secteurs")
-
+    secteurs = await db.collection("secteurs")
+    if(user.generated){
     user.password = await GenerateHashPassword(user.password)
+    }
 
-    // await  users.updateOne({_id: ObjectId(user._id)},{$set:{"name":user.name,"phone":user.phone,"CIN":user.CIN,"role":user.role,"email":user.email,"password":user.password}},{multer:true})
-    // console.log(user.sector)
-    // console.log(await secteur.findOne({nameSecteur:Number(user.sector)}))
-    // await  secteur.updateOne({nameSecteur:Number(user.sector)},{$addToSet:{users:ObjectId(user._id)}})
+    console.log(req.body)
+
+
+    await  users.updateMany({_id: ObjectId(user._id)},{$set:{"UserID":user.UserID,"name":user.name,"phone":user.phone,"CIN":user.CIN,"role":user.role,"email":user.email,"password":user.password}}).then(res=>console.log(res))
+
+    user.sectors.forEach(async el=>{
+    
+    await  secteurs.updateOne({nameSecteur:Number(el)},{$addToSet:{users:ObjectId(user._id)}}).then(res=>console.log(res))
+
+    })
+
+    user.SectorDeleted.forEach(async el=>{
+    
+    await  secteurs.updateOne({nameSecteur:Number(el)},{$pull:{users:ObjectId(user._id)}}).then(res=>console.log(res))
+
+    })
 
 })
 ////************************* INJECTION ***********************/////

@@ -75,9 +75,7 @@ export class ClientInfoComponent implements OnInit {
   
   deleteRequest(){
     this.dialogRef.close();
-    //this._router.navigateByUrl('/deleteClient',{dataClient:this.data})
     this._router.navigateByUrl('/deleteClient', { state: { dataClient:this.data } });
-    //this.clientService.De
   }
 
  ////**********VALIDATE FUNCTION ***********////

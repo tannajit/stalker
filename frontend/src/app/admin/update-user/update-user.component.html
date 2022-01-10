@@ -43,14 +43,23 @@
                      <mat-label>Id User</mat-label>
                     <input matInput placeholder="Type the email" type="email" [(ngModel)]="userInfo.email" disabled/>
                 </mat-form-field>
-                <button mat-button class="gen-btn" (click)="GenerateEmail()">Generate Email</button>
+                <!-- <button mat-button class="gen-btn" (click)="GenerateEmail()">Generate Email</button> -->
             </div>
             <div class="field">
                 <label>Password :</label>
-                <mat-form-field>
-                     <mat-label>Id User</mat-label> 
-                     <input matInput placeholder="Generate the password..." type="password" value="{{userInfo.password}}" disabled/>
-                </mat-form-field>
+               
+                    <mat-form-field >
+                        <mat-label>Id User</mat-label> 
+                        <ng-template  [ngIf]="hidpass" [ngIfElse]="showPass"> 
+                        <input matInput placeholder="Generate the password..." type="password" value="{{userInfo.password}}" disabled/>
+                        </ng-template>
+
+                        <ng-template #showPass>
+                                <input matInput placeholder="Generate the password..." type="type" value="{{userInfo.password}}" disabled/>
+                        </ng-template>
+                </mat-form-field>                
+                
+               
                 <button mat-button class="gen-btn" (click)="GeneratePassword()">Generate Password</button>
             </div>  
             <div class="field"> 
