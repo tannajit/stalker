@@ -49,6 +49,8 @@ export class DeleteClientComponent implements AfterViewInit {
   selected
   checkInfos;
   // photo
+  user = JSON.parse(localStorage.getItem("user"));
+  
   showWebcam = false
   private trigger: Subject<void> = new Subject<void>();
   public webcamImage = null;
@@ -327,17 +329,18 @@ text;
   Send(){
 
     var photo;
-
-
-
+    
     if(this.webcamImage==null) {photo=""}else{photo=this.webcamImage}
-    this.checkInfos={"data": this.data,"raison":this.raison,"video":this.Video,"Photo":photo}
+    this.checkInfos={"data": this.data,"raison":this.raison,status:"Waiting","video":this.Video,"user":this.user._id,"role":this.user.role,"Photo":photo}
 
     //var test=new Uint8Array(this.Video1  as ArrayBuffer)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodoDelete(this.checkInfos)
     } else {
-      this.clientService.DeleteRequest(this.checkInfos).subscribe(res => { console.log(res) })
+      this.clientService.DeleteRequest(this.checkInfos).subscribe(res => { console.log(res)
+      
+        this.router.navigate(['/map'])
+    })
     }
     console.log("uuuuuuuuuuuuuuu")
     //this.ReadV()

@@ -1,8 +1,9 @@
 const MongoClient = require('mongodb').MongoClient;
 //var url = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-var url = "mongodb://localhost:27017";
+//var url = "mongodb://localhost:27017";
+var url= "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 var client = new MongoClient(url);
-var name_database = "stalker1"
+var name_database = "stalker2"
 var ObjectId = require('mongodb').ObjectID;
 const bcrypt = require('bcrypt')
 var salt=5

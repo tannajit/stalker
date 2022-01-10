@@ -99,7 +99,6 @@ export class MapComponent implements AfterViewInit {
           console.log(this.lat);
           console.log(this.lon);
           this.map.setView(new L.LatLng(this.lat, this.lon), 18, { animation: true });
-          //this.myMarker = L.marker([this.lat, this.lon], { icon: this.location_icon };
          if(this.myCercle!==undefined){
           this.map.removeLayer( this.myCercle)
          }
@@ -115,12 +114,9 @@ export class MapComponent implements AfterViewInit {
           }
           this.myMarker = L.circleMarker([this.lat, this.lon], {
             color: "#163AE3 ",
-            //fillColor: "#f03",
             fillOpacity: 1,
             radius: 8.0
           }).addTo(this.map);
-          
-
         }
       },
         (error: GeolocationPositionError) => console.log(error));
@@ -159,59 +155,49 @@ export class MapComponent implements AfterViewInit {
       objectStoreRequest.onsuccess = event => {
         const all = event.target.result;
         all.forEach(element => {
+          var marker;
           const elm = JSON.parse(element.Valeur);
           const Point = { _id: element._id, geometry: elm };
+          var status="green"
+          console.log(element._id)
+          if(Point.geometry.properties?.status!=undefined){
+            status=Point.geometry.properties.status
+          }
+      
+          console.log("status: "+status)
+         
           const geojsonPoint: geojson.Point = Point.geometry;
-          const marker = L.geoJSON(geojsonPoint, {
+          var iconClient = L.icon({ iconUrl: 'assets/'+status+'.png', iconSize: [10, 10] });
+           marker = L.geoJSON(geojsonPoint, {
             pointToLayer: (point, latlon) => {
-              return L.marker(latlon, { icon: this.getIcon(Point.geometry.properties.status) }); }
+              return L.marker(latlon, { icon:iconClient }); }
           });
+         
           if (Point.geometry.properties?.nfc != undefined) {
             marker.on('click', () => {
               this._serviceClient.getPosition({"Client":new L.LatLng(Point.geometry.geometry.coordinates[1],Point.geometry.geometry.coordinates[0])});
               this.content = Point.geometry;
               this.zone.run(() => this.openDialog(Point));
             });
-          } else {
+         } else {
+          
             //console.log("############# ici"+Point.geometry.properties.Nom_Client)
             marker.bindPopup('<h1> <b>Client Information</b></h1><p><b>Name:</b> ' + String(Point.geometry.properties.Nom_Client) + '</p><p><b>Sector Name: </b>' + String(Point.geometry.properties.Nom_du_Secteur) + '</p>');
-          }
+        }
+        if(status=='deleted' && (this.user.role =="Admin" || this.user.role =="Back Office") ){
+          console.log("deleted status ")
+          console.log(this.user.role)
           this.markersCluster.addLayer(marker);
+        }else if(status!='deleted'){
+          this.markersCluster.addLayer(marker);
+        }
         });
 
       };
     };
   }
-  /// list of icons
-  getIcon(statuss) {
-    const green = L.icon({ iconUrl: 'assets/green.png', iconSize: [10, 10] });
-    const black = L.icon({ iconUrl: 'assets/black.png', iconSize: [10, 10] });
-    const pink = L.icon({ iconUrl: 'assets/pink.png', iconSize: [10, 10] });
-    const red_white = L.icon({ iconUrl: 'assets/r_white.png', iconSize: [10, 10] });
-    const red = L.icon({ iconUrl: 'assets/red.png', iconSize: [10, 10] });
-    const purple = L.icon({ iconUrl: 'assets/purple.png', iconSize: [10, 10]});
-    switch (statuss) {
-      case 'green':
-        return green;
-        break;
-      case 'black':
-        return black;
-        break;
-      case 'red_white':
-        return red_white;
-        break;
-      case 'purple':
-        return purple;
-        break;
-      case 'pink':
-        return pink;
-        break;
-      case 'red':
-        return red;
-        break;
-      // code block
-    }
-  }
+  
+
 ////////////******* Put Sector in Map  *****////////////////////////////////
   public getDataSector() {
     let db; let transaction;
@@ -232,7 +218,7 @@ export class MapComponent implements AfterViewInit {
           console.log('---');
           const elm = JSON.parse(element.Valeur);
           const Point = { _id: element._id, geometry: elm };
-          const marker = L.geoJSON(Point.geometry, { style: { color: '#DE8B28', fillOpacity: 0.1 } });
+          const marker = L.geoJSON(Point.geometry, { style: { color: '#CD9575', fillOpacity: 0.1 } });
           marker.bindPopup(String(Point.geometry.properties.codeRegion));
           marker.addTo(this.map);
           this.markerClusterSector.addLayer(marker);
@@ -261,7 +247,7 @@ export class MapComponent implements AfterViewInit {
           allclient.push(geo);
           transaction = db.transaction(['data'], 'readwrite');
           const objectStore = transaction.objectStore('data');
-          const request = objectStore.add(geo);
+          const request = objectStore.put(geo);
           request.onsuccess = function (event) {
             console.log('done Adding');
           };
@@ -289,7 +275,7 @@ export class MapComponent implements AfterViewInit {
           allclient.push(geo);
           transaction = db.transaction(['sector'], 'readwrite');
           const objectStore = transaction.objectStore('sector');
-          const request = objectStore.add(geo);
+          const request = objectStore.put(geo);
           request.onsuccess = function (event) {
             console.log('done Adding Sector login');
           };
