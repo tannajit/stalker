@@ -1,0 +1,89 @@
+.dialog-container{
+    width: 600px;
+    display: flex;
+    flex-flow: column;
+    margin-bottom: 30px;
+}
+
+.dialog-container span{
+    margin-top: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    padding: 5px;
+    border-radius: 5px;
+    color: #fff;
+    width: fit-content;
+    
+}
+
+
+.title{
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+    margin: auto;
+}
+
+.btn-green{
+    font-size: 13px;
+    color: #ffff;
+    background-color: #27AE61;
+    border-radius: 8px;
+    width: 150px;
+    line-height: 35px;
+}
+.btn-red{
+    font-size: 13px;
+    color: #ffff;
+    background-color: #AE5827;
+    border-radius: 8px;
+    width: 150px;
+    line-height: 35px;
+}
+.btn-orange{
+    font-size: 13px;
+    color: #ffff;
+    background-color: #ac8808;
+    border-radius: 8px;
+    width: 150px;
+    line-height: 35px;
+}
+
+.user-info{
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 30px;
+}
+
+.info-container{
+    display: flex;
+    flex-flow: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 60px;
+}
+
+.fields{
+    display: flex;
+    flex-flow: column;
+    gap: 30px;
+}
+
+.case{
+    background-color: #e6e2e0;
+    padding: 4px;
+    border-radius: 5px;
+    width: 200px;
+}
+
+.case p{
+    font-size: 12px;
+    margin: auto;
+}
+
+.sectors{
+    display: flex;
+    flex-flow: column wrap;
+    gap: 10px
+}

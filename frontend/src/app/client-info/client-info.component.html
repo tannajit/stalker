@@ -203,9 +203,9 @@
             <div class="pdv-info-container">
 
                 <div class="pdv-img">
-                    <img *ngIf="data.Photo!=null" src="{{data.PhotoURL}}" alt=""
+                    <img *ngIf="data.Photo!=null" src="{{data.prove}}" alt=""
                     (click)="openImage(data.PhotoURL)">
-                    <video *ngIf="data.Video!=null" src="assets/videos/video.mp4"  controls>
+                    <video *ngIf="data.Video!=null" src="{{data.prove}}"  controls>
                         
                     </video>
                 </div>

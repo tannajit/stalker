@@ -48,7 +48,7 @@ export class ClientsComponent implements OnInit {
     this.getAllClients()
     console.log(this.clients)
   }
-
+  
   //////////////////////////////////////////////
 
   ////*********** GET CLIENTS INFOS ***********/////

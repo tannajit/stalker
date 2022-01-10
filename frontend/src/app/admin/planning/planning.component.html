@@ -1,1 +1,22 @@
-<p>planning works!</p>
+<div id="inner_video" >
+    <video #video id="video" autoplay></video>
+</div>
+
+<div>
+
+    <button id='request'>
+      Request Camera
+    </button>
+    <button id='start'>
+      Start Recording
+    </button>
+    <button id='stop'>
+      Stop Recording
+    </button>
+    <ul id='ul'>
+      Downloads List:
+    </ul>
+  
+  </div>
+<canvas #canvas id="canvas" width="1024" height="768">canvas</canvas>    
+<button (click)="Capture()">Capture</button>

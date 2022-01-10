@@ -10,7 +10,11 @@ var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?r
 var fs = require('fs');
 var client = new MongoClient(uri);
 var db; // database 
+<<<<<<< HEAD
+var name_database="stalker2"
+=======
 var name_database = "stalker1"
+>>>>>>> 18f96d14c1df8dbca7fcb6c09d45e7eea1dcd857
 
 async function run() {
 	try {

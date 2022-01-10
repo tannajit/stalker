@@ -432,7 +432,12 @@ export class AddclientComponent implements AfterViewInit {
     this.clientInfos.userRole = this.user.role;
     this.clientInfos.created_at = new Date()
     this.clientInfos.updated_at = new Date()
-    this.clientInfos.Status = "red_white"
+    if(this.user.role=="Seller"){
+      this.clientInfos.Status = "white_red"
+    }else{
+      this.clientInfos.Status = "red_white"
+    }
+   
     console.log(this.clientInfos)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodo(this.clientInfos);
@@ -441,7 +446,7 @@ export class AddclientComponent implements AfterViewInit {
       this.clientService.SendClient(this.clientInfos).subscribe((res) => {
         console.log("\n **********Response form API************")
         console.log(res)
-        this.index.ClearData();
+        //this.index.ClearData();
         var db, transaction;
         var request = window.indexedDB.open("off", this.version)
         request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
@@ -462,7 +467,7 @@ export class AddclientComponent implements AfterViewInit {
               var geo = { _id: element._id, Valeur: JSON.stringify(element.geometry) }
               transaction = db.transaction(['data'], 'readwrite');
               var objectStore = transaction.objectStore("data");
-              var request = objectStore.add(geo)
+              var request = objectStore.put(geo)
               request.onsuccess = (event) => {
                 console.log("****************** done Adding to Database After Adding Client *******************")
               }
@@ -517,7 +522,7 @@ export class AddclientComponent implements AfterViewInit {
             "NomPrenom": this.NomPrenom,
             "PhoneNumber": this.PhoneNumber,
             "PVP": this.clientInfos.PVPhoto,
-            "status": "red"
+            "status": "white_red"
           }
         },
         "_id": _id

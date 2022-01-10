@@ -36,48 +36,41 @@ export class ClientsService {
   private _getClientByID = this.uri + "/api1/GetClient";
   private _allDeleteRequests = this.uri+"/api1/getAllDeleteRequests";
   ////////////////////remplacer par uri après le port
+  //private _getClientByID = "http://localhost:3000/api1/GetClient";
+  //private _Delete = "http://localhost:3000/api1/";
   private _Delete = this.uri+"/api1/";
 
   ////////*************** API *****************////////
-
   getNFC() {
     var url = "http://localhost:7000/nfc"
     return this.http.post<any>(url, "0633691574")
   }
-
   getSMS(phone) {
     var url = "http://localhost:7000/sms"
     return this.http.post<any>(url, phone)
   }
-
   SendClient(client) {
     return this.http.post<any>(this._addclient, client);
   }
-
   getAllClient() {
     return this.http.get<any>(this._clientUrl)
   }
-
   getClientBySeller(id) {
     var url = "http://localhost:3000/api1/getClientBySeller/" + id
     console.log(url)
     return this.http.get<any>(url)
   }
-
   getClientByAuditor(id) {
     var url = "http://localhost:3000/api1/getClientByAuditor/" + id
     console.log(url)
     return this.http.get<any>(url)
   }
-
   getAllSecteurs() {
     return this.http.get<any>(this._secteurUrl)
   }
-
   getClient() {
     return this.http.get<any>(this._getclient);
   }
-
   updateClient(client: any) {
     return this.http.post<any>(this._updateclient, client);
   }
@@ -104,6 +97,12 @@ export class ClientsService {
   //   return this.http.get(this._Delete + "ReadVideo");
   // }
 
+  myDelete(info){
+    return this.http.post<any>("http://localhost:3000/api1/deleteo",info)
+  }
+  myDeleteRead(){
+    return this.http.get<any>("http://localhost:3000/api1/VideoReadHafsa")
+  }
 
   //////////////////////////////////////////////////////////
 
@@ -122,9 +121,7 @@ export class ClientsService {
       update: 'UUid'
     });
   }
-
   /////********* ADD CLIENT IN INDEXEDDB OFFLINE MODE *********//////////
-
   addTodo(client: any) {
     client["UUid"] = UUID.UUID();
     if (!this.onlineOffline.isOnline) {
@@ -136,7 +133,6 @@ export class ClientsService {
       });
     }
   }
-
   addToIndexedDb(clientt: any) {
     this.db.client
       .add(clientt)
@@ -153,7 +149,6 @@ export class ClientsService {
   }
   ////////////////////////////////////////////////////////////////////
 
-
   /////*********** UPDATE CLIENT OFFLINE MODE *********///////
 
   addTodoUpdate(client: any) {
@@ -168,7 +163,7 @@ export class ClientsService {
       });
     }
   }
-
+///////************  ********************/
   addToIndexedDbUpdate(clientt: any) {
     var db; var transaction; var upgradeDb
     var request = window.indexedDB.open("MyTestDatabase", 10)

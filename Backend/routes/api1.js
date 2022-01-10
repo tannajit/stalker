@@ -140,9 +140,21 @@ router.get('/addedClients', async function (req, res) {
 /* GET . */
 
 router.get('/getAllUsers', async(req,res)=>{
-    let userColl = await db.collection("users")
-    var values = await userColl.find({}).toArray()
 
+    list=[]
+    let usersColl = await db.collection("users") 
+    var values = await usersColl.aggregate([
+    {
+        $lookup: {
+            from: "secteurs",
+            localField: "_id",
+            foreignField: "users",
+            as: "sectors"
+        }
+    }]).toArray();
+
+    // let userColl = await db.collection("users")
+    // var values = await userColl.find({}).toArray()
     res.json(values)
 })
 
@@ -166,57 +178,7 @@ router.get('/secteurss', async (req, res) => {
 
 
 
-router.get('/getAllDeleteRequests', async(req, res) =>{
 
-    list=[]
-    let delReq = await db.collection("DeleteRequest") 
-    var values = await delReq.aggregate([
-        {
-            $lookup: {
-                from: "geometries",
-                localField: "_id",
-                foreignField: "_id",
-                as: "PDV"
-            }
-        }]).toArray();
-
-    curs = values.map(async (elem) => {
-        //console.log("----------- element ")
-        //console.log(elem)
-        
-        ////console.log(elem)
-        if (elem.PDV[0].geometry.properties?.nfc != undefined) {
-            var element = elem.PDV[0].geometry.properties;
-            //elem.geometry.properties.status="red_white"
-            await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
-                //console.log("hna 1")
-                elem.PDV[0].geometry.properties.NFCP = re
-            })
-
-            await test1(db, ObjectId(element.PVPhoto)).then(re => {
-                //console.log("hna 2")
-                elem.PDV[0].geometry.properties.PVP = re
-            })
-            //a.add(elem)
-        }
-        if(elem.Photo != undefined){
-            await test1(db, ObjectId(elem.Photo)).then(re => {
-                //console.log("hna 1")
-                elem.PhotoURL = re
-            })
-        }
-
-        list.push(elem)
-
-    })
-    ////console.log(a.length)
-    Promise.all(curs).then(ee => {
-        ////console.log(a.length)
-        res.json(list)
-    });
-
-    // res.json(values)
-})
 
 /* GET Sectors Based on User */
 router.get('/secteurs', verifyToken, async (req, res) => {
@@ -289,24 +251,37 @@ router.post('/validate', async (req, res) => {
 
 })
 
-router.post('/deleteUser', async(req,res) =>{
-    
+router.post('/deleteUser', async (req, res) => {
+
     let user = req.body;
     let userColl = db.collection("users")
     var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
-            { $set: { "status": "out of work" } })
-        console.log(updated)
+        { $set: { "status": "out of work" } })
+    console.log(updated)
 })
 
-router.post('/restoreUser', async(req,res) =>{
+router.get('/getSectorsByUser', async(req,res) =>{
+    let userId = req.query.userId
+    console.log(userId)
+    let sectColl = db.collection("secteurs")
+    var values = await sectColl.aggregate([
+        { $match: { users: ObjectId(userId) } },
+        { $project: { nameSecteur: 1, _id: 0 } }
+    ]).toArray();
+
+    res.json(values)
+})
+
+
+router.post('/restoreUser', async (req, res) => {
     let user = req.body;
     let userColl = db.collection("users")
     var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
-            { $set: { "status": "Active" } })
-        console.log(updated)
+        { $set: { "status": "Active" } })
+    console.log(updated)
 })
 
-async function InsertClient(client) {
+async function InsertClient(client, res) {
     //console.log("/n /n ************************** /n /n")
     let collection = db.collection("clients") // collection clients
     let geometries = db.collection("geometries") /// geometries Collections
@@ -319,16 +294,20 @@ async function InsertClient(client) {
         if (v.nbr === 4) codeQR = v.value
     })
     var id_pv, id_NFC;
-    console.log("PhotoofClient" + client.PVPhoto)
+    //console.log("PhotoofClient"+client.PVPhoto)
     await test(db, client.NomPrenom, client.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
 
     await test(db, client.NomPrenom, client.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
 
-    var id = new ObjectId();
-    console.log("=========== id" + id)
+    //console.log(id_NFC)
+    //console.log(id_pv);
+    //console.log("-------------- " + client.lat)
+    //console.log(client)
+    //var id = new ObjectId();
+    //console.log("=========== id" + id)
     client.nfc.NFCPhoto = id_NFC
     var id = new ObjectId();
-    console.log("=========== id" + id)
+    //console.log("=========== id" + id)
     var temp_datetime_obj = new Date();
     let clientinfo = {
         idGeometry: id,
@@ -340,7 +319,7 @@ async function InsertClient(client) {
         lat: client.lat,
         lon: client.lon,
         nfc: client.nfc,
-        Code_Secteur_OS: (client.sector != null) ? parseInt(client.sector) : 901010181,
+        Code_Secteur_OS: (client.sector != null) ? parseInt(client.sector) : 901011082,
         machine: "CMG",
         TypeDPV: client.TypeDPV,
         detailType: client.detailType,
@@ -358,11 +337,16 @@ async function InsertClient(client) {
     await collection.insertOne(clientinfo)
     ////********* Add in geometries *****************/
     let getInsertedId; //// put Id inserted
+    delete clientinfo.idGeometry;
     var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
     geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
         var id = result.insertedId
         var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
-            { $addToSet: { points: { "point": id, "route": null } } })
+            { $addToSet: { points: { "point": id, "route": null } } }).then(ss => {
+                res.status(200).json("Done")
+            })
+        //console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
+        //console.log(up)
     }).catch(error => console.log(error))
 }
 
@@ -440,8 +424,8 @@ async function validateData(id, status) {
 router.post('/AddClient', async (req, res) => {
     let client = req.body;
     //console.log(client)
-    await InsertClient(client);
-    res.status(200).json("added")
+    await InsertClient(client, res);
+    //res.status(200).json("added")
 
 })
 
@@ -541,7 +525,7 @@ async function getUser(user) {
     console.log("find user")
     let collection = db.collection("users")
     var status = { value: 401, data: null }
-    var FindUser = await collection.findOne({email:user.email})
+    var FindUser = await collection.findOne({ email: user.email })
     console.log(FindUser)
     if (FindUser != null) {
         var valid = await ValidPassword(user.password, FindUser.password)
@@ -571,11 +555,11 @@ router.post('/login', async (req, res) => {
     res.status(status.value).send({ 'Data': status.data })
 })
 
-router.get('/GeEmail',async(req,res)=>{
+router.get('/GeEmail', async (req, res) => {
     console.log("****** get All Email *****")
     let collection = db.collection("users")
-    var FindUser = await collection.find({}).project({ _id:0,email:1}).toArray()
-    res.json(FindUser)  
+    var FindUser = await collection.find({}).project({ _id: 0, email: 1 }).toArray()
+    res.json(FindUser)
 })
 ////
 async function getClientBySeller(id) {
@@ -641,49 +625,49 @@ router.post('/login', async (req, res) => {
 
 router.post('/register', async (req, res) => {
     let user = req.body;
-    await AddNewUser(user).then(ress=>{
-        
+    await AddNewUser(user).then(ress => {
+
         res.status(200).json("User inserted/Updated")
-    }).catch(err=>{
+    }).catch(err => {
         console.log(err);
         res.status(401).json("Not inserted")
     });
-    
+
 })
 
-async function AddNewUser(user){
+async function AddNewUser(user) {
     user.userinfo.password = await GenerateHashPassword(user.userinfo.password)
     let collection = db.collection("users") // collection users 
     await collection.insertOne({
-            UserID: user.userinfo.UserID,
-            name:user.userinfo.name,
-            phone: user.userinfo.phone,
-            CIN: user.userinfo.CIN,
-            role: user.userinfo.role,
-            email: user.userinfo.email,
-            password: user.userinfo.password,
-            status:user.userinfo.status
-    
-    }).then(result=>{
+        UserID: user.userinfo.UserID,
+        name: user.userinfo.name,
+        phone: user.userinfo.phone,
+        CIN: user.userinfo.CIN,
+        role: user.userinfo.role,
+        email: user.userinfo.email,
+        password: user.userinfo.password,
+        status: user.userinfo.status
+
+    }).then(result => {
         console.log(result.insertedId)
-        var id=result.insertedId
-        user.Sectors.forEach(sector=>{
-            AddUserToSector(id,sector)
+        var id = result.insertedId
+        user.Sectors.forEach(sector => {
+            AddUserToSector(id, sector)
         })
     })
 
 }
 
-async function AddUserToSector(id,sec_name){
+async function AddUserToSector(id, sec_name) {
     console.log(id)
-    console.log("|*********** User affected to sector: "+sec_name+" **********************|")
-    let collection=db.collection("secteurs");
+    console.log("|*********** User affected to sector: " + sec_name + " **********************|")
+    let collection = db.collection("secteurs");
     await collection.updateMany({
-      nameSecteur: Number(sec_name)
+        nameSecteur: Number(sec_name)
     },
-    {
-      $addToSet: {"users": id}
-    });
+        {
+            $addToSet: { "users": id }
+        });
 }
 
 // Insert User 
@@ -732,21 +716,21 @@ router.post("/settings", async (req, res) => {
 });
 
 router.get("/settings", async (req, res) => {
-   var obj=req.query
-   
-   response=""
-   console.log(obj) 
-   if(obj?.user=="CountUser"){
-    let users=await db.collection("users")
-    var RoleCount=obj.role
-    let values=await users.find({ "role": RoleCount }).toArray()
-    response=values.length
-   }else{
-    var proprety=obj.param;
-    let collection = await db.collection("settings") // collection 
-    var values = await collection.find({ "proprety": proprety }).toArray()
-    response=values[0]
-   }
+    var obj = req.query
+
+    response = ""
+    console.log(obj)
+    if (obj?.user == "CountUser") {
+        let users = await db.collection("users")
+        var RoleCount = obj.role
+        let values = await users.find({ "role": RoleCount }).toArray()
+        response = values.length
+    } else {
+        var proprety = obj.param;
+        let collection = await db.collection("settings") // collection 
+        var values = await collection.find({ "proprety": proprety }).toArray()
+        response = values[0]
+    }
     //console.log(values[0])
     res.json(response)
 
@@ -776,52 +760,53 @@ router.get("/GetClient/:id", async (req, res) => {
 router.post("/DeleteRequest", async (req, res) => {
 
     console.log("get client : ")
-    dataclient=req.body.data
+    dataclient = req.body.data
+    console.log(req.body)
     // NomClient=dataclient.geometry.geometry.properties.NomPrenom
     // console.log(NomClient)
 
-    client={}
+    client = {}
     var id_Photo;
     var id_Video;
 
-     DeleteRequest = await db.collection("DeleteRequest")
+    DeleteRequest = await db.collection("DeleteRequest")
 
-    
-    if(req.body.Photo._imageAsDataUrl!=null){
-        photo=req.body.Photo._imageAsDataUrl
-        await test(db, ObjectId(dataclient._id),photo).then(res=>id_Photo=res._id,err=>console.log(err))
-    }
-  
-    if(req.body.video!=null){
-        await test(db,ObjectId(dataclient._id),req.body.video).then(res=>{id_Video=res._id;console.log(res)},err=>console.log(err))
+
+    if (req.body.Photo._imageAsDataUrl != null) {
+        photo = req.body.Photo._imageAsDataUrl
+        await test(db, ObjectId(dataclient._id), photo).then(res => id_Photo = res._id, err => console.log(err))
     }
 
-
-    client["_id"]= ObjectId(dataclient._id);
-    client["NomPrenom"]=dataclient.geometry.properties.NomPrenom;
-    client["Code_Secteur_OS"]=dataclient.geometry.properties.Code_Secteur_OS;
-    client["Video"]=id_Video;
-    client["Raison"]=req.body.raison;
-    client["Photo"]=id_Photo;
-    client["Coordinates"]=dataclient.geometry.geometry.coordinates;
+    if (req.body.video != null) {
+        await test(db, ObjectId(dataclient._id), req.body.video).then(res => { id_Video = res._id; console.log(res) }, err => console.log(err))
+    }
 
 
-    await DeleteRequest.insertOne(client); 
-
-}
-)
+    //client["_id"] = ObjectId(dataclient._id);
+    client["NomPrenom"] = dataclient.geometry.properties.NomPrenom;
+    client["Code_Secteur_OS"] = dataclient.geometry.properties.Code_Secteur_OS;
+    client["Video"] = id_Video;
+    client["status"] = "Waiting";
+    client["userId"] = req.body.user;
+    client["role"] = req.body.role;
+    client["Raison"] = req.body.raison;
+    client["Photo"] = id_Photo;
+    client["Coordinates"] = dataclient.geometry.geometry.coordinates;
+    await DeleteRequest.updateOne({_id:ObjectId(dataclient._id)},{
+        $set:client},{ upsert: true });
+    res.status(200).json("Deleted Successfully")
+})
 
 router.get("/ReadVideo/:idG", async (req, res) => {
 
     DeleteRequest = await db.collection("DeleteRequest")
     console.log("wiliwlwi ");
-    client =await DeleteRequest.findOne({_id:ObjectId(req.params.idG)}); 
+    client = await DeleteRequest.findOne({ _id: ObjectId(req.params.idG) });
     console.log(client)
     console.log(req.params.idG);
-    let video = await test1(db,client.Video)
+    let video = await test1(db, client.Video)
     console.log(client)
     //console.log(video)
-
     res.json(video)
 })
 
@@ -832,7 +817,6 @@ router.get("/extract", async (req, res) => {
         {
             $match: {
                 $and: [{ "geometry.geometry.type": "Point" }
-
                 ]
             }
         },
@@ -863,24 +847,18 @@ router.get("/extract", async (req, res) => {
                 return ele;
             }
         })
-        // console.log(all)
         elem.info = all
         return elem;
-
     });
-
     DataAll = []
-    //console.log(test)
     test.forEach(element => {
-        //console.log("element")
-        //console.log(element)
         Data = {
             "Identifiant system": element._id,
             "X": element.geometry.geometry.coordinates[1],
             "Y": element.geometry.geometry.coordinates[0],
             "Date_Creation": element.geometry.properties.created_at,
-            "NFC_ID": (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc.Numero_Serie,
-            "NFC_UUID": (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc.UUID,
+            "NFC_ID": (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc?.Numero_Serie,
+            "NFC_UUID": (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc?.UUID,
             "Code_Secteur_OS": element.geometry.properties.Code_Secteur_OS,
             "machine": (element.geometry.properties.machine != null) ? element.geometry.properties.machine : "",
             "TypeDPV": (element.geometry.properties.TypeDPV != null) ? element.geometry.properties.TypeDPV : "",
@@ -900,8 +878,11 @@ router.get("/extract", async (req, res) => {
             "Type_Vendeur": "",
             "Phone_Vendeur": "",
             "Photo_Vendeur": "",
-            "Valid_Vondeur": ""
+            "Valid_Vondeur": "",
+            "Supprime_Audtior":IsDeletedBy(ObjectId(element._id),"Auditor"),
+            "Supprime_Vondeur":IsDeletedBy(ObjectId(element._id),"Seller")
         }
+    
 
         element.info.forEach(info => {
             if (info.userRole === "Auditor") {
@@ -935,14 +916,152 @@ router.get("/extract", async (req, res) => {
     })
     res.json(DataAll);
 });
+///*** Hafsa Function  ****///
+async function IsDeletedBy(id,role){
+    console.log("isdeletedby")
+    let delReq = await db.collection("DeleteRequest")
+    var values= await delReq.find({_id:id,role:role}).toArray()
+   // console.log(values)
+    if( values.length>0)
+     { 
+         //console.log("find")
+         return "Yes";}
+    else 
+     return "No";
+}
+////////
 
-router.put("/UpdateUser",async (req,res)=>{
-    user =req.body
+router.get('/getAllDeleteRequests', async (req, res) => {
+
+    list = []
+    let delReq = await db.collection("DeleteRequest")
+    var values = await delReq.aggregate([
+        {
+            $lookup: {
+                from: "geometries",
+                localField: "_id",
+                foreignField: "_id",
+                as: "PDV"
+            }
+        }]).toArray();
+
+    curs = values.map(async (elem) => {
+        console.log("----------- element ")
+       // console.log(elem)
+        var id_raison = (elem.Video != null) ? elem.Video : (elem.Photo != null) ? elem.Photo : null;
+        console.log(id_raison)
+        ////console.log(elem) //
+        if (elem.PDV[0].geometry.properties?.nfc != undefined) {
+            var element = elem.PDV[0].geometry.properties;
+            //elem.geometry.properties.status="red_white"
+            await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
+                //console.log("hna 1")
+                elem.PDV[0].geometry.properties.NFCP = re
+            })
+
+            await test1(db, ObjectId(element.PVPhoto)).then(re => {
+                //console.log("hna 2")
+                elem.PDV[0].geometry.properties.PVP = re
+            });
+            if (id_raison!=null) {
+                await test1(db,id_raison).then(re => {
+                    console.log("------------- get -------")
+                    console.log(re.length)
+                    elem.prove = re
+                });
+            }
+            //a.add(elem)
+        }
+        /*if(elem.Photo != undefined){
+            await test1(db, ObjectId(elem.Photo)).then(re => {
+                //console.log("hna 1")
+                elem.PhotoURL = re
+            })
+        }*/
+
+        list.push(elem)
+
+    })
+    ////console.log(a.length)
+    Promise.all(curs).then(ee => {
+        ////console.log(a.length)
+        console.log("---- Deleted Requestes ----")
+        //console.log(list)
+        res.json(list)
+    });
+
+    // res.json(values)
+})
+
+router.post('/ValidateDeleteClient', async (req, res) => {
+    let _id = req.body.request._id
+    let request = req.body.request
+    
+    let DeleteRequest = db.collection("DeleteRequest")
+    let geometries = db.collection("geometries");
+    
+    if (request.status == "Deleted") {
+        let value = geometries.findOne({ _id: ObjectId(_id) }).then(async (result) => {
+            console.log(result)
+            result.geometry.properties.status = 'deleted'
+            await geometries.updateOne({ _id: ObjectId(_id) },
+                { $set: { "geometry.properties": result.geometry.properties } }).then(result => {
+                    console.log(result)
+                    console.log("---Done Deleting Client---")
+                })
+        })
+    }
+    if(request.Photo!=null){
+        request.Photo=ObjectId(request.Photo)
+    }else if(request.Video!=null){
+        request.Video=ObjectId(request.Video)
+    }
+    delete request?.prove;
+    delete request.PDV;
+    delete request._id;
+    console.log(request)
+    DeleteRequest.updateOne({ _id: ObjectId(_id) }, {
+        $set: request
+    }).then(resu => {
+        console.log(resu)
+        res.status(200).json("deleted Successfully")
+    })
+    //console.log(value)
+    /*await geometries.updateOne({ _id: ObjectId(_id) },
+    { $addToSet: { "status_deleted": true }}).then(result=>{
+        console.log(result)
+        console.log("---Done Deleting Client---")
+       
+    })*/
+
+
+
+});
+
+
+router.post('/deleteo', function (req, res, next) {
+    console.log("chwya labasssss")
+    console.log(req.body); // see what got uploaded
+    //console.log(req.file);
+    // let uploadLocation ='/uploads/'+"test.txt" // where to save the file to. make sure the incoming name has a .wav extension
+    //fs.writeFileSync(uploadLocation,Buffer.from(new Uint8Array(req.file.buffer))); // write the blob to the server as a file
+    //let collection=db.collection("testVideo")
+    //collection.insertOne(req.body)
+    res.status(200).json("test"); //send back that everything went ok
+});
+
+router.get("/VideoReadHafsa", async (req, res) => {
+    console.log("hhhhhhhh")
+    let collection = db.collection("testVideo")
+    var Values = await collection.find({}).toArray()
+    res.json(Values[0])
+});
+router.put("/UpdateUser", async (req, res) => {
+    user = req.body
     console.log(req.body)
 
     users = await db.collection("users")
     secteur = await db.collection("secteurs")
-
     user.password = await GenerateHashPassword(user.password)
 
     // await  users.updateOne({_id: ObjectId(user._id)},{$set:{"name":user.name,"phone":user.phone,"CIN":user.CIN,"role":user.role,"email":user.email,"password":user.password}},{multer:true})
@@ -1013,4 +1132,4 @@ async function InjectSecteurData(elem) {
 
 //////////////**********************/////////////////////
 
-module.exports = router;
+module.exports = router
