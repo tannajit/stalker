@@ -766,9 +766,11 @@ router.post("/DeleteRequest", async (req, res) => {
     client["role"] = req.body.role;
     client["Raison"] = req.body.raison;
     client["Photo"] = id_Photo;
+    client["created_at"] = new Date();
     client["Coordinates"] = dataclient.geometry.geometry.coordinates;
-    await DeleteRequest.updateOne({_id:ObjectId(dataclient._id)},{
-        $set:client},{ upsert: true });
+    await DeleteRequest.updateOne({ _id: ObjectId(dataclient._id) }, {
+        $set: client
+    }, { upsert: true });
     res.status(200).json("Deleted Successfully")
 })
 
@@ -826,8 +828,8 @@ router.get("/extract", async (req, res) => {
         return elem;
     });
     DataAll = []
-    test.forEach(element => {
-        Data = {
+    var to = test.map(async (element) => {
+        var Data = {
             "Identifiant system": element._id,
             "X": element.geometry.geometry.coordinates[1],
             "Y": element.geometry.geometry.coordinates[0],
@@ -854,11 +856,22 @@ router.get("/extract", async (req, res) => {
             "Phone_Vendeur": "",
             "Photo_Vendeur": "",
             "Valid_Vondeur": "",
-            "Supprime_Audtior":IsDeletedBy(ObjectId(element._id),"Auditor"),
-            "Supprime_Vondeur":IsDeletedBy(ObjectId(element._id),"Seller")
+            "Supprime_Audtior": "",
+            "Supprime_Vondeur": ""
         }
-    
-
+        await IsDeletedBy(ObjectId(element._id), "Seller").then(ress => {
+            //console.log(ress)
+            Data["Supprime_Vondeur"] = String(ress)
+            console.log(Data["Supprime_Vondeur"])
+        }).catch(err => {
+            Data["Supprime_Vondeur"] = String(err)
+        });
+        await IsDeletedBy(ObjectId(element._id), "Auditor").then(ress => {
+            console.log("Auditor")
+            Data["Supprime_Audtior"] = String(ress)
+        }).catch(err => {
+            Data["Supprime_Audtior"] = String(err)
+        });
         element.info.forEach(info => {
             if (info.userRole === "Auditor") {
                 Data.Passage_Auditeur = "YES"
@@ -888,23 +901,40 @@ router.get("/extract", async (req, res) => {
             }
         })
         DataAll.push(Data)
-    })
+        console.log(DataAll.length)
+        element = Data;
+        return element;
+    });
 
-
-    res.json(DataAll);
+    Promise.all(to).then(ee => {
+        ////console.log(a.length)
+        console.log("---- Extract ----")
+        //console.log(list)
+        res.status(200).json(DataAll)
+    });
+    //console.log(to)
+    //res.status(200).json("test")
+    //res.json(DataAll);
 });
 ///*** Hafsa Function  ****///
-async function IsDeletedBy(id,role){
-    console.log("isdeletedby")
-    let delReq = await db.collection("DeleteRequest")
-    var values= await delReq.find({_id:id,role:role}).toArray()
-   // console.log(values)
-    if( values.length>0)
-     { 
-         //console.log("find")
-         return "Yes";}
-    else 
-     return "No";
+async function IsDeletedBy(id, role) {
+
+
+    //console.log(values.length)
+    return new Promise(async (resolve, reject) => {
+        let delReq = await db.collection("DeleteRequest")
+        var values = await delReq.find({ _id: id, role: role }).toArray()
+        if (values.length > 0)
+            resolve("Yes");
+        else
+            reject("No")
+    })
+    /*if (values.length > 0) {
+        console.log("find")
+        return "Yes";
+    }
+    else
+        return "No";*/
 }
 ////////
 
@@ -913,6 +943,7 @@ router.get('/getAllDeleteRequests', async (req, res) => {
     list = []
     let delReq = await db.collection("DeleteRequest")
     var values = await delReq.aggregate([
+        { $sort: { created_at: -1 } },
         {
             $lookup: {
                 from: "geometries",
@@ -921,10 +952,10 @@ router.get('/getAllDeleteRequests', async (req, res) => {
                 as: "PDV"
             }
         }]).toArray();
-
+    //res.json(values)
     curs = values.map(async (elem) => {
-        console.log("----------- element ")
-       // console.log(elem)
+        console.log(elem.created_at)
+        // console.log(elem)
         var id_raison = (elem.Video != null) ? elem.Video : (elem.Photo != null) ? elem.Photo : null;
         console.log(id_raison)
         ////console.log(elem) //
@@ -940,8 +971,8 @@ router.get('/getAllDeleteRequests', async (req, res) => {
                 //console.log("hna 2")
                 elem.PDV[0].geometry.properties.PVP = re
             });
-            if (id_raison!=null) {
-                await test1(db,id_raison).then(re => {
+            if (id_raison != null) {
+                await test1(db, id_raison).then(re => {
                     console.log("------------- get -------")
                     console.log(re.length)
                     elem.prove = re
@@ -961,9 +992,9 @@ router.get('/getAllDeleteRequests', async (req, res) => {
     })
     ////console.log(a.length)
     Promise.all(curs).then(ee => {
-        ////console.log(a.length)
         console.log("---- Deleted Requestes ----")
-        //console.log(list)
+        list.sort((a,b)=>b.created_at-a.created_at); //sort by date desc
+
         res.json(list)
     });
 
@@ -973,10 +1004,10 @@ router.get('/getAllDeleteRequests', async (req, res) => {
 router.post('/ValidateDeleteClient', async (req, res) => {
     let _id = req.body.request._id
     let request = req.body.request
-    
+
     let DeleteRequest = db.collection("DeleteRequest")
     let geometries = db.collection("geometries");
-    
+
     if (request.status == "Deleted") {
         let value = geometries.findOne({ _id: ObjectId(_id) }).then(async (result) => {
             console.log(result)
@@ -988,10 +1019,10 @@ router.post('/ValidateDeleteClient', async (req, res) => {
                 })
         })
     }
-    if(request.Photo!=null){
-        request.Photo=ObjectId(request.Photo)
-    }else if(request.Video!=null){
-        request.Video=ObjectId(request.Video)
+    if (request.Photo != null) {
+        request.Photo = ObjectId(request.Photo)
+    } else if (request.Video != null) {
+        request.Video = ObjectId(request.Video)
     }
     delete request?.prove;
     delete request.PDV;
@@ -1002,6 +1033,8 @@ router.post('/ValidateDeleteClient', async (req, res) => {
     }).then(resu => {
         console.log(resu)
         res.status(200).json("deleted Successfully")
+    }).catch(err => {
+        res.status(500)
     })
     //console.log(value)
     /*await geometries.updateOne({ _id: ObjectId(_id) },
