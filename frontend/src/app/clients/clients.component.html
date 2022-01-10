@@ -77,8 +77,7 @@
             <div class="field">
                 <mat-form-field>
                     <mat-select placeholder="Delete" panelClass="selectPanel2" [(ngModel)]="deleteStatus">
-                        <mat-option value="Request Delete">Request Delete</mat-option>
-                        <mat-option value="Deleted">Deleted</mat-option>
+                        <mat-option value="yellow">Deleted</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -89,7 +88,7 @@
 
     <div class="clients-list">
         <!-- *ngFor="let client of clients" -->
-        <div *ngFor="let client of clients.slice().reverse() | filter: IdClient | filter: PhoneNumber | filter: PDVType | filter: detailType | filter: sector | filter: validate | filter: nfc"
+        <div *ngFor="let client of clients.slice().reverse() | filter: IdClient | filter: PhoneNumber | filter: PDVType | filter: detailType | filter: sector | filter: validate | filter: nfc | filter: deleteStatus"
             class="card-container">
             <mat-card (click)="openDialog(client)">
                 <img mat-card-image src="{{client.geometry.properties.PVP}}" alt=""

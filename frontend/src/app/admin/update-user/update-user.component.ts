@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { AdminService } from '../admin.service';
 import { SettingsService } from 'src/app/settings/settings.service';
 import { ClientsService } from 'src/app/clients.service';
+import { Router } from '@angular/router';
+import { AlertDialogComponent } from 'src/app/alert-dialog/alert-dialog.component';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { UsersComponent } from '../users/users.component';
 
 @Component({
   selector: 'app-update-user',
@@ -10,41 +14,63 @@ import { ClientsService } from 'src/app/clients.service';
 })
 export class UpdateUserComponent implements OnInit {
 
-  userInfo
-
+  userInfo=this._router.getCurrentNavigation().extras.state.dataUser
+  UserInfoUp
   FirstName;
   LastName;
   Roles;
-  role;
+  role=this.userInfo.role
+  hidpass=true
   SelectedSector=[];
-  SectorAffacted=[];
+  SectorsAttached=[];
   AllSectors=[];
   Sectors = []
-  UserID = '0000'
+  UserID = this.userInfo.UserID
+  UserIDAfficher
   CountUser = 0
   selected=false
-
+  generated=false
+  setUserID
 
   constructor(
-    private adminService: AdminService,
     private _setting: SettingsService,
-    private _client: ClientsService
+    private _client: ClientsService,
+    private _router: Router,
+    private dialog:MatDialog
+
   ) { }
 
   ngOnInit(): void {
+    //this.adminService.getAllUsers().subscribe(res=>{console.log("sectors",res)})
    
-    this.userInfo = this.adminService.getUserInfo() 
+    //this.userInfo = this.adminService.getUserInfo() 
     console.log("userInfo")
     console.log(this.userInfo)
     this.FirstName=this.userInfo.name.split(" ")[1]
     this.LastName=this.userInfo.name.split(" ")[0]
-    this.userInfo.UserID=this.userInfo.UserID
-    
+    // const UserIDAfficher= this.userInfo.UserID
+    // const RoleAfficher=this.userInfo.role
+     console.log("UserIDAfficher",this.UserID)
+    // console.log("RoleAfficher",RoleAfficher)
+    console.log("this.userInfo.role",this.role)
+
+    // if(RoleAfficher!=this.userInfo.role){
+    //   this.userInfo.UserID=this.userInfo.UserID
+
+    // }if(RoleAfficher === this.userInfo.role){
+    //   this.userInfo.UserID = UserIDAfficher
+
+    // }
+   
+    console.log("userInfoSectors")
+
+    this.userInfo.sectors.forEach(el => {this.SelectedSector.push(""+el.nameSecteur)});
+    this.SectorsAttached=this.SelectedSector
     this._setting.getSettings('param=role').subscribe(res => {
       this.Roles = res.details.roles
       console.log(res)
     })
-
+    
     this._client.getAllSecteurs().subscribe(res => {
       console.log(res)
       res.forEach(element => {
@@ -53,26 +79,21 @@ export class UpdateUserComponent implements OnInit {
         var machine = (idSector == 0) ? "Onion" : "CMG"
         console.log(machine)
         var result = element.geometry.properties.idSecteur + " - " + machine + " - " + element.geometry.properties.name
-        console.log(result)
+        console.log("selected",result)
         var obj={
           id:element.geometry.properties.idSecteur,
           detail:result
         }
         this.AllSectors.push(element.geometry.properties.idSecteur)
         this.Sectors.push(obj)
+        console.log("sectors",this.Sectors)
       });
     })
   }
 
-  UpdateUser(){
-    console.log("sfjldkfjdkfjdlsk") 
-    this.userInfo["sector"]=this.SelectedSector
-    this.userInfo["name"]=this.LastName+" "+this.FirstName
-    console.log(this.userInfo)
-    //this._setting.UpdateUser(this.userInfo).subscribe(res=>console.log(res))
-    
-  }
-  GenerateEmail(){
+
+  GenerateEmail()
+  {
     var i=0;
     var last = this.LastName.replace(" ", '.')
     var l1 = this.FirstName.toLowerCase().slice(0, 1)
@@ -81,6 +102,8 @@ export class UpdateUserComponent implements OnInit {
   }
 
   GeneratePassword(){
+    this.hidpass=false
+    this.generated=true;
     this.userInfo.password = (Math.random() + 1).toString(36).substring(2);
 
   }
@@ -101,15 +124,22 @@ export class UpdateUserComponent implements OnInit {
   }
 
   onChange() {
-    this.SetUserID()
+
+    if(this.role!=this.userInfo.role){
+      this.SetUserID()
+    }if(this.role === this.userInfo.role){
+      this.userInfo.UserID = this.UserID
+    }
 
   }
   //// Set User ID 
   SetUserID() {
-    this._setting.getSettings("user=CountUser&role=" + this.role + "").subscribe(res => {
+    this._setting.getSettings("user=CountUser&role=" + this.userInfo.role + "").subscribe(res => {
       console.log(res)
       this.CountUser = res + 1
-      this.UserID = this.role.slice(0, 2) + String(this.pad(Number(this.CountUser), 7))
+      // const RoleAfficher=this.userInfo.role
+        this.userInfo.UserID = this.userInfo.role.slice(0, 2) + String(this.pad(Number(this.CountUser), 7))
+  
     })
   }
 
@@ -118,16 +148,50 @@ export class UpdateUserComponent implements OnInit {
     console.log(b)
     return (1e15 + a + '').slice(-b);
   }
+  UpdateUser(){
+    console.log("sfjldkfjdkfjdlsk") 
+    var UserInfoUp={}
+    UserInfoUp["_id"]=this.userInfo._id
+    UserInfoUp["UserID"]=this.userInfo.UserID
+    UserInfoUp["name"]=this.LastName+" "+this.FirstName
+    UserInfoUp["CIN"]=this.userInfo.CIN
+    UserInfoUp["role"]=this.userInfo.role
+    UserInfoUp["password"]=this.userInfo.password
+    UserInfoUp["email"]=this.userInfo.email
+    UserInfoUp["phone"]=this.userInfo.phone
+    UserInfoUp["status"]=this.userInfo.status
+    UserInfoUp["sectors"]=this.SelectedSector
+    UserInfoUp["generated"]=this.generated
+    console.log("====================================")
 
-  // SendUser() {
-   
-  //   if(this.role=='Seller' || this.role =='Auditor' || this.role =='Supervisor'){
-  //     this.SectorAffacted=this.SelectedSector
-  //   }else{
-  //     this.SectorAffacted=this.AllSectors
-  //   }
-  //   console.log(this.SectorAffacted)
     
-  // }
+    const SectorDeleted = this.SectorsAttached.filter(value => !this.SelectedSector.includes(value));
+    UserInfoUp["SectorDeleted"]=SectorDeleted
 
+    this._setting.UpdateUser(UserInfoUp).subscribe(res=>console.log(res))
+    if(this.generated){
+          this.openAlertDialog()
+    }else{
+      this._router.navigate(['/users'])
+    }
+
+  }
+  
+
+  openAlertDialog() {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        message:"Please Copy this credentials before Exit \n " +"[Email:"+this.userInfo.email +"-"+"Password:"+this.userInfo.password+"]",
+        buttonText: {
+          ok: 'Done',
+        }
+      }
+
+    }).afterClosed().subscribe(result => {
+      this._router.navigate(['/users'])
+    });
+    ;
+
+
+}
 }
