@@ -12,6 +12,11 @@ export class AdminService {
   private deleteUserURL = this.uri+"/api1/deleteUser"
   private restoreUserURL = this.uri+"/api1/restoreUser"
   private getSectorsByUserURL = this.uri+"/api1/getSectorsByUser"
+  private _user=this.uri+"/api1/register"
+  private _user_email=this.uri+"/api1/GeEmail"
+  private _setting =this.uri + "/api1/deleteClient";
+
+  private _deleteClient =this.uri+"/api1/ValidateDeleteClient"
 
   currentUser;
 
@@ -36,13 +41,30 @@ export class AdminService {
   setUserInfo(user){
     this.currentUser = user
   }
-
-
   getUserInfo() {
+    
     return this.currentUser;
   }
 
   getSectorsByUser(user){
     return this.http.get<any>(this.getSectorsByUserURL+"?userId="+user._id)
   }
+  /////////////***** Add User (Hafsa's code) ***////////////////
+  CreateUser(user){
+    return this.http.post<any>(this._user,user)
+  }
+  CheckEmail(){
+      return this.http.get<any>(this._user_email)
+  }
+  getSettings(params) {
+    console.log(params)
+    return this.http.get<any>(this._setting+"?"+params);
+  }
+
+  ValidateDeleteClient(request){
+    
+    console.log(request)
+    return this.http.post<any>(this._deleteClient,{request:request});
+  }
+  //////
 }

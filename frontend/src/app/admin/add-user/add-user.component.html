@@ -33,7 +33,7 @@
                 <label>Phone Number :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input placeholder="Type the phone number..." matInput [(ngModel)]="phoneNumber" />
+                    <input pattern="[0]{1}[0-9]{9}" placeholder="Type the phone number..." matInput [(ngModel)]="phoneNumber" />
                 </mat-form-field>
             </div>
             <div class="field">
@@ -74,8 +74,8 @@
                 </mat-form-field>
             </div>
             <div class="btns">
-                <button class="btn-red" mat-button routerLink="/users">Cancel</button>
-                <button class="btn-green" mat-button (click)="SendUser()">Add</button>
+                <button class="btn-red" mat-button routerLink="/users" >Cancel</button>
+                <button class="btn-green" mat-button (click)="SendUser()" >Add</button>
             </div>
         </div>
         

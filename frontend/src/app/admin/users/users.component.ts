@@ -41,6 +41,7 @@ export class UsersComponent implements OnInit {
     private _router: Router,
     private changeDetectorRefs: ChangeDetectorRef,
     private _setting: SettingsService,
+    private _admin: AdminService,
     private _client: ClientsService
     ) { }
 

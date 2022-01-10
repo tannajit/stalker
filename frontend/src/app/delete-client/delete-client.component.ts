@@ -5,6 +5,7 @@ import * as L from 'leaflet';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { ClientsService } from '../clients.service';
+import { ThrowStmt } from '@angular/compiler';
 import { OnlineOfflineServiceService } from '../online-offline-service.service';
 
 declare var MediaRecorder: any;
@@ -23,11 +24,13 @@ export class DeleteClientComponent implements AfterViewInit {
   videoElement: HTMLVideoElement;
   recordVideoElement: HTMLVideoElement;
   mediaRecorder: any;
-  recordedBlobs: Blob[];
+  recordedBlobs=[]
   isRecording: boolean = false;
   downloadUrl: string;
   stream: MediaStream;
   showVideo = false
+
+  
 
   list = []
   Status;
@@ -46,6 +49,8 @@ export class DeleteClientComponent implements AfterViewInit {
   selected
   checkInfos;
   // photo
+  user = JSON.parse(localStorage.getItem("user"));
+  
   showWebcam = false
   private trigger: Subject<void> = new Subject<void>();
   public webcamImage = null;
@@ -76,7 +81,8 @@ export class DeleteClientComponent implements AfterViewInit {
     this.onDataAvailableEvent();
     this.onStopRecordingEvent();
   }
-  thestream;
+thestream;
+
   stopRecording() {
     this.mediaRecorder.stop();
     //   console.log("Strem:"+ this.stream.getTracks()[0].stop())
@@ -99,18 +105,15 @@ export class DeleteClientComponent implements AfterViewInit {
     }
     this.recordVideoElement.play();
   }
-  dataV;
+dataV;
+text;
+
   onDataAvailableEvent() {
     try {
       this.mediaRecorder.ondataavailable = (event: any) => {
         if (event.data && event.data.size > 0) {
           this.recordedBlobs.push(event.data);
-          // console.log("puch blobs:"+ this.recordedBlobs)
-          // console.log("Strem:"+ this.stream.getTracks()[0].stop())
-          // console.log("blobs:"+ this.recordedBlobs)
-
-          // this.thestream=this.stream.getTracks()[0].stop()
-          // this.dataV = new Blob(this.recordedBlobs, {type: "video/webm"});
+      
 
         }
       };
@@ -119,17 +122,53 @@ export class DeleteClientComponent implements AfterViewInit {
     }
   }
   Video;
+  fd;
   onStopRecordingEvent() {
     try {
-      this.mediaRecorder.onstop = (event: Event) => {
-        const videoBuffer = new Blob(this.recordedBlobs, {
+       this.mediaRecorder.onstop = async (event: Event) => {
+         const videoBuffer = new Blob(this.recordedBlobs, {
           type: 'video/webm'
         });
-        console.log("videoBuffer" + videoBuffer)
-        this.Video = videoBuffer;
-        this.downloadUrl = window.URL.createObjectURL(videoBuffer); // you can download with <a> tag
-        console.log("this.downloadUrl " + this.downloadUrl);
-        this.recordVideoElement.src = this.downloadUrl;
+        console.log("==========================")
+        console.log(videoBuffer.size)
+        console.log(this.recordedBlobs)
+        console.log("==========================")
+
+        console.log(this.recordedBlobs.length)
+
+        this.Video=await videoBuffer.arrayBuffer();
+        console.log("==========================")
+
+        var reader = new FileReader();
+        reader.readAsDataURL(videoBuffer); 
+        reader.onloadend =async ()=> {
+        var base64data = reader.result;                
+        console.log(base64data); 
+        
+        this.Video=base64data;
+      }
+        // const reader = new FileReader();
+        //  reader.addEventListener('loadend', () => {
+        //      //reader.result //contains the contents of blob as a typed array
+        //      console.log("ééééééééé")
+        //      console.log(reader.result)
+        //      //this.Video1={"buffer":reader.result}
+        //  });
+        //  reader.readAsArrayBuffer(videoBuffer)
+
+        //console.log(this.Video)
+
+        console.log("lllll")
+
+        
+        
+        //console.log(uri)
+       this.downloadUrl = window.URL.createObjectURL(videoBuffer); // you can download with <a> tag
+
+        console.log("this.downloadUrl ")
+        console.log(this.downloadUrl);
+        this.recordVideoElement.src =this.downloadUrl;
+
       };
     } catch (error) {
       console.log(error);
@@ -253,7 +292,7 @@ export class DeleteClientComponent implements AfterViewInit {
     this.percentage = 0
     interval(300).subscribe(x => {
       if (this.percentage < 100) {
-        this.percentage += 4
+        this.percentage += 50
       }
     });
   }
@@ -284,27 +323,87 @@ export class DeleteClientComponent implements AfterViewInit {
     this.showWebcam = !this.showWebcam;
   }
 
-  data = this.router.getCurrentNavigation().extras.state.dataClient
+  data =this.router.getCurrentNavigation().extras.state.dataClient
+  Video1;
 
-  Send() {
-    // console.log("dataV:"+ this.dataV )
-    // console.log("video:"+ this.recordVideoElement.src)
-    // console.log("video 2:"+Object.keys(this.mediaRecorder))
-    // console.log("raison :"+this.raison)
-    // console.log("data :"+this.data._id)
-    // console.log("videoBuffer:"+this.Video)
-    //this.clientService.DeleteClientByID(this.data._id).subscribe(res=>{console.log(res)})
-    this.checkInfos = { "data": this.data, "raison": this.raison, "video": this.stream, "Photo": this.webcamImage }
+  Send(){
+
+    var photo;
+    
+    if(this.webcamImage==null) {photo=""}else{photo=this.webcamImage}
+    this.checkInfos={"data": this.data,"raison":this.raison,status:"Waiting","video":this.Video,"user":this.user._id,"role":this.user.role,"Photo":photo}
+
+    //var test=new Uint8Array(this.Video1  as ArrayBuffer)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodoDelete(this.checkInfos)
     } else {
-      this.clientService.DeleteRequest(this.checkInfos).subscribe(res => { console.log(res) })
+      this.clientService.DeleteRequest(this.checkInfos).subscribe(res => { console.log(res)
+      
+        this.router.navigate(['/map'])
+    })
     }
+    console.log("uuuuuuuuuuuuuuu")
+    //this.ReadV()
+  }
+
+    b64toBlob(dataURI) {
+      
+      var byteString = atob(dataURI.split(',')[1]);
+      var ab = new ArrayBuffer(byteString.length);
+      var ia = new Uint8Array(ab);
+      
+      for (var i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+      }
+      return new Blob([ab], { type: 'video/webm' });
+  }
+
+  content;
+    ReadVideo(){
+      console.log(this.data._id)
+      this.clientService.ReadVideo(this.data._id).subscribe(res=>{
+      var blob = this.b64toBlob(res)
+      this.downloadUrl = window.URL.createObjectURL(blob);
+      console.log("this.downloadUrl")
+      console.log(this.downloadUrl);
+      this.recordVideoElement.src =this.downloadUrl;
+      // console.log("resVideo")
+      // console.log(res)
+     })  
+      //console.log("-------------------------------------  Read the video from the Database  -------------")
+ 
+    
+
   }
   
-  ReadV() {
-    console.log(this.clientService.ReadV().subscribe(res => this.recordVideoElement.src = res.toString()))
+  
+   recorderOnDataAvailable(event) {
+    if (event.data.size == 0) return;
+    this.recordedBlobs.push(event.data);
   }
+
+
+  // data = this.router.getCurrentNavigation().extras.state.dataClient
+
+  // Send() {
+  //   // console.log("dataV:"+ this.dataV )
+  //   // console.log("video:"+ this.recordVideoElement.src)
+  //   // console.log("video 2:"+Object.keys(this.mediaRecorder))
+  //   // console.log("raison :"+this.raison)
+  //   // console.log("data :"+this.data._id)
+  //   // console.log("videoBuffer:"+this.Video)
+  //   //this.clientService.DeleteClientByID(this.data._id).subscribe(res=>{console.log(res)})
+  //   this.checkInfos = { "data": this.data, "raison": this.raison, "video": this.stream, "Photo": this.webcamImage }
+  //   if (!this.onlineOfflineService.isOnline) {
+  //     this.clientService.addTodoDelete(this.checkInfos)
+  //   } else {
+  //     this.clientService.DeleteRequest(this.checkInfos).subscribe(res => { console.log(res) })
+  //   }
+  // }
+  
+  // ReadV() {
+  //   console.log(this.clientService.ReadV().subscribe(res => this.recordVideoElement.src = res.toString()))
+  // }
 
 
 }

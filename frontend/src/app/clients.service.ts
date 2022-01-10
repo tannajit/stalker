@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { OnlineOfflineServiceService } from './online-offline-service.service';
 import Dexie from 'dexie';
@@ -7,6 +7,7 @@ import { UUID } from 'angular2-uuid';
 import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import * as L from 'leaflet';
+import { Observable } from 'rxjs';
 
 
 @Injectable({
@@ -21,6 +22,7 @@ export class ClientsService {
   Distance;
   private db: any;
   items
+
   private currentClient;
   uri = "http://localhost:3000";
   private _clientUrl = this.uri + "/api1/clients";
@@ -31,52 +33,44 @@ export class ClientsService {
   private getClientBySell = this.uri + "/api1/getClientBySeller";
   private _validate = this.uri + "/api1/validate";
   private _extarct = this.uri + "/api1/extract";
-  private _allDeleteRequests = this.uri + "/api1/getAllDeleteRequests";
-
+  private _getClientByID = this.uri + "/api1/GetClient";
+  private _allDeleteRequests = this.uri+"/api1/getAllDeleteRequests";
   ////////////////////remplacer par uri après le port
-  private _getClientByID = "http://localhost:3000/api1/GetClient";
-  private _Delete = "http://localhost:3000/api1/";
+  //private _getClientByID = "http://localhost:3000/api1/GetClient";
+  //private _Delete = "http://localhost:3000/api1/";
+  private _Delete = this.uri+"/api1/";
 
   ////////*************** API *****************////////
-
   getNFC() {
     var url = "http://localhost:7000/nfc"
     return this.http.post<any>(url, "0633691574")
   }
-
   getSMS(phone) {
     var url = "http://localhost:7000/sms"
     return this.http.post<any>(url, phone)
   }
-
   SendClient(client) {
     return this.http.post<any>(this._addclient, client);
   }
-
   getAllClient() {
     return this.http.get<any>(this._clientUrl)
   }
-
   getClientBySeller(id) {
     var url = "http://localhost:3000/api1/getClientBySeller/" + id
     console.log(url)
     return this.http.get<any>(url)
   }
-
   getClientByAuditor(id) {
     var url = "http://localhost:3000/api1/getClientByAuditor/" + id
     console.log(url)
     return this.http.get<any>(url)
   }
-
   getAllSecteurs() {
     return this.http.get<any>(this._secteurUrl)
   }
-
   getClient() {
     return this.http.get<any>(this._getclient);
   }
-
   updateClient(client: any) {
     return this.http.post<any>(this._updateclient, client);
   }
@@ -94,15 +88,21 @@ export class ClientsService {
     return this.http.get(this._Delete + "DeleteClient/" + id);
   }
 
-  DeleteRequest(data) {
-    console.log("DeleteClientByID" + data.video);
-    return this.http.post(this._Delete + "DeleteRequest", data);
-  }
+  // DeleteRequest(data) {
+  //   console.log("DeleteClientByID" + data.video);
+  //   return this.http.post(this._Delete + "DeleteRequest", data);
+  // }
 
-  ReadV() {
-    return this.http.get(this._Delete + "ReadVideo");
-  }
+  // ReadV() {
+  //   return this.http.get(this._Delete + "ReadVideo");
+  // }
 
+  myDelete(info){
+    return this.http.post<any>("http://localhost:3000/api1/deleteo",info)
+  }
+  myDeleteRead(){
+    return this.http.get<any>("http://localhost:3000/api1/VideoReadHafsa")
+  }
 
   //////////////////////////////////////////////////////////
 
@@ -121,9 +121,7 @@ export class ClientsService {
       update: 'UUid'
     });
   }
-
   /////********* ADD CLIENT IN INDEXEDDB OFFLINE MODE *********//////////
-
   addTodo(client: any) {
     client["UUid"] = UUID.UUID();
     if (!this.onlineOffline.isOnline) {
@@ -135,7 +133,6 @@ export class ClientsService {
       });
     }
   }
-
   addToIndexedDb(clientt: any) {
     this.db.client
       .add(clientt)
@@ -152,7 +149,6 @@ export class ClientsService {
   }
   ////////////////////////////////////////////////////////////////////
 
-
   /////*********** UPDATE CLIENT OFFLINE MODE *********///////
 
   addTodoUpdate(client: any) {
@@ -167,7 +163,7 @@ export class ClientsService {
       });
     }
   }
-
+///////************  ********************/
   addToIndexedDbUpdate(clientt: any) {
     var db; var transaction; var upgradeDb
     var request = window.indexedDB.open("MyTestDatabase", 10)
@@ -412,11 +408,11 @@ export class ClientsService {
           list.push(elm)
           console.log(list)
         });
-
       }
     };
     return list
   }
+
   ////************ GET DATA BY ID FROM INDEXEDB (DELETE CLIENT) *********///////
   getIDdelete() {
     var list = []
@@ -432,7 +428,6 @@ export class ClientsService {
       transaction = this.db.transaction(['delete'], 'readwrite');
       var objectStore = transaction.objectStore("delete");
       var objectStoreRequest = objectStore.getAll();
-
       objectStoreRequest.onsuccess = function (event) {
         var all = event.target.result
         all.forEach(element => {
@@ -442,7 +437,6 @@ export class ClientsService {
           list.push(elm)
           console.log(list)
         });
-
       }
     };
     return list
@@ -466,14 +460,12 @@ export class ClientsService {
     return this.currentClient;
   }
 
-
   //////////////////
   getClientByID(id) {
     console.log('id' + id);
     return this.http.get(this._getClientByID + '/' + id);
   }
-
-
+  
   ///////////////////
 
   getPosition(position) {
@@ -506,26 +498,106 @@ export class ClientsService {
       console.log("Raduis :" + this.Raduis);
 
     }
-
-    // if(this.Distance<=this.Raduis) {
-    // console.log("The point into the cercle")
-    // //this.getDistance();
-    // return this.Distance;
-    //}
   }
-  ActiveTheButton() {
-    if (this.Distance <= this.Raduis) {
+
+  DeleteRequest(data){
+    console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    
+
+    console.log(data)
+    console.log("DeleteClientByID"+data);
+    return this.http.post(this._Delete+"DeleteRequest",data);
+  }
+
+  ReadVideo(id){
+  console.log("DeleteClientByID"+id);
+
+  return this.http.get(this._Delete+"ReadVideo/"+id);
+  }
+
+//   getPosition(position){
+//     if(Object.keys(position)[0]==="Map"){
+//     this.MyPosition=position.Map;
+//     this.Raduis=position.Raduis;
+//   };
+//     if(Object.keys(position)[0]==="Client"){
+//     this.PositionClient=position.Client;
+
+//   }
+//   if((Object.keys(position)[0]==="MapUp")&&(this.PositionClient!=null)){
+
+//     console.log("MyPosition Updated "+ new L.LatLng(position.MapUp[0], position.MapUp[1]));
+
+//     this.MyPosition=new L.LatLng(position.MapUp[0], position.MapUp[1]);
+//     this.Raduis=position.Raduis;
+//     this.Distance=this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
+//     console.log("Distance Up :"+this.Distance );
+//     console.log("Raduis Up :"+this.Raduis );
+    
+//   }
+//   if(this.PositionClient!=null){
+// console.log("MyPosition "+this.MyPosition);
+
+//   console.log("Pointposition "+this.PositionClient);
+
+//     this.Distance=this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
+//     console.log("Distance :"+this.Distance );
+//     console.log("Raduis :"+this.Raduis );
+
+//   }
+  
+//     // if(this.Distance<=this.Raduis) {
+//     // console.log("The point into the cercle")
+//     // //this.getDistance();
+//     // return this.Distance;
+//     //}
+//   }
+  ActiveTheButton(){
+    if(this.Distance<=this.Raduis) {
       //console.log("The point into the cercle")
       return false;
     }
     return true
   }
 
-  getDistance() {
+  getDistance(){
     //console.log("Distance2 :"+this.Distance );
     return this.Distance;
 
   }
+
+  /////////////////////////////////////////////////////////////////
+
+  private baseUrl = 'http://localhost:3000/api1';
+  
+  upload(file: File): Observable<HttpEvent<any>> {
+    const formData: FormData = new FormData();
+
+    formData.append('file', file);
+    console.log(formData)
+
+    const req = new HttpRequest('POST', `${this.baseUrl}/upload`, formData, {
+      reportProgress: true,
+      responseType: 'json'
+    });
+    console.log(req)
+
+    return this.http.request(req);
+   
+  }
+
+  getFiles(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/files`);
+  }
+
+  deleteFiles(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/deletefile`);
+  }
+
+  //****************************** */
+
+
+
 
 
 }

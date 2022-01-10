@@ -9,6 +9,7 @@ var uri="mongodb://localhost:27017"
 var client = new MongoClient(uri);
 var name_database="stalker1"
 
+
 async function run() {
 	try {
 		var t=await client.connect();
@@ -91,6 +92,7 @@ router.post('/Add',async(req,res)=>{
 router.post('/addClient',async (req,res)=>{
     res.status(200).json("done")
 })
+
 
 /// gridFS script 
 function getFileSystemItem(dbo,id) {

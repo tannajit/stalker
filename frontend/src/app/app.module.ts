@@ -52,6 +52,10 @@ import { DeleteClientComponent } from './delete-client/delete-client.component';
 import { DeleteRequestsComponent } from './admin/delete-requests/delete-requests.component';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
+import { InjectionComponent } from './injection/injection.component'
+// import { FileUploadModule } from "ng2-file-upload";
+
+
 import { AddUserComponent } from './admin/add-user/add-user.component';
 import { UsersComponent } from './admin/users/users.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
@@ -80,6 +84,7 @@ import { UserInfoComponent } from './admin/user-info/user-info.component';
     ExtractComponent,
     DeleteClientComponent,
     DeleteRequestsComponent,
+    InjectionComponent,
     AddUserComponent,
     UsersComponent,
     ConfirmationDialogComponent,
@@ -122,6 +127,7 @@ import { UserInfoComponent } from './admin/user-info/user-info.component';
     MatTableModule,
     MatPaginatorModule,
     MatSlideToggleModule,
+    // FileUploadModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: true,
       // Register the ServiceWorker as soon as the app is stable
