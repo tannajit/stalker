@@ -114,8 +114,9 @@ export class UsersComponent implements OnInit {
   }
 
   updateUser(user){
-    this.adminService.setUserInfo(user)
-    this._router.navigate(['/updateUser'])
+
+    this._router.navigateByUrl('/updateUser', { state: { dataUser:user,userid:user.UserID,userrole:user.role } });
+
   }
   
   restoreUser(user){
