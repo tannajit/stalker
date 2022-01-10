@@ -5,6 +5,46 @@
           <h1 class="list-title">Users</h1>
           <button mat-button routerLink="/addUser">Add New User</button>
         </div>
+
+        <div class="filter-container">
+         
+            <mat-form-field>
+              <!-- <mat-label>Id User</mat-label> -->
+              <input placeholder="Search..." matInput (keyup)="applyFilter($event.target.value)"/>
+          </mat-form-field>
+
+            <mat-form-field>
+              <mat-select placeholder="Status" panelClass="selectPanel2" (selectionChange)="onChangeStatus($event)" [(ngModel)]="selectedStatus">
+                  <mat-option value="all">All</mat-option>
+                  <mat-option value="out of work">Out Of Work</mat-option>
+                  <mat-option value="Active">Active</mat-option>
+              </mat-select>
+            </mat-form-field>
+            
+
+            <mat-form-field>
+              <mat-select placeholder="Role" panelClass="selectPanel2"   (selectionChange)="onChangeRole($event)" [(ngModel)]="selectedRole">
+                  <mat-option value="all">All</mat-option>
+                  <ng-container *ngFor="let rol of roles">
+                    <mat-option value="{{rol}}">{{rol}}</mat-option>
+                  </ng-container>
+                   
+              
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field >
+              <mat-select placeholder="Sector"  panelClass="selectPanel2" (selectionChange)="onChangeSector($event)" [(ngModel)]="selectedSector">
+                <mat-option value="all">All</mat-option>
+                <ng-container *ngFor="let sector of Sectors">
+                  <mat-option value="{{sector.id}}">{{sector.detail}}</mat-option>
+                </ng-container>
+              </mat-select>
+            </mat-form-field>
+            
+         
+
+        </div>
       
         <table mat-table matSort [dataSource]="dataSource">
           <ng-container matColumnDef="Id">
@@ -14,7 +54,7 @@
                 <mat-icon class="sort-icon"></mat-icon>
               </button> -->
             </th>
-            <td mat-cell *matCellDef="let request">{{request.id}}</td>
+            <td mat-cell *matCellDef="let request">{{request.UserID}}</td>
           </ng-container>
           
           <ng-container matColumnDef="Name">
@@ -67,6 +107,7 @@
             <td mat-cell *matCellDef="let request">{{request.role}}</td>
           </ng-container>
 
+
           <ng-container matColumnDef="Status">
             <th class="header role-column" mat-header-cell *matHeaderCellDef>
               <span>Status</span>
@@ -81,8 +122,6 @@
             </ng-container>
           
           </ng-container>
-
-          
       
           <ng-container matColumnDef="Actions">
             <th class="header actions-column" mat-header-cell *matHeaderCellDef>
@@ -99,7 +138,7 @@
                 <button mat-icon-button (click)="restoreUser(request)" title="Bring back this user" *ngIf="request.status=='out of work'">
                   <mat-icon class="restore-icon" >restore_from_trash</mat-icon>
                 </button>
-                <button mat-icon-button ><mat-icon class="detail-icon" title="Click to view user details.">remove_red_eye</mat-icon></button>
+                <button mat-icon-button (click)="viewUserDetails(request)" ><mat-icon class="detail-icon" title="Click to view user details.">remove_red_eye</mat-icon></button>
             </td>
           </ng-container>
           
@@ -109,7 +148,8 @@
       
         </table>
 
-        <mat-paginator [pageSizeOptions]="[ 5, 10]" showFirstLastButtons></mat-paginator>
+        <mat-paginator [pageSizeOptions]="[ 10, 15, 20]" showFirstLastButtons></mat-paginator>
       
     </div>
+
 </div>

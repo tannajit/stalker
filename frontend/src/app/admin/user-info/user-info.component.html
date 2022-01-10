@@ -1,0 +1,76 @@
+<mat-dialog-content>
+    <div class="dialog-container">
+        <h1 class="title">User Info</h1>
+        <span *ngIf="data.status=='Active'" style="background-color: #27AE61;">{{data.status}}</span>
+        <span *ngIf="data.status=='out of work'" style="background-color: #AE5827;">{{data.status}}</span>
+        <div class="user-info">
+            <div class="info-container">
+                <div class="fields">
+                    <div class="field">
+                        <label>User Id</label>
+                        <div class="case">
+                            <ng-container *ngIf="!data.UserID">
+                               <p>not found</p> 
+                            </ng-container>
+                            
+                            <p>{{data.UserID}}</p>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>CIN</label>
+                        <div class="case">
+                            <p>{{data.CIN}}</p>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Email</label>
+                        <div class="case">
+                            <p>{{data.email}}</p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="fields">
+                    <div class="field">
+                        <label>Name</label>
+                        <div class="case">
+                           <p>{{data.name}}</p> 
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Phone Number</label>
+                        <div class="case">
+                           <p>{{data.phone}}</p> 
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Role</label>
+                        <div class="case">
+                            <p>{{data.role}}</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="sectors-container" *ngIf="data.role != 'Admin'">
+                <div class="field">
+                    <label>Sectors</label>
+                    <div class="sectors" >
+                        <ng-container *ngFor="let sector of sectors">
+                            <div class="case">
+                                <p>{{sector.nameSecteur}}</p>
+                            </div>
+                        </ng-container>     
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <p> {{data.NomPrenom}}</p> -->
+</mat-dialog-content>
+
+<mat-dialog-actions class="action-btns" align="center">
+    <button mat-raised-button color="primary" class="btn-green" (click)="updateUser(data)" mat-dialog-close>Update User</button>
+    <button *ngIf="data.status=='Active'" mat-raised-button color="primary" class="btn-red" (click)="deleteUser(data)" mat-dialog-close>Delete User</button>
+    <button *ngIf="data.status=='out of work'" mat-raised-button color="primary" class="btn-orange" (click)="restoreUser(data)" mat-dialog-close>Restore this User</button>
+</mat-dialog-actions>

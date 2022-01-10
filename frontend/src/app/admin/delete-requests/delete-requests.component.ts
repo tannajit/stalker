@@ -8,6 +8,7 @@ import { AlertDialogComponent } from '../../alert-dialog/alert-dialog.component'
 import { ClientInfoComponent } from '../../client-info/client-info.component';
 import { ClientsService } from '../../clients.service';
 import { Router } from '@angular/router';
+import {MatPaginator} from '@angular/material/paginator';
 import { AdminService } from '../admin.service';
 
 
@@ -19,6 +20,8 @@ import { AdminService } from '../admin.service';
 export class DeleteRequestsComponent implements OnInit {
 
 
+ // @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
  // @ViewChild(MatSort) sort: MatSort;
   dialogRef: MatDialogRef<ClientInfoComponent>;
 
@@ -85,6 +88,8 @@ export class DeleteRequestsComponent implements OnInit {
       this.dataSource = new MatTableDataSource(this.deleteRequests);
       this.dataSource.data = this.deleteRequests;
      // this.dataSource.sort = this.sort;
+      //this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator;
     })
   }
 

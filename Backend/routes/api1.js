@@ -7,7 +7,8 @@ var path = require('path');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
 var uri = "mongodb://localhost:27017";
-//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+// var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+//var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 // uri to your Mongo database
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
@@ -138,10 +139,22 @@ router.get('/addedClients', async function (req, res) {
 
 /* GET . */
 
-router.get('/getAllUsers', async (req, res) => {
-    let userColl = await db.collection("users")
-    var values = await userColl.find({}).toArray()
+router.get('/getAllUsers', async(req,res)=>{
 
+    list=[]
+    let usersColl = await db.collection("users") 
+    var values = await usersColl.aggregate([
+    {
+        $lookup: {
+            from: "secteurs",
+            localField: "_id",
+            foreignField: "users",
+            as: "sectors"
+        }
+    }]).toArray();
+
+    // let userColl = await db.collection("users")
+    // var values = await userColl.find({}).toArray()
     res.json(values)
 })
 
@@ -246,6 +259,19 @@ router.post('/deleteUser', async (req, res) => {
         { $set: { "status": "out of work" } })
     console.log(updated)
 })
+
+router.get('/getSectorsByUser', async(req,res) =>{
+    let userId = req.query.userId
+    console.log(userId)
+    let sectColl = db.collection("secteurs")
+    var values = await sectColl.aggregate([
+        { $match: { users: ObjectId(userId) } },
+        { $project: { nameSecteur: 1, _id: 0 } }
+    ]).toArray();
+
+    res.json(values)
+})
+
 
 router.post('/restoreUser', async (req, res) => {
     let user = req.body;
@@ -642,9 +668,8 @@ async function AddUserToSector(id, sec_name) {
         {
             $addToSet: { "users": id }
         });
-
-
 }
+
 // Insert User 
 async function InsertUser(user) {
     user.password = await GenerateHashPassword(user.password)
@@ -671,7 +696,7 @@ async function ValidPassword(passwordG, passwordD) {
     var result = await bcrypt.compare(passwordG, passwordD)
     return (result);
 }
-///////// *************** Settings *************** ///////
+
 ///////// *************** Settings hafsa's code *************** ///////
 
 router.post("/settings", async (req, res) => {
