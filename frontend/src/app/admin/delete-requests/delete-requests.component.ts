@@ -19,15 +19,17 @@ import { AdminService } from '../admin.service';
 })
 export class DeleteRequestsComponent implements OnInit {
 
+
+ // @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+ // @ViewChild(MatSort) sort: MatSort;
   dialogRef: MatDialogRef<ClientInfoComponent>;
 
   deleteRequests;
 
 
   dataSource;
-  columnsToDisplay = ['Id', 'Sector', 'PDV Type', 'Reason', 'Status','Location', 'Actions'];
+  columnsToDisplay = ['Id', 'Sector', 'PDV Type', 'Reason', 'Status','Location','Request_Date', 'Actions'];
   dataSubject = new BehaviorSubject<Element[]>([]);
 
   constructor(
@@ -85,7 +87,8 @@ export class DeleteRequestsComponent implements OnInit {
       this.deleteRequests = res
       this.dataSource = new MatTableDataSource(this.deleteRequests);
       this.dataSource.data = this.deleteRequests;
-      this.dataSource.sort = this.sort;
+     // this.dataSource.sort = this.sort;
+      //this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
     })
   }

@@ -23,7 +23,7 @@ const upload = async (req, res) => {
 
 const getListFiles = (req, res) => {
     // var __basedir=path.resolve();
-    const directoryPath = "D:/FGD/Project Stalker/Projet/stalker/Backend/uploads/";
+    const directoryPath = "D:/Project/stalker/Backend/uploads/";
     fs.readdir(directoryPath, function (err, files) {
       if (err) {
         res.status(500).send({
