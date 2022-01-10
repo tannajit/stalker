@@ -8,6 +8,7 @@ import { AlertDialogComponent } from '../../alert-dialog/alert-dialog.component'
 import { ClientInfoComponent } from '../../client-info/client-info.component';
 import { ClientsService } from '../../clients.service';
 import { Router } from '@angular/router';
+import {MatPaginator} from '@angular/material/paginator';
 
 
 @Component({
@@ -17,7 +18,7 @@ import { Router } from '@angular/router';
 })
 export class DeleteRequestsComponent implements OnInit {
 
-
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   dialogRef: MatDialogRef<ClientInfoComponent>;
 
@@ -77,6 +78,7 @@ export class DeleteRequestsComponent implements OnInit {
       this.dataSource = new MatTableDataSource(this.deleteRequests);
       this.dataSource.data = this.deleteRequests;
       this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator;
     })
   }
 

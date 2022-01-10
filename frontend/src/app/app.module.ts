@@ -57,6 +57,7 @@ import { UsersComponent } from './admin/users/users.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { UpdateUserComponent } from './admin/update-user/update-user.component'
 import {MatPaginatorModule} from '@angular/material/paginator';
+import { UserInfoComponent } from './admin/user-info/user-info.component';
 
 
 
@@ -83,6 +84,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     UsersComponent,
     ConfirmationDialogComponent,
     UpdateUserComponent,
+    UserInfoComponent,
     
 
   ],

@@ -11,6 +11,7 @@ export class AdminService {
   private getUsersURL = this.uri+"/api1/getAllUsers"
   private deleteUserURL = this.uri+"/api1/deleteUser"
   private restoreUserURL = this.uri+"/api1/restoreUser"
+  private getSectorsByUserURL = this.uri+"/api1/getSectorsByUser"
 
   currentUser;
 
@@ -39,5 +40,9 @@ export class AdminService {
 
   getUserInfo() {
     return this.currentUser;
+  }
+
+  getSectorsByUser(user){
+    return this.http.get<any>(this.getSectorsByUserURL+"?userId="+user._id)
   }
 }

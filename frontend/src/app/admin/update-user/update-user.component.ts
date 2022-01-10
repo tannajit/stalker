@@ -16,6 +16,7 @@ export class UpdateUserComponent implements OnInit {
 
   ngOnInit(): void {
     this.userInfo = this.adminService.getUserInfo()
+    console.log(this.userInfo)
   }
 
 }

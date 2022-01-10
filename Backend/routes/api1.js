@@ -3,7 +3,6 @@ var router = express.Router();
 var mongo = require('mongodb');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-
 var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri="mongodb://localhost:27017"
 // uri to your Mongo database
@@ -76,9 +75,21 @@ router.get('/addedClients', async function (req, res) {
 /* GET . */
 
 router.get('/getAllUsers', async(req,res)=>{
-    let userColl = await db.collection("users")
-    var values = await userColl.find({}).toArray()
 
+    list=[]
+    let usersColl = await db.collection("users") 
+    var values = await usersColl.aggregate([
+    {
+        $lookup: {
+            from: "secteurs",
+            localField: "_id",
+            foreignField: "users",
+            as: "sectors"
+        }
+    }]).toArray();
+
+    // let userColl = await db.collection("users")
+    // var values = await userColl.find({}).toArray()
     res.json(values)
 })
 
@@ -262,6 +273,18 @@ router.post('/deleteUser', async(req,res) =>{
         console.log(updated)
 })
 
+router.get('/getSectorsByUser', async(req,res) =>{
+    let userId = req.query.userId
+    console.log(userId)
+    let sectColl = db.collection("secteurs")
+    var values = await sectColl.aggregate([
+        { $match: { users: ObjectId(userId) } },
+        { $project: { nameSecteur: 1, _id: 0 } }
+    ]).toArray();
+
+    res.json(values)
+})
+
 router.post('/restoreUser', async(req,res) =>{
     let user = req.body;
     let userColl = db.collection("users")
@@ -441,6 +464,7 @@ router.post('/updateClient', async (req, res) => {
     await updateClient(client);
     res.status(200).json("Client Inserted From Ang")
 })
+
 /// gridFS script 
 function getFileSystemItem(dbo, id) {
     var buf = Buffer('');
