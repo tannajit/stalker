@@ -21,7 +21,7 @@ export class InjectionComponent implements OnInit {
 
   ngOnInit(): void {
     // this.fileInfos = this.clientservice.getFiles();
-    
+
   }
 
   constructor(private clientservice: ClientsService) {
@@ -35,7 +35,6 @@ export class InjectionComponent implements OnInit {
 
   uploadFiles() {
     this.message = '';
-  
     for (let i = 0; i < this.selectedFiles.length; i++) {
       this.upload(i, this.selectedFiles[i]);
     }
@@ -44,12 +43,11 @@ export class InjectionComponent implements OnInit {
 
   upload(idx, file) {
     this.progressInfos[idx] = { value: 0, fileName: file.name };
-  
     this.clientservice.upload(file).subscribe(
       event => {
         if (event.type === HttpEventType.UploadProgress) {
           this.progressInfos[idx].value = Math.round(100 * event.loaded / event.total);
-        } 
+        }
       },
       err => {
         this.progressInfos[idx].value = 0;
@@ -57,19 +55,13 @@ export class InjectionComponent implements OnInit {
       });
   }
 
-  
   runscript() {
     this.fileInfos = this.clientservice.getFiles();
   }
 
-  deletefile(){
-    this.fileInfos=this.clientservice.deleteFiles()
+  deletefile() {
+    this.fileInfos = this.clientservice.deleteFiles()
     console.log("files deleted succussfully")
   }
-
- 
-
-
- 
 
 }

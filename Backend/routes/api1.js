@@ -6,11 +6,9 @@ var multer = require('multer');
 var path = require('path');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-// var uri = "mongodb://localhost:27017";
-var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+var uri = "mongodb://localhost:27017";
+// var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
-
-//var uri="mongodb://localhost:27017"
 // uri to your Mongo database
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
@@ -656,7 +654,7 @@ router.post('/register', async (req, res) => {
 async function AddNewUser(user){
     user.userinfo.password = await GenerateHashPassword(user.userinfo.password)
     let collection = db.collection("users") // collection users 
-    await collection.insertOne( {
+    await collection.insertOne({
             UserID: user.userinfo.UserID,
             name:user.userinfo.name,
             phone: user.userinfo.phone,
@@ -686,9 +684,8 @@ async function AddUserToSector(id,sec_name){
     {
       $addToSet: {"users": id}
     });
-  
-    
 }
+
 // Insert User 
 async function InsertUser(user) {
     user.password = await GenerateHashPassword(user.password)
@@ -715,7 +712,7 @@ async function ValidPassword(passwordG, passwordD) {
     var result = await bcrypt.compare(passwordG, passwordD)
     return (result);
 }
-///////// *************** Settings *************** ///////
+
 ///////// *************** Settings hafsa's code *************** ///////
 
 router.post("/settings", async (req, res) => {
@@ -936,8 +933,6 @@ router.get("/extract", async (req, res) => {
         })
         DataAll.push(Data)
     })
-
-
     res.json(DataAll);
 });
 
