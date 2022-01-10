@@ -86,7 +86,7 @@ export class MapComponent implements AfterViewInit {
     });
   }
  ///*** get Location */
- radius=20000
+ radius=2000000
   getLocation() {
     // interval(1000).subscribe(x => {
     if (navigator.geolocation) {
@@ -163,7 +163,9 @@ export class MapComponent implements AfterViewInit {
           if(Point.geometry.properties?.status!=undefined){
             status=Point.geometry.properties.status
           }
+      
           console.log("status: "+status)
+         
           const geojsonPoint: geojson.Point = Point.geometry;
           var iconClient = L.icon({ iconUrl: 'assets/'+status+'.png', iconSize: [10, 10] });
            marker = L.geoJSON(geojsonPoint, {
@@ -177,11 +179,18 @@ export class MapComponent implements AfterViewInit {
               this.content = Point.geometry;
               this.zone.run(() => this.openDialog(Point));
             });
-          } else {
+         } else {
+          
             //console.log("############# ici"+Point.geometry.properties.Nom_Client)
             marker.bindPopup('<h1> <b>Client Information</b></h1><p><b>Name:</b> ' + String(Point.geometry.properties.Nom_Client) + '</p><p><b>Sector Name: </b>' + String(Point.geometry.properties.Nom_du_Secteur) + '</p>');
-          }
+        }
+        if(status=='deleted' && (this.user.role =="Admin" || this.user.role =="Back Office") ){
+          console.log("deleted status ")
+          console.log(this.user.role)
           this.markersCluster.addLayer(marker);
+        }else if(status!='deleted'){
+          this.markersCluster.addLayer(marker);
+        }
         });
 
       };

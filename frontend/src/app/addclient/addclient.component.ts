@@ -432,7 +432,12 @@ export class AddclientComponent implements AfterViewInit {
     this.clientInfos.userRole = this.user.role;
     this.clientInfos.created_at = new Date()
     this.clientInfos.updated_at = new Date()
-    this.clientInfos.Status = "white_red"
+    if(this.user.role=="Seller"){
+      this.clientInfos.Status = "white_red"
+    }else{
+      this.clientInfos.Status = "red_white"
+    }
+   
     console.log(this.clientInfos)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodo(this.clientInfos);
