@@ -157,9 +157,21 @@ export class UsersComponent implements OnInit {
 // filterage based on status select
   onChangeStatus($event){
     console.log($event.value)
-    if($event.value == 'all' && !this.selectedSector && !this.selectedRole){
-      // when we select all for status and the others are not selected
-      this.dataSource = new MatTableDataSource(this.users);
+    console.log(this.selectedRole)
+    console.log(this.selectedSector)
+    if($event.value == 'all'){
+      // when we select all for status 
+      
+      if(this.selectedRole=='all' && !this.selectedSector){
+        this.dataSource = new MatTableDataSource(this.users);
+      }if(this.selectedSector=='all' && !this.selectedRole){
+        this.dataSource = new MatTableDataSource(this.users);
+      }if(this.selectedRole=='all' && this.selectedSector=='all'){
+        this.dataSource = new MatTableDataSource(this.users);
+      }if(!this.selectedRole && !this.selectedSector){
+        this.dataSource = new MatTableDataSource(this.users);
+      }
+
     }else{
 
       // let filteredData = _.filter(this.users,(item) =>{
@@ -211,7 +223,7 @@ export class UsersComponent implements OnInit {
             }
           })
           
-        }if($event.value == 'all' && this.selectedSector && (!this.selectedRole || this.selectedRole=='all')){
+        }if($event.value == 'all' && this.selectedSector && (!this.selectedRole)){
           // if we select all for status knowing that only the sector is selected already
           item.sectors.forEach(element =>{
             if(element.nameSecteur == String(this.selectedSector)){
@@ -230,9 +242,19 @@ export class UsersComponent implements OnInit {
 // filterage based on role select
   onChangeRole($event){
     console.log(this.selectedRole)
-    if($event.value == 'all' && !this.selectedSector && !this.selectedStatus){
+    if($event.value == 'all'){
       // when we select all for role and the others are not selected
-      this.dataSource = new MatTableDataSource(this.users);
+      if(this.selectedStatus=='all' && !this.selectedSector){
+        this.dataSource = new MatTableDataSource(this.users);
+      }if(this.selectedSector=='all' && !this.selectedStatus){
+        this.dataSource = new MatTableDataSource(this.users);
+      }if(this.selectedSector=='all' && this.selectedStatus=='all'){
+        this.dataSource = new MatTableDataSource(this.users);
+      }if(!this.selectedStatus && !this.selectedSector){
+        this.dataSource = new MatTableDataSource(this.users);
+      }
+
+
     }else{
       let filtered=[]
       _.filter(this.users,(item) =>{
@@ -271,6 +293,7 @@ export class UsersComponent implements OnInit {
           if(item.status==this.selectedStatus){
               filtered.push(item)
           }
+
         }if($event.value == 'all' && this.selectedStatus && this.selectedSector){
           // when we sellect all for role and the status and the sector ar both selected
           item.sectors.forEach(element =>{
@@ -300,9 +323,18 @@ export class UsersComponent implements OnInit {
   // filterage based on sector select
   onChangeSector($event){
     console.log(this.selectedSector)
-    if($event.value == 'all' && !this.selectedRole && !this.selectedStatus){
-      // when we select all for role and the others are not selected
-      this.dataSource = new MatTableDataSource(this.users);
+    if($event.value == 'all'){
+
+      if(this.selectedStatus=='all' && !this.selectedRole){
+        this.dataSource = new MatTableDataSource(this.users);
+      }if(this.selectedRole=='all' && !this.selectedStatus){
+        this.dataSource = new MatTableDataSource(this.users);
+      }if(this.selectedRole=='all' && this.selectedStatus=='all'){
+        this.dataSource = new MatTableDataSource(this.users);
+      }if(!this.selectedStatus && !this.selectedRole){
+        this.dataSource = new MatTableDataSource(this.users);
+      }
+
     }else{
       let filtered=[]
       _.filter(this.users,(item) =>{
