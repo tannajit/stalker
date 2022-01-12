@@ -65,7 +65,7 @@
             <div class="field"> 
                  <label>Role :</label>
                 <mat-form-field>
-                    <mat-select  panelClass="selectPanel2"   (selectionChange)="onChange()" [(value)]="userInfo.role">
+                    <mat-select  panelClass="selectPanel2"   (selectionChange)="onChange()" [(value)]="userInfo.role" disabled>
                         
                         <div *ngFor="let rol of Roles" >
                             <mat-option  value="{{rol}}">{{rol}}</mat-option>
