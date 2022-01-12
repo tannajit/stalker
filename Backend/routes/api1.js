@@ -6,8 +6,8 @@ var multer = require('multer');
 var path = require('path');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-// var uri = "mongodb://localhost:27017";
-var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+var uri = "mongodb://localhost:27017";
+// var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 // uri to your Mongo database
 var client = new MongoClient(uri);
@@ -21,10 +21,7 @@ const jwt = require("jsonwebtoken")
 const { param } = require("express/lib/router");
 const controller = require("./controller");
 const fs = require("fs");
-var path = require('path');
 var GeoJSON = require('geojson');
-var ObjectId = require('mongodb').ObjectId;
-const MongoClient = require("mongodb").MongoClient;
 var uri = "mongodb://localhost:27017";
 //var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
