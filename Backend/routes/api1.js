@@ -3,13 +3,24 @@ var app = express();
 var router = express.Router();
 var mongo = require('mongodb');
 var multer = require('multer');
+var path = require('path');
+var ObjectId = require('mongodb').ObjectId;
+const MongoClient = require("mongodb").MongoClient;
+var uri = "mongodb://localhost:27017";
+// var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+//var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+// uri to your Mongo database
+var client = new MongoClient(uri);
+var GeoJSON = require('geojson');
+var db; // database 
+var name_database = "stalker1"
+var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
 const jwt = require("jsonwebtoken")
 const { param } = require("express/lib/router");
 const controller = require("./controller");
 const fs = require("fs");
-var path = require('path');
 var GeoJSON = require('geojson');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
@@ -20,7 +31,7 @@ var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?r
 var client = new MongoClient(uri);
 var db; // database 
 var name_database = "stalker1"
-const baseUrl = "D:/Stalker/stalker_05_01_2022/stalker/Backend/routes/upload";
+const baseUrl = "D:/Project/stalker/Backend/uploads/";
 var salt = 5 //any random value,  the salt value specifies how much time it’s gonna take to hash the password. higher the salt value, more secure the password is and more time it will take for calculation.
 // MongoDataBase
 async function run() {
@@ -135,13 +146,11 @@ router.get('/addedClients', async function (req, res) {
             console.log(error)
         });
     }
-
 });
 
 /* GET . */
 
 router.get('/getAllUsers', async (req, res) => {
-
     list = []
     let usersColl = await db.collection("users")
     var values = await usersColl.aggregate([
@@ -234,22 +243,22 @@ router.get('/getClientBySeller/:id', async (req, res) => {
     var status = await getClientBySeller(req.params.id)
     res.json(status)
 })
+
 /////////// get client by auditor  (Fadma's code)
 router.get('/getClientByAuditor/:id', async (req, res) => {
     var status = await getClientByAuditor(req.params.id)
     res.json(status)
 })
+
 /////////////////////////////
 router.post('/validate', async (req, res) => {
     let id = req.body.id;
     let status = req.body.status
     await validateData(id, status);
     res.status(200).json("client insterted from ANg")
-
 })
 
 router.post('/deleteUser', async (req, res) => {
-
     let user = req.body;
     let userColl = db.collection("users")
     var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
@@ -265,16 +274,14 @@ router.get('/getSectorsByUser', async (req, res) => {
         { $match: { users: ObjectId(userId) } },
         { $project: { nameSecteur: 1, _id: 0 } }
     ]).toArray();
-
     res.json(values)
 })
-
 
 router.post('/restoreUser', async (req, res) => {
     let user = req.body;
     let userColl = db.collection("users")
     var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
-        { $set: { "status": "Active" } })
+        { $set: { "status": "Ac tive" } })
     console.log(updated)
 })
 
@@ -350,6 +357,20 @@ async function InsertClient(client,res) {
     catch (error) {
         next(error)
     }
+    await collection.insertOne(clientinfo)
+    ////********* Add in geometries *****************/
+    let getInsertedId; //// put Id inserted
+    delete clientinfo.idGeometry;
+    var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
+    geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
+        var id = result.insertedId
+        var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
+            { $addToSet: { points: { "point": id, "route": null } } }).then(ss => {
+                res.status(200).json("Done")
+            })
+        //console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
+        //console.log(up)
+    }).catch(error => console.log(error))
 }
 
 async function updateClient(client) {
