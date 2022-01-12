@@ -68,11 +68,22 @@ export class ClientsComponent implements OnInit {
       objectStoreRequest.onsuccess = event => {
         const all = event.target.result;
         all.forEach(element => {
-          console.log('---');
+          console.log("******************")
           const elm = JSON.parse(element.Valeur);
-          const Point = { _id: element._id, geometry: elm };
+          var  Point = { _id: element._id, geometry: elm };
+          if(this.loggedUser.role=='Admin' || this.loggedUser.role=='Back Office'){
+            console.log("deleted")
+            console.log(this.loggedUser.role)
+            this.clients.push(Point);
+            console.log(Point.geometry.properties.status);
+         }
+         else if((this.loggedUser.role=='Seller' || this.loggedUser.role=='Auditor') && Point.geometry.properties.status!="deleted"){
           this.clients.push(Point);
-          console.log(Point);
+          console.log(this.loggedUser.role)
+          console.log(Point.geometry.properties.status);
+         }
+
+         
 
         });
 

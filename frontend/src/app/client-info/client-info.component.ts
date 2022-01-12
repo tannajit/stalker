@@ -75,9 +75,7 @@ export class ClientInfoComponent implements OnInit {
   
   deleteRequest(){
     this.dialogRef.close();
-    //this._router.navigateByUrl('/deleteClient',{dataClient:this.data})
     this._router.navigateByUrl('/deleteClient', { state: { dataClient:this.data } });
-    //this.clientService.De
   }
 
  ////**********VALIDATE FUNCTION ***********////
@@ -119,4 +117,11 @@ export class ClientInfoComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  /// enbale Button
+/// status1: for DeletedRequests Collection status2: status
+  EnableButton(status1,status2){
+    
+    console.log(status1)
+    console.log(status2)
+  }
 }

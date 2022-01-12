@@ -21,6 +21,17 @@ const jwt = require("jsonwebtoken")
 const { param } = require("express/lib/router");
 const controller = require("./controller");
 const fs = require("fs");
+var path = require('path');
+var GeoJSON = require('geojson');
+var ObjectId = require('mongodb').ObjectId;
+const MongoClient = require("mongodb").MongoClient;
+//var uri = "mongodb://localhost:27017";
+var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+//var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+// uri to your Mongo database
+var client = new MongoClient(uri);
+var db; // database 
+var name_database = "stalker1"
 const baseUrl = "D:/Project/stalker/Backend/uploads/";
 var salt = 5 //any random value,  the salt value specifies how much time it’s gonna take to hash the password. higher the salt value, more secure the password is and more time it will take for calculation.
 // MongoDataBase
@@ -78,7 +89,7 @@ router.get("/files", async function (req, res) {
         fileInfos.forEach(element => {
             PutDataGeometries(collection, element.url)
         });
-        var arr = await collection.find({ 'geometry.geometry.type': 'Point' }).toArray()
+        var arr = await collectio.find({ 'geometry.geometry.type': 'Point' }).toArray()
         InjectSecteurData(arr)
     });
 });
@@ -126,13 +137,15 @@ router.get('/addedClients', async function (req, res) {
             var values;
             await test1(db, ObjectId(elem.nfc.NFCPhoto)).then(re => {
                 elem.NFCP = re
-            })
+            }).catch(err => console.log(err))
             await test1(db, ObjectId(elem.PVPhoto)).then(re => {
                 elem.PVP = re
-            })
+            }).catch(err => console.log(err))
             a.push(elem)
         })
-        Promise.all(curs).then(ee => res.json(a));
+        Promise.all(curs).then(ee => res.json(a)).catch(err => {
+            console.log(error)
+        });
     }
 });
 
@@ -150,6 +163,9 @@ router.get('/getAllUsers', async (req, res) => {
                 as: "sectors"
             }
         }]).toArray();
+
+    // let userColl = await db.collection("users")
+    // var values = await userColl.find({}).toArray()
     res.json(values)
 })
 
@@ -211,16 +227,16 @@ router.get('/clients', verifyToken, async (req, res) => {
             var element = elem.geometry.properties;
             await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
                 elem.geometry.properties.NFCP = re
-            })
+            }).catch(err => console.log(err))
             await test1(db, ObjectId(element.PVPhoto)).then(re => {
                 elem.geometry.properties.PVP = re
-            })
+            }).catch(err => console.log(err))
         }
         a.push(elem)
     })
     Promise.all(curs).then(ee => {
         res.json(a)
-    });
+    }).catch(err => console.log(err));
 })
 
 // get client by seller   (Fadma's code)
@@ -270,56 +286,77 @@ router.post('/restoreUser', async (req, res) => {
     console.log(updated)
 })
 
-async function InsertClient(client, res) {
+async function InsertClient(client,res) {
     //console.log("/n /n ************************** /n /n")
-    let collection = db.collection("clients") // collection clients
-    let geometries = db.collection("geometries") /// geometries Collections
-    let secteurs = db.collection("secteurs")
-    let codeDANON, codeCOLA, codeFGD, codeQR
-    client.codes.forEach(v => {
-        if (v.nbr === 1) codeDANON = v.value
-        if (v.nbr === 2) codeCOLA = v.value
-        if (v.nbr === 3) codeFGD = v.value
-        if (v.nbr === 4) codeQR = v.value
-    })
-    var id_pv, id_NFC;
-    //console.log("PhotoofClient"+client.PVPhoto)
-    await test(db, client.NomPrenom, client.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
+    try {
+        let collection = db.collection("clients") // collection clients
+        let geometries = db.collection("geometries") /// geometries Collections
+        let secteurs = db.collection("secteurs")
+        let codeDANON, codeCOLA, codeFGD, codeQR
+        client.codes.forEach(v => {
+            if (v.nbr === 1) codeDANON = v.value
+            if (v.nbr === 2) codeCOLA = v.value
+            if (v.nbr === 3) codeFGD = v.value
+            if (v.nbr === 4) codeQR = v.value
+        })
+        var id_pv, id_NFC;
+        //console.log("PhotoofClient"+client.PVPhoto)
+        await test(db, client.NomPrenom, client.PVPhoto).then(s => id_pv = s._id).catch(err => console.log(err))
 
-    await test(db, client.NomPrenom, client.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
+        await test(db, client.NomPrenom, client.nfc.NFCPhoto).then(s => id_NFC = s._id).catch(err => console.log(err)) //PV photo
 
-    //console.log(id_NFC)
-    //console.log(id_pv);
-    //console.log("-------------- " + client.lat)
-    //console.log(client)
-    //var id = new ObjectId();
-    //console.log("=========== id" + id)
-    client.nfc.NFCPhoto = id_NFC
-    var id = new ObjectId();
-    //console.log("=========== id" + id)
-    var temp_datetime_obj = new Date();
-    let clientinfo = {
-        idGeometry: id,
-        UUid: client.UUid,
-        codeDANON: codeDANON,
-        codeCOLA: codeCOLA,
-        codeFGD: codeFGD,
-        codeQR: codeQR,
-        lat: client.lat,
-        lon: client.lon,
-        nfc: client.nfc,
-        Code_Secteur_OS: (client.sector != null) ? parseInt(client.sector) : 901011082,
-        machine: "CMG",
-        TypeDPV: client.TypeDPV,
-        detailType: client.detailType,
-        userId: client.userId,
-        userRole: client.userRole,
-        NomPrenom: client.NomPrenom,
-        PhoneNumber: client.PhoneNumber,
-        PVPhoto: id_pv,
-        status: client.Status,
-        created_at: temp_datetime_obj,
-        updated_at: temp_datetime_obj
+        //console.log(id_NFC)
+        //console.log(id_pv);
+        //console.log("-------------- " + client.lat)
+        //console.log(client)
+        //var id = new ObjectId();
+        //console.log("=========== id" + id)
+        client.nfc.NFCPhoto = id_NFC
+        var id = new ObjectId();
+        //console.log("=========== id" + id)
+        var temp_datetime_obj = new Date();
+        let clientinfo = {
+            idGeometry: id,
+            UUid: client.UUid,
+            codeDANON: codeDANON,
+            codeCOLA: codeCOLA,
+            codeFGD: codeFGD,
+            codeQR: codeQR,
+            lat: client.lat,
+            lon: client.lon,
+            nfc: client.nfc,
+            Code_Secteur_OS: (client.sector != null) ? parseInt(client.sector) : 901011082,
+            machine: "CMG",
+            TypeDPV: client.TypeDPV,
+            detailType: client.detailType,
+            userId: client.userId,
+            userRole: client.userRole,
+            NomPrenom: client.NomPrenom,
+            PhoneNumber: client.PhoneNumber,
+            PVPhoto: id_pv,
+            status: client.Status,
+            created_at: temp_datetime_obj,
+            updated_at: temp_datetime_obj
+        }
+
+
+        await collection.insertOne(clientinfo)
+        ////********* Add in geometries *****************/
+        let getInsertedId; //// put Id inserted
+        delete clientinfo.idGeometry;
+        var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
+        geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
+            var id = result.insertedId
+            var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
+                { $addToSet: { points: { "point": id, "route": null } } }).then(ss => {
+                    res.status(200).json("Done")
+                })
+            //console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
+            //console.log(up)
+        }).catch(error => console.log(error))
+    }
+    catch (error) {
+        next(error)
     }
     await collection.insertOne(clientinfo)
     ////********* Add in geometries *****************/
@@ -411,8 +448,8 @@ async function validateData(id, status) {
 router.post('/AddClient', async (req, res) => {
     let client = req.body;
     //console.log(client)
-    await InsertClient(client, res);
-    //res.status(200).json("added")
+    await InsertClient(client,res);
+    
 
 })
 
@@ -512,7 +549,7 @@ async function getUser(user) {
     console.log("find user")
     let collection = db.collection("users")
     var status = { value: 401, data: null }
-    var FindUser = await collection.findOne({ email: user.email })
+    var FindUser = await collection.findOne({email:user.email})
     console.log(FindUser)
     if (FindUser != null) {
         var valid = await ValidPassword(user.password, FindUser.password)
@@ -704,7 +741,7 @@ router.post("/settings", async (req, res) => {
 
 router.get("/settings", async (req, res) => {
     var obj = req.query
-
+    console.log("param")
     response = ""
     console.log(obj)
     if (obj?.user == "CountUser") {
@@ -713,12 +750,13 @@ router.get("/settings", async (req, res) => {
         let values = await users.find({ "role": RoleCount }).toArray()
         response = values.length
     } else {
+        console.log("test")
         var proprety = obj.param;
         let collection = await db.collection("settings") // collection 
         var values = await collection.find({ "proprety": proprety }).toArray()
         response = values[0]
     }
-    //console.log(values[0])
+    console.log(values)
     res.json(response)
 
 })
@@ -743,7 +781,41 @@ router.get("/GetClient/:id", async (req, res) => {
 
 // })
 //////////////////////////////////////////////////////////////
+router.get('/getAllUsers', async(req,res)=>{
 
+
+
+    list=[]
+
+    let usersColl = await db.collection("users")
+
+    var values = await usersColl.aggregate([
+
+    {
+
+        $lookup: {
+
+            from: "secteurs",
+
+            localField: "_id",
+
+            foreignField: "users",
+
+            as: "sectors"
+
+        }
+
+    }]).toArray();
+
+
+
+    // let userColl = await db.collection("users")
+
+    // var values = await userColl.find({}).toArray()
+
+    res.json(values)
+
+})
 router.post("/DeleteRequest", async (req, res) => {
 
     console.log("get client : ")
@@ -778,6 +850,7 @@ router.post("/DeleteRequest", async (req, res) => {
     client["role"] = req.body.role;
     client["Raison"] = req.body.raison;
     client["Photo"] = id_Photo;
+    client["created_at"] = new Date();
     client["Coordinates"] = dataclient.geometry.geometry.coordinates;
     await DeleteRequest.updateOne({ _id: ObjectId(dataclient._id) }, {
         $set: client
@@ -797,7 +870,16 @@ router.get("/ReadVideo/:idG", async (req, res) => {
     //console.log(video)
     res.json(video)
 })
-
+////
+router.get("/image",async(req,res)=>{
+    console.log(req.query.id)
+    await test1(db, ObjectId(req.query.id)).then(re => {
+        //console.log("hna 1")
+        res.set('Content-Type', 'text/html');
+    res.send(Buffer.from("<img src='"+re+"'></img"));
+    })
+   
+})
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////
 router.get("/extract", async (req, res) => {
     let geometries = await db.collection("geometries")
@@ -819,7 +901,7 @@ router.get("/extract", async (req, res) => {
 
     ]).toArray();
     all1 = []
-
+    //res.json(values)
     var test = values.map((elem) => {
         elem.info.reverse();
         audit = false;
@@ -839,8 +921,10 @@ router.get("/extract", async (req, res) => {
         return elem;
     });
     DataAll = []
-    test.forEach(element => {
-        Data = {
+
+    var to = test.map(async (element) => {
+        var imgurl="http://localhost:3000/api1/image?id="
+        var Data = {
             "Identifiant system": element._id,
             "X": element.geometry.geometry.coordinates[1],
             "Y": element.geometry.geometry.coordinates[0],
@@ -852,12 +936,14 @@ router.get("/extract", async (req, res) => {
             "TypeDPV": (element.geometry.properties.TypeDPV != null) ? element.geometry.properties.TypeDPV : "",
             "NomPrenom": (element.geometry.properties.NomPrenom != null) ? element.geometry.properties.NomPrenom : element.geometry.properties.Nom_Client,
             "PhoneNumber": (element.geometry.properties.PhoneNumber != null) ? element.geometry.properties.PhoneNumber : element.geometry.properties.Telephone_Client,
+            "Photo_PDV":(element.geometry.properties.PVPhoto!= null)? imgurl+element.geometry.properties.PVPhoto : '',
             "Passage_Auditeur": "NO",
             "Auditeur_ID": "",
             "Date_Reception_Auditor": "",
             "Nom_Auditeur": "",
             "TypeAuditeur": "",
             "Phone_Auditeur": "",
+            "Photo_Auditor":"",
             "Valid_Auditeur": "",
             "Passage_Vendeur": "NO",
             "SalesPerson_ID": "",
@@ -867,11 +953,22 @@ router.get("/extract", async (req, res) => {
             "Phone_Vendeur": "",
             "Photo_Vendeur": "",
             "Valid_Vondeur": "",
-            "Supprime_Audtior": IsDeletedBy(ObjectId(element._id), "Auditor"),
-            "Supprime_Vondeur": IsDeletedBy(ObjectId(element._id), "Seller")
+            "Supprime_Audtior": "",
+            "Supprime_Vondeur": ""
         }
-
-
+        await IsDeletedBy(ObjectId(element._id), "Seller").then(ress => {
+            //console.log(ress)
+            Data["Supprime_Vondeur"] = String(ress)
+            console.log(Data["Supprime_Vondeur"])
+        }).catch(err => {
+            Data["Supprime_Vondeur"] = String(err)
+        });
+        await IsDeletedBy(ObjectId(element._id), "Auditor").then(ress => {
+            console.log("Auditor")
+            Data["Supprime_Audtior"] = String(ress)
+        }).catch(err => {
+            Data["Supprime_Audtior"] = String(err)
+        });
         element.info.forEach(info => {
             if (info.userRole === "Auditor") {
                 Data.Passage_Auditeur = "YES"
@@ -879,6 +976,7 @@ router.get("/extract", async (req, res) => {
                 Data.Nom_Auditeur = info.NomPrenom
                 Data.Date_Reception_Auditor = info.created_at
                 Data.TypeAuditeur = Data.TypeDPV
+                Data.Photo_Auditor=imgurl+info.PVPhoto
                 Data.Phone_Auditeur = info.PhoneNumber
                 if (element.geometry.properties.status == "green") {
                     Data.Valid_Auditeur = "YES"
@@ -892,6 +990,7 @@ router.get("/extract", async (req, res) => {
                 Data.Date_Reception_Vondeur = info.created_at
                 Data.Nom_Vendeur = info.NomPrenom
                 Data.Type_Vendeur = info.TypeDPV
+                Data.Photo_Vendeur=imgurl+info.PVPhoto
                 Data.Phone_Vendeur = info.PhoneNumber
                 if (element.geometry.properties.status == "black") {
                     Data.Valid_Vondeur = "NO"
@@ -901,29 +1000,40 @@ router.get("/extract", async (req, res) => {
             }
         })
         DataAll.push(Data)
-    })
-    res.json(DataAll);
+        //console.log(DataAll.length)
+        element = Data;
+        return element;
+    });
+
+    Promise.all(to).then(ee => {
+        ////console.log(a.length)
+        console.log("---- Extract ----")
+        //console.log(list)
+        res.status(200).json(DataAll)
+    });
+    //console.log(to)
+    //res.status(200).json("test")
+    //res.json(DataAll);
 });
 ///*** Hafsa Function  ****///
 async function IsDeletedBy(id, role) {
-    console.log("isdeletedby")
-    let delReq = await db.collection("DeleteRequest")
-    var values = await delReq.find({ _id: id, role: role }).toArray()
-    // console.log(values)
-    if (values.length > 0) {
-        //console.log("find")
-        return "Yes";
-    }
-    else
-        return "No";
+    return new Promise(async (resolve, reject) => {
+        let delReq = await db.collection("DeleteRequest")
+        var values = await delReq.find({ _id: id, role: role }).toArray()
+        if (values.length > 0)
+            resolve("Yes");
+        else
+            reject("No")
+    })
 }
-////////
+////////********************************************************//////////////////////
 
 router.get('/getAllDeleteRequests', async (req, res) => {
 
     list = []
     let delReq = await db.collection("DeleteRequest")
     var values = await delReq.aggregate([
+        { $sort: { created_at: -1 } },
         {
             $lookup: {
                 from: "geometries",
@@ -932,9 +1042,9 @@ router.get('/getAllDeleteRequests', async (req, res) => {
                 as: "PDV"
             }
         }]).toArray();
-
+    //res.json(values)
     curs = values.map(async (elem) => {
-        console.log("----------- element ")
+        console.log(elem.created_at)
         // console.log(elem)
         var id_raison = (elem.Video != null) ? elem.Video : (elem.Photo != null) ? elem.Photo : null;
         console.log(id_raison)
@@ -972,9 +1082,9 @@ router.get('/getAllDeleteRequests', async (req, res) => {
     })
     ////console.log(a.length)
     Promise.all(curs).then(ee => {
-        ////console.log(a.length)
         console.log("---- Deleted Requestes ----")
-        //console.log(list)
+        list.sort((a, b) => b.created_at - a.created_at); //sort by date desc
+
         res.json(list)
     });
 
@@ -1013,6 +1123,8 @@ router.post('/ValidateDeleteClient', async (req, res) => {
     }).then(resu => {
         console.log(resu)
         res.status(200).json("deleted Successfully")
+    }).catch(err => {
+        res.status(500)
     })
     //console.log(value)
     /*await geometries.updateOne({ _id: ObjectId(_id) },
@@ -1049,13 +1161,27 @@ router.put("/UpdateUser", async (req, res) => {
     console.log(req.body)
 
     users = await db.collection("users")
-    secteur = await db.collection("secteurs")
+    secteurs = await db.collection("secteurs")
+    if(user.generated){
     user.password = await GenerateHashPassword(user.password)
+    }
 
-    // await  users.updateOne({_id: ObjectId(user._id)},{$set:{"name":user.name,"phone":user.phone,"CIN":user.CIN,"role":user.role,"email":user.email,"password":user.password}},{multer:true})
-    // console.log(user.sector)
-    // console.log(await secteur.findOne({nameSecteur:Number(user.sector)}))
-    // await  secteur.updateOne({nameSecteur:Number(user.sector)},{$addToSet:{users:ObjectId(user._id)}})
+    console.log(req.body)
+
+
+    await  users.updateMany({_id: ObjectId(user._id)},{$set:{"UserID":user.UserID,"name":user.name,"phone":user.phone,"CIN":user.CIN,"role":user.role,"email":user.email,"password":user.password}}).then(res=>console.log(res))
+
+    user.sectors.forEach(async el=>{
+    
+    await  secteurs.updateOne({nameSecteur:Number(el)},{$addToSet:{users:ObjectId(user._id)}}).then(res=>console.log(res))
+
+    })
+
+    user.SectorDeleted.forEach(async el=>{
+    
+    await  secteurs.updateOne({nameSecteur:Number(el)},{$pull:{users:ObjectId(user._id)}}).then(res=>console.log(res))
+
+    })
 
 })
 ////************************* INJECTION ***********************/////

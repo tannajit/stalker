@@ -3,7 +3,7 @@
         <!-- <div class="filter1"> -->
             <div class="field">
                 <mat-form-field>
-                    <mat-label>Id Client</mat-label>
+                    <mat-label>Id Client</mat-label> 
                     <input matInput placeholder="Typing..." [(ngModel)]="IdClient"/>
                 </mat-form-field>
             </div>
@@ -77,8 +77,7 @@
             <div class="field">
                 <mat-form-field>
                     <mat-select placeholder="Delete" panelClass="selectPanel2" [(ngModel)]="deleteStatus">
-                        <mat-option value="Request Delete">Request Delete</mat-option>
-                        <mat-option value="Deleted">Deleted</mat-option>
+                        <mat-option value="yellow">Deleted</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -89,7 +88,7 @@
 
     <div class="clients-list">
         <!-- *ngFor="let client of clients" -->
-        <div *ngFor="let client of clients.slice().reverse() | filter: IdClient | filter: PhoneNumber | filter: PDVType | filter: detailType | filter: sector | filter: validate | filter: nfc"
+        <div *ngFor="let client of clients.slice().reverse() | filter: IdClient | filter: PhoneNumber | filter: PDVType | filter: detailType | filter: sector | filter: validate | filter: nfc | filter: deleteStatus"
             class="card-container">
             <mat-card (click)="openDialog(client)">
                 <img mat-card-image src="{{client.geometry.properties.PVP}}" alt=""
@@ -100,7 +99,7 @@
                 </ng-template>
 
                 <mat-card-content class="card-content">
-                    <p><span>Id:</span> {{client._id}}</p>
+                    <p><span>Id:</span> {{client._id}}</p> <label *ngIf="client.geometry.properties.status=='deleted'" style="background-color: #ee5f54;">Deleted</label>
                     <p><span>Name:</span> {{client.geometry.properties.NomPrenom}}</p>
                     <p><span>PDV type:</span> {{client.geometry.properties.TypeDPV}}</p>
                     <p><span>Sector:</span> {{client.geometry.properties.Code_Secteur_OS}}</p>

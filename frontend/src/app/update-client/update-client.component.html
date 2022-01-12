@@ -27,8 +27,11 @@
         <button mat-button class="btn-yellow" (click)="showcheck()"
             [disabled]="(percentage!=100) ||  !Status">Next</button>
     </div>
-
-    <div class="container" id="checkcodes">
+    <ng-template  #showBtn> 
+        <button mat-button class="btn-yellow">Recalculate my position</button>
+    </ng-template>
+    <ng-template  [ngIf]="getLocation()" [ngIfElse]="showBtn"> 
+    <div class="container" id="checkcodes" *ngIf="hide">
         <div class="checkcodes-fields">
             <div class="scan-field">
                 <label class="input-label">Code Centrale Danoune : </label>
@@ -88,7 +91,7 @@
 
     </div>
 
-    <div class="container" id="nfc">
+    <div class="container" id="nfc" *ngIf="nfcShown">
 
         <div class="inputs-container">
             <div class="nfc">
@@ -255,6 +258,7 @@
 
         <button mat-button class="btn-yellow" (click)="Update()">Update</button>
     </div>
+    </ng-template>
 
 
 </div>
