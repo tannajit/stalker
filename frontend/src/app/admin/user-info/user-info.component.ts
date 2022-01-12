@@ -90,7 +90,6 @@ export class UserInfoComponent implements OnInit {
     // this._router.navigate(['/updateUser'])
     this._router.navigateByUrl('/updateUser', { state: { dataUser:user,userid:user.UserID,userrole:user.role } });
 
-
   }
 
 }

@@ -15,6 +15,7 @@ export class InjectionComponent implements OnInit {
   selectedFiles: FileList;
   progressInfos = [];
   message = '';
+  isShown: boolean = true;
 
   fileInfos: Observable<any>;
 
@@ -39,6 +40,7 @@ export class InjectionComponent implements OnInit {
       this.upload(i, this.selectedFiles[i]);
     }
     console.log(this.selectedFiles)
+    this.isShown=true
   }
 
   upload(idx, file) {
@@ -62,6 +64,7 @@ export class InjectionComponent implements OnInit {
   deletefile() {
     this.fileInfos = this.clientservice.deleteFiles()
     console.log("files deleted succussfully")
+    this.isShown=false
   }
 
 }

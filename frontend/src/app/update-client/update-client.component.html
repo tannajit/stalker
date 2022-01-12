@@ -12,6 +12,8 @@
     <div>
         <pre>pos collectés: {{list.length}}</pre>
         <pre>Accuracy: {{acc}}</pre>
+        <pre>Distance according client : {{getDistance()}}</pre>
+
     </div>
 
     <div ng-app ng-controller="ApplicationController" class="progress-cantainer">
@@ -30,7 +32,7 @@
     <ng-template  #showBtn> 
         <button mat-button class="btn-yellow">Recalculate my position</button>
     </ng-template>
-    <ng-template  [ngIf]="getLocation()" [ngIfElse]="showBtn"> 
+    <ng-template  [ngIf]="!ValidatePosition()" [ngIfElse]="showBtn"> 
     <div class="container" id="checkcodes" *ngIf="hide">
         <div class="checkcodes-fields">
             <div class="scan-field">

@@ -66,6 +66,7 @@ export class UpdateUserComponent implements OnInit {
 
     this.userInfo.sectors.forEach(el => {this.SelectedSector.push(""+el.nameSecteur)});
     this.SectorsAttached=this.SelectedSector
+    
     this._setting.getSettings('param=role').subscribe(res => {
       this.Roles = res.details.roles
       console.log(res)
@@ -125,9 +126,12 @@ export class UpdateUserComponent implements OnInit {
 
   onChange() {
 
-    if(this.role!=this.userInfo.role){
+    if(this.role!=this.userInfo.role)
+    {
       this.SetUserID()
-    }if(this.role === this.userInfo.role){
+    }
+    if(this.role === this.userInfo.role)
+    {
       this.userInfo.UserID = this.UserID
     }
 
@@ -135,10 +139,11 @@ export class UpdateUserComponent implements OnInit {
   //// Set User ID 
   SetUserID() {
     this._setting.getSettings("user=CountUser&role=" + this.userInfo.role + "").subscribe(res => {
-      console.log(res)
+      console.log("res",res)
       this.CountUser = res + 1
+      console.log("res",this.CountUser)
       // const RoleAfficher=this.userInfo.role
-        this.userInfo.UserID = this.userInfo.role.slice(0, 2) + String(this.pad(Number(this.CountUser), 7))
+      this.userInfo.UserID = this.userInfo.role.slice(0, 2) + String(this.pad(Number(this.CountUser), 7))
   
     })
   }
@@ -148,6 +153,7 @@ export class UpdateUserComponent implements OnInit {
     console.log(b)
     return (1e15 + a + '').slice(-b);
   }
+
   UpdateUser(){
     console.log("sfjldkfjdkfjdlsk") 
     var UserInfoUp={}
