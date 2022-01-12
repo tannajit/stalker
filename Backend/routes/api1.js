@@ -6,8 +6,8 @@ var multer = require('multer');
 var path = require('path');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-var uri = "mongodb://localhost:27017";
-// var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+// var uri = "mongodb://localhost:27017";
+var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 // uri to your Mongo database
 var client = new MongoClient(uri);
@@ -134,27 +134,22 @@ router.get('/addedClients', async function (req, res) {
         })
         Promise.all(curs).then(ee => res.json(a));
     }
-
 });
 
 /* GET . */
 
-router.get('/getAllUsers', async(req,res)=>{
-
-    list=[]
-    let usersColl = await db.collection("users") 
+router.get('/getAllUsers', async (req, res) => {
+    list = []
+    let usersColl = await db.collection("users")
     var values = await usersColl.aggregate([
-    {
-        $lookup: {
-            from: "secteurs",
-            localField: "_id",
-            foreignField: "users",
-            as: "sectors"
-        }
-    }]).toArray();
-
-    // let userColl = await db.collection("users")
-    // var values = await userColl.find({}).toArray()
+        {
+            $lookup: {
+                from: "secteurs",
+                localField: "_id",
+                foreignField: "users",
+                as: "sectors"
+            }
+        }]).toArray();
     res.json(values)
 })
 
@@ -175,10 +170,6 @@ router.get('/secteurss', async (req, res) => {
     res.json(values)
 
 });
-
-
-
-
 
 /* GET Sectors Based on User */
 router.get('/secteurs', verifyToken, async (req, res) => {
@@ -237,22 +228,22 @@ router.get('/getClientBySeller/:id', async (req, res) => {
     var status = await getClientBySeller(req.params.id)
     res.json(status)
 })
+
 /////////// get client by auditor  (Fadma's code)
 router.get('/getClientByAuditor/:id', async (req, res) => {
     var status = await getClientByAuditor(req.params.id)
     res.json(status)
 })
+
 /////////////////////////////
 router.post('/validate', async (req, res) => {
     let id = req.body.id;
     let status = req.body.status
     await validateData(id, status);
     res.status(200).json("client insterted from ANg")
-
 })
 
 router.post('/deleteUser', async (req, res) => {
-
     let user = req.body;
     let userColl = db.collection("users")
     var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
@@ -260,7 +251,7 @@ router.post('/deleteUser', async (req, res) => {
     console.log(updated)
 })
 
-router.get('/getSectorsByUser', async(req,res) =>{
+router.get('/getSectorsByUser', async (req, res) => {
     let userId = req.query.userId
     console.log(userId)
     let sectColl = db.collection("secteurs")
@@ -268,16 +259,14 @@ router.get('/getSectorsByUser', async(req,res) =>{
         { $match: { users: ObjectId(userId) } },
         { $project: { nameSecteur: 1, _id: 0 } }
     ]).toArray();
-
     res.json(values)
 })
-
 
 router.post('/restoreUser', async (req, res) => {
     let user = req.body;
     let userColl = db.collection("users")
     var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
-        { $set: { "status": "Active" } })
+        { $set: { "status": "Ac tive" } })
     console.log(updated)
 })
 
@@ -332,8 +321,6 @@ async function InsertClient(client, res) {
         created_at: temp_datetime_obj,
         updated_at: temp_datetime_obj
     }
-
-
     await collection.insertOne(clientinfo)
     ////********* Add in geometries *****************/
     let getInsertedId; //// put Id inserted
@@ -792,8 +779,9 @@ router.post("/DeleteRequest", async (req, res) => {
     client["Raison"] = req.body.raison;
     client["Photo"] = id_Photo;
     client["Coordinates"] = dataclient.geometry.geometry.coordinates;
-    await DeleteRequest.updateOne({_id:ObjectId(dataclient._id)},{
-        $set:client},{ upsert: true });
+    await DeleteRequest.updateOne({ _id: ObjectId(dataclient._id) }, {
+        $set: client
+    }, { upsert: true });
     res.status(200).json("Deleted Successfully")
 })
 
@@ -879,10 +867,10 @@ router.get("/extract", async (req, res) => {
             "Phone_Vendeur": "",
             "Photo_Vendeur": "",
             "Valid_Vondeur": "",
-            "Supprime_Audtior":IsDeletedBy(ObjectId(element._id),"Auditor"),
-            "Supprime_Vondeur":IsDeletedBy(ObjectId(element._id),"Seller")
+            "Supprime_Audtior": IsDeletedBy(ObjectId(element._id), "Auditor"),
+            "Supprime_Vondeur": IsDeletedBy(ObjectId(element._id), "Seller")
         }
-    
+
 
         element.info.forEach(info => {
             if (info.userRole === "Auditor") {
@@ -917,17 +905,17 @@ router.get("/extract", async (req, res) => {
     res.json(DataAll);
 });
 ///*** Hafsa Function  ****///
-async function IsDeletedBy(id,role){
+async function IsDeletedBy(id, role) {
     console.log("isdeletedby")
     let delReq = await db.collection("DeleteRequest")
-    var values= await delReq.find({_id:id,role:role}).toArray()
-   // console.log(values)
-    if( values.length>0)
-     { 
-         //console.log("find")
-         return "Yes";}
-    else 
-     return "No";
+    var values = await delReq.find({ _id: id, role: role }).toArray()
+    // console.log(values)
+    if (values.length > 0) {
+        //console.log("find")
+        return "Yes";
+    }
+    else
+        return "No";
 }
 ////////
 
@@ -947,7 +935,7 @@ router.get('/getAllDeleteRequests', async (req, res) => {
 
     curs = values.map(async (elem) => {
         console.log("----------- element ")
-       // console.log(elem)
+        // console.log(elem)
         var id_raison = (elem.Video != null) ? elem.Video : (elem.Photo != null) ? elem.Photo : null;
         console.log(id_raison)
         ////console.log(elem) //
@@ -963,8 +951,8 @@ router.get('/getAllDeleteRequests', async (req, res) => {
                 //console.log("hna 2")
                 elem.PDV[0].geometry.properties.PVP = re
             });
-            if (id_raison!=null) {
-                await test1(db,id_raison).then(re => {
+            if (id_raison != null) {
+                await test1(db, id_raison).then(re => {
                     console.log("------------- get -------")
                     console.log(re.length)
                     elem.prove = re
@@ -996,10 +984,10 @@ router.get('/getAllDeleteRequests', async (req, res) => {
 router.post('/ValidateDeleteClient', async (req, res) => {
     let _id = req.body.request._id
     let request = req.body.request
-    
+
     let DeleteRequest = db.collection("DeleteRequest")
     let geometries = db.collection("geometries");
-    
+
     if (request.status == "Deleted") {
         let value = geometries.findOne({ _id: ObjectId(_id) }).then(async (result) => {
             console.log(result)
@@ -1011,10 +999,10 @@ router.post('/ValidateDeleteClient', async (req, res) => {
                 })
         })
     }
-    if(request.Photo!=null){
-        request.Photo=ObjectId(request.Photo)
-    }else if(request.Video!=null){
-        request.Video=ObjectId(request.Video)
+    if (request.Photo != null) {
+        request.Photo = ObjectId(request.Photo)
+    } else if (request.Video != null) {
+        request.Video = ObjectId(request.Video)
     }
     delete request?.prove;
     delete request.PDV;

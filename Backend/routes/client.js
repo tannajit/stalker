@@ -9,7 +9,6 @@ var uri="mongodb://localhost:27017"
 var client = new MongoClient(uri);
 var name_database="stalker1"
 
-
 async function run() {
 	try {
 		var t=await client.connect();
@@ -59,7 +58,6 @@ async function InsertClient(client){
             PhoneNumber:client.PhoneNumber,
             PVPhoto:id_pv,
             status:client.Status
-
         })
     console.log('Client Inserted by function')
 
