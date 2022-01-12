@@ -11,6 +11,7 @@ import * as turf from '@turf/turf';
 import { IndexdbService } from '../indexdb.service';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import * as XLSX from 'xlsx';
+import { ExtractSelectComponent } from '../extract-select/extract-select.component';
 
 
 
@@ -34,6 +35,7 @@ export class MapComponent implements AfterViewInit {
   }
 
   dialogRef: MatDialogRef<ClientInfoComponent>;
+  dialogExtract: MatDialogRef<ExtractSelectComponent>;
   private map;
   public content = null;
   myCercle;
@@ -134,6 +136,7 @@ export class MapComponent implements AfterViewInit {
   // open dialog with client info
   openDialog(content) {
     this.dialogRef = this.dialog.open(ClientInfoComponent, { data: content });
+  
 
   }
 
@@ -432,8 +435,11 @@ export class MapComponent implements AfterViewInit {
   //////////////////////////////////////////////////////////////////////////////////
 
   /////////////*********** EXTRACT DATA ******/////////////////
+  extract(){
+    this.dialogExtract = this.dialog.open(ExtractSelectComponent);
+  }
   exportexcel() {
-    this._serviceClient.extract().subscribe(res => {
+    this._serviceClient.extract("test").subscribe(res => {
       const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(res)
       //generate workbook and add the worksheet 
       const wb: XLSX.WorkBook = XLSX.utils.book_new();

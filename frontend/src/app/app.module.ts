@@ -45,7 +45,6 @@ import { SettingsComponent } from './settings/settings.component';
 import { FullImageComponent } from './full-image/full-image.component';
 import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
 import {CommonModule} from '@angular/common';
-import { ExtractComponent } from './extract/extract.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { DeleteClientComponent } from './delete-client/delete-client.component';
@@ -53,7 +52,8 @@ import { DeleteRequestsComponent } from './admin/delete-requests/delete-requests
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
 import { InjectionComponent } from './injection/injection.component'
-
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 // import { FileUploadModule } from "ng2-file-upload";
 
 
@@ -63,6 +63,7 @@ import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-
 import { UpdateUserComponent } from './admin/update-user/update-user.component'
 import {MatPaginatorModule} from '@angular/material/paginator';
 import { UserInfoComponent } from './admin/user-info/user-info.component';
+import { ExtractSelectComponent } from './extract-select/extract-select.component';
 
 
 
@@ -82,7 +83,6 @@ import { UserInfoComponent } from './admin/user-info/user-info.component';
     SettingsComponent,
     FullImageComponent,
     AlertDialogComponent,
-    ExtractComponent,
     DeleteClientComponent,
     DeleteRequestsComponent,
     InjectionComponent,
@@ -91,6 +91,7 @@ import { UserInfoComponent } from './admin/user-info/user-info.component';
     ConfirmationDialogComponent,
     UpdateUserComponent,
     UserInfoComponent,
+    ExtractSelectComponent,
     
 
   ],
@@ -98,9 +99,11 @@ import { UserInfoComponent } from './admin/user-info/user-info.component';
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
+    MatDatepickerModule,
     MatToolbarModule,
     MatSidenavModule,
     MatButtonModule,
+    MatNativeDateModule,
     HttpClientModule,
     MatListModule,
     MatDividerModule,
