@@ -16,6 +16,7 @@ import { IndexdbService } from '../indexdb.service';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 
+
 const incr = 1;
 
 @Component({
@@ -256,7 +257,8 @@ export class AddclientComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.loggedUser = JSON.parse(localStorage.getItem("user"));
     this.initMap();
-    this._setting.getSettings("sms").subscribe(res => this.timeLeft = res.details.time)
+    //this._setting.getSettings("sms")
+    this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time)
     this.aroute.paramMap.subscribe(params => {
       this.mySector = params.get('sector')
       console.log("mysector" + this.mySector)
@@ -379,7 +381,7 @@ export class AddclientComponent implements AfterViewInit {
   ;
   Verify(code: string) {
     this.disbale_sms = true;
-    this.clientInfos.PhoneNumber = this.PhoneNumber
+    //this.clientInfos.PhoneNumber = this.PhoneNumber
     this.timer(this.timeLeft);
     this.SendSMS(this.PhoneNumber);
   }
@@ -387,6 +389,7 @@ export class AddclientComponent implements AfterViewInit {
   VerifySMS() {
     if (this.verification_code === this.codeSMS) {
       this.status = "the code is correct"
+      this.clientInfos.PhoneNumber=this.PhoneNumber;
     } else {
       this.status = "the code is incorrect"
     }
@@ -424,7 +427,7 @@ export class AddclientComponent implements AfterViewInit {
   /////////////*********  SEND CLIENT INFOS ************////////////
   Send() {
     // this.clientInfos.UUid=UUID.UUID();
-    this.clientInfos.PhoneNumber = this.PhoneNumber
+    //this.clientInfos.PhoneNumber = this.PhoneNumber
     this.clientInfos.NomPrenom = this.NomPrenom
     this.clientInfos.TypeDPV = this.TypeDPV;
     this.clientInfos.detailType = this.detailType;

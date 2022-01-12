@@ -156,8 +156,9 @@
     </mat-dialog-content>
     <mat-dialog-actions class="action-btns" align="center">
         <button mat-raised-button color="primary" [disabled]="ActiveTheButton()" class="btn-green" (click)="onUpdateClick()">Update Client</button>
-        <button mat-raised-button color="primary" [disabled]="ActiveTheButton()" class="btn-red" (click)="deleteRequest()">Delete Client</button>
+        <button mat-raised-button color="primary"  class="btn-red" (click)="deleteRequest()">Delete Client</button>
     </mat-dialog-actions>
+    
 </div>
 
 <div *ngIf="data?.Raison">
@@ -220,8 +221,8 @@
     </mat-dialog-content>
 
     <mat-dialog-actions class="action-btns" align="center">
-        <button mat-raised-button color="primary" class="btn-green" >Validate Supp</button>
-        <button mat-raised-button color="primary" class="btn-red" >Cancel Supp</button>
+        <button mat-raised-button color="primary" class="btn-green" *ngIf="data.status=='Waiting'">Validate Supp</button>
+        <button mat-raised-button color="primary" class="btn-red" *ngIf="data.status=='Waiting'">Cancel Supp</button>
     </mat-dialog-actions>
 </div>
 

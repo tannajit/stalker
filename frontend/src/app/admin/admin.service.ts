@@ -14,7 +14,7 @@ export class AdminService {
   private getSectorsByUserURL = this.uri+"/api1/getSectorsByUser"
   private _user=this.uri+"/api1/register"
   private _user_email=this.uri+"/api1/GeEmail"
-  private _setting =this.uri + "/api1/deleteClient";
+  private _setting =this.uri + "/api1/settings";
 
   private _deleteClient =this.uri+"/api1/ValidateDeleteClient"
 
