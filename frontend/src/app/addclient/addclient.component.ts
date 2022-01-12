@@ -16,6 +16,7 @@ import { IndexdbService } from '../indexdb.service';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 
+
 const incr = 1;
 
 @Component({
@@ -256,7 +257,8 @@ export class AddclientComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.loggedUser = JSON.parse(localStorage.getItem("user"));
     this.initMap();
-    this._setting.getSettings("sms").subscribe(res => this.timeLeft = res.details.time)
+    //this._setting.getSettings("sms")
+    this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time)
     this.aroute.paramMap.subscribe(params => {
       this.mySector = params.get('sector')
       console.log("mysector" + this.mySector)

@@ -25,8 +25,8 @@ var path = require('path');
 var GeoJSON = require('geojson');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-//var uri = "mongodb://localhost:27017";
-var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+var uri = "mongodb://localhost:27017";
+//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 // uri to your Mongo database
 var client = new MongoClient(uri);
@@ -1134,10 +1134,7 @@ router.post('/ValidateDeleteClient', async (req, res) => {
        
     })*/
 
-
-
 });
-
 
 router.post('/deleteo', function (req, res, next) {
     console.log("chwya labasssss")
@@ -1165,12 +1162,8 @@ router.put("/UpdateUser", async (req, res) => {
     if(user.generated){
     user.password = await GenerateHashPassword(user.password)
     }
-
     console.log(req.body)
-
-
     await  users.updateMany({_id: ObjectId(user._id)},{$set:{"UserID":user.UserID,"name":user.name,"phone":user.phone,"CIN":user.CIN,"role":user.role,"email":user.email,"password":user.password}}).then(res=>console.log(res))
-
     user.sectors.forEach(async el=>{
     
     await  secteurs.updateOne({nameSecteur:Number(el)},{$addToSet:{users:ObjectId(user._id)}}).then(res=>console.log(res))
