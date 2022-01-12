@@ -23,11 +23,11 @@ app.use(function(req, res, next) {
 
 app.use(bodyParser.json({limit: "5000mb"}));
 app.use(bodyParser.urlencoded({limit: "5000mb", extended: true, parameterLimit:50000000}));
-//app.use(express.static("dist"))
+app.use(express.static("frontend"))
 
-/*app.get('/', (req, res) => {
-    res.sendFile('dist\\index.html',{root:__dirname})
-});*/
+app.get('/', (req, res) => {
+    res.sendFile('frontend\\index.html',{root:__dirname})
+});
 
 ///  
 //var credentials = {key: privateKey, cert: certificate};
