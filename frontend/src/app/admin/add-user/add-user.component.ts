@@ -40,7 +40,8 @@ export class AddUserComponent implements OnInit {
     /// get Roles available
     this._setting.getSettings('param=role').subscribe(res => {
       this.Roles = res.details.roles
-      console.log(res)
+      console.log("ttttttttt")
+      console.log(this.Roles)    
     })
 
     //// get Sectors 

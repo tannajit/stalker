@@ -20,7 +20,7 @@ const incr = 1;
   templateUrl: './update-client.component.html',
   styleUrls: ['./update-client.component.css']
 })
-export class UpdateClientComponent implements AfterViewInit {
+export class UpdateClientComponent implements AfterViewInit,OnInit {
 
   ////******************** VARIABLE'S DECLARATION ****************/////
   progress = 0;
@@ -108,7 +108,9 @@ export class UpdateClientComponent implements AfterViewInit {
     console.log('@@@@@@@@@@@@@@@@' + this.clientInfo.NomPrenom)
   }
   //////////////////////////////////////////////////
-
+  ngOnInit(): void {
+      this.getLocation()
+  }
   /////////************** INTERFACE FUNCTIONS **************/////////////
   manageProgress() {
     if (this.progress === 100) {
@@ -259,8 +261,7 @@ export class UpdateClientComponent implements AfterViewInit {
         };
         var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
           if (position) {
-            //console.log("Latitude: " + position.coords.latitude +
-            // " // Longitude: " + position.coords.longitude);
+
             var newlat = position.coords.latitude
             var newLon = position.coords.longitude;
             if (newlat != this.lat || newLon != this.lat) {
@@ -303,8 +304,7 @@ export class UpdateClientComponent implements AfterViewInit {
       this.map.setView(new L.LatLng(this.latclt, this.lonclt), 11, { animation: true });
       L.circle([this.latclt, this.lonclt], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
   
-        console.log('LatitudeOfUpadate: ' + this.latclt +
-          ' LongitudeOfUpadate: ' + this.lonclt);
+        console.log('LatitudeOfUpadate: ' + this.latclt +' LongitudeOfUpadate: ' + this.lonclt);
       this.clientService.getPosition({"MapUp":[this.latclt, this.lonclt],"Raduis":raduis});
 
       }

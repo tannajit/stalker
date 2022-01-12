@@ -717,22 +717,55 @@ router.post("/settings", async (req, res) => {
 
 router.get("/settings", async (req, res) => {
     var obj = req.query
+    console.log("44444444444")
+    //console.log(req.query)
 
     response = ""
     console.log(obj)
     if (obj?.user == "CountUser") {
         let users = await db.collection("users")
         var RoleCount = obj.role
+        console.log("RoleCount",RoleCount)
         let values = await users.find({ "role": RoleCount }).toArray()
+        console.log("values1")
+        console.log(values)
+
         response = values.length
+        console.log(response)
+
     } else {
         var proprety = obj.param;
         let collection = await db.collection("settings") // collection 
         var values = await collection.find({ "proprety": proprety }).toArray()
+        console.log("values2")
+        console.log(values)
         response = values[0]
     }
     //console.log(values[0])
     res.json(response)
+
+})
+
+router.get("/settingsUp", async (req, res) => {
+    var obj = req.query
+
+    console.log("44444444444")
+    console.log(req.query)
+    // response = ""
+    // console.log(obj)
+    // if (obj?.user == "CountUser") {
+    //     let users = await db.collection("users")
+    //     var RoleCount = obj.role
+    //     let values = await users.find({ "role": RoleCount }).count()
+    //     response = values
+    // } else {
+    //     var proprety = obj.param;
+    //     let collection = await db.collection("settings") // collection 
+    //     var values = await collection.find({ "proprety": proprety }).toArray()
+    //     response = values[0]
+    // }
+    // //console.log(values[0])
+    // res.json(response)
 
 })
 //////////***********************************////////////////////////
