@@ -117,4 +117,11 @@ export class ClientInfoComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  /// enbale Button
+/// status1: for DeletedRequests Collection status2: status
+  EnableButton(status1,status2){
+    
+    console.log(status1)
+    console.log(status2)
+  }
 }
