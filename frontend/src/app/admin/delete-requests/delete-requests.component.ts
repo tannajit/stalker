@@ -29,7 +29,7 @@ export class DeleteRequestsComponent implements OnInit {
 
 
   dataSource;
-  columnsToDisplay = ['Id', 'Sector', 'PDV Type', 'Reason', 'Status','Location','Request_Date', 'Actions'];
+  columnsToDisplay = ['Id', 'Sector', 'PDV Type', 'Reason', 'Status','Location','Date', 'Actions'];
   dataSubject = new BehaviorSubject<Element[]>([]);
 
   constructor(
@@ -85,7 +85,7 @@ export class DeleteRequestsComponent implements OnInit {
       console.log("---")
       console.log(res)
       this.deleteRequests = res
-      this.dataSource = new MatTableDataSource(this.deleteRequests);
+      this.dataSource = new MatTableDataSource(this.deleteRequests.reverse());
       this.dataSource.data = this.deleteRequests;
      // this.dataSource.sort = this.sort;
       //this.dataSource.sort = this.sort;

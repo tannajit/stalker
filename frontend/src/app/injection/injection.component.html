@@ -1,15 +1,16 @@
 <!-- <link type="text/css" rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" /> -->
 <div class="containe-ids">
+    
     <label class="btn btn-default">
         <input type="file" multiple (change)="selectFiles($event)" />
     </label>
-    <button class="btn-success" [disabled]="!selectedFiles" (click)="uploadFiles()">
+    <button mat-button class="btn-success" [disabled]="!selectedFiles" (click)="uploadFiles()">
         Upload
     </button>
-    <button class="btn-red" [disabled]="!selectedFiles" (click)="runscript()">
+    <button mat-button class="btn-red" [disabled]="!selectedFiles" (click)="runscript()">
         Run
     </button>
-    <button class="btn-clear" [disabled]="!selectedFiles" (click)="deletefile()">
+    <button mat-button class="btn-clear" [disabled]="!selectedFiles" (click)="deletefile()">
         Clear
     </button>
 
