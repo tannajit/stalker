@@ -15,7 +15,7 @@ const controller = require("./controller");
 const fs = require("fs");
 var GeoJSON = require('geojson');
 //var uri = "mongodb://localhost:27017";
- var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 var client = new MongoClient(uri);
 var db; // database 
 var name_database = "stalker1"
@@ -414,9 +414,7 @@ async function updateClient(client) {
             { $set: { "geometry": clientGeo } })
         console.log(updated)
         console.log("********** geometrie updated *******")
-
     })
-
 }
 
 
@@ -899,13 +897,46 @@ router.get("/image",async(req,res)=>{
    
 })
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////
-router.get("/extract", async (req, res) => {
+router.post("/extract", async (req, res) => {
     let geometries = await db.collection("geometries")
+    var condition=req.body
+    console.log(condition)
+    var queries=[]
+    queries.push({ "geometry.geometry.type" : "Point" } )
+   
+    if(condition?.Sectors){
+        console.log("found")
+        queries.push({
+            "geometry.properties.Code_Secteur_OS":{
+                $in:condition.Sectors
+            }
+        })
+    }
+    if(condition?.StartDate){
+        queries.push( {
+            "geometry.properties.created_at":{
+             $gte: new Date(condition.StartDate)}
+        })
+    }
+    if(condition?.EndDate){
+        queries.push( {
+            "geometry.properties.created_at":{
+             $lte: new Date(condition.EndDate)}
+        }) 
+    }
+    if(condition?.TypeDPV){
+        queries.push( {
+            "geometry.properties.TypeDPV":{
+                $in:condition.TypeDPV
+            }
+        })
+    }
     let values = await geometries.aggregate([
         {
             $match: {
-                $and: [{ "geometry.geometry.type": "Point" }
-                ]
+                $and: 
+                    queries
+                
             }
         },
         {
@@ -916,9 +947,9 @@ router.get("/extract", async (req, res) => {
                 as: "info"
             }
         }
-
     ]).toArray();
     all1 = []
+    //console.log(values)
     //res.json(values)
     var test = values.map((elem) => {
         elem.info.reverse();
@@ -1112,7 +1143,6 @@ router.get('/getAllDeleteRequests', async (req, res) => {
 router.post('/ValidateDeleteClient', async (req, res) => {
     let _id = req.body.request._id
     let request = req.body.request
-
     let DeleteRequest = db.collection("DeleteRequest")
     let geometries = db.collection("geometries");
 

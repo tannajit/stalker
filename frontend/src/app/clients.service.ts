@@ -75,8 +75,8 @@ export class ClientsService {
     return this.http.post<any>(this._updateclient, client);
   }
 
-  extract() {
-    return this.http.get<any>(this._extarct);
+  extract(info) {
+    return this.http.post<any>(this._extarct,info);
   }
 
   getDeleteRequests() {

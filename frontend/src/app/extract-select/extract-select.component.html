@@ -1,0 +1,41 @@
+<div class="filter-container">
+    <mat-form-field>
+        <input matInput [matDatepicker]="picker" [(ngModel)]="StartDate" placeholder="Start Day">
+        <mat-icon matDatepickerToggleIcon (click)="ResetDate(1)">clear</mat-icon>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput [matDatepicker]="picker1" [(ngModel)]="EndDate" placeholder="End Day">
+        <mat-icon matDatepickerToggleIcon (click)="ResetDate(2)">clear</mat-icon>
+        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-select placeholder="All Sectors" multiple panelClass="selectPanel2" value="SelectedSector"
+            [(ngModel)]="SelectedSector">
+            <mat-icon matDatepickerToggleIcon (click)="ResetDate(3)">clear</mat-icon>
+            <div *ngFor="let sector of Sectors">
+                <mat-option value="{{sector.id}}">{{sector.detail}}</mat-option>
+            </div>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+       
+        <mat-select placeholder="All Type of PDV" multiple panelClass="selectPanel2" [(value)]="SelectedTypePDV">
+            <mat-icon matDatepickerToggleIcon (click)="ResetDate(4)">clear</mat-icon>
+            <mat-option value="Gros">Gros</mat-option>
+            <mat-option value="Demi Gros">Demi Gros</mat-option>
+            <mat-option value="Detail">Detail</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-dialog-actions class="action-btns" align="center">
+        <button mat-raised-button color="primary" class="btn-green" (click)="Extract()">Extract</button>
+        <button mat-raised-button color="primary" class="btn-red" (click)="Cancel()">Cancel </button>
+    </mat-dialog-actions>
+<mat-dialog-actions>
+    <mat-progress-bar mode="indeterminate" *ngIf="startExtract"></mat-progress-bar>
+    <mat-progress-bar mode="determinate" value="{{valueProgress}}" *ngIf="done"></mat-progress-bar>
+   <label  *ngIf="valueProgress!=0">{{valueProgress}}%</label> 
+</mat-dialog-actions>
+</div>

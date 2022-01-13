@@ -11,7 +11,7 @@
             <button mat-button class="btn-primary" [disabled]="!statusAddClient"
                   [routerLink]="['/addclient', mySector]">Add PDV</button>
             <button mat-button class="btn-warning" (click)="sync()">Synchronize</button>
-            <button mat-button class="btn-warning" style="background-color:rgb(56, 117, 231)" (click)="exportexcel()"
+            <button mat-button class="btn-warning" style="background-color:rgb(56, 117, 231)" (click)="extract()"
                   *ngIf="user.role== 'Admin' || user.role== 'Back Office'">Extract</button>
       </div>
       <div class="map-top-elements">
