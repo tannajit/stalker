@@ -64,6 +64,7 @@ import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-
 import { UpdateUserComponent } from './admin/update-user/update-user.component'
 import {MatPaginatorModule} from '@angular/material/paginator';
 import { UserInfoComponent } from './admin/user-info/user-info.component';
+import { MatRadioModule } from '@angular/material/radio';
 import { ExtractSelectComponent } from './extract-select/extract-select.component';
 
 
@@ -134,6 +135,9 @@ import { ExtractSelectComponent } from './extract-select/extract-select.componen
     MatPaginatorModule,
     MatSlideToggleModule,
     FilePickerModule,
+    MatInputModule,
+    MatRadioModule,
+    MatIconModule,
     // FileUploadModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: true,
