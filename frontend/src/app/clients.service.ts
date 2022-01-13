@@ -25,8 +25,8 @@ export class ClientsService {
 
   private currentClient;
   uri = "http://localhost:3000";
-  private _clientUrl = this.uri + "/api1/clients";
-  private _secteurUrl = this.uri + "/api1/secteurs";
+  private _clientUrl = this.uri + "/api1/getClientByUser";
+  private _secteurUrl = this.uri + "/api1/getSectorByUser";
   private _addclient = this.uri + "/api1/AddClient";
   private _getclient = this.uri + "/api1/addedClients";
   private _updateclient = this.uri + "/api1/updateClient";
@@ -75,8 +75,8 @@ export class ClientsService {
     return this.http.post<any>(this._updateclient, client);
   }
 
-  extract() {
-    return this.http.get<any>(this._extarct);
+  extract(info) {
+    return this.http.post<any>(this._extarct,info);
   }
 
   getDeleteRequests() {

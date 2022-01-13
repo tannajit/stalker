@@ -166,7 +166,6 @@ router.get('/clientss', async (req, res) => {
 });
 
 router.get('/secteurss', async (req, res) => {
-
     let collection = await db.collection("geometries") // collection 
     var values = await collection.find({ 'geometry.geometry.type': 'MultiPolygon' }).toArray()
     //console.log("---------  send data -----------")
@@ -188,6 +187,84 @@ router.get('/secteurs', verifyToken, async (req, res) => {
     ////console.log(arrv)
     var sec = await collectiongeom.find({ 'geometry.geometry.type': 'MultiPolygon', 'geometry.properties.idSecteur': { $in: arrv } }).toArray()
     res.json(sec)
+})
+//*** Get Sector affected to a User (fix query structure) */
+router.get('/getSectorByUser',verifyToken,async (req, res) => {
+    var userId = req.userId;
+    console.log("***** Get Sectors Based on User:"+userId+" *******")
+    let collectionSec = await db.collection("secteurs") //collection where ids are stored 
+    var values = await collectionSec.aggregate([
+        {
+            $match: {
+                users: ObjectId(userId)
+            }
+        },
+        {
+            $lookup: {
+                from: "geometries",
+                localField: "nameSecteur",
+                foreignField: "geometry.properties.idSecteur",
+                as: "info"
+            }
+        },
+        { "$unwind": "$info" },
+        { "$match": { "info.geometry.geometry.type": "MultiPolygon" } },
+        { $project: { info: 1, _id: 0 } }
+
+    ]).toArray();
+    ListInfo = []
+    values.forEach(element => {
+       ListInfo.push(element.info)
+    });
+    //console.log(ListInfo.length)
+    res.json(ListInfo)
+})
+//*** Get PDV by user (I changed the structure of the Query ) */
+router.get('/getClientByUser', verifyToken, async (req, res) => {
+    var userId = req.userId;
+    console.log("***** Get PDV Based on User: "+userId+" *******")
+    let collectionSec = await db.collection("secteurs") //collection where ids are stored 
+    var values = await collectionSec.aggregate([
+        {
+            $match: { users: ObjectId(userId) }
+        },
+        {
+            $lookup: {
+                from: "geometries",
+                localField: "points.point",
+                foreignField: "_id",
+                as: "info"
+            }
+        },
+        { $project: { info: 1, _id: 0 } }
+
+    ]).toArray();
+    ListInfo = []
+    a = []
+    values.forEach(elemm => {
+        elemm.info.forEach(async (elem) => {
+            ListInfo.push(elem)
+        });
+    });
+    All_PDV = ListInfo.map(async (elem) => {
+        if (elem.geometry.properties.NFC) {
+            ///data injected by script 
+            elem.geometry.properties.status = "green"
+        }
+        if (elem.geometry.properties?.nfc != undefined) {
+            var element = elem.geometry.properties;
+            await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
+                elem.geometry.properties.NFCP = re
+            }).catch(err => console.log(err))
+            await test1(db, ObjectId(element.PVPhoto)).then(re => {
+                elem.geometry.properties.PVP = re
+            }).catch(err => console.log(err))
+        }
+        a.push(elem)
+    })
+    Promise.all(All_PDV).then(ee => {
+        res.json(a)
+    }).catch(err => next());
 })
 
 /* GET clients Based on User */
@@ -214,16 +291,16 @@ router.get('/clients', verifyToken, async (req, res) => {
             var element = elem.geometry.properties;
             await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
                 elem.geometry.properties.NFCP = re
-            }).catch(err => console.log(err))
+            }).catch(err => next())
             await test1(db, ObjectId(element.PVPhoto)).then(re => {
                 elem.geometry.properties.PVP = re
-            }).catch(err => console.log(err))
+            }).catch(err => next())
         }
         a.push(elem)
     })
     Promise.all(curs).then(ee => {
         res.json(a)
-    }).catch(err => console.log(err));
+    }).catch(err => next());
 })
 
 // get client by seller   (Fadma's code)
@@ -273,7 +350,7 @@ router.post('/restoreUser', async (req, res) => {
     console.log(updated)
 })
 
-async function InsertClient(client,res) {
+async function InsertClient(client, res) {
     //console.log("/n /n ************************** /n /n")
     try {
         let collection = db.collection("clients") // collection clients
@@ -345,20 +422,7 @@ async function InsertClient(client,res) {
     catch (error) {
         next(error)
     }
-    await collection.insertOne(clientinfo)
-    ////********* Add in geometries *****************/
-    let getInsertedId; //// put Id inserted
-    delete clientinfo.idGeometry;
-    var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
-    geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
-        var id = result.insertedId
-        var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
-            { $addToSet: { points: { "point": id, "route": null } } }).then(ss => {
-                res.status(200).json("Done")
-            })
-        //console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
-        //console.log(up)
-    }).catch(error => console.log(error))
+
 }
 
 async function updateClient(client) {
@@ -414,9 +478,7 @@ async function updateClient(client) {
             { $set: { "geometry": clientGeo } })
         console.log(updated)
         console.log("********** geometrie updated *******")
-
     })
-
 }
 
 
@@ -435,8 +497,8 @@ async function validateData(id, status) {
 router.post('/AddClient', async (req, res) => {
     let client = req.body;
     //console.log(client)
-    await InsertClient(client,res);
-    
+    await InsertClient(client, res);
+
 
 })
 
@@ -536,7 +598,7 @@ async function getUser(user) {
     console.log("find user")
     let collection = db.collection("users")
     var status = { value: 401, data: null }
-    var FindUser = await collection.findOne({email:user.email})
+    var FindUser = await collection.findOne({ email: user.email })
     console.log(FindUser)
     if (FindUser != null) {
         var valid = await ValidPassword(user.password, FindUser.password)
@@ -741,7 +803,7 @@ router.get("/settings", async (req, res) => {
     if (obj?.user == "CountUser") {
         let users = await db.collection("users")
         var RoleCount = obj.role
-        console.log("RoleCount",RoleCount)
+        console.log("RoleCount", RoleCount)
         let values = await users.find({ "role": RoleCount }).toArray()
         console.log("values1")
         console.log(values)
@@ -806,31 +868,31 @@ router.get("/GetClient/:id", async (req, res) => {
 
 // })
 //////////////////////////////////////////////////////////////
-router.get('/getAllUsers', async(req,res)=>{
+router.get('/getAllUsers', async (req, res) => {
 
 
 
-    list=[]
+    list = []
 
     let usersColl = await db.collection("users")
 
     var values = await usersColl.aggregate([
 
-    {
+        {
 
-        $lookup: {
+            $lookup: {
 
-            from: "secteurs",
+                from: "secteurs",
 
-            localField: "_id",
+                localField: "_id",
 
-            foreignField: "users",
+                foreignField: "users",
 
-            as: "sectors"
+                as: "sectors"
 
-        }
+            }
 
-    }]).toArray();
+        }]).toArray();
 
 
 
@@ -896,23 +958,58 @@ router.get("/ReadVideo/:idG", async (req, res) => {
     res.json(video)
 })
 ////
-router.get("/image",async(req,res)=>{
+router.get("/image", async (req, res) => {
     console.log(req.query.id)
     await test1(db, ObjectId(req.query.id)).then(re => {
         //console.log("hna 1")
         res.set('Content-Type', 'text/html');
-    res.send(Buffer.from("<img src='"+re+"'></img"));
+        res.send(Buffer.from("<img src='" + re + "'></img"));
     })
-   
+
 })
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////
-router.get("/extract", async (req, res) => {
+router.post("/extract", async (req, res) => {
     let geometries = await db.collection("geometries")
+    var condition = req.body
+    console.log(condition)
+    var queries = []
+    queries.push({ "geometry.geometry.type": "Point" })
+
+    if (condition?.Sectors) {
+        console.log("found")
+        queries.push({
+            "geometry.properties.Code_Secteur_OS": {
+                $in: condition.Sectors
+            }
+        })
+    }
+    if (condition?.StartDate) {
+        queries.push({
+            "geometry.properties.created_at": {
+                $gte: new Date(condition.StartDate)
+            }
+        })
+    }
+    if (condition?.EndDate) {
+        queries.push({
+            "geometry.properties.created_at": {
+                $lte: new Date(condition.EndDate)
+            }
+        })
+    }
+    if (condition?.TypeDPV) {
+        queries.push({
+            "geometry.properties.TypeDPV": {
+                $in: condition.TypeDPV
+            }
+        })
+    }
     let values = await geometries.aggregate([
         {
             $match: {
-                $and: [{ "geometry.geometry.type": "Point" }
-                ]
+                $and:
+                    queries
+
             }
         },
         {
@@ -923,9 +1020,9 @@ router.get("/extract", async (req, res) => {
                 as: "info"
             }
         }
-
     ]).toArray();
     all1 = []
+    //console.log(values)
     //res.json(values)
     var test = values.map((elem) => {
         elem.info.reverse();
@@ -948,7 +1045,7 @@ router.get("/extract", async (req, res) => {
     DataAll = []
 
     var to = test.map(async (element) => {
-        var imgurl="http://localhost:3000/api1/image?id="
+        var imgurl = "http://localhost:3000/api1/image?id="
         var Data = {
             "Identifiant system": element._id,
             "X": element.geometry.geometry.coordinates[1],
@@ -961,14 +1058,14 @@ router.get("/extract", async (req, res) => {
             "TypeDPV": (element.geometry.properties.TypeDPV != null) ? element.geometry.properties.TypeDPV : "",
             "NomPrenom": (element.geometry.properties.NomPrenom != null) ? element.geometry.properties.NomPrenom : element.geometry.properties.Nom_Client,
             "PhoneNumber": (element.geometry.properties.PhoneNumber != null) ? element.geometry.properties.PhoneNumber : element.geometry.properties.Telephone_Client,
-            "Photo_PDV":(element.geometry.properties.PVPhoto!= null)? imgurl+element.geometry.properties.PVPhoto : '',
+            "Photo_PDV": (element.geometry.properties.PVPhoto != null) ? imgurl + element.geometry.properties.PVPhoto : '',
             "Passage_Auditeur": "NO",
             "Auditeur_ID": "",
             "Date_Reception_Auditor": "",
             "Nom_Auditeur": "",
             "TypeAuditeur": "",
             "Phone_Auditeur": "",
-            "Photo_Auditor":"",
+            "Photo_Auditor": "",
             "Valid_Auditeur": "",
             "Passage_Vendeur": "NO",
             "SalesPerson_ID": "",
@@ -1001,7 +1098,7 @@ router.get("/extract", async (req, res) => {
                 Data.Nom_Auditeur = info.NomPrenom
                 Data.Date_Reception_Auditor = info.created_at
                 Data.TypeAuditeur = Data.TypeDPV
-                Data.Photo_Auditor=imgurl+info.PVPhoto
+                Data.Photo_Auditor = imgurl + info.PVPhoto
                 Data.Phone_Auditeur = info.PhoneNumber
                 if (element.geometry.properties.status == "green") {
                     Data.Valid_Auditeur = "YES"
@@ -1015,7 +1112,7 @@ router.get("/extract", async (req, res) => {
                 Data.Date_Reception_Vondeur = info.created_at
                 Data.Nom_Vendeur = info.NomPrenom
                 Data.Type_Vendeur = info.TypeDPV
-                Data.Photo_Vendeur=imgurl+info.PVPhoto
+                Data.Photo_Vendeur = imgurl + info.PVPhoto
                 Data.Phone_Vendeur = info.PhoneNumber
                 if (element.geometry.properties.status == "black") {
                     Data.Valid_Vondeur = "NO"
@@ -1119,7 +1216,6 @@ router.get('/getAllDeleteRequests', async (req, res) => {
 router.post('/ValidateDeleteClient', async (req, res) => {
     let _id = req.body.request._id
     let request = req.body.request
-
     let DeleteRequest = db.collection("DeleteRequest")
     let geometries = db.collection("geometries");
 
@@ -1184,20 +1280,20 @@ router.put("/UpdateUser", async (req, res) => {
 
     users = await db.collection("users")
     secteurs = await db.collection("secteurs")
-    if(user.generated){
-    user.password = await GenerateHashPassword(user.password)
+    if (user.generated) {
+        user.password = await GenerateHashPassword(user.password)
     }
     console.log(req.body)
-    await  users.updateMany({_id: ObjectId(user._id)},{$set:{"UserID":user.UserID,"name":user.name,"phone":user.phone,"CIN":user.CIN,"role":user.role,"email":user.email,"password":user.password}}).then(res=>console.log(res))
-    user.sectors.forEach(async el=>{
-    
-    await  secteurs.updateOne({nameSecteur:Number(el)},{$addToSet:{users:ObjectId(user._id)}}).then(res=>console.log(res))
+    await users.updateMany({ _id: ObjectId(user._id) }, { $set: { "UserID": user.UserID, "name": user.name, "phone": user.phone, "CIN": user.CIN, "role": user.role, "email": user.email, "password": user.password } }).then(res => console.log(res))
+    user.sectors.forEach(async el => {
+
+        await secteurs.updateOne({ nameSecteur: Number(el) }, { $addToSet: { users: ObjectId(user._id) } }).then(res => console.log(res))
 
     })
 
-    user.SectorDeleted.forEach(async el=>{
-    
-    await  secteurs.updateOne({nameSecteur:Number(el)},{$pull:{users:ObjectId(user._id)}}).then(res=>console.log(res))
+    user.SectorDeleted.forEach(async el => {
+
+        await secteurs.updateOne({ nameSecteur: Number(el) }, { $pull: { users: ObjectId(user._id) } }).then(res => console.log(res))
 
     })
 

@@ -18,6 +18,8 @@ import { DeleteRequestsComponent } from './admin/delete-requests/delete-requests
 import { AddUserComponent } from './admin/add-user/add-user.component';
 import { UsersComponent } from './admin/users/users.component';
 import { UpdateUserComponent } from './admin/update-user/update-user.component';
+import { ExtractSelectComponent } from './extract-select/extract-select.component';
+
 
 
 
@@ -95,6 +97,10 @@ const routes: Routes = [
   },
   {
     path: 'updateUser', component: UpdateUserComponent,
+    canActivate: [AuthGaurdService]
+  },
+  {
+    path: 'extract', component: ExtractSelectComponent,
     canActivate: [AuthGaurdService]
   }
   // {
