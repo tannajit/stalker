@@ -37,6 +37,7 @@
     "moment": "^2.29.1",
     "ng2-file-upload": "^1.4.0",
     "ng2-search-filter": "^0.5.1",
+    "ngx-awesome-uploader": "^13.0.0",
     "ngx-filesaver": "^13.0.0",
     "ngx-indexed-db": "^9.4.2",
     "ngx-webcam": "^0.4.1",

@@ -1,46 +1,58 @@
 <!-- <link type="text/css" rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" /> -->
-<div class="containe-ids">
+<h1 class="title">Data Injection</h1>
+<div class="container">
     
-    <label class="btn btn-default">
-        <input type="file" multiple (change)="selectFiles($event)" />
-    </label>
-    <button mat-button class="btn-success" [disabled]="!selectedFiles" (click)="uploadFiles()">
-        Upload
-    </button>
-    <button mat-button class="btn-red" [disabled]="!selectedFiles" (click)="runscript()">
-        Run
-    </button>
-    <button mat-button class="btn-clear" [disabled]="!selectedFiles" (click)="deletefile()">
-        Clear
-    </button>
+    <section>
+        <div class="upload">
+            <img src="assets/images/upload.png" alt="">
+            <p>Select & upload your files</p>
+            <span *ngIf="numFileSelected">You selected {{numFileSelected}} files</span>
+            <div class="btns">
+                <button mat-raised-button class="select-btn" (click)="onClick($event)">
+                <mat-icon>add</mat-icon> Select Files</button>
+                <input #fileUpload
+                type="file"
+                class="input_fileupload--hidden"
+                multiple 
+                (change)="selectFiles($event)">
 
-    <div class="hehe" *ngIf="isShown">
-        <div *ngFor="let progressInfo of progressInfos" class="mb-2">
-            <span>{{ progressInfo.fileName }}</span>
-            <div class="progress" >
-                <mat-progress-bar mode="determinate" [value]="progressInfo.value"></mat-progress-bar>
-                <span attr.aria-valuenow="{{ progressInfo.value }}"
-                    [ngStyle]="{width: progressInfo.value + '%'}">{{progressInfo.value}}%</span>
-                <!--
-            <div class="progress-bar" role="progressbar"
-                attr.aria-valuenow="{{ progressInfo.value }}" aria-valuemin="0" aria-valuemax="100"
-                [ngStyle]="{ width: progressInfo.value + '%' }">
-                {{ progressInfo.value }}%
-            </div> -->
+                <button mat-raised-button class="upload-btn" [disabled]="!selectedFiles" (click)="uploadFiles()">
+                <mat-icon>cloud_upload</mat-icon> Upload</button>
             </div>
         </div>
-    </div>
-
-    <div class="alert alert-light" role="alert">{{ message }}</div>
+        
+    </section>
+    <section>
+        <div  *ngIf="isShown">
+            <div *ngFor="let progressInfo of progressInfos" class="mb-2">
+                
+                <span class="file-name">{{ progressInfo.fileName }}</span>
+                <div class="progress-cantainer" >
+                    
+                    <mat-progress-bar ng-app ng-controller="ApplicationController" mode="determinate" [value]="progressInfo.value"></mat-progress-bar>
+                    <span attr.aria-valuenow="{{ progressInfo.value }}"
+                        [ngStyle]="{width: progressInfo.value + '%'}">{{progressInfo.value}}%</span>
+                    <!--
+                <div class="progress-bar" role="progressbar"
+                    attr.aria-valuenow="{{ progressInfo.value }}" aria-valuemin="0" aria-valuemax="100"
+                    [ngStyle]="{ width: progressInfo.value + '%' }">
+                    {{ progressInfo.value }}%
+                </div> -->
+                </div>
+            </div>
+            <div class="alert" role="alert" *ngIf="message">{{ message }}</div>
+            <div class="btns" style="margin-top: 20px;">
+                <button mat-raised-button class="run-btn" [disabled]="!selectedFiles" (click)="runscript()">
+                    <mat-icon>play_circle</mat-icon> Run
+                </button>
+                <button mat-raised-button class="clear-btn" [disabled]="!selectedFiles" (click)="deletefile()">
+                    <mat-icon>clear</mat-icon>  Clear
+                </button>
+            </div>
+        </div>
+        
+    </section>
+    
 
 </div>
-<div class="containe-ids">
-    <div class="card">
-        <div class="card-header">List of Files</div>
-        <ul class="list-group list-group-flush" *ngFor="let file of fileInfos | async">
-            <li class="list-group-item">
-                <a href="{{ file.url }}">{{ file.name }}</a>
-            </li>
-        </ul>
-    </div>
-</div>
+
