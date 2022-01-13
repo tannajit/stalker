@@ -33,7 +33,16 @@
           </mat-form-field>
         </div>
         <button mat-flat-button color="primary" (click)="onLogin()">Sign in</button>
-      </form>
+       
+      </form> 
+      <div>
+       <mat-radio-group aria-label="Select an option" [(ngModel)]="select">
+          <mat-radio-button value="Option 1">Option 1</mat-radio-button>
+          <mat-radio-button value="Option 2">Option 2</mat-radio-button>
+        </mat-radio-group>
+        
+        </div>
+        {{select}}
     </mat-card-content>
   </mat-card>
 </div>

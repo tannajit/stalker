@@ -15,11 +15,11 @@ const controller = require("./controller");
 const fs = require("fs");
 var GeoJSON = require('geojson');
 //var uri = "mongodb://localhost:27017";
- var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 var client = new MongoClient(uri);
 var db; // database 
 var name_database = "stalker1"
-const baseUrl = "D:/Project/stalker/Backend/uploads/";
+const baseUrl = "C:/Users/h.ouaziz/Desktop/ProjetV5/stalker/Backend/uploads/";
 var salt = 5 //any random value,  the salt value specifies how much time it’s gonna take to hash the password. higher the salt value, more secure the password is and more time it will take for calculation.
 // MongoDataBase
 async function run() {
@@ -58,7 +58,7 @@ router.post("/upload", controller.upload);
 
 router.get("/files", async function (req, res) {
     const collection = await db.collection('geometries');
-    const directoryPath = "D:/Project/stalker/Backend/uploads/";
+    const directoryPath = "C:/Users/h.ouaziz/Desktop/ProjetV5/stalker/Backend/uploads/";
     fs.readdir(directoryPath, async (err, files) => {
         if (err) {
             res.status(500).send({
@@ -76,13 +76,13 @@ router.get("/files", async function (req, res) {
         fileInfos.forEach(element => {
             PutDataGeometries(collection, element.url)
         });
-        var arr = await collectio.find({ 'geometry.geometry.type': 'Point' }).toArray()
+        var arr = await collection.find({ 'geometry.geometry.type': 'Point' }).toArray()
         InjectSecteurData(arr)
     });
 });
 
 router.get("/deletefile", function (req, res) {
-    const directory = "D:/Project/stalker/Backend/uploads/";
+    const directory = "C:/Users/h.ouaziz/Desktop/ProjetV5/stalker/Backend/uploads/";
 
     fs.readdir(directory, (err, files) => {
         if (err) throw err;
@@ -269,7 +269,7 @@ router.post('/restoreUser', async (req, res) => {
     let user = req.body;
     let userColl = db.collection("users")
     var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
-        { $set: { "status": "Ac tive" } })
+        { $set: { "status": "Active" } })
     console.log(updated)
 })
 
@@ -647,23 +647,30 @@ router.post('/register', async (req, res) => {
 })
 
 async function AddNewUser(user) {
+    
     user.userinfo.password = await GenerateHashPassword(user.userinfo.password)
     let collection = db.collection("users") // collection users 
+    console.log("user",user)
+    var Roles=[]
+    user.SectorsByRoles.forEach(r=>Roles.push(r.role))
     await collection.insertOne({
         UserID: user.userinfo.UserID,
         name: user.userinfo.name,
         phone: user.userinfo.phone,
         CIN: user.userinfo.CIN,
-        role: user.userinfo.role,
         email: user.userinfo.email,
         password: user.userinfo.password,
-        status: user.userinfo.status
+        status: user.userinfo.status,
+        Roles: Roles
+
 
     }).then(result => {
         console.log(result.insertedId)
         var id = result.insertedId
-        user.Sectors.forEach(sector => {
-            AddUserToSector(id, sector)
+        user.SectorsByRoles.forEach(role => {
+            role.value.forEach(sector=>
+                AddUserToSector(id, sector)
+            )
         })
     })
 
