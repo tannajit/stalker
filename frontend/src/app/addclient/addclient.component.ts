@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ViewEncapsulation } from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
@@ -27,7 +27,7 @@ const incr = 1;
 
 })
 
-export class AddclientComponent implements AfterViewInit {
+export class AddclientComponent implements AfterViewInit,OnDestroy {
 
   //////////////// VARIABLE'S DECLARATION /////////////////////////
   mySector = "test";
@@ -119,6 +119,8 @@ export class AddclientComponent implements AfterViewInit {
   status;
   display;
   codeSMS
+  geoId;
+  GeoWatch;
   ///////////////////////////////////////////////////////////////////////////
 
   //////////////**************** CONSTRUCTOR ******************///////////////////
@@ -131,6 +133,10 @@ export class AddclientComponent implements AfterViewInit {
     private _setting: SettingsService) {
 
   }
+  ngOnDestroy() {
+    console.log("destroy")
+  }
+  
   ////////////////////////////////////////////////////////////////
 
   //////////////*************** INTERFACE FUNCTIONS *****************//////////
@@ -303,8 +309,8 @@ export class AddclientComponent implements AfterViewInit {
           timeout: 5000,
           maximumAge: 2000
         };
-        var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
-
+        this.geoId=navigator.geolocation
+         this.GeoWatch =  this.geoId.watchPosition((position: GeolocationPosition) => {
           if (position) {
             var newlat = position.coords.latitude
             var newLon = position.coords.longitude;
@@ -313,7 +319,7 @@ export class AddclientComponent implements AfterViewInit {
               this.lon = newLon
               this.list.push(position)
               if (position.coords.accuracy < this.acc) {
-                console.log("********** Accuracy:" + position.coords.accuracy)
+               // console.log("********** Accuracy:" + position.coords.accuracy)
                 this.acc = position.coords.accuracy
                 this.lat = position.coords.latitude
                 this.lon = position.coords.longitude
@@ -325,15 +331,15 @@ export class AddclientComponent implements AfterViewInit {
               this.Status = true
               marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
             }
-            console.log(this.lat)
-            console.log(this.lon)
+            //console.log(this.lat)
+            //console.log(this.lon)
             this.map.removeLayer(marker);
             this.show = false
             this.Status = true
             marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
           }
         },
-          (error: GeolocationPositionError) => console.log(error), options);
+          (error: GeolocationPositionError) => {}, options);
       } else {
         alert("Geolocation is not supported by this browser.");
       }
@@ -428,6 +434,10 @@ export class AddclientComponent implements AfterViewInit {
   Send() {
     // this.clientInfos.UUid=UUID.UUID();
     //this.clientInfos.PhoneNumber = this.PhoneNumber
+
+    //clearInterval(this.inter);
+    //GeoWatch
+    this.geoId.clearWatch(this.GeoWatch)
     this.clientInfos.NomPrenom = this.NomPrenom
     this.clientInfos.TypeDPV = this.TypeDPV;
     this.clientInfos.detailType = this.detailType;
@@ -476,7 +486,9 @@ export class AddclientComponent implements AfterViewInit {
               }
               if (i === array.length) {
                 console.log("Array I" + i)
-                this._router.navigate(['/map'])
+                this._router.navigate(['/map']).then(r=>{
+                  window.location.reload();
+                })
               }
             });
 
