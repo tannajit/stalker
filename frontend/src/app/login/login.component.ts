@@ -10,6 +10,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
+import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -18,18 +20,20 @@ import { MatIconModule } from '@angular/material/icon';
 
 export class LoginComponent implements OnInit {
 
-  hide: boolean = false;
+  hide: boolean = true;
+  errorMessage
   version = 6
 
   constructor(private fb: FormBuilder,
     private _auth: AuthenticationService,
     private _router: Router,
     private route: ActivatedRoute,
+    private dialog: MatDialog,
     private client: ClientsService,
     private index: IndexdbService) { }
     
-    select="fff";
-
+    selectedRole;
+    RoleSelected=["Seller","Auditor","Admin","Supervisor","Controler","Back Office"]
   ngOnInit() {
     this.index.createDatabase()
     this.index.createDatabaseOffline();
@@ -50,15 +54,20 @@ export class LoginComponent implements OnInit {
       console.log(email, password)
       var user = {
         'email': email,
-        'password': password
+        'password': password,
+        'role' :this.selectedRole
       }
 
       this._auth.getUserLogin(user,this.httpOptions).subscribe(
         res => {
-          console.log("--------")
-          console.log(res.status)
+          console.log("----getUserLogin----")
+          console.log(res)
           //console.log(res.status)
           this.Response(res)
+        },err=>{
+          console.log(err)
+          this.errorMessage=err.error.Data
+          //this.openAlertDialog(err.error.Data)
         }
        );
     }
@@ -67,10 +76,14 @@ export class LoginComponent implements OnInit {
   ////******* Store Token and delegate to Home page *******////
   Response(res) {
     //console.log(res)
+    console.log("----Response----")
+          console.log(res)
     localStorage.setItem('token', res.Data.token)
     localStorage.setItem("user", JSON.stringify(res.Data.user))
     console.log(this._auth.getToken())
     localStorage.setItem("name", res.Data.user.name)
+    console.log("----localStorage----")
+    console.log(localStorage)
     ///******* GET DATA  ******/
     this.PutDataClient()
   }
@@ -127,7 +140,27 @@ export class LoginComponent implements OnInit {
       });
     }
   }
+
+  onChange(){
+    
+    console.log("role",this.selectedRole);
+    
+  }
+
+  openAlertDialog(message) {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        message: message,
+        buttonText: {
+          ok: 'Ok',
+        }
+      }
+    });
+  }
  
+  clearErrMesg(){
+    this.errorMessage=''
+  }
   
 
 

@@ -22,7 +22,6 @@ export class InjectionComponent implements OnInit {
 
   fileInfos: Observable<any>;
 
-
   @ViewChild('fileUpload') fileUpload: ElementRef
 
   ngOnInit(): void {
@@ -74,7 +73,6 @@ export class InjectionComponent implements OnInit {
     this.fileInfos = this.clientservice.getFiles();
     var message = "We have runned the scripts!"
     this.openAlertDialog(message)
-    
   }
 
   deletefile() {

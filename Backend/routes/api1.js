@@ -68,10 +68,12 @@ router.get("/files", async function (req, res) {
     collection.find({}).forEach(async (doc) => {
         await colection1.insertOne(doc.geometry);
     });
+
     colection2.find({}).forEach(async (doc) => {
         doc.points = [];
         await colection2.update({ nameSecteur: doc.nameSecteur }, { $set: doc });
     });
+    
     fs.readdir(directoryPath, async (err, files) => {
         if (err) {
             res.status(500).send({
@@ -200,6 +202,92 @@ router.get('/secteurs', verifyToken, async (req, res) => {
     ////console.log(arrv)
     var sec = await collectiongeom.find({ 'geometry.geometry.type': 'MultiPolygon', 'geometry.properties.idSecteur': { $in: arrv } }).toArray()
     res.json(sec)
+})
+//*** Get Sector affected to a User (fix query structure) */
+router.get('/getSectorByUser',verifyToken,async (req, res) => {
+    var userId = req.userId;
+    console.log("***** Get Sectors Based on User:"+userId+" *******")
+    let collectionSec = await db.collection("secteurs") //collection where ids are stored 
+    var values = await collectionSec.aggregate([
+        {
+            $match: {
+                users: ObjectId(userId)
+            }
+        },
+        {
+            $lookup: {
+                from: "geometries",
+                localField: "nameSecteur",
+                foreignField: "geometry.properties.idSecteur",
+                as: "info"
+            }
+        },
+        { "$unwind": "$info" },
+        { "$match": { "info.geometry.geometry.type": "MultiPolygon" } },
+        { $project: { info: 1, _id: 0 } }
+
+    ]).toArray();
+    ListInfo = []
+    values.forEach(element => {
+       ListInfo.push(element.info)
+    });
+    //console.log(ListInfo.length)
+    res.json(ListInfo)
+})
+//*** Get PDV by user (I changed the structure of the Query ) */
+router.get('/getClientByUser', verifyToken, async (req, res) => {
+    var userId = req.userId;
+    console.log("***** Get PDV Based on User: "+userId+" *******")
+
+
+
+    let collectionSec = await db.collection("secteurs") //collection where ids are stored 
+
+
+
+    var values = await collectionSec.aggregate([
+        {
+            $match: { users: ObjectId(userId) }
+        },
+        {
+            $lookup: {
+                from: "geometries",
+                localField: "points.point",
+                foreignField: "_id",
+                as: "info"
+            }
+        },
+        { $project: { info: 1, _id: 0 } }
+
+    ]).toArray();
+    ListInfo = []
+    a = []
+    // console.log("reqclientvalues",values)
+    values.forEach(elemm => {
+        elemm.info.forEach(async (elem) => {
+            ListInfo.push(elem)
+        });
+    });
+
+    All_PDV = ListInfo.map(async (elem) => {
+        if (elem.geometry.properties.NFC) {
+            ///data injected by script 
+            elem.geometry.properties.status = "green"
+        }
+        if (elem.geometry.properties?.nfc != undefined) {
+            var element = elem.geometry.properties;
+            await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
+                elem.geometry.properties.NFCP = re
+            }).catch(err => console.log(err))
+            await test1(db, ObjectId(element.PVPhoto)).then(re => {
+                elem.geometry.properties.PVP = re
+            }).catch(err => console.log(err))
+        }
+        a.push(elem)
+    })
+    Promise.all(All_PDV).then(ee => {
+        res.json(a)
+    }).catch(err => next());
 })
 
 /* GET clients Based on User */
@@ -542,31 +630,62 @@ async function GenerateHashPassword(password) {
     return encrypted_password;
 }
 
-/// get User from database 
+/// get User from database
 async function getUser(user) {
-    var FindUser;
     console.log("find user")
+    console.log(user)
+    
+    
+    
     let collection = db.collection("users")
     var status = { value: 401, data: null }
-    var FindUser = await collection.findOne({ email: user.email })
-    console.log(FindUser)
-    if (FindUser != null) {
-        var valid = await ValidPassword(user.password, FindUser.password)
-        if (valid) {
-            let playload = { subject: FindUser._id }
-            let token = jwt.sign(playload, 'secretKey')
-            status.value = 200
-            status.data = { 'token': token, 'user': FindUser }
-        } else {
-            status.value = 401
-            status.data = "invalid password"
-        }
-    } else {
-        status.value = 403
-        status.data = "invalid User"
+    
+    
+    
+    var User = await collection.find({ email: user.email}).toArray()
+    if(User!=null){
+    var FindUser;
+    User.forEach( async (u)=>{
+    console.log(u)
+    if(u.role==user.role){
+    console.log("****")
+    FindUser=u;
+    }else{
+    console.log("$$$$$$$$$$")
+    return null;
     }
+    })
+    console.log("Find User")
+    
+    console.log(FindUser)
+    if(FindUser!=null){
+    var valid = await ValidPassword(user.password, FindUser.password)
+    if (valid) {
+    let playload = { subject: FindUser._id }
+    let token = jwt.sign(playload, 'secretKey')
+    status.value = 200
+    status.data = { 'token': token, 'user': FindUser }
+    } else {
+    status.value = 401
+    status.data = "invalid password"
+    }
+    }else{
+    status.value = 403
+    status.data = "invalid Role"
+    }
+    
+    
+    
+    
+    
+    }else{
+    status.value = 403
+    status.data = "invalid User"
+    }
+    
+    
     return status;
-}
+    }
 
 //***  Login */
 router.post('/login', async (req, res) => {
@@ -658,6 +777,9 @@ router.post('/register', async (req, res) => {
 async function AddNewUser(user) {
     user.userinfo.password = await GenerateHashPassword(user.userinfo.password)
     let collection = db.collection("users") // collection users 
+    console.log("user",user)
+    user.SectorsByRoles.forEach(async(r)=>
+        {
     await collection.insertOne({
         UserID: user.userinfo.UserID,
         name: user.userinfo.name,
@@ -666,16 +788,18 @@ async function AddNewUser(user) {
         role: user.userinfo.role,
         email: user.userinfo.email,
         password: user.userinfo.password,
-        status: user.userinfo.status
+        status: user.userinfo.status,
+        role: r.role
+
 
     }).then(result => {
         console.log(result.insertedId)
         var id = result.insertedId
-        user.Sectors.forEach(sector => {
-            AddUserToSector(id, sector)
-        })
+            r.value.forEach(sector=>
+                AddUserToSector(id, sector)
+            )
     })
-
+        })
 }
 
 async function AddUserToSector(id, sec_name) {

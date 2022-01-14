@@ -32,12 +32,6 @@
                     <mat-progress-bar ng-app ng-controller="ApplicationController" mode="determinate" [value]="progressInfo.value"></mat-progress-bar>
                     <span attr.aria-valuenow="{{ progressInfo.value }}"
                         [ngStyle]="{width: progressInfo.value + '%'}">{{progressInfo.value}}%</span>
-                    <!--
-                <div class="progress-bar" role="progressbar"
-                    attr.aria-valuenow="{{ progressInfo.value }}" aria-valuemin="0" aria-valuemax="100"
-                    [ngStyle]="{ width: progressInfo.value + '%' }">
-                    {{ progressInfo.value }}%
-                </div> -->
                 </div>
             </div>
             <div class="alert" role="alert" *ngIf="message">{{ message }}</div>
