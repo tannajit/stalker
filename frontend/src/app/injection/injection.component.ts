@@ -14,8 +14,6 @@ import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 })
 export class InjectionComponent implements OnInit {
 
-  
-
   selectedFiles: FileList;
   numFileSelected
   progressInfos = [];
@@ -73,7 +71,7 @@ export class InjectionComponent implements OnInit {
   }
 
   runscript() {
-    //this.fileInfos = this.clientservice.getFiles();
+    this.fileInfos = this.clientservice.getFiles();
     var message = "We have runned the scripts!"
     this.openAlertDialog(message)
     

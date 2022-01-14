@@ -105,8 +105,8 @@
               </button> -->
             </th>
             <td mat-cell *matCellDef="let request">
-              <ng-container *ngFor="let role of request.Roles">
-                {{role}}
+              <ng-container *ngFor="let role of request.Roles" class="role-td">
+                <div>{{role}}</div>
               </ng-container>
             </td>
           </ng-container>
@@ -121,7 +121,6 @@
             </th>
             <ng-container *matCellDef="let request" >
               <td mat-cell *ngIf="request.status=='out of work'"><span style="background-color: #AE5827; padding: 3px; color: #fff; border-radius: 3px;">{{request.status}}</span></td>
-            
               <td mat-cell *ngIf="request.status=='Active'"><span style="background-color: #27AE61; padding: 3px; color: #fff; border-radius: 3px;">{{request.status}}</span></td>
             </ng-container>
           

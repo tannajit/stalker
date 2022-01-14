@@ -99,3 +99,31 @@
 .btns{
     align-self: flex-end;
 }
+.roles-container{
+    margin-left: 218px;
+    width: 250px;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    gap: 10px;
+}
+.role-row{
+    display: flex;
+    flex-flow: row;
+    width: 100%;
+    padding: 10px;
+    background-color: #e7ece9;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: space-between;
+}
+.role-row p{
+    margin: 0;
+    font-size: 12px;
+}
+.role-row mat-icon{
+    cursor: pointer;
+    color: #646362;
+}

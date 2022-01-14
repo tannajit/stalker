@@ -64,8 +64,9 @@
                         </div>
                     </mat-select>
                 </mat-form-field>
+                <button mat-button class="gen-btn" *ngIf="RoleSelected.length!=0" (click)="AddNewRole()">Add Role</button>
                                 
-                <label>Role Selected:</label>
+                <!-- <label>Role Selected:</label>
                 <mat-form-field >
                     <mat-select placeholder="select"  panelClass="selectPanel2"   >
                         
@@ -73,9 +74,9 @@
                             <mat-option  >{{rol}} <button class="btn-red" mat-button (click)="RemoveRole(rol)" >x</button></mat-option>
                             </div>
                     </mat-select>
-                </mat-form-field>
+                </mat-form-field> -->
             </div>
-
+            
             <div class="field" *ngIf="RoleActive()">
                 <label>Sector :</label>
                 <form [formGroup]="searchUserForm">
@@ -91,6 +92,16 @@
                         </mat-select>
                     </mat-form-field>
                 </form>
+            </div>
+
+            <div class="roles-container" *ngIf="RoleSelected.length!=0">
+                <ng-container *ngFor="let rol of RoleSelected">
+                    <div class="role-row">
+                        <p>{{rol}}</p>
+                        <mat-icon (click)="RemoveRole(rol)">clear</mat-icon>
+                    </div>
+                </ng-container>
+                
             </div>
 
             <div class="btns">
