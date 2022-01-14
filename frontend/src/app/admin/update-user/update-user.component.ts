@@ -173,6 +173,7 @@ export class UpdateUserComponent implements OnInit {
     
     const SectorDeleted = this.SectorsAttached.filter(value => !this.SelectedSector.includes(value));
     UserInfoUp["SectorDeleted"]=SectorDeleted
+    console.log("====================================","/n",UserInfoUp)
 
     this._setting.UpdateUser(UserInfoUp).subscribe(res=>console.log(res))
     if(this.generated){
