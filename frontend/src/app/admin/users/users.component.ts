@@ -30,7 +30,7 @@ export class UsersComponent implements OnInit {
   Sectors=[]
   AllSectors=[]
   dataSource;
-  columnsToDisplay = ['Id', 'Name','CIN','Phone Number', 'Email', 'Role','Status', 'Actions'];
+  columnsToDisplay = ['Name','CIN','Phone Number', 'Email', 'Role','Status', 'Actions'];
   dataSubject = new BehaviorSubject<Element[]>([]);
   dialogRef: MatDialogRef<ConfirmationDialogComponent>;
   dialogRef2: MatDialogRef<UserInfoComponent>;

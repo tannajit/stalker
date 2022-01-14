@@ -10,6 +10,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
+import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -18,17 +20,19 @@ import { MatIconModule } from '@angular/material/icon';
 
 export class LoginComponent implements OnInit {
 
-  hide: boolean = false;
+  hide: boolean = true;
+  errorMessage
   version = 6
 
   constructor(private fb: FormBuilder,
     private _auth: AuthenticationService,
     private _router: Router,
     private route: ActivatedRoute,
+    private dialog: MatDialog,
     private client: ClientsService,
     private index: IndexdbService) { }
     
-    select="fff";
+    selectedRole;
     RoleSelected=["Seller","Auditor","Admin","Supervisor","Controler","Back Office"]
   ngOnInit() {
     this.index.createDatabase()
@@ -51,7 +55,7 @@ export class LoginComponent implements OnInit {
       var user = {
         'email': email,
         'password': password,
-        'role' :this.select
+        'role' :this.selectedRole
       }
 
       this._auth.getUserLogin(user,this.httpOptions).subscribe(
@@ -60,6 +64,10 @@ export class LoginComponent implements OnInit {
           console.log(res)
           //console.log(res.status)
           this.Response(res)
+        },err=>{
+          console.log(err)
+          this.errorMessage=err.error.Data
+          //this.openAlertDialog(err.error.Data)
         }
        );
     }
@@ -135,10 +143,24 @@ export class LoginComponent implements OnInit {
 
   onChange(){
     
-    console.log("role",this.select);
+    console.log("role",this.selectedRole);
     
   }
+
+  openAlertDialog(message) {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        message: message,
+        buttonText: {
+          ok: 'Ok',
+        }
+      }
+    });
+  }
  
+  clearErrMesg(){
+    this.errorMessage=''
+  }
   
 
 

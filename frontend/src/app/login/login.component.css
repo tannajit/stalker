@@ -10,15 +10,44 @@
     background-color: #AFE3C6;
   }
 
+  mat-card-content{
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+  }
   mat-card {
-    max-width: 500px;
+    width: 500px;
     text-align: center;
-    max-height: 600px;
+    max-height: 800px;
    margin-left: auto;
    margin-right: auto;
    vertical-align: center;
   }
   
+  .role-div{
+    margin-top: 40px;
+  }
+
+  .error-message{
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgb(224, 185, 185);
+    width: 340px;
+    border-radius: 4px;
+    margin-bottom: 30px;
+    padding: 6px;
+  }
+  .error-message span{
+    font-size: 13px;
+  }
+
+  .error-message mat-icon{
+    cursor: pointer;
+  }
+
   .header{
     text-align: center;
     color: #27AE61;
@@ -208,6 +237,7 @@
 
   .mat-flat-button{
       background-color: #27AE61;
+      margin-top: 20px;
   }
 
   ::ng-deep .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {

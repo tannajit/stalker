@@ -600,33 +600,62 @@ async function GenerateHashPassword(password) {
     return encrypted_password;
 }
 
-/// get User from database 
+/// get User from database
 async function getUser(user) {
-    var FindUser;
     console.log("find user")
     console.log(user)
-
+    
+    
+    
     let collection = db.collection("users")
     var status = { value: 401, data: null }
-    var FindUser = await collection.findOne({ email: user.email ,role:user.role})
-    console.log(FindUser)
-    if (FindUser != null) {
-        var valid = await ValidPassword(user.password, FindUser.password)
-        if (valid) {
-            let playload = { subject: FindUser._id }
-            let token = jwt.sign(playload, 'secretKey')
-            status.value = 200
-            status.data = { 'token': token, 'user': FindUser }
-        } else {
-            status.value = 401
-            status.data = "invalid password"
-        }
-    } else {
-        status.value = 403
-        status.data = "invalid User"
+    
+    
+    
+    var User = await collection.find({ email: user.email}).toArray()
+    if(User!=null){
+    var FindUser;
+    User.forEach( async (u)=>{
+    console.log(u)
+    if(u.role==user.role){
+    console.log("****")
+    FindUser=u;
+    }else{
+    console.log("$$$$$$$$$$")
+    return null;
     }
+    })
+    console.log("Find User")
+    
+    console.log(FindUser)
+    if(FindUser!=null){
+    var valid = await ValidPassword(user.password, FindUser.password)
+    if (valid) {
+    let playload = { subject: FindUser._id }
+    let token = jwt.sign(playload, 'secretKey')
+    status.value = 200
+    status.data = { 'token': token, 'user': FindUser }
+    } else {
+    status.value = 401
+    status.data = "invalid password"
+    }
+    }else{
+    status.value = 403
+    status.data = "invalid Role"
+    }
+    
+    
+    
+    
+    
+    }else{
+    status.value = 403
+    status.data = "invalid User"
+    }
+    
+    
     return status;
-}
+    }
 
 //***  Login */
 router.post('/login', async (req, res) => {
