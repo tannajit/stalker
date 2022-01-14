@@ -600,11 +600,13 @@ async function GenerateHashPassword(password) {
     return encrypted_password;
 }
 
-/// get User from database 
+/// get User from database
 async function getUser(user) {
     console.log("find user")
     console.log(user)
-
+    
+    
+    
     let collection = db.collection("users")
     var status = { value: 401, data: null }
 
@@ -649,7 +651,7 @@ async function getUser(user) {
     
     
     return status;
-}
+    }
 
 //***  Login */
 router.post('/login', async (req, res) => {
