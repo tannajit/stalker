@@ -4,7 +4,7 @@ const maxSize = 2 * 1024 * 1024;
 
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null,"D:/Project/stalker/Backend/uploads/");
+    cb(null,"uploads/");
   },
   filename: (req, file, cb) => {
     console.log(file.originalname);
