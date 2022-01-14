@@ -139,7 +139,7 @@ export class AddUserComponent implements OnInit {
      {
        obj.value=this.SelectedSector     
       }
-      if(this.role==="Admin"||this.role==="Auditor"||this.role==="Back Office"){
+      if(this.role==="Admin"||this.role==="Controler"||this.role==="Back Office"){
        
        obj.value=this.AllSectors
  
@@ -156,8 +156,8 @@ export class AddUserComponent implements OnInit {
   AddRoles=[0];
   AddNewRole(){
     this.role=""
-    var i=1
-    this.AddRoles.push(i++);
+    // var i=1
+    // this.AddRoles.push(i++);
     
   }
 

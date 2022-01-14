@@ -223,7 +223,13 @@ router.get('/getSectorByUser',verifyToken,async (req, res) => {
 router.get('/getClientByUser', verifyToken, async (req, res) => {
     var userId = req.userId;
     console.log("***** Get PDV Based on User: "+userId+" *******")
+
+
+
     let collectionSec = await db.collection("secteurs") //collection where ids are stored 
+
+
+
     var values = await collectionSec.aggregate([
         {
             $match: { users: ObjectId(userId) }
@@ -241,11 +247,13 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
     ]).toArray();
     ListInfo = []
     a = []
+    // console.log("reqclientvalues",values)
     values.forEach(elemm => {
         elemm.info.forEach(async (elem) => {
             ListInfo.push(elem)
         });
     });
+
     All_PDV = ListInfo.map(async (elem) => {
         if (elem.geometry.properties.NFC) {
             ///data injected by script 
@@ -713,8 +721,8 @@ async function AddNewUser(user) {
     user.userinfo.password = await GenerateHashPassword(user.userinfo.password)
     let collection = db.collection("users") // collection users 
     console.log("user",user)
-    var Roles=[]
-    user.SectorsByRoles.forEach(r=>Roles.push(r.role))
+    user.SectorsByRoles.forEach(async(r)=>
+        {
     await collection.insertOne({
         UserID: user.userinfo.UserID,
         name: user.userinfo.name,
@@ -723,19 +731,17 @@ async function AddNewUser(user) {
         email: user.userinfo.email,
         password: user.userinfo.password,
         status: user.userinfo.status,
-        Roles: Roles
+        role: r.role
 
 
     }).then(result => {
         console.log(result.insertedId)
         var id = result.insertedId
-        user.SectorsByRoles.forEach(role => {
-            role.value.forEach(sector=>
+            r.value.forEach(sector=>
                 AddUserToSector(id, sector)
             )
-        })
     })
-
+        })
 }
 
 async function AddUserToSector(id, sec_name) {

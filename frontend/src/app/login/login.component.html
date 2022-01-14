@@ -4,6 +4,18 @@
       <div class="header">
         <p>Sign in</p>
       </div>
+      <div>
+    
+        <mat-form-field >
+          <mat-select placeholder="select your role" (selectionChange)="onChange()" panelClass="selectPanel2" [(value)]="select"  >
+              
+              <div *ngFor="let rol of RoleSelected">
+                  <mat-option  value="{{rol}}">{{rol}} </mat-option>
+                  </div>
+          </mat-select>
+      </mat-form-field>
+
+      </div>
       <form name="loginForm" [formGroup]="loginForm">
         <div class="emailInput">
           <mat-form-field class="full-width" appearance="outline">
@@ -35,14 +47,8 @@
         <button mat-flat-button color="primary" (click)="onLogin()">Sign in</button>
        
       </form> 
-      <div>
-       <mat-radio-group aria-label="Select an option" [(ngModel)]="select">
-          <mat-radio-button value="Option 1">Option 1</mat-radio-button>
-          <mat-radio-button value="Option 2">Option 2</mat-radio-button>
-        </mat-radio-group>
-        
-        </div>
-        {{select}}
+ 
+     
     </mat-card-content>
   </mat-card>
 </div>

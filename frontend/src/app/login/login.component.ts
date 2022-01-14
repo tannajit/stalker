@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
     private index: IndexdbService) { }
     
     select="fff";
-
+    RoleSelected=["Seller","Auditor","Admin","Supervisor","Controler","Back Office"]
   ngOnInit() {
     this.index.createDatabase()
     this.index.createDatabaseOffline();
@@ -50,13 +50,14 @@ export class LoginComponent implements OnInit {
       console.log(email, password)
       var user = {
         'email': email,
-        'password': password
+        'password': password,
+        'role' :this.select
       }
 
       this._auth.getUserLogin(user,this.httpOptions).subscribe(
         res => {
-          console.log("--------")
-          console.log(res.status)
+          console.log("----getUserLogin----")
+          console.log(res)
           //console.log(res.status)
           this.Response(res)
         }
@@ -67,10 +68,14 @@ export class LoginComponent implements OnInit {
   ////******* Store Token and delegate to Home page *******////
   Response(res) {
     //console.log(res)
+    console.log("----Response----")
+          console.log(res)
     localStorage.setItem('token', res.Data.token)
     localStorage.setItem("user", JSON.stringify(res.Data.user))
     console.log(this._auth.getToken())
     localStorage.setItem("name", res.Data.user.name)
+    console.log("----localStorage----")
+    console.log(localStorage)
     ///******* GET DATA  ******/
     this.PutDataClient()
   }
@@ -126,6 +131,12 @@ export class LoginComponent implements OnInit {
         });
       });
     }
+  }
+
+  onChange(){
+    
+    console.log("role",this.select);
+    
   }
  
   
