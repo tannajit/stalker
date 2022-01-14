@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit , ViewChild, ElementRef} from '@angular/core';
 import { Observable } from 'rxjs';
 import { ClientsService } from '../clients.service';
 import { FileSelectDirective, FileUploader } from 'ng2-file-upload';
 import { saveAs } from 'file-saver';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
+import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-injection',
@@ -12,26 +14,39 @@ import { HttpEventType, HttpResponse } from '@angular/common/http';
 })
 export class InjectionComponent implements OnInit {
 
+  
+
   selectedFiles: FileList;
+  numFileSelected
   progressInfos = [];
   message = '';
-  isShown: boolean = true;
+  isShown: boolean = false;
 
   fileInfos: Observable<any>;
 
+
+  @ViewChild('fileUpload') fileUpload: ElementRef
 
   ngOnInit(): void {
     // this.fileInfos = this.clientservice.getFiles();
 
   }
 
-  constructor(private clientservice: ClientsService) {
+  constructor(
+    private clientservice: ClientsService,
+    private dialog: MatDialog,) {
 
+  }
+
+  onClick(event) {
+    if (this.fileUpload)
+      this.fileUpload.nativeElement.click()
   }
 
   selectFiles(event) {
     this.progressInfos = [];
     this.selectedFiles = event.target.files;
+    this.numFileSelected = event.target.files.length
   }
 
   uploadFiles() {
@@ -58,13 +73,27 @@ export class InjectionComponent implements OnInit {
   }
 
   runscript() {
-    this.fileInfos = this.clientservice.getFiles();
+    //this.fileInfos = this.clientservice.getFiles();
+    var message = "We have runned the scripts!"
+    this.openAlertDialog(message)
+    
   }
 
   deletefile() {
     this.fileInfos = this.clientservice.deleteFiles()
     console.log("files deleted succussfully")
     this.isShown=false
+  }
+
+  openAlertDialog(message) {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        message: message,
+        buttonText: {
+          ok: 'Ok',
+        }
+      }
+    });
   }
 
 }

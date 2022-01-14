@@ -20,6 +20,8 @@ export class AddUserComponent implements OnInit {
     private _router:Router) { }
     
   ListOfRoles=[];
+  RoleSelected=[];
+  selected
   Roles = []
   Sectors = []
   AllEmail=[]
@@ -41,6 +43,9 @@ export class AddUserComponent implements OnInit {
   ngOnInit(): void {
     /// get All Email from Database to prevenet Email duplication
     this.CheckEmail()
+    console.log(this.RoleSelected)
+    //// get Sectors 
+    this.getSectors()
     /// get Roles available
     this._setting.getSettings('param=role').subscribe(res => {
       this.Roles = res.details.roles
@@ -48,7 +53,11 @@ export class AddUserComponent implements OnInit {
       console.log(this.Roles)    
     })
 
-    //// get Sectors 
+    
+   
+  }
+
+  getSectors(){
     this._client.getAllSecteurs().subscribe(res => {
       console.log(res)
       res.forEach(element => {
@@ -67,7 +76,6 @@ export class AddUserComponent implements OnInit {
       });
     })
   }
-
   RoleActive() {
     if (this.role == "Seller")
      { 
@@ -127,8 +135,7 @@ export class AddUserComponent implements OnInit {
      })
      
   }
-  RoleSelected=[];
-  selected
+  
   onChange() {
     console.log("role",this.role)
     console.log("SectorAffacted",this.AllSectors)

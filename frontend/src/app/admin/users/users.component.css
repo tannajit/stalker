@@ -195,3 +195,7 @@
     /* justify-content: space-between; */
     gap: 40px;
   }
+  .role-td{
+    display: flex;
+    flex-flow: column;
+  }

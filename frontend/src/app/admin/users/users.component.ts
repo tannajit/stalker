@@ -212,7 +212,8 @@ export class UsersComponent implements OnInit {
 
 
       })
-      this.dataSource = new MatTableDataSource(filtered);
+      this.dataSource.data = filtered
+      
       
 
     }else{
@@ -254,7 +255,7 @@ export class UsersComponent implements OnInit {
           
         }
     })
-    this.dataSource = new MatTableDataSource(filtered);
+    this.dataSource.data = filtered
     
   }
 }
@@ -304,7 +305,7 @@ export class UsersComponent implements OnInit {
           
         }
       })
-      this.dataSource = new MatTableDataSource(filtered);
+      this.dataSource.data = filtered
 
       
 
@@ -343,7 +344,7 @@ export class UsersComponent implements OnInit {
           
         }
     })
-    this.dataSource = new MatTableDataSource(filtered);
+    this.dataSource.data = filtered
     }
 
     
@@ -385,7 +386,7 @@ export class UsersComponent implements OnInit {
           
         }
       })
-      this.dataSource = new MatTableDataSource(filtered);
+      this.dataSource.data = filtered
       
 
     }else{
@@ -429,7 +430,7 @@ export class UsersComponent implements OnInit {
           
         }
     })
-    this.dataSource = new MatTableDataSource(filtered);
+    this.dataSource.data = filtered
     }
 
   }
