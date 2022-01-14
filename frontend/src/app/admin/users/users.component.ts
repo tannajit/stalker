@@ -182,6 +182,14 @@ export class UsersComponent implements OnInit {
           if(item.role==this.selectedRole){
               filtered.push(item)
           }
+        }if(this.selectedSector && (!this.selectedRole || this.selectedRole=='all') && this.selectedSector!='all'){
+          // when we select all for status and only the role is selected already
+          item.sectors.forEach(element =>{
+            if(element.nameSecteur == String(this.selectedSector)){
+              filtered.push(item)
+              console.log("#####")
+            }
+          })
         }if(this.selectedRole && this.selectedSector && (this.selectedRole!='all' && this.selectedSector!='all')){
           // if we select all for status and the role and the sector ar both selected
           item.sectors.forEach(element =>{
@@ -204,7 +212,8 @@ export class UsersComponent implements OnInit {
 
 
       })
-      this.dataSource = new MatTableDataSource(filtered);
+      this.dataSource.data = filtered
+      
       
 
     }else{
@@ -246,7 +255,7 @@ export class UsersComponent implements OnInit {
           
         }
     })
-    this.dataSource = new MatTableDataSource(filtered);
+    this.dataSource.data = filtered
     
   }
 }
@@ -296,7 +305,7 @@ export class UsersComponent implements OnInit {
           
         }
       })
-      this.dataSource = new MatTableDataSource(filtered);
+      this.dataSource.data = filtered
 
       
 
@@ -335,7 +344,7 @@ export class UsersComponent implements OnInit {
           
         }
     })
-    this.dataSource = new MatTableDataSource(filtered);
+    this.dataSource.data = filtered
     }
 
     
@@ -377,7 +386,7 @@ export class UsersComponent implements OnInit {
           
         }
       })
-      this.dataSource = new MatTableDataSource(filtered);
+      this.dataSource.data = filtered
       
 
     }else{
@@ -421,7 +430,7 @@ export class UsersComponent implements OnInit {
           
         }
     })
-    this.dataSource = new MatTableDataSource(filtered);
+    this.dataSource.data = filtered
     }
 
   }

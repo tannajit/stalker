@@ -11,6 +11,7 @@ import * as turf from '@turf/turf';
 import { IndexdbService } from '../indexdb.service';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import * as XLSX from 'xlsx';
+import { ExtractSelectComponent } from '../extract-select/extract-select.component';
 
 
 
@@ -34,6 +35,7 @@ export class MapComponent implements AfterViewInit {
   }
 
   dialogRef: MatDialogRef<ClientInfoComponent>;
+  dialogExtract: MatDialogRef<ExtractSelectComponent>;
   private map;
   public content = null;
   myCercle;
@@ -68,6 +70,9 @@ export class MapComponent implements AfterViewInit {
     this.getDataClient();
     this.getDataSector();
     this.map.addLayer(this.markersCluster);
+    console.log("*************** Sb7aaan laaah ***********************")
+    this.getLocation()
+    console.log("*************** Sb7aaan laaah 2 ***********************")
     this.map.addControl(L.control.zoom({ position: 'bottomleft' }));
 
   }
@@ -81,6 +86,7 @@ export class MapComponent implements AfterViewInit {
         console.log("loooooooooooooooong: " + params['long'])
         this.map.flyTo(new L.LatLng(params['lat'], params['long']), 18);
       } else {
+        console.log("*************** Sb7aaan laaah 3 ***********************")
         this.getLocation()
       }
     });
@@ -88,10 +94,17 @@ export class MapComponent implements AfterViewInit {
  ///*** get Location */
  radius=3
   getLocation() {
+    var options = {
+      enableHighAccuracy: false,
+      timeout: 1000,
+      maximumAge: 2000
+    };
+    console.log("*************** Sb7aaan laaah 4 ***********************")
     // interval(1000).subscribe(x => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
         if (position) {
+          console.log("nmiiii nmiiii")
           console.log('Latitude: ' + position.coords.latitude +
             ' Longitude: ' + position.coords.longitude);
           this.lat = position.coords.latitude;
@@ -103,11 +116,8 @@ export class MapComponent implements AfterViewInit {
           this.map.removeLayer( this.myCercle)
          }
          this.myCercle = L.circle([this.lat, this.lon], {color:"blue",fillColor:"#cce6ff",radius:this.radius});
-
           this.myCercle.addTo(this.map);
-          
           this._serviceClient.getPosition({"Map":new L.LatLng(this.lat, this.lon),"Raduis":this.radius});
-
           if (this.myMarker != undefined) {
             console.log("remove layer ")
             this.map.removeLayer(this.myMarker)
@@ -119,7 +129,7 @@ export class MapComponent implements AfterViewInit {
           }).addTo(this.map);
         }
       },
-        (error: GeolocationPositionError) => console.log(error));
+        (error: GeolocationPositionError) => console.log(error),options);
     } else {
       alert('Geolocation is not supported by this browser.');
     }
@@ -134,6 +144,7 @@ export class MapComponent implements AfterViewInit {
   // open dialog with client info
   openDialog(content) {
     this.dialogRef = this.dialog.open(ClientInfoComponent, { data: content });
+   // this.
 
   }
 
@@ -165,9 +176,8 @@ export class MapComponent implements AfterViewInit {
           }
       
           console.log("status: "+status)
-         
           const geojsonPoint: geojson.Point = Point.geometry;
-          var iconClient = L.icon({ iconUrl: 'assets/'+status+'.png', iconSize: [10, 10] });
+          var iconClient = L.icon({ iconUrl: 'assets/'+status+'.png', iconSize: [15,15] });
            marker = L.geoJSON(geojsonPoint, {
             pointToLayer: (point, latlon) => {
               return L.marker(latlon, { icon:iconClient }); }
@@ -432,16 +442,10 @@ export class MapComponent implements AfterViewInit {
   //////////////////////////////////////////////////////////////////////////////////
 
   /////////////*********** EXTRACT DATA ******/////////////////
-  exportexcel() {
-    this._serviceClient.extract().subscribe(res => {
-      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(res)
-      //generate workbook and add the worksheet 
-      const wb: XLSX.WorkBook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-      //save to file 
-      XLSX.writeFile(wb, "Data_Extraction.xlsx");
-    });
+  extract(){
+    this.dialogExtract = this.dialog.open(ExtractSelectComponent);
   }
+ 
   ////////////////////////////////////////////////////////////
 
 }

@@ -1,20 +1,17 @@
 var express = require('express');
-var app = express();
 var router = express.Router();
 var mongo = require('mongodb');
 var multer = require('multer');
 var path = require('path');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-// var uri = "mongodb://localhost:27017";
-var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+var uri = "mongodb://localhost:27017";
+// var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 // uri to your Mongo database
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker1"
-var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
 const jwt = require("jsonwebtoken")
@@ -61,7 +58,7 @@ router.post("/upload", controller.upload);
 
 router.get("/files", async function (req, res) {
     const collection = await db.collection('geometries');
-    const directoryPath = "D:/Project/stalker/Backend/uploads/";
+    const directoryPath = "uploads/";
     const colection1 = await db.collection('backup');
     const colection2 = await db.collection('secteurs');
 
@@ -95,7 +92,7 @@ router.get("/files", async function (req, res) {
 });
 
 router.get("/deletefile", function (req, res) {
-    const directory = "D:/Project/stalker/Backend/uploads/";
+    const directory = "uploads/";
 
     fs.readdir(directory, (err, files) => {
         if (err) throw err;
@@ -178,7 +175,6 @@ router.get('/clientss', async (req, res) => {
 });
 
 router.get('/secteurss', async (req, res) => {
-
     let collection = await db.collection("geometries") // collection 
     var values = await collection.find({ 'geometry.geometry.type': 'MultiPolygon' }).toArray()
     //console.log("---------  send data -----------")
@@ -200,6 +196,84 @@ router.get('/secteurs', verifyToken, async (req, res) => {
     ////console.log(arrv)
     var sec = await collectiongeom.find({ 'geometry.geometry.type': 'MultiPolygon', 'geometry.properties.idSecteur': { $in: arrv } }).toArray()
     res.json(sec)
+})
+//*** Get Sector affected to a User (fix query structure) */
+router.get('/getSectorByUser',verifyToken,async (req, res) => {
+    var userId = req.userId;
+    console.log("***** Get Sectors Based on User:"+userId+" *******")
+    let collectionSec = await db.collection("secteurs") //collection where ids are stored 
+    var values = await collectionSec.aggregate([
+        {
+            $match: {
+                users: ObjectId(userId)
+            }
+        },
+        {
+            $lookup: {
+                from: "geometries",
+                localField: "nameSecteur",
+                foreignField: "geometry.properties.idSecteur",
+                as: "info"
+            }
+        },
+        { "$unwind": "$info" },
+        { "$match": { "info.geometry.geometry.type": "MultiPolygon" } },
+        { $project: { info: 1, _id: 0 } }
+
+    ]).toArray();
+    ListInfo = []
+    values.forEach(element => {
+       ListInfo.push(element.info)
+    });
+    //console.log(ListInfo.length)
+    res.json(ListInfo)
+})
+//*** Get PDV by user (I changed the structure of the Query ) */
+router.get('/getClientByUser', verifyToken, async (req, res) => {
+    var userId = req.userId;
+    console.log("***** Get PDV Based on User: "+userId+" *******")
+    let collectionSec = await db.collection("secteurs") //collection where ids are stored 
+    var values = await collectionSec.aggregate([
+        {
+            $match: { users: ObjectId(userId) }
+        },
+        {
+            $lookup: {
+                from: "geometries",
+                localField: "points.point",
+                foreignField: "_id",
+                as: "info"
+            }
+        },
+        { $project: { info: 1, _id: 0 } }
+
+    ]).toArray();
+    ListInfo = []
+    a = []
+    values.forEach(elemm => {
+        elemm.info.forEach(async (elem) => {
+            ListInfo.push(elem)
+        });
+    });
+    All_PDV = ListInfo.map(async (elem) => {
+        if (elem.geometry.properties.NFC) {
+            ///data injected by script 
+            elem.geometry.properties.status = "green"
+        }
+        if (elem.geometry.properties?.nfc != undefined) {
+            var element = elem.geometry.properties;
+            await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
+                elem.geometry.properties.NFCP = re
+            }).catch(err => console.log(err))
+            await test1(db, ObjectId(element.PVPhoto)).then(re => {
+                elem.geometry.properties.PVP = re
+            }).catch(err => console.log(err))
+        }
+        a.push(elem)
+    })
+    Promise.all(All_PDV).then(ee => {
+        res.json(a)
+    }).catch(err => next());
 })
 
 /* GET clients Based on User */
@@ -226,16 +300,16 @@ router.get('/clients', verifyToken, async (req, res) => {
             var element = elem.geometry.properties;
             await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
                 elem.geometry.properties.NFCP = re
-            }).catch(err => console.log(err))
+            }).catch(err => next())
             await test1(db, ObjectId(element.PVPhoto)).then(re => {
                 elem.geometry.properties.PVP = re
-            }).catch(err => console.log(err))
+            }).catch(err => next())
         }
         a.push(elem)
     })
     Promise.all(curs).then(ee => {
         res.json(a)
-    }).catch(err => console.log(err));
+    }).catch(err => next());
 })
 
 // get client by seller   (Fadma's code)
@@ -281,7 +355,7 @@ router.post('/restoreUser', async (req, res) => {
     let user = req.body;
     let userColl = db.collection("users")
     var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
-        { $set: { "status": "Ac tive" } })
+        { $set: { "status": "Active" } })
     console.log(updated)
 })
 
@@ -357,20 +431,7 @@ async function InsertClient(client, res) {
     catch (error) {
         next(error)
     }
-    await collection.insertOne(clientinfo)
-    ////********* Add in geometries *****************/
-    let getInsertedId; //// put Id inserted
-    delete clientinfo.idGeometry;
-    var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
-    geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
-        var id = result.insertedId
-        var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
-            { $addToSet: { points: { "point": id, "route": null } } }).then(ss => {
-                res.status(200).json("Done")
-            })
-        //console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
-        //console.log(up)
-    }).catch(error => console.log(error))
+
 }
 
 async function updateClient(client) {
@@ -426,9 +487,7 @@ async function updateClient(client) {
             { $set: { "geometry": clientGeo } })
         console.log(updated)
         console.log("********** geometrie updated *******")
-
     })
-
 }
 
 
@@ -656,23 +715,30 @@ router.post('/register', async (req, res) => {
 })
 
 async function AddNewUser(user) {
+    
     user.userinfo.password = await GenerateHashPassword(user.userinfo.password)
     let collection = db.collection("users") // collection users 
+    console.log("user",user)
+    var Roles=[]
+    user.SectorsByRoles.forEach(r=>Roles.push(r.role))
     await collection.insertOne({
         UserID: user.userinfo.UserID,
         name: user.userinfo.name,
         phone: user.userinfo.phone,
         CIN: user.userinfo.CIN,
-        role: user.userinfo.role,
         email: user.userinfo.email,
         password: user.userinfo.password,
-        status: user.userinfo.status
+        status: user.userinfo.status,
+        Roles: Roles
+
 
     }).then(result => {
         console.log(result.insertedId)
         var id = result.insertedId
-        user.Sectors.forEach(sector => {
-            AddUserToSector(id, sector)
+        user.SectorsByRoles.forEach(role => {
+            role.value.forEach(sector=>
+                AddUserToSector(id, sector)
+            )
         })
     })
 
@@ -743,17 +809,48 @@ router.get("/settings", async (req, res) => {
     if (obj?.user == "CountUser") {
         let users = await db.collection("users")
         var RoleCount = obj.role
+        console.log("RoleCount", RoleCount)
         let values = await users.find({ "role": RoleCount }).toArray()
+        console.log("values1")
+        console.log(values)
+
         response = values.length
+        console.log(response)
+
     } else {
         console.log("test")
         var proprety = obj.param;
         let collection = await db.collection("settings") // collection 
         var values = await collection.find({ "proprety": proprety }).toArray()
+        console.log("values2")
+        console.log(values)
         response = values[0]
     }
     console.log(values)
     res.json(response)
+
+})
+
+router.get("/settingsUp", async (req, res) => {
+    var obj = req.query
+
+    console.log("44444444444")
+    console.log(req.query)
+    // response = ""
+    // console.log(obj)
+    // if (obj?.user == "CountUser") {
+    //     let users = await db.collection("users")
+    //     var RoleCount = obj.role
+    //     let values = await users.find({ "role": RoleCount }).count()
+    //     response = values
+    // } else {
+    //     var proprety = obj.param;
+    //     let collection = await db.collection("settings") // collection 
+    //     var values = await collection.find({ "proprety": proprety }).toArray()
+    //     response = values[0]
+    // }
+    // //console.log(values[0])
+    // res.json(response)
 
 })
 //////////***********************************////////////////////////
@@ -877,13 +974,48 @@ router.get("/image", async (req, res) => {
 
 })
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////
-router.get("/extract", async (req, res) => {
+router.post("/extract", async (req, res) => {
     let geometries = await db.collection("geometries")
+    var condition = req.body
+    console.log(condition)
+    var queries = []
+    queries.push({ "geometry.geometry.type": "Point" })
+
+    if (condition?.Sectors) {
+        console.log("found")
+        queries.push({
+            "geometry.properties.Code_Secteur_OS": {
+                $in: condition.Sectors
+            }
+        })
+    }
+    if (condition?.StartDate) {
+        queries.push({
+            "geometry.properties.created_at": {
+                $gte: new Date(condition.StartDate)
+            }
+        })
+    }
+    if (condition?.EndDate) {
+        queries.push({
+            "geometry.properties.created_at": {
+                $lte: new Date(condition.EndDate)
+            }
+        })
+    }
+    if (condition?.TypeDPV) {
+        queries.push({
+            "geometry.properties.TypeDPV": {
+                $in: condition.TypeDPV
+            }
+        })
+    }
     let values = await geometries.aggregate([
         {
             $match: {
-                $and: [{ "geometry.geometry.type": "Point" }
-                ]
+                $and:
+                    queries
+
             }
         },
         {
@@ -894,9 +1026,9 @@ router.get("/extract", async (req, res) => {
                 as: "info"
             }
         }
-
     ]).toArray();
     all1 = []
+    //console.log(values)
     //res.json(values)
     var test = values.map((elem) => {
         elem.info.reverse();
@@ -1089,7 +1221,6 @@ router.get('/getAllDeleteRequests', async (req, res) => {
 router.post('/ValidateDeleteClient', async (req, res) => {
     let _id = req.body.request._id
     let request = req.body.request
-
     let DeleteRequest = db.collection("DeleteRequest")
     let geometries = db.collection("geometries");
 

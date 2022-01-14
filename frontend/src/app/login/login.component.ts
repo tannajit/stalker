@@ -6,7 +6,10 @@ import { SidebarMenuComponent } from '../sidebar-menu/sidebar-menu.component';
 import { IndexdbService } from '../indexdb.service';
 import { ClientsService } from '../clients.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -24,10 +27,13 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute,
     private client: ClientsService,
     private index: IndexdbService) { }
+    
+    select="fff";
 
   ngOnInit() {
     this.index.createDatabase()
     this.index.createDatabaseOffline();
+
   }
 
   loginForm: FormGroup = this.fb.group({
@@ -46,6 +52,7 @@ export class LoginComponent implements OnInit {
         'email': email,
         'password': password
       }
+
       this._auth.getUserLogin(user,this.httpOptions).subscribe(
         res => {
           console.log("--------")
@@ -120,6 +127,8 @@ export class LoginComponent implements OnInit {
       });
     }
   }
+ 
+  
 
 
 }

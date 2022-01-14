@@ -63,7 +63,11 @@ export class DeleteClientComponent implements AfterViewInit {
   ) { }
 
   async ngOnInit() {
-
+    console.log("Lat",this.lat)
+    console.log("Lon",this.lon)
+    console.log("Lat",this.latclt)
+    console.log("Lon",this.lonclt)
+    this.getLocation()
   }
 
   startRecording() {
@@ -147,23 +151,8 @@ text;
         
         this.Video=base64data;
       }
-        // const reader = new FileReader();
-        //  reader.addEventListener('loadend', () => {
-        //      //reader.result //contains the contents of blob as a typed array
-        //      console.log("ééééééééé")
-        //      console.log(reader.result)
-        //      //this.Video1={"buffer":reader.result}
-        //  });
-        //  reader.readAsArrayBuffer(videoBuffer)
-
-        //console.log(this.Video)
-
-        console.log("lllll")
-
         
-        
-        //console.log(uri)
-       this.downloadUrl = window.URL.createObjectURL(videoBuffer); // you can download with <a> tag
+        this.downloadUrl = window.URL.createObjectURL(videoBuffer); 
 
         console.log("this.downloadUrl ")
         console.log(this.downloadUrl);
@@ -245,33 +234,24 @@ text;
         var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
 
           if (position) {
-            //console.log("Latitude: " + position.coords.latitude +
-            // " // Longitude: " + position.coords.longitude);
+
             var newlat = position.coords.latitude
             var newLon = position.coords.longitude;
 
-            // if (position.coords.accuracy > 10) {
-            //   console.log("The GPS accuracy isn't good enough");
-            // }
             if (newlat != this.lat || newLon != this.lat) {
-              //console.log("nmi rah tbdl")
-              // this.percentage=0
+
               this.lat = newlat
               this.lon = newLon
               this.list.push(position)
-              //console.log(this.list)
-              //console.log("Accuracy:"+position.coords.accuracy)
 
               if (position.coords.accuracy < this.acc) {
-                //console.log("********** Accuracy:"+position.coords.accuracy)
                 this.acc = position.coords.accuracy
                 this.lat = position.coords.latitude
                 this.lon = position.coords.longitude
                 this.latclt = position.coords.latitude
                 this.lonclt = position.coords.longitude
               }
-              //console.log(this.lat)
-              //console.log(this.lon)
+
               this.map.removeLayer(marker);
               this.show = false
               this.Status = true
@@ -382,28 +362,34 @@ text;
     this.recordedBlobs.push(event.data);
   }
 
+   // distance;
+   getDistance(){
+    //console.log("Distance2 :"+this.Distance );
+    return this.clientService.getDistance();
+  }
+  getLocation(){
 
-  // data = this.router.getCurrentNavigation().extras.state.dataClient
-
-  // Send() {
-  //   // console.log("dataV:"+ this.dataV )
-  //   // console.log("video:"+ this.recordVideoElement.src)
-  //   // console.log("video 2:"+Object.keys(this.mediaRecorder))
-  //   // console.log("raison :"+this.raison)
-  //   // console.log("data :"+this.data._id)
-  //   // console.log("videoBuffer:"+this.Video)
-  //   //this.clientService.DeleteClientByID(this.data._id).subscribe(res=>{console.log(res)})
-  //   this.checkInfos = { "data": this.data, "raison": this.raison, "video": this.stream, "Photo": this.webcamImage }
-  //   if (!this.onlineOfflineService.isOnline) {
-  //     this.clientService.addTodoDelete(this.checkInfos)
-  //   } else {
-  //     this.clientService.DeleteRequest(this.checkInfos).subscribe(res => { console.log(res) })
-  //   }
-  // }
+    interval(1000).subscribe(x => {
+    console.log("yesssss")
+    if (navigator.geolocation) {
+      let raduis =3;
+      this.map.setView(new L.LatLng(this.latclt, this.lonclt), 11, { animation: true });
+      L.circle([this.latclt, this.lonclt], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
   
-  // ReadV() {
-  //   console.log(this.clientService.ReadV().subscribe(res => this.recordVideoElement.src = res.toString()))
-  // }
+        console.log('LatitudeOfUpadate: ' + this.latclt +
+          ' LongitudeOfUpadate: ' + this.lonclt);
+      this.clientService.getPosition({"MapUp":[this.latclt, this.lonclt],"Raduis":raduis});
+
+      }
+    })
+
+  }
+  
+  SessionTerminate=false;
+  ValidatePosition(){
+
+    return this.clientService.ActiveTheButton();
+  }
 
 
 }

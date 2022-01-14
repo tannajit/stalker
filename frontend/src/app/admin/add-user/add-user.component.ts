@@ -8,6 +8,8 @@ import { AdminService } from '../admin.service';
 import { MatOption } from '@angular/material/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { sector } from '@turf/turf';
+import { WebElement } from 'protractor';
+import { Console } from 'console';
 @Component({
   selector: 'app-add-user',
   templateUrl: './add-user.component.html',
@@ -19,9 +21,11 @@ export class AddUserComponent implements OnInit {
 
   constructor(private _setting: AdminService,
     private _client: ClientsService,
-    private dialog: MatDialog,
-    private _router: Router,
-    private fb: FormBuilder) {}
+    private dialog:MatDialog,
+    private _router:Router,
+    private fb: FormBuilder) { }
+    
+  ListOfRoles=[];
   Roles = []
   Sectors = []
   AllEmail = []
@@ -51,7 +55,8 @@ export class AddUserComponent implements OnInit {
     /// get Roles available
     this._setting.getSettings('param=role').subscribe(res => {
       this.Roles = res.details.roles
-      console.log(res)
+      console.log("ttttttttt")
+      console.log(this.Roles)    
     })
 
     //// get Sectors 
@@ -86,10 +91,7 @@ export class AddUserComponent implements OnInit {
       return false;
     }
   }
-  onChange() {
-    this.SetUserID()
 
-  }
   //// Set User ID 
   SetUserID() {
     this._setting.getSettings("user=CountUser&role=" + this.role + "").subscribe(res => {
@@ -133,8 +135,76 @@ export class AddUserComponent implements OnInit {
     })
 
   }
+  RoleSelected=[];
+  selected
+  onChange() {
+    console.log("role",this.role)
+    console.log("SectorAffacted",this.AllSectors)
+     console.log(this.SelectedSector)
+     this.selected=this.role
+     const obj={role:this.role,value:null}
+     if(this.SelectedSector.length!=0)
+     {
+       obj.value=this.SelectedSector     
+      }
+      if(this.role==="Admin"||this.role==="Auditor"||this.role==="Back Office"){
+       
+       obj.value=this.AllSectors
+ 
+      }
+     this.upsert(this.ListOfRoles,obj)
+  
+     console.log("ListOfRules",this.ListOfRoles)
 
-  //** Generate password **/
+     if (!this.RoleSelected.includes(this.role)) {
+      this.RoleSelected.push(this.role);
+    }
+  }
+
+  AddRoles=[0];
+  AddNewRole(){
+    this.role=""
+    var i=1
+    this.AddRoles.push(i++);
+    
+  }
+
+  RemoveRole(role){ 
+
+
+      this.RoleSelected.splice(this.RoleSelected.indexOf(role),1);
+      
+      this.ListOfRoles.forEach(el=> {
+
+        if(el.role===role){
+          this.ListOfRoles.splice(this.ListOfRoles.indexOf(el),1);
+        }
+
+      }) 
+
+  }
+
+
+
+  upsert(array, item) { // (1)
+    const i = array.findIndex(_item => _item.role === item.role);
+    if (i > -1) array[i] = item; // (2)
+    else array.push(item);
+  }
+
+  
+  
+  upsertRole(array, item) { // (1)
+    
+    if (array.indexOf(item) === -1) {
+      array.push(item);
+    }
+  }
+ 
+
+
+  
+  //** Generate password */
   GeneratePassword() {
     this.Password = (Math.random() + 1).toString(36).substring(2);
     console.log("random", this.Password);
@@ -155,14 +225,15 @@ export class AddUserComponent implements OnInit {
         name: this.FirstName + " " + this.LastName,
         phone: this.phoneNumber,
         CIN: this.CIN,
-        role: this.role,
         email: this.Email,
-        password: this.Password,
-        status: "active"
+        password:this.Password,
+        status:"Active"
       },
-      Sectors: this.SectorAffacted
+      SectorsByRoles:this.ListOfRoles
     }
-    this._setting.CreateUser(this.UserInfo).subscribe(res => {
+
+    console.log("result",this.UserInfo)
+    this._setting.CreateUser(this.UserInfo).subscribe(res=>{
       this.openAlertDialog()
     })
   }

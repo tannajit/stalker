@@ -1,0 +1,24 @@
+.btn-green{
+    font-size: 13px;
+    color: #ffff;
+    background-color: #27AE61;
+    border-radius: 8px;
+    width: 150px;
+    line-height: 35px;
+}
+.btn-red{
+    font-size: 13px;
+    color: #ffff;
+    background-color: #AE5827;
+    border-radius: 8px;
+    width: 150px;
+    line-height: 35px;
+}
+
+mat-icon {
+    position: relative;
+    float: right;
+    top: -3px;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.54);
+  }
