@@ -604,9 +604,11 @@ async function GenerateHashPassword(password) {
 async function getUser(user) {
     var FindUser;
     console.log("find user")
+    console.log(user)
+
     let collection = db.collection("users")
     var status = { value: 401, data: null }
-    var FindUser = await collection.findOne({ email: user.email })
+    var FindUser = await collection.findOne({ email: user.email ,role:user.role})
     console.log(FindUser)
     if (FindUser != null) {
         var valid = await ValidPassword(user.password, FindUser.password)

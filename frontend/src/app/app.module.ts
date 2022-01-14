@@ -54,7 +54,7 @@ import {MatTableModule} from '@angular/material/table';
 import { InjectionComponent } from './injection/injection.component'
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import {FilePickerModule} from 'ngx-awesome-uploader';
+// import {FilePickerModule} from 'ngx-awesome-uploader';
 // import { FileUploadModule } from "ng2-file-upload";
 
 
@@ -134,7 +134,7 @@ import { ExtractSelectComponent } from './extract-select/extract-select.componen
     MatTableModule,
     MatPaginatorModule,
     MatSlideToggleModule,
-    FilePickerModule,
+    // FilePickerModule,
     MatInputModule,
     MatRadioModule,
     MatIconModule,
