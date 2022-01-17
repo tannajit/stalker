@@ -53,9 +53,9 @@ import { DeleteRequestsComponent } from './admin/delete-requests/delete-requests
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
 import { InjectionComponent } from './injection/injection.component'
-import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
-import { MatSelectSearchModule } from 'mat-select-search';
-import { MatSelectFilterModule } from 'mat-select-filter';
+// import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+// import { MatSelectSearchModule } from 'mat-select-search';
+// import { MatSelectFilterModule } from 'mat-select-filter';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core'
 
@@ -134,7 +134,7 @@ import { UserInfoComponent } from './admin/user-info/user-info.component';
     MatTableModule,
     MatPaginatorModule,
     MatSlideToggleModule,
-    MatSelectFilterModule,
+    // MatSelectFilterModule,
     MatDatepickerModule,
     MatNativeDateModule,
     // FileUploadModule,
