@@ -73,8 +73,9 @@ export class UpdateUserComponent implements OnInit {
     // }
 
 
-    this.userInfo.sectors.forEach(el => {this.SelectedSector.push(""+el.nameSecteur)});
+    this.userInfo.sectors.forEach(el => {this.SelectedSector.push(String(el.nameSecteur))});
     this.SectorsAttached=this.SelectedSector
+
     console.log("SelectedSector",this.SelectedSector)
     this._setting.getSettings('param=role').subscribe(res => {
       this.Roles = res.details.roles

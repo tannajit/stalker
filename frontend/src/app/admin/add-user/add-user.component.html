@@ -100,8 +100,7 @@
                     <mat-select placeholder="select" multiple  panelClass="selectPanel2" (selectionChange)="onChange()"  [(value)]="SelectedSector">
                         <div *ngFor="let sector of Sectors">
                             <mat-option value="{{sector.id}}">{{sector.detail}}</mat-option>
-                            </div>
-
+                        </div>
                     </mat-select>
                 </mat-form-field>
             </div>
