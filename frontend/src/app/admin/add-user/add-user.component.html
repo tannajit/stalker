@@ -81,7 +81,7 @@
                 <label>Sector :</label>
                 <form [formGroup]="searchUserForm">
                     <mat-form-field>
-                        <mat-select placeholder="select" formControlName="userType" multiple multiple value="SelectedSector" [(ngModel)]="SelectedSector" >
+                        <mat-select placeholder="select" formControlName="userType"  multiple  [(ngModel)]="SelectedSector" >
                             <mat-label>Filter</mat-label>
                             <input class="nmi" placeholder="Ex.901010181" matInput (keyup)="filterListCareUnit($event.target.value)" >
                             <mat-option #allSelected (click)="toggleAllSelection()" [value]="0">All</mat-option>

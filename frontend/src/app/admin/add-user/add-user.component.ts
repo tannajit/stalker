@@ -243,9 +243,9 @@ export class AddUserComponent implements OnInit {
     }
 
     console.log("result",this.UserInfo)
-    this._setting.CreateUser(this.UserInfo).subscribe(res=>{
-      this.openAlertDialog()
-    })
+    // this._setting.CreateUser(this.UserInfo).subscribe(res=>{
+    //   this.openAlertDialog()
+    // })
   }
 
   ///////********************* Open Dialog *********************////////
