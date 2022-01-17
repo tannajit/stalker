@@ -20,6 +20,7 @@ export class UpdateUserComponent implements OnInit {
   @ViewChild('allSelected') private allSelected: MatOption;
 
   userInfo = this._router.getCurrentNavigation().extras.state.dataUser
+  dataSource = this._router.getCurrentNavigation().extras.state.dataSource
   UserInfoUp
   FirstName;
   LastName;
@@ -27,6 +28,7 @@ export class UpdateUserComponent implements OnInit {
   role = this.userInfo.role
   hidpass = true
   SelectedSector = [];
+  test=[]
   SectorsAttached = [];
   AllSectors = [];
   Sectors = []
@@ -51,6 +53,9 @@ export class UpdateUserComponent implements OnInit {
     this.searchUserForm = this.fb.group({
       userType: new FormControl('')
     });
+
+    console.log("#### DATASOURCE #####")
+    console.log(this.dataSource)
     //this.adminService.getAllUsers().subscribe(res=>{console.log("sectors",res)})
 
     //this.userInfo = this.adminService.getUserInfo() 
@@ -73,7 +78,7 @@ export class UpdateUserComponent implements OnInit {
     // }
 
 
-    this.userInfo.sectors.forEach(el => {this.SelectedSector.push(String(el.nameSecteur))});
+    this.userInfo.sectors.forEach(el => {this.SelectedSector.push(el.nameSecteur)});
     this.SectorsAttached=this.SelectedSector
 
     console.log("SelectedSector",this.SelectedSector)
@@ -105,6 +110,7 @@ export class UpdateUserComponent implements OnInit {
 
   GenerateEmail() {
     var i = 0;
+   
     var last = this.LastName.replace(" ", '.')
     var l1 = this.FirstName.toLowerCase().slice(0, 1)
     var email = (l1 + "." + last.toLowerCase() + "@fgddistrib.com").replace(/\s/g, '');
@@ -112,6 +118,7 @@ export class UpdateUserComponent implements OnInit {
   }
 
   GeneratePassword() {
+  console.log(this.SelectedSector)
     this.hidpass = false
     this.generated = true;
     this.userInfo.password = (Math.random() + 1).toString(36).substring(2);
@@ -160,7 +167,6 @@ export class UpdateUserComponent implements OnInit {
   }
 
   UpdateUser(){
-    console.log("sfjldkfjdkfjdlsk") 
     var UserInfoUp={}
     UserInfoUp["_id"]=this.userInfo._id
     UserInfoUp["UserID"]=this.userInfo.UserID
@@ -179,10 +185,13 @@ export class UpdateUserComponent implements OnInit {
     const SectorDeleted = this.SectorsAttached.filter(value => !this.SelectedSector.includes(value));
     UserInfoUp["SectorDeleted"] = SectorDeleted
 
-    this._setting.UpdateUser(UserInfoUp).subscribe(res => console.log(res))
-    if (this.generated) {
-      this.openAlertDialog()
-    } else {
+    this._setting.UpdateUser(UserInfoUp).subscribe(res=>console.log(res))
+
+    if(this.generated){
+          this.openAlertDialog()
+    }else{
+      var message="User updated successfully!"
+      this.openSuccessDialog(message)
       this._router.navigate(['/users'])
     }
 
@@ -192,7 +201,7 @@ export class UpdateUserComponent implements OnInit {
   openAlertDialog() {
     const dialogRef = this.dialog.open(AlertDialogComponent, {
       data: {
-        message: "Please Copy this credentials before Exit \n " + "[Email:" + this.userInfo.email + "-" + "Password:" + this.userInfo.password + "]",
+        message:"User has been updated. Please Copy this credentials before Exit \n " +"[Email:"+this.userInfo.email +"-"+"Password:"+this.userInfo.password+"]",
         buttonText: {
           ok: 'Done',
         }
@@ -201,7 +210,19 @@ export class UpdateUserComponent implements OnInit {
     }).afterClosed().subscribe(result => {
       this._router.navigate(['/users'])
     });
-    
+    ;
+  }
+
+  openSuccessDialog(msg){
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        message:msg,
+        buttonText: {
+          ok: 'Ok',
+        }
+      }
+
+    })
   }
 
   anotherArray = this.Sectors;

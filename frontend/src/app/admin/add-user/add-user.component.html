@@ -81,10 +81,14 @@
                 <label>Sector :</label>
                 <form [formGroup]="searchUserForm">
                     <mat-form-field>
-                        <mat-select placeholder="select" formControlName="userType"  multiple  (selectionChange)="onChange()"  [(ngModel)]="SelectedSector" >
-                            <mat-label>Filter</mat-label>
-                            <input class="nmi" placeholder="Ex.901010181" matInput (keyup)="filterListCareUnit($event.target.value)" >
-                            <mat-option #allSelected (click)="toggleAllSelection()" [value]="0">All</mat-option>
+                        <mat-select placeholder="select" formControlName="userType" multiple (selectionChange)="onChange()"
+                        [(ngModel)]="SelectedSector">
+                            <!-- <mat-label>Filter</mat-label>
+                            <input class="nmi" placeholder="Ex.901010181" matInput (keyup)="filterListCareUnit($event.target.value)" > -->
+                            <mat-option>
+                                <ngx-mat-select-search placeholderLabel="Search" (keyup)="filterListCareUnit($event.target.value)" ></ngx-mat-select-search>
+                            </mat-option>
+                            <mat-option #allSelected (click)="toggleAllSelection()" [value]="0">Select all</mat-option>
                             <mat-option *ngFor="let sector of Sectors" [value]="sector.id"
                                 (click)="togglePerOne(allSelected.viewValue)">
                                 {{sector.detail}}

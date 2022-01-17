@@ -27,7 +27,6 @@ export class InjectionComponent implements OnInit {
 
   ngOnInit(): void {
     // this.fileInfos = this.clientservice.getFiles();
-
   }
 
   constructor(

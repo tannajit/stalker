@@ -7,7 +7,7 @@ var path = require('path');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
 //var uri = "mongodb://localhost:27017";
- var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 // uri to your Mongo database
 var client = new MongoClient(uri);
@@ -204,9 +204,9 @@ router.get('/secteurs', verifyToken, async (req, res) => {
     res.json(sec)
 })
 //*** Get Sector affected to a User (fix query structure) */
-router.get('/getSectorByUser',verifyToken,async (req, res) => {
+router.get('/getSectorByUser', verifyToken, async (req, res) => {
     var userId = req.userId;
-    console.log("***** Get Sectors Based on User:"+userId+" *******")
+    console.log("***** Get Sectors Based on User:" + userId + " *******")
     let collectionSec = await db.collection("secteurs") //collection where ids are stored 
     var values = await collectionSec.aggregate([
         {
@@ -229,7 +229,7 @@ router.get('/getSectorByUser',verifyToken,async (req, res) => {
     ]).toArray();
     ListInfo = []
     values.forEach(element => {
-       ListInfo.push(element.info)
+        ListInfo.push(element.info)
     });
     //console.log(ListInfo.length)
     res.json(ListInfo)
@@ -237,7 +237,7 @@ router.get('/getSectorByUser',verifyToken,async (req, res) => {
 //*** Get PDV by user (I changed the structure of the Query ) */
 router.get('/getClientByUser', verifyToken, async (req, res) => {
     var userId = req.userId;
-    console.log("***** Get PDV Based on User: "+userId+" *******")
+    console.log("***** Get PDV Based on User: " + userId + " *******")
 
 
 
@@ -369,7 +369,7 @@ router.post('/restoreUser', async (req, res) => {
     let user = req.body;
     let userColl = db.collection("users")
     var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
-        { $set: { "status": "Ac tive" } })
+        { $set: { "status": "Active" } })
     console.log(updated)
 })
 
@@ -634,30 +634,29 @@ async function GenerateHashPassword(password) {
 async function getUser(user) {
     console.log("find user")
     console.log(user)
-    
-    
-    
+
+
     let collection = db.collection("users")
 
     var status = { value: 401, data: null }
 
-    var User = await collection.find({ email: user.email}).toArray()
-    if(User.length>0){
+    var User = await collection.find({ email: user.email }).toArray()
+    if (User.length > 0) {
         var FindUser;
-        User.forEach( async (u)=>{
+        User.forEach(async (u) => {
             console.log(u)
-            if(u.role==user.role){
+            if (u.role == user.role) {
                 console.log("****")
-                FindUser=u;
-            }else{
+                FindUser = u;
+            } else {
                 console.log("$$$$$$$$$$")
                 return null;
             }
         })
         console.log("Find User")
-        
+
         console.log(FindUser)
-        if(FindUser!=null){
+        if (FindUser != null) {
             var valid = await ValidPassword(user.password, FindUser.password)
             if (valid) {
                 let playload = { subject: FindUser._id }
@@ -666,23 +665,21 @@ async function getUser(user) {
                 status.data = { 'token': token, 'user': FindUser }
             } else {
                 status.value = 401
-                status.data = "Invalid password"
+                status.data = "invalid password"
             }
-        }else{
-                status.value = 403
-                status.data = "Invalid Role"
-            }
+        } else {
+            status.value = 403
+            status.data = "invalid Role"
+        }
 
-        
-        
-    }else{
+    } else {
         status.value = 403
-        status.data = "Invalid User"
+        status.data = "invalid User"
     }
-    
-    
+
+
     return status;
-    }
+}
 
 //***  Login */
 router.post('/login', async (req, res) => {
@@ -774,29 +771,28 @@ router.post('/register', async (req, res) => {
 async function AddNewUser(user) {
     user.userinfo.password = await GenerateHashPassword(user.userinfo.password)
     let collection = db.collection("users") // collection users 
-    console.log("user",user)
-    user.SectorsByRoles.forEach(async(r)=>
-        {
-    await collection.insertOne({
-        UserID: user.userinfo.UserID,
-        name: user.userinfo.name,
-        phone: user.userinfo.phone,
-        CIN: user.userinfo.CIN,
-        role: user.userinfo.role,
-        email: user.userinfo.email,
-        password: user.userinfo.password,
-        status: user.userinfo.status,
-        role: r.role
+    console.log("user", user)
+    user.SectorsByRoles.forEach(async (r) => {
+        await collection.insertOne({
+            UserID: user.userinfo.UserID,
+            name: user.userinfo.name,
+            phone: user.userinfo.phone,
+            CIN: user.userinfo.CIN,
+            role: user.userinfo.role,
+            email: user.userinfo.email,
+            password: user.userinfo.password,
+            status: user.userinfo.status,
+            role: r.role
 
 
-    }).then(result => {
-        console.log(result.insertedId)
-        var id = result.insertedId
-            r.value.forEach(sector=>
+        }).then(result => {
+            console.log(result.insertedId)
+            var id = result.insertedId
+            r.value.forEach(sector =>
                 AddUserToSector(id, sector)
             )
-    })
         })
+    })
 }
 
 async function AddUserToSector(id, sec_name) {
@@ -1308,9 +1304,9 @@ async function getInsertedIds(result) {
 }
 
 async function putEachData(res, collection) {
-      if (res.geometry.type == "MultiPolygon") {
-        collection.updateOne({ "geometry.geometry.type": "MultiPolygon" ,"geometry.properties.idSecteur": res.properties.idSecteur }, { $set: { geometry: res } }, { upsert: true }).then(rr => console.log(rr)).catch(error => console.log(error))
-    }else{
+    if (res.geometry.type == "MultiPolygon") {
+        collection.updateOne({ "geometry.geometry.type": "MultiPolygon", "geometry.properties.idSecteur": res.properties.idSecteur }, { $set: { geometry: res } }, { upsert: true }).then(rr => console.log(rr)).catch(error => console.log(error))
+    } else {
         collection.updateOne({ "geometry.properties.Code_Client": res.properties.Code_Client }, { $set: { geometry: res } }, { upsert: true }).then().catch(error => console.log(error))
     }
 }
