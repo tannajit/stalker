@@ -49,7 +49,7 @@ export class UsersComponent implements OnInit {
     this.getUsers()
     this.getRoles()
     this.getAllSectors()
-  console.log("###"+this.selectedStatus)
+    console.log("###"+this.selectedStatus)
   }
 
   getAllSectors(){

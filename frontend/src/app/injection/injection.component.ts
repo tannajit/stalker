@@ -29,7 +29,6 @@ export class InjectionComponent implements OnInit {
 
   ngOnInit(): void {
     // this.fileInfos = this.clientservice.getFiles();
-
   }
 
   constructor(
@@ -75,8 +74,7 @@ export class InjectionComponent implements OnInit {
   runscript() {
     //this.fileInfos = this.clientservice.getFiles();
     var message = "We have runned the scripts!"
-    this.openAlertDialog(message)
-    
+    this.openAlertDialog(message) 
   }
 
   deletefile() {

@@ -163,6 +163,8 @@ export class AddUserComponent implements OnInit {
   AddRoles=[0];
   AddNewRole(){
     this.role=""
+    this.SelectedSector=null
+
     // var i=1
     // this.AddRoles.push(i++);
     
