@@ -30,6 +30,7 @@ export class AddUserComponent implements OnInit {
   RoleSelected=[];
   selected
   Roles = []
+  test=[]
   Sectors = []
   AllEmail = []
   AllSectors = []

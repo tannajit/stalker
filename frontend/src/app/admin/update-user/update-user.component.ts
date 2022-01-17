@@ -20,6 +20,7 @@ export class UpdateUserComponent implements OnInit {
   @ViewChild('allSelected') private allSelected: MatOption;
 
   userInfo = this._router.getCurrentNavigation().extras.state.dataUser
+  dataSource = this._router.getCurrentNavigation().extras.state.dataSource
   UserInfoUp
   FirstName;
   LastName;
@@ -27,6 +28,7 @@ export class UpdateUserComponent implements OnInit {
   role = this.userInfo.role
   hidpass = true
   SelectedSector = [];
+  test=[]
   SectorsAttached = [];
   AllSectors = [];
   Sectors = []
@@ -51,6 +53,9 @@ export class UpdateUserComponent implements OnInit {
     this.searchUserForm = this.fb.group({
       userType: new FormControl('')
     });
+
+    console.log("#### DATASOURCE #####")
+    console.log(this.dataSource)
     //this.adminService.getAllUsers().subscribe(res=>{console.log("sectors",res)})
 
     //this.userInfo = this.adminService.getUserInfo() 
@@ -74,7 +79,13 @@ export class UpdateUserComponent implements OnInit {
 
     console.log("userInfoSectors")
 
-    this.userInfo.sectors.forEach(el => {this.SelectedSector.push(""+el.nameSecteur)});
+    this.userInfo.sectors.forEach(el => {
+      console.log("$$$$$")
+      console.log(el)
+      this.SelectedSector.push(el.nameSecteur)
+    });
+    console.log("**************")
+    console.log(this.SelectedSector)
     this.SectorsAttached=this.SelectedSector
     
     this._setting.getSettings('param=role').subscribe(res => {
@@ -105,6 +116,7 @@ export class UpdateUserComponent implements OnInit {
 
   GenerateEmail() {
     var i = 0;
+   
     var last = this.LastName.replace(" ", '.')
     var l1 = this.FirstName.toLowerCase().slice(0, 1)
     var email = (l1 + "." + last.toLowerCase() + "@fgddistrib.com").replace(/\s/g, '');
@@ -112,6 +124,7 @@ export class UpdateUserComponent implements OnInit {
   }
 
   GeneratePassword() {
+  console.log(this.SelectedSector)
     this.hidpass = false
     this.generated = true;
     this.userInfo.password = (Math.random() + 1).toString(36).substring(2);

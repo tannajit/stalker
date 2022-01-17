@@ -46,6 +46,7 @@ export class UsersComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
+    
     this.getUsers()
     this.getRoles()
     this.getAllSectors()
@@ -114,7 +115,6 @@ export class UsersComponent implements OnInit {
   }
 
   updateUser(user){
-
     this._router.navigateByUrl('/updateUser', { state: { dataUser:user,userid:user.UserID,userrole:user.role } });
 
   }
@@ -166,8 +166,7 @@ export class UsersComponent implements OnInit {
       let filtered=[]
       _.filter(this.users,(item) =>{
 
-        
-        
+          
         if(this.selectedRole=='all' && !this.selectedSector){
           filtered=this.users
           
@@ -217,7 +216,6 @@ export class UsersComponent implements OnInit {
       
 
     }else{
-
       // let filteredData = _.filter(this.users,(item) =>{
       //   return item.status.toLowerCase() ==  $event.value.toLowerCase();
       // })
