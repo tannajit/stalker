@@ -197,7 +197,7 @@ export class UpdateUserComponent implements OnInit {
     }).afterClosed().subscribe(result => {
       this._router.navigate(['/users'])
     });
-    ;
+    
 
 
 }
