@@ -135,7 +135,6 @@ import { UserInfoComponent } from './admin/user-info/user-info.component';
     MatTableModule,
     MatPaginatorModule,
     MatSlideToggleModule,
-    
     MatDatepickerModule,
     MatNativeDateModule,
     // FileUploadModule,

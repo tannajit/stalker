@@ -405,21 +405,37 @@ export class MapComponent implements AfterViewInit {
       this.getDataClient();
     }
   }
-  ///////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
 
-  ///////******** Search for a client By id ***********///////////
+
+
+  ///////******** Search for the client By id ***********///////////
   Search(IDGeomerty) {
     console.log(IDGeomerty);
     //tslint:disable-next-line:no-shadowed-variable
     this._serviceClient.getClientByID(IDGeomerty).subscribe(res => {
+      console.log("res ",res)
       if (IDGeomerty != null) {
         this.map.setView(new L.LatLng(res["geometry"].geometry.coordinates[1], res["geometry"].geometry.coordinates[0]), 30, { animation: true }).addTo(this.map);
       }
-    });
+  })}
+  horsCx=false
+  openAlertSearch(mess) {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        message:mess,
+        buttonText: {
+          ok: 'Ok',
+        }
+      }
+
+    }).afterClosed()
   }
+  
   /////////////////////////////////////////////////////////
 
   ///////************** Search for the client from indexDB ***********////////////
+
   SearchIndexDB(IDGeomerty){
     console.log("Update in IndexedDB")
     var db, transaction;
@@ -431,14 +447,36 @@ export class MapComponent implements AfterViewInit {
       db = event.target.result;
       transaction = db.transaction(['data'], 'readwrite');
       var objectStore = transaction.objectStore("data");
-      var objectStoreRequest = objectStore.get(IDGeomerty);
-      objectStoreRequest.onsuccess = (event) => {
-        var elm = JSON.parse(objectStoreRequest.result.Valeur);
-        console.log(elm.geometry.coordinates)
-        this.map.setView(new L.LatLng(elm.geometry.coordinates[1], elm.geometry.coordinates[0]), 18);
+      if(IDGeomerty!=null){
+        var objectStoreRequest = objectStore.get(IDGeomerty);
+
+          objectStoreRequest.onsuccess = (event) => {
+
+          if(objectStoreRequest.result!=undefined){
+            var elm = JSON.parse(objectStoreRequest.result.Valeur);
+            console.log(elm.geometry.coordinates)
+            this.map.setView(new L.LatLng(elm.geometry.coordinates[1], elm.geometry.coordinates[0]), 30);
+            }
+          else{
+            var mess="Be sure of the id :"+IDGeomerty
+            this.openAlertSearch(mess);
+          }
+           
+        }
+        
+  
+        
+         
+
+      }else{
+        var mess="Please Enter the ID"
+        this.openAlertSearch(mess)
       }
+      console.log("objectStoreRequest",objectStoreRequest)
+      
     }
   }
+
   //////////////////////////////////////////////////////////////////////////////////
 
   /////////////*********** EXTRACT DATA ******/////////////////

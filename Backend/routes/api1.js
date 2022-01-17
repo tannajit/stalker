@@ -637,6 +637,7 @@ async function getUser(user) {
 
 
     let collection = db.collection("users")
+
     var status = { value: 401, data: null }
 
     var User = await collection.find({ email: user.email }).toArray()
