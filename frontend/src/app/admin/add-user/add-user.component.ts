@@ -145,17 +145,14 @@ export class AddUserComponent implements OnInit {
   }
   
   onChange() {
-    console.log("role",this.role)
-    console.log("this.SelectedSector",this.SelectedSector)
-    
-     console.log(this.SelectedSector)
+
      this.selected=this.role
      const obj={role:this.role,value:null}
      if(this.SelectedSector.length!=0)
      {
        obj.value=this.SelectedSector     
       }
-      if(this.role==="Admin"||this.role==="Auditor"||this.role==="Back Office"){
+      if(this.role==="Admin"||this.role==="Controler"||this.role==="Back Office"){
        
        obj.value=this.AllSectors
  
@@ -174,6 +171,8 @@ export class AddUserComponent implements OnInit {
   AddRoles=[0];
   AddNewRole(){
     this.role=""
+    this.SelectedSector=[]
+
     // var i=1
     // this.AddRoles.push(i++);
     
