@@ -61,19 +61,19 @@ router.post("/upload", controller.upload);
 
 router.get("/files", async function (req, res) {
     const collection = await db.collection('geometries');
+
     const directoryPath = "uploads/";
     const colection1 = await db.collection('backup');
     const colection2 = await db.collection('secteurs');
-
     collection.find({}).forEach(async (doc) => {
         await colection1.insertOne(doc.geometry);
     });
 
     colection2.find({}).forEach(async (doc) => {
         doc.points = [];
-        await colection2.update({ nameSecteur: doc.nameSecteur }, { $set: doc });
+        await colection2.updateOne({ nameSecteur: doc.nameSecteur }, { $set: doc });
     });
-    
+
     fs.readdir(directoryPath, async (err, files) => {
         if (err) {
             res.status(500).send({

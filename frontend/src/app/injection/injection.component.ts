@@ -13,6 +13,7 @@ import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
   styleUrls: ['./injection.component.css']
 })
 export class InjectionComponent implements OnInit {
+  @ViewChild('fileUpload') fileUpload: ElementRef
 
   selectedFiles: FileList;
   numFileSelected
@@ -22,7 +23,7 @@ export class InjectionComponent implements OnInit {
 
   fileInfos: Observable<any>;
 
-  @ViewChild('fileUpload') fileUpload: ElementRef
+  
 
   ngOnInit(): void {
     // this.fileInfos = this.clientservice.getFiles();
@@ -70,13 +71,17 @@ export class InjectionComponent implements OnInit {
   }
 
   runscript() {
-    this.fileInfos = this.clientservice.getFiles();
+    this.clientservice.getFiles().subscribe(res=>{
+      console.log("test")
+    });
     var message = "We have runned the scripts!"
     this.openAlertDialog(message)
   }
 
   deletefile() {
-    this.fileInfos = this.clientservice.deleteFiles()
+     this.clientservice.deleteFiles().subscribe(res=>{
+      console.log("test")
+    });
     console.log("files deleted succussfully")
     this.isShown=false
   }
