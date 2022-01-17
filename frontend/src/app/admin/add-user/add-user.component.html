@@ -1,8 +1,8 @@
 <div class="adduser-container">
     <div class="holder">
-        <!-- <div class="title-holder">
-          <h1 class="title">Add New User</h1>
-        </div> -->
+        <div class="title-holder">
+            <h1 class="title">Add New User</h1>
+        </div>
         <div class="add-form">
             <!-- <div class="field"> -->
                 <!-- <label>Id User :</label>
@@ -10,7 +10,7 @@
             </div> -->
             <div class="field">
                 <label>First Name :</label>
-                <mat-form-field >
+                <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
                     <input placeholder="Type the First name..." matInput [(ngModel)]="FirstName" />
                 </mat-form-field>
@@ -33,14 +33,15 @@
                 <label>Phone Number :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input pattern="[0]{1}[0-9]{9}" placeholder="Type the phone number..." matInput [(ngModel)]="phoneNumber" />
+                    <input pattern="[0]{1}[0-9]{9}" placeholder="Type the phone number..." matInput
+                        [(ngModel)]="phoneNumber" />
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>Email :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput placeholder="Type the email" type="email" [(ngModel)]="Email" disabled/>
+                    <input matInput placeholder="Type the email" type="email" [(ngModel)]="Email" disabled />
                 </mat-form-field>
                 <button mat-button class="gen-btn" (click)="GenerateEmail()">Generate Email</button>
             </div>
@@ -48,7 +49,7 @@
                 <label>Password :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input matInput placeholder="Generate the password..." type="text" value="{{Password}}" disabled/>
+                    <input matInput placeholder="Generate the password..." type="text" value="{{Password}}" disabled />
                 </mat-form-field>
                 <button mat-button class="gen-btn" (click)="GeneratePassword()">Generate Password</button>
             </div>
@@ -57,11 +58,10 @@
             <div class="field">
                 <label>Role :</label>
                 <mat-form-field >
-                    <mat-select placeholder="select"  panelClass="selectPanel2"  (selectionChange)="onChange()" [(value)]="role">
-                        
+                    <mat-select placeholder="select"  panelClass="selectPanel2"  (selectionChange)="onChange()" [(value)]="role">   
                         <div *ngFor="let rol of Roles">
                             <mat-option value="{{rol}}">{{rol}}</mat-option>
-                            </div>
+                        </div>
                     </mat-select>
                 </mat-form-field>
                 <button mat-button class="gen-btn" *ngIf="RoleSelected.length!=0" (click)="AddNewRole()">Add Role</button>
@@ -79,13 +79,22 @@
             
             <div class="field" *ngIf="RoleActive()">
                 <label>Sector :</label>
-                <mat-form-field>
-                    <mat-select placeholder="select" multiple panelClass="selectPanel2" (selectionChange)="onChange()" value="SelectedSector" [(ngModel)]="SelectedSector">
-                        <div *ngFor="let sector of Sectors">
-                            <mat-option value="{{sector.id}}">{{sector.detail}}</mat-option>
-                            </div>
-                    </mat-select>
-                </mat-form-field>
+                <form [formGroup]="searchUserForm">
+                    <mat-form-field>
+                        <mat-select placeholder="select" formControlName="userType" multiple>
+                            <!-- <mat-label>Filter</mat-label>
+                            <input class="nmi" placeholder="Ex.901010181" matInput (keyup)="filterListCareUnit($event.target.value)" > -->
+                            <mat-option>
+                                <ngx-mat-select-search placeholderLabel="Search" (keyup)="filterListCareUnit($event.target.value)" ></ngx-mat-select-search>
+                            </mat-option>
+                            <mat-option #allSelected (click)="toggleAllSelection()" [value]="0">Select all</mat-option>
+                            <mat-option *ngFor="let sector of Sectors" [value]="sector.id"
+                                (click)="togglePerOne(allSelected.viewValue)">
+                                {{sector.detail}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </form>
             </div>
 
             <div class="roles-container" *ngIf="RoleSelected.length!=0">
@@ -99,11 +108,9 @@
             </div>
 
             <div class="btns">
-                <button class="btn-red" mat-button routerLink="/users" >Cancel</button>
-                <button class="btn-green" mat-button (click)="SendUser()" >Add</button>
+                <button class="btn-red" mat-button routerLink="/users">Cancel</button>
+                <button class="btn-green" mat-button (click)="SendUser()">Add</button>
             </div>
         </div>
-        
     </div>
-    
 </div>
