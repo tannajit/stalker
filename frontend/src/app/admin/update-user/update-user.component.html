@@ -73,16 +73,20 @@
             <div class="field" *ngIf="RoleActive()">
                 <label>Sector :</label>
                 <form [formGroup]="searchUserForm">
+                    {{SelectedSector}}
                     <mat-form-field>
-                        <mat-select placeholder="select" multiple formControlName="userType"  (selectionChange)="onChange()"  [(value)]="SectorsAttached">
+                        <mat-select placeholder="select" multiple formControlName="userType"  (selectionChange)="onChange()"  [(value)]="SelectedSector">
                             <mat-label>Filter</mat-label>
                             <input class="nmi" placeholder="Ex.901010181" matInput
                                 (keyup)="filterListCareUnit($event.target.value)">
                             <mat-option #allSelected (click)="toggleAllSelection()" [value]="0">All</mat-option>
-                            <mat-option *ngFor="let sector of Sectors" [value]="sector.id"
+                            <div *ngFor="let sector of Sectors">
+                            <mat-option  
                                 (click)="togglePerOne(allSelected.viewValue)">
                                 {{sector.detail}}
                             </mat-option>
+                            </div>
+                            
                         </mat-select>
                     </mat-form-field>
                 </form>
