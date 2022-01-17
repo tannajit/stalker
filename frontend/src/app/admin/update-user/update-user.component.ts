@@ -72,7 +72,7 @@ export class UpdateUserComponent implements OnInit {
 
     // }
 
-    console.log("userInfoSectors")
+    console.log("userInfoSectors",this.userInfo.sectors)
 
     this.userInfo.sectors.forEach(el => {this.SelectedSector.push(""+el.nameSecteur)});
     this.SectorsAttached=this.SelectedSector
@@ -202,7 +202,6 @@ export class UpdateUserComponent implements OnInit {
       this._router.navigate(['/users'])
     });
     
-
   }
 
   anotherArray = this.Sectors;

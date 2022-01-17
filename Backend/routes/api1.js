@@ -642,7 +642,7 @@ async function getUser(user) {
     var status = { value: 401, data: null }
 
     var User = await collection.find({ email: user.email}).toArray()
-    if(User!=null){
+    if(User.length>0){
         var FindUser;
         User.forEach( async (u)=>{
             console.log(u)
