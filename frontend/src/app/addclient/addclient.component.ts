@@ -15,6 +15,7 @@ import { SettingsService } from '../settings/settings.service';
 import { IndexdbService } from '../indexdb.service';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { LocationService } from '../location.service';
 
 
 const incr = 1;
@@ -27,7 +28,7 @@ const incr = 1;
 
 })
 
-export class AddclientComponent implements AfterViewInit,OnDestroy {
+export class AddclientComponent implements AfterViewInit, OnDestroy {
 
   //////////////// VARIABLE'S DECLARATION /////////////////////////
   mySector = "test";
@@ -95,7 +96,7 @@ export class AddclientComponent implements AfterViewInit,OnDestroy {
   lonclt
 
   inter;
-  acc = 1222000;
+  acc = 34567800;
   version = 6
 
   //* map*//
@@ -129,14 +130,16 @@ export class AddclientComponent implements AfterViewInit,OnDestroy {
     private _router: Router,
     private aroute: ActivatedRoute,
     private index: IndexdbService,
+    private _location: LocationService,
     private dialog: MatDialog,
     private _setting: SettingsService) {
+    this._location.ClearWatch();
 
   }
   ngOnDestroy() {
     console.log("destroy")
   }
-  
+
   ////////////////////////////////////////////////////////////////
 
   //////////////*************** INTERFACE FUNCTIONS *****************//////////
@@ -262,6 +265,7 @@ export class AddclientComponent implements AfterViewInit,OnDestroy {
 
   ngAfterViewInit(): void {
     this.loggedUser = JSON.parse(localStorage.getItem("user"));
+
     this.initMap();
     //this._setting.getSettings("sms")
     this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time)
@@ -287,14 +291,16 @@ export class AddclientComponent implements AfterViewInit,OnDestroy {
       maxZoom: 30,
       minZoom: 0
     });
+    ///*** Clear any watch before using it again ***/
 
+    //////////////////////////////
     tiles.addTo(this.map);
+   
 
-    var location_icon = L.icon({
-      iconUrl: "assets/location.png",
-      iconSize: [30, 30]
-    });
-    var marker = L.marker([this.lat, this.lon], { icon: location_icon })
+
+    /////
+
+    var marker = L.marker([this.lat, this.lon], { icon: this.location_icon })
     this.inter = interval(1000).subscribe(x => {
 
       if (navigator.geolocation) {
@@ -329,14 +335,14 @@ export class AddclientComponent implements AfterViewInit,OnDestroy {
               this.map.removeLayer(marker);
               this.show = false
               this.Status = true
-              marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
+              marker = new (L.marker as any)([this.lat, this.lon], { icon: this.location_icon }).addTo(this.map);
             }
             //console.log(this.lat)
             //console.log(this.lon)
             this.map.removeLayer(marker);
             this.show = false
             this.Status = true
-            marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
+            marker = new (L.marker as any)([this.lat, this.lon], { icon: this.location_icon }).addTo(this.map);
           }
         },
           (error: GeolocationPositionError) => {}, options);
@@ -344,8 +350,10 @@ export class AddclientComponent implements AfterViewInit,OnDestroy {
         alert("Geolocation is not supported by this browser.");
       }
     });
+
   }
   //////////////////////////////////////////////////////////////////////
+
 
   /////////////******** TIMER FOR FIX POSITION ********////////////////
   testTimer() {
@@ -395,7 +403,7 @@ export class AddclientComponent implements AfterViewInit,OnDestroy {
   VerifySMS() {
     if (this.verification_code === this.codeSMS) {
       this.status = "the code is correct"
-      this.clientInfos.PhoneNumber=this.PhoneNumber;
+      this.clientInfos.PhoneNumber = this.PhoneNumber;
     } else {
       this.status = "the code is incorrect"
     }
@@ -445,12 +453,12 @@ export class AddclientComponent implements AfterViewInit,OnDestroy {
     this.clientInfos.userRole = this.user.role;
     this.clientInfos.created_at = new Date()
     this.clientInfos.updated_at = new Date()
-    if(this.user.role=="Seller"){
+    if (this.user.role == "Seller") {
       this.clientInfos.Status = "white_red"
-    }else{
+    } else {
       this.clientInfos.Status = "red_white"
     }
-   
+
     console.log(this.clientInfos)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodo(this.clientInfos);
@@ -486,7 +494,7 @@ export class AddclientComponent implements AfterViewInit,OnDestroy {
               }
               if (i === array.length) {
                 console.log("Array I" + i)
-                this._router.navigate(['/map']).then(r=>{
+                this._router.navigate(['/map']).then(r => {
                   window.location.reload();
                 })
               }

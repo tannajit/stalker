@@ -14,12 +14,16 @@ const { param } = require("express/lib/router");
 const controller = require("./controller");
 const fs = require("fs");
 var GeoJSON = require('geojson');
-//var uri = "mongodb://localhost:27017";
-var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+var uri = "mongodb://localhost:27017";
+var through = require('through');
+//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 var client = new MongoClient(uri);
 var db; // database 
 var name_database = "stalker1"
-const baseUrl = "C:/Users/h.ouaziz/Desktop/ProjetV5/stalker/Backend/uploads/";
+const baseUrl = "uploads/";
+//// fetch 
+const fetch = require("node-fetch")
+
 var salt = 5 //any random value,  the salt value specifies how much time it’s gonna take to hash the password. higher the salt value, more secure the password is and more time it will take for calculation.
 // MongoDataBase
 async function run() {
@@ -52,8 +56,9 @@ run().catch(console.log)
 //         //do all database record saving activity
 //         return res.json({originalname:req.file.originalname, uploadname:req.file.filename});
 //     });
-// });
 
+
+//////************** */
 router.post("/upload", controller.upload);
 
 router.get("/files", async function (req, res) {
@@ -189,9 +194,9 @@ router.get('/secteurs', verifyToken, async (req, res) => {
     res.json(sec)
 })
 //*** Get Sector affected to a User (fix query structure) */
-router.get('/getSectorByUser',verifyToken,async (req, res) => {
+router.get('/getSectorByUser', verifyToken, async (req, res) => {
     var userId = req.userId;
-    console.log("***** Get Sectors Based on User:"+userId+" *******")
+    console.log("***** Get Sectors Based on User:" + userId + "*******")
     let collectionSec = await db.collection("secteurs") //collection where ids are stored 
     var values = await collectionSec.aggregate([
         {
@@ -214,15 +219,17 @@ router.get('/getSectorByUser',verifyToken,async (req, res) => {
     ]).toArray();
     ListInfo = []
     values.forEach(element => {
-       ListInfo.push(element.info)
+        ListInfo.push(element.info)
+
     });
-    //console.log(ListInfo.length)
-    res.json(ListInfo)
+    res.status(200).json(ListInfo)
+
+
 })
 //*** Get PDV by user (I changed the structure of the Query ) */
 router.get('/getClientByUser', verifyToken, async (req, res) => {
     var userId = req.userId;
-    console.log("***** Get PDV Based on User: "+userId+" *******")
+    console.log("***** Get PDV Based on User: " + userId + " *******")
     let collectionSec = await db.collection("secteurs") //collection where ids are stored 
     var values = await collectionSec.aggregate([
         {
@@ -264,7 +271,8 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
     })
     Promise.all(All_PDV).then(ee => {
         res.json(a)
-    }).catch(err => next());
+    }).catch(err =>console.log(err));
+    
 })
 
 /* GET clients Based on User */
@@ -709,12 +717,12 @@ router.post('/register', async (req, res) => {
 })
 
 async function AddNewUser(user) {
-    
+
     user.userinfo.password = await GenerateHashPassword(user.userinfo.password)
     let collection = db.collection("users") // collection users 
-    console.log("user",user)
-    var Roles=[]
-    user.SectorsByRoles.forEach(r=>Roles.push(r.role))
+    console.log("user", user)
+    var Roles = []
+    user.SectorsByRoles.forEach(r => Roles.push(r.role))
     await collection.insertOne({
         UserID: user.userinfo.UserID,
         name: user.userinfo.name,
@@ -730,7 +738,7 @@ async function AddNewUser(user) {
         console.log(result.insertedId)
         var id = result.insertedId
         user.SectorsByRoles.forEach(role => {
-            role.value.forEach(sector=>
+            role.value.forEach(sector =>
                 AddUserToSector(id, sector)
             )
         })
