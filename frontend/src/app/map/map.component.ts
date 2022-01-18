@@ -182,7 +182,9 @@ export class MapComponent implements AfterViewInit {
             pointToLayer: (point, latlon) => {
               return L.marker(latlon, { icon:iconClient }); }
           });
-         
+          marker.addTo(this.map);
+
+
           if (Point.geometry.properties?.nfc != undefined) {
             marker.on('click', () => {
               
@@ -192,7 +194,6 @@ export class MapComponent implements AfterViewInit {
             });
          } 
          else {
-          
             //console.log("############# ici"+Point.geometry.properties.Nom_Client)
             marker.bindPopup('<h1> <b>Client Information</b></h1><p><b>Name:</b> ' + String(Point.geometry.properties.Nom_Client) + '</p><p><b>Sector Name: </b>' + String(Point.geometry.properties.Nom_du_Secteur) + '</p>');
         }
