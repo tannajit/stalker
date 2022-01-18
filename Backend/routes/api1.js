@@ -1,25 +1,27 @@
 var express = require('express');
+var app = express();
 var router = express.Router();
 var mongo = require('mongodb');
 var multer = require('multer');
 var path = require('path');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
+var uri = "mongodb://localhost:27017";
+//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+//var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+// uri to your Mongo database
+var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
+var name_database = "stalker1"
+var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
 const jwt = require("jsonwebtoken")
 const { param } = require("express/lib/router");
 const controller = require("./controller");
 const fs = require("fs");
-var GeoJSON = require('geojson');
-var uri = "mongodb://localhost:27017";
-var through = require('through');
-//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
-var client = new MongoClient(uri);
-var db; // database 
-var name_database = "stalker1"
+
 const baseUrl = "uploads/";
 //// fetch 
 const fetch = require("node-fetch")
@@ -63,7 +65,19 @@ router.post("/upload", controller.upload);
 
 router.get("/files", async function (req, res) {
     const collection = await db.collection('geometries');
-    const directoryPath = "C:/Users/h.ouaziz/Desktop/ProjetV5/stalker/Backend/uploads/";
+
+    const directoryPath = "uploads/";
+    const colection1 = await db.collection('backup');
+    const colection2 = await db.collection('secteurs');
+    collection.find({}).forEach(async (doc) => {
+        await colection1.insertOne(doc.geometry);
+    });
+
+    colection2.find({}).forEach(async (doc) => {
+        doc.points = [];
+        await colection2.updateOne({ nameSecteur: doc.nameSecteur }, { $set: doc });
+    });
+
     fs.readdir(directoryPath, async (err, files) => {
         if (err) {
             res.status(500).send({
@@ -87,7 +101,7 @@ router.get("/files", async function (req, res) {
 });
 
 router.get("/deletefile", function (req, res) {
-    const directory = "C:/Users/h.ouaziz/Desktop/ProjetV5/stalker/Backend/uploads/";
+    const directory = "uploads/";
 
     fs.readdir(directory, (err, files) => {
         if (err) throw err;
@@ -101,7 +115,6 @@ router.get("/deletefile", function (req, res) {
 })
 
 router.get("/files/:name", controller.download);
-
 //verfiy token
 function verifyToken(req, res, next) {
     if (!req.headers.authorization) {
@@ -171,6 +184,7 @@ router.get('/clientss', async (req, res) => {
 });
 
 router.get('/secteurss', async (req, res) => {
+
     let collection = await db.collection("geometries") // collection 
     var values = await collection.find({ 'geometry.geometry.type': 'MultiPolygon' }).toArray()
     //console.log("---------  send data -----------")
@@ -196,7 +210,7 @@ router.get('/secteurs', verifyToken, async (req, res) => {
 //*** Get Sector affected to a User (fix query structure) */
 router.get('/getSectorByUser', verifyToken, async (req, res) => {
     var userId = req.userId;
-    console.log("***** Get Sectors Based on User:" + userId + "*******")
+    console.log("***** Get Sectors Based on User:" + userId + " *******")
     let collectionSec = await db.collection("secteurs") //collection where ids are stored 
     var values = await collectionSec.aggregate([
         {
@@ -220,7 +234,6 @@ router.get('/getSectorByUser', verifyToken, async (req, res) => {
     ListInfo = []
     values.forEach(element => {
         ListInfo.push(element.info)
-
     });
     res.status(200).json(ListInfo)
 
@@ -230,7 +243,13 @@ router.get('/getSectorByUser', verifyToken, async (req, res) => {
 router.get('/getClientByUser', verifyToken, async (req, res) => {
     var userId = req.userId;
     console.log("***** Get PDV Based on User: " + userId + " *******")
+
+
+
     let collectionSec = await db.collection("secteurs") //collection where ids are stored 
+
+
+
     var values = await collectionSec.aggregate([
         {
             $match: { users: ObjectId(userId) }
@@ -248,11 +267,13 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
     ]).toArray();
     ListInfo = []
     a = []
+    // console.log("reqclientvalues",values)
     values.forEach(elemm => {
         elemm.info.forEach(async (elem) => {
             ListInfo.push(elem)
         });
     });
+
     All_PDV = ListInfo.map(async (elem) => {
         if (elem.geometry.properties.NFC) {
             ///data injected by script 
@@ -299,16 +320,16 @@ router.get('/clients', verifyToken, async (req, res) => {
             var element = elem.geometry.properties;
             await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
                 elem.geometry.properties.NFCP = re
-            }).catch(err => next())
+            }).catch(err => console.log(err))
             await test1(db, ObjectId(element.PVPhoto)).then(re => {
                 elem.geometry.properties.PVP = re
-            }).catch(err => next())
+            }).catch(err => console.log(err))
         }
         a.push(elem)
     })
     Promise.all(curs).then(ee => {
         res.json(a)
-    }).catch(err => next());
+    }).catch(err => console.log(err));
 })
 
 // get client by seller   (Fadma's code)
@@ -430,7 +451,20 @@ async function InsertClient(client, res) {
     catch (error) {
         next(error)
     }
-
+    await collection.insertOne(clientinfo)
+    ////********* Add in geometries *****************/
+    let getInsertedId; //// put Id inserted
+    delete clientinfo.idGeometry;
+    var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
+    geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
+        var id = result.insertedId
+        var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
+            { $addToSet: { points: { "point": id, "route": null } } }).then(ss => {
+                res.status(200).json("Done")
+            })
+        //console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
+        //console.log(up)
+    }).catch(error => console.log(error))
 }
 
 async function updateClient(client) {
@@ -486,7 +520,9 @@ async function updateClient(client) {
             { $set: { "geometry": clientGeo } })
         console.log(updated)
         console.log("********** geometrie updated *******")
+
     })
+
 }
 
 
@@ -600,29 +636,54 @@ async function GenerateHashPassword(password) {
     return encrypted_password;
 }
 
-/// get User from database 
+/// get User from database
 async function getUser(user) {
-    var FindUser;
     console.log("find user")
+    console.log(user)
+
+
     let collection = db.collection("users")
+
     var status = { value: 401, data: null }
-    var FindUser = await collection.findOne({ email: user.email })
-    console.log(FindUser)
-    if (FindUser != null) {
-        var valid = await ValidPassword(user.password, FindUser.password)
-        if (valid) {
-            let playload = { subject: FindUser._id }
-            let token = jwt.sign(playload, 'secretKey')
-            status.value = 200
-            status.data = { 'token': token, 'user': FindUser }
+
+    var User = await collection.find({ email: user.email }).toArray()
+    if (User.length > 0) {
+        var FindUser;
+        User.forEach(async (u) => {
+            console.log(u)
+            if (u.role == user.role) {
+                console.log("****")
+                FindUser = u;
+            } else {
+                console.log("$$$$$$$$$$")
+                return null;
+            }
+        })
+        console.log("Find User")
+
+        console.log(FindUser)
+        if (FindUser != null) {
+            var valid = await ValidPassword(user.password, FindUser.password)
+            if (valid) {
+                let playload = { subject: FindUser._id }
+                let token = jwt.sign(playload, 'secretKey')
+                status.value = 200
+                status.data = { 'token': token, 'user': FindUser }
+            } else {
+                status.value = 401
+                status.data = "invalid password"
+            }
         } else {
-            status.value = 401
-            status.data = "invalid password"
+            status.value = 403
+            status.data = "invalid Role"
         }
+
     } else {
         status.value = 403
         status.data = "invalid User"
     }
+
+
     return status;
 }
 
@@ -693,10 +754,7 @@ async function getClientByAuditor(id) {
     }
     return cli;
 }
-/* GET users listing. */
-//   router.get('/', async function(req, res) {
-//     res.json("hey");
-//   });
+
 
 router.post('/login', async (req, res) => {
     let user = req.body;
@@ -717,33 +775,30 @@ router.post('/register', async (req, res) => {
 })
 
 async function AddNewUser(user) {
-
     user.userinfo.password = await GenerateHashPassword(user.userinfo.password)
     let collection = db.collection("users") // collection users 
     console.log("user", user)
-    var Roles = []
-    user.SectorsByRoles.forEach(r => Roles.push(r.role))
-    await collection.insertOne({
-        UserID: user.userinfo.UserID,
-        name: user.userinfo.name,
-        phone: user.userinfo.phone,
-        CIN: user.userinfo.CIN,
-        email: user.userinfo.email,
-        password: user.userinfo.password,
-        status: user.userinfo.status,
-        Roles: Roles
+    user.SectorsByRoles.forEach(async (r) => {
+        await collection.insertOne({
+            UserID: user.userinfo.UserID,
+            name: user.userinfo.name,
+            phone: user.userinfo.phone,
+            CIN: user.userinfo.CIN,
+            role: user.userinfo.role,
+            email: user.userinfo.email,
+            password: user.userinfo.password,
+            status: user.userinfo.status,
+            role: r.role
 
 
-    }).then(result => {
-        console.log(result.insertedId)
-        var id = result.insertedId
-        user.SectorsByRoles.forEach(role => {
-            role.value.forEach(sector =>
+        }).then(result => {
+            console.log(result.insertedId)
+            var id = result.insertedId
+            r.value.forEach(sector =>
                 AddUserToSector(id, sector)
             )
         })
     })
-
 }
 
 async function AddUserToSector(id, sec_name) {
@@ -811,48 +866,17 @@ router.get("/settings", async (req, res) => {
     if (obj?.user == "CountUser") {
         let users = await db.collection("users")
         var RoleCount = obj.role
-        console.log("RoleCount", RoleCount)
         let values = await users.find({ "role": RoleCount }).toArray()
-        console.log("values1")
-        console.log(values)
-
         response = values.length
-        console.log(response)
-
     } else {
         console.log("test")
         var proprety = obj.param;
         let collection = await db.collection("settings") // collection 
         var values = await collection.find({ "proprety": proprety }).toArray()
-        console.log("values2")
-        console.log(values)
         response = values[0]
     }
     console.log(values)
     res.json(response)
-
-})
-
-router.get("/settingsUp", async (req, res) => {
-    var obj = req.query
-
-    console.log("44444444444")
-    console.log(req.query)
-    // response = ""
-    // console.log(obj)
-    // if (obj?.user == "CountUser") {
-    //     let users = await db.collection("users")
-    //     var RoleCount = obj.role
-    //     let values = await users.find({ "role": RoleCount }).count()
-    //     response = values
-    // } else {
-    //     var proprety = obj.param;
-    //     let collection = await db.collection("settings") // collection 
-    //     var values = await collection.find({ "proprety": proprety }).toArray()
-    //     response = values[0]
-    // }
-    // //console.log(values[0])
-    // res.json(response)
 
 })
 //////////***********************************////////////////////////
@@ -976,48 +1000,13 @@ router.get("/image", async (req, res) => {
 
 })
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////
-router.post("/extract", async (req, res) => {
+router.get("/extract", async (req, res) => {
     let geometries = await db.collection("geometries")
-    var condition = req.body
-    console.log(condition)
-    var queries = []
-    queries.push({ "geometry.geometry.type": "Point" })
-
-    if (condition?.Sectors) {
-        console.log("found")
-        queries.push({
-            "geometry.properties.Code_Secteur_OS": {
-                $in: condition.Sectors
-            }
-        })
-    }
-    if (condition?.StartDate) {
-        queries.push({
-            "geometry.properties.created_at": {
-                $gte: new Date(condition.StartDate)
-            }
-        })
-    }
-    if (condition?.EndDate) {
-        queries.push({
-            "geometry.properties.created_at": {
-                $lte: new Date(condition.EndDate)
-            }
-        })
-    }
-    if (condition?.TypeDPV) {
-        queries.push({
-            "geometry.properties.TypeDPV": {
-                $in: condition.TypeDPV
-            }
-        })
-    }
     let values = await geometries.aggregate([
         {
             $match: {
-                $and:
-                    queries
-
+                $and: [{ "geometry.geometry.type": "Point" }
+                ]
             }
         },
         {
@@ -1028,9 +1017,9 @@ router.post("/extract", async (req, res) => {
                 as: "info"
             }
         }
+
     ]).toArray();
     all1 = []
-    //console.log(values)
     //res.json(values)
     var test = values.map((elem) => {
         elem.info.reverse();
@@ -1051,7 +1040,6 @@ router.post("/extract", async (req, res) => {
         return elem;
     });
     DataAll = []
-
     var to = test.map(async (element) => {
         var imgurl = "http://localhost:3000/api1/image?id="
         var Data = {
@@ -1163,7 +1151,6 @@ router.get('/getAllDeleteRequests', async (req, res) => {
     list = []
     let delReq = await db.collection("DeleteRequest")
     var values = await delReq.aggregate([
-        { $sort: { created_at: -1 } },
         {
             $lookup: {
                 from: "geometries",
@@ -1173,6 +1160,7 @@ router.get('/getAllDeleteRequests', async (req, res) => {
             }
         }]).toArray();
     //res.json(values)
+    console.log(values)
     curs = values.map(async (elem) => {
         console.log(elem.created_at)
         // console.log(elem)
@@ -1213,7 +1201,7 @@ router.get('/getAllDeleteRequests', async (req, res) => {
     ////console.log(a.length)
     Promise.all(curs).then(ee => {
         console.log("---- Deleted Requestes ----")
-        list.sort((a, b) => b.created_at - a.created_at); //sort by date desc
+        list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); //sort by date desc
 
         res.json(list)
     });
@@ -1224,6 +1212,7 @@ router.get('/getAllDeleteRequests', async (req, res) => {
 router.post('/ValidateDeleteClient', async (req, res) => {
     let _id = req.body.request._id
     let request = req.body.request
+
     let DeleteRequest = db.collection("DeleteRequest")
     let geometries = db.collection("geometries");
 
@@ -1321,9 +1310,13 @@ async function getInsertedIds(result) {
 }
 
 async function putEachData(res, collection) {
-    collection.insertOne({ geometry: res }).then(getInsertedIds).catch(error => console.log(error))
-
+    if (res.geometry.type == "MultiPolygon") {
+        collection.updateOne({ "geometry.geometry.type": "MultiPolygon", "geometry.properties.idSecteur": res.properties.idSecteur }, { $set: { geometry: res } }, { upsert: true }).then(rr => console.log(rr)).catch(error => console.log(error))
+    } else {
+        collection.updateOne({ "geometry.properties.Code_Client": res.properties.Code_Client }, { $set: { geometry: res } }, { upsert: true }).then().catch(error => console.log(error))
+    }
 }
+
 
 async function PutDataGeometries(collection, file) {
     console.log("\n ---------------- Start adding Data to geometries------------------------------")
@@ -1343,7 +1336,6 @@ async function InjectSecteurData(elem) {
     console.log("\n --------------------- Start Injecting Sector Data ------------------------------")
     var arrNull = []  // put Data that Have Null in idSecteur ( didn't join with any sector)
     elem.forEach(value => {
-
         var val = value.geometry;
         if (val.properties.idSecteur != null) {
             db.collection("secteurs").updateOne(

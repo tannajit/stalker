@@ -5,16 +5,12 @@
 // then run  ' node script.js'
 
 const MongoClient = require("mongodb").MongoClient;
-//var uri = "mongodb://localhost:27017";
+// var uri = "mongodb://localhost:27017";
 var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 var fs = require('fs');
 var client = new MongoClient(uri);
 var db; // database 
-<<<<<<< HEAD
-var name_database="stalker2"
-=======
 var name_database = "stalker1"
->>>>>>> 18f96d14c1df8dbca7fcb6c09d45e7eea1dcd857
 
 async function run() {
 	try {
@@ -47,8 +43,8 @@ async function getInsertedIds(result) {
 }
 
 async function putEachData(res, collection) {
-	collection.insertOne({ geometry: res }).then(getInsertedIds).catch(error => console.log(error))
-	console.log(insertedId)
+	collection.insertOne({ geometry: res })
+	//console.log(insertedId)
 }
 
 async function PutDataGeometries(collection) {

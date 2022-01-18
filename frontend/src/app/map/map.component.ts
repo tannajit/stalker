@@ -183,21 +183,29 @@ export class MapComponent implements AfterViewInit {
               return L.marker(latlon, { icon: iconClient });
             }
           });
+          marker.addTo(this.map);
+
+
           if (Point.geometry.properties?.nfc != undefined) {
             marker.on('click', () => {
-              this._serviceClient.getPosition({ "Client": new L.LatLng(Point.geometry.geometry.coordinates[1], Point.geometry.geometry.coordinates[0]) });
+              
+              this._serviceClient.getPosition({"Client":new L.LatLng(Point.geometry.geometry.coordinates[1],Point.geometry.geometry.coordinates[0])});
               this.content = Point.geometry;
               this.zone.run(() => this.openDialog(Point));
             });
-          } else {
+         } 
+         else {
             //console.log("############# ici"+Point.geometry.properties.Nom_Client)
             marker.bindPopup('<h1> <b>Client Information</b></h1><p><b>Name:</b> ' + String(Point.geometry.properties.Nom_Client) + '</p><p><b>Sector Name: </b>' + String(Point.geometry.properties.Nom_du_Secteur) + '</p>');
-          }
-          if (status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
-            this.markersCluster.addLayer(marker);
-          } else if (status != 'deleted') {
-            this.markersCluster.addLayer(marker);
-          }
+        }
+
+        if(status=='deleted' && (this.user.role =="Admin" || this.user.role =="Back Office") ){
+          console.log("deleted status ")
+          console.log(this.user.role)
+          this.markersCluster.addLayer(marker);
+        }else if(status!='deleted'){
+          this.markersCluster.addLayer(marker);
+        }
         });
       };
     };
@@ -417,22 +425,38 @@ export class MapComponent implements AfterViewInit {
       this.getDataClient();
     }
   }
-  ///////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////
 
-  ///////******** Search for a client By id ***********///////////
+
+
+  ///////******** Search for the client By id ***********///////////
   Search(IDGeomerty) {
     console.log(IDGeomerty);
     //tslint:disable-next-line:no-shadowed-variable
     this._serviceClient.getClientByID(IDGeomerty).subscribe(res => {
+      console.log("res ",res)
       if (IDGeomerty != null) {
         this.map.setView(new L.LatLng(res["geometry"].geometry.coordinates[1], res["geometry"].geometry.coordinates[0]), 30, { animation: true }).addTo(this.map);
       }
-    });
+  })}
+  horsCx=false
+  openAlertSearch(mess) {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        message:mess,
+        buttonText: {
+          ok: 'Ok',
+        }
+      }
+
+    }).afterClosed()
   }
+  
   /////////////////////////////////////////////////////////
 
   ///////************** Search for the client from indexDB ***********////////////
-  SearchIndexDB(IDGeomerty) {
+
+  SearchIndexDB(IDGeomerty){
     console.log("Update in IndexedDB")
     var db, transaction;
     var request = window.indexedDB.open("off", this.version)
@@ -443,14 +467,36 @@ export class MapComponent implements AfterViewInit {
       db = event.target.result;
       transaction = db.transaction(['data'], 'readwrite');
       var objectStore = transaction.objectStore("data");
-      var objectStoreRequest = objectStore.get(IDGeomerty);
-      objectStoreRequest.onsuccess = (event) => {
-        var elm = JSON.parse(objectStoreRequest.result.Valeur);
-        console.log(elm.geometry.coordinates)
-        this.map.setView(new L.LatLng(elm.geometry.coordinates[1], elm.geometry.coordinates[0]), 18);
+      if(IDGeomerty!=null){
+        var objectStoreRequest = objectStore.get(IDGeomerty);
+
+          objectStoreRequest.onsuccess = (event) => {
+
+          if(objectStoreRequest.result!=undefined){
+            var elm = JSON.parse(objectStoreRequest.result.Valeur);
+            console.log(elm.geometry.coordinates)
+            this.map.setView(new L.LatLng(elm.geometry.coordinates[1], elm.geometry.coordinates[0]), 30);
+            }
+          else{
+            var mess="Be sure of the id :"+IDGeomerty
+            this.openAlertSearch(mess);
+          }
+           
+        }
+        
+  
+        
+         
+
+      }else{
+        var mess="Please Enter the ID"
+        this.openAlertSearch(mess)
       }
+      console.log("objectStoreRequest",objectStoreRequest)
+      
     }
   }
+
   //////////////////////////////////////////////////////////////////////////////////
 
   /////////////*********** EXTRACT DATA ******/////////////////

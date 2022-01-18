@@ -509,8 +509,6 @@ export class ClientsService {
 
   DeleteRequest(data) {
     console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-
-
     console.log(data)
     console.log("DeleteClientByID" + data);
     return this.http.post(this._Delete + "DeleteRequest", data);
