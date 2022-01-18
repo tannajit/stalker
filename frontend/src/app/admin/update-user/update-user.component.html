@@ -67,6 +67,16 @@
                     </mat-select>
                 </mat-form-field>
             </div>
+            <!-- <div class="field" *ngIf="RoleActive()">
+                <label>Sector :</label>
+                <mat-form-field >
+                    <mat-select placeholder="select" multiple  panelClass="selectPanel2" value="SelectedSector" [(ngModel)]="SelectedSector">
+                        <div *ngFor="let sector of Sectors">
+                            <mat-option value="{{sector.id}}">{{sector.detail}}</mat-option>
+                            </div>
+                    </mat-select>
+                </mat-form-field>
+            </div> -->
             <div class="field" *ngIf="RoleActive()">
                 <label>Sector :</label>
                 <form [formGroup]="searchUserForm">

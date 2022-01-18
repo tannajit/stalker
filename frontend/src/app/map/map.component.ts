@@ -182,18 +182,22 @@ export class MapComponent implements AfterViewInit {
             pointToLayer: (point, latlon) => {
               return L.marker(latlon, { icon:iconClient }); }
           });
-         
+          marker.addTo(this.map);
+
+
           if (Point.geometry.properties?.nfc != undefined) {
             marker.on('click', () => {
+              
               this._serviceClient.getPosition({"Client":new L.LatLng(Point.geometry.geometry.coordinates[1],Point.geometry.geometry.coordinates[0])});
               this.content = Point.geometry;
               this.zone.run(() => this.openDialog(Point));
             });
-         } else {
-          
+         } 
+         else {
             //console.log("############# ici"+Point.geometry.properties.Nom_Client)
             marker.bindPopup('<h1> <b>Client Information</b></h1><p><b>Name:</b> ' + String(Point.geometry.properties.Nom_Client) + '</p><p><b>Sector Name: </b>' + String(Point.geometry.properties.Nom_du_Secteur) + '</p>');
         }
+
         if(status=='deleted' && (this.user.role =="Admin" || this.user.role =="Back Office") ){
           console.log("deleted status ")
           console.log(this.user.role)

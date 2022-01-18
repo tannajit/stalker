@@ -147,20 +147,20 @@ export class AddUserComponent implements OnInit {
   }
   
   onChange() {
-    console.log("role",this.role)
-    console.log("SectorAffacted",this.AllSectors)
-     console.log(this.SelectedSector)
+
      this.selected=this.role
      const obj={role:this.role,value:null}
      if(this.SelectedSector.length!=0)
      {
        obj.value=this.SelectedSector     
       }
-      if(this.role==="Admin"||this.role==="Auditor"||this.role==="Back Office"){
+      if(this.role==="Admin"||this.role==="Controler"||this.role==="Back Office"){
        
        obj.value=this.AllSectors
  
       }
+      console.log("this.obj",obj)
+
      this.upsert(this.ListOfRoles,obj)
   
      console.log("ListOfRules",this.ListOfRoles)

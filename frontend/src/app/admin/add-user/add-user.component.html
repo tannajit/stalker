@@ -98,6 +98,18 @@
                 </form>
             </div>
 
+            <!-- <div class="field" *ngIf="RoleActive()">
+                <label>Sector :</label>
+                <mat-form-field >
+                    <mat-select placeholder="select" multiple  panelClass="selectPanel2" (selectionChange)="onChange()"  [(value)]="SelectedSector">
+                        <div *ngFor="let sector of Sectors">
+                            <mat-option value="{{sector.id}}">{{sector.detail}}</mat-option>
+                        </div>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            {{SelectedSector}} -->
+
             <div class="roles-container" *ngIf="RoleSelected.length!=0">
                 <ng-container *ngFor="let rol of RoleSelected">
                     <div class="role-row">
