@@ -58,13 +58,14 @@
             <div class="field">
                 <label>Role :</label>
                 <mat-form-field >
-                    <mat-select placeholder="select"  panelClass="selectPanel2"  (selectionChange)="onChange()" [(value)]="role">   
-                        <div *ngFor="let rol of Roles">
-                            <mat-option value="{{rol}}">{{rol}}</mat-option>
+                    <mat-select  placeholder="select"  panelClass="selectPanel2"  (selectionChange)="onChange()" [(value)]="role">   
+                        <div *ngFor="let rol of Roles" >
+                        
+                        <mat-option   value="{{rol}}">{{rol}}</mat-option>
                         </div>
                     </mat-select>
                 </mat-form-field>
-                <button mat-button class="gen-btn" *ngIf="RoleSelected.length!=0" (click)="AddNewRole()">Add Role</button>
+                <button mat-button class="gen-btn" *ngIf="RoleSelected.length!=0"  (click)="AddNewRole()">Add Role</button>
                                 
                 <!-- <label>Role Selected:</label>
                 <mat-form-field >
@@ -89,7 +90,7 @@
                                 <ngx-mat-select-search placeholderLabel="Search" (keyup)="filterListCareUnit($event.target.value)" ></ngx-mat-select-search>
                             </mat-option>
                             <mat-option #allSelected (click)="toggleAllSelection()" [value]="0">Select all</mat-option>
-                            <mat-option *ngFor="let sector of Sectors" [value]="sector.id"
+                            <mat-option  *ngFor="let sector of Sectors" [value]="sector.id"
                                 (click)="togglePerOne(allSelected.viewValue)">
                                 {{sector.detail}}
                             </mat-option>

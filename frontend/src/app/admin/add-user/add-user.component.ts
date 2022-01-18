@@ -145,9 +145,9 @@ export class AddUserComponent implements OnInit {
     })
 
   }
-  
+  Disabled=false
   onChange() {
-
+    
      this.selected=this.role
      const obj={role:this.role,value:null}
      if(this.SelectedSector.length!=0)
@@ -168,12 +168,25 @@ export class AddUserComponent implements OnInit {
      if (!this.RoleSelected.includes(this.role)) {
       this.RoleSelected.push(this.role);
     }
+    
+    console.log("RoleSelected",this.RoleSelected)
+    this.Disabled =this.RoleSelected.includes(this.role)
+    console.log("Disabled",this.Disabled)
+
+
+    
+
+    
   }
 
-  AddRoles=[0];
   AddNewRole(){
+    this.SelectedSector=[]
+    if(this.RoleSelected.includes(this.role)){
+      this.Roles.splice(this.Roles.indexOf(this.role),1);
+    }
     this.role=""
-    this.SelectedSector=null
+    
+    
 
     // var i=1
     // this.AddRoles.push(i++);
@@ -192,6 +205,10 @@ export class AddUserComponent implements OnInit {
         }
 
       }) 
+      
+      this.Roles.push(role);
+
+     if(this.RoleSelected.length==0) this.role=""
 
   }
 
