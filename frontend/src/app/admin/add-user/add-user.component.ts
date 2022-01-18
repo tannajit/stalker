@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ClientsService } from 'src/app/clients.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ClientInfoComponent } from 'src/app/client-info/client-info.component';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { AlertDialogComponent } from 'src/app/alert-dialog/alert-dialog.component';
 import { Router } from '@angular/router';
 import { AdminService } from '../admin.service';
@@ -29,6 +30,7 @@ export class AddUserComponent implements OnInit {
   RoleSelected = [];
   selected
   Roles = []
+  test=[]
   Sectors = []
   AllEmail = []
   AllSectors = []
@@ -143,6 +145,8 @@ export class AddUserComponent implements OnInit {
     })
 
   }
+  
+  
 
   onChange() {
     console.log("role", this.role)
@@ -167,9 +171,11 @@ export class AddUserComponent implements OnInit {
     }
   }
 
-  AddRoles = [0];
-  AddNewRole() {
-    this.role = ""
+  AddRoles=[0];
+  AddNewRole(){
+    this.role=""
+    this.SelectedSector=null
+
     // var i=1
     // this.AddRoles.push(i++);
 
@@ -261,7 +267,7 @@ export class AddUserComponent implements OnInit {
   ////////////////////// 
   anotherArray = this.Sectors;
   filterListCareUnit(val) {
-    console.log(val);
+    // console.log(val);
     this.Sectors = this.anotherArray.filter((unit) => unit.detail.toLowerCase().indexOf(val) > -1);
   }
 

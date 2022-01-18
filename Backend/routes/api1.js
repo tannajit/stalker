@@ -21,8 +21,11 @@ const jwt = require("jsonwebtoken")
 const { param } = require("express/lib/router");
 const controller = require("./controller");
 const fs = require("fs");
-var GeoJSON = require('geojson');
+
 const baseUrl = "uploads/";
+//// fetch 
+const fetch = require("node-fetch")
+
 var salt = 5 //any random value,  the salt value specifies how much time it’s gonna take to hash the password. higher the salt value, more secure the password is and more time it will take for calculation.
 // MongoDataBase
 async function run() {
@@ -55,8 +58,9 @@ run().catch(console.log)
 //         //do all database record saving activity
 //         return res.json({originalname:req.file.originalname, uploadname:req.file.filename});
 //     });
-// });
 
+
+//////************** */
 router.post("/upload", controller.upload);
 
 router.get("/files", async function (req, res) {
@@ -204,9 +208,9 @@ router.get('/secteurs', verifyToken, async (req, res) => {
     res.json(sec)
 })
 //*** Get Sector affected to a User (fix query structure) */
-router.get('/getSectorByUser',verifyToken,async (req, res) => {
+router.get('/getSectorByUser', verifyToken, async (req, res) => {
     var userId = req.userId;
-    console.log("***** Get Sectors Based on User:"+userId+" *******")
+    console.log("***** Get Sectors Based on User:" + userId + " *******")
     let collectionSec = await db.collection("secteurs") //collection where ids are stored 
     var values = await collectionSec.aggregate([
         {
@@ -229,15 +233,16 @@ router.get('/getSectorByUser',verifyToken,async (req, res) => {
     ]).toArray();
     ListInfo = []
     values.forEach(element => {
-       ListInfo.push(element.info)
+        ListInfo.push(element.info)
     });
-    //console.log(ListInfo.length)
-    res.json(ListInfo)
+    res.status(200).json(ListInfo)
+
+
 })
 //*** Get PDV by user (I changed the structure of the Query ) */
 router.get('/getClientByUser', verifyToken, async (req, res) => {
     var userId = req.userId;
-    console.log("***** Get PDV Based on User: "+userId+" *******")
+    console.log("***** Get PDV Based on User: " + userId + " *******")
 
 
 
@@ -287,7 +292,8 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
     })
     Promise.all(All_PDV).then(ee => {
         res.json(a)
-    }).catch(err => next());
+    }).catch(err =>console.log(err));
+    
 })
 
 /* GET clients Based on User */
@@ -369,7 +375,7 @@ router.post('/restoreUser', async (req, res) => {
     let user = req.body;
     let userColl = db.collection("users")
     var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
-        { $set: { "status": "Ac tive" } })
+        { $set: { "status": "Active" } })
     console.log(updated)
 })
 
@@ -634,58 +640,52 @@ async function GenerateHashPassword(password) {
 async function getUser(user) {
     console.log("find user")
     console.log(user)
-    
-    
-    
+
+
     let collection = db.collection("users")
+
     var status = { value: 401, data: null }
-    
-    
-    
-    var User = await collection.find({ email: user.email}).toArray()
-    if(User!=null){
-    var FindUser;
-    User.forEach( async (u)=>{
-    console.log(u)
-    if(u.role==user.role){
-    console.log("****")
-    FindUser=u;
-    }else{
-    console.log("$$$$$$$$$$")
-    return null;
-    }
-    })
-    console.log("Find User")
-    
-    console.log(FindUser)
-    if(FindUser!=null){
-    var valid = await ValidPassword(user.password, FindUser.password)
-    if (valid) {
-    let playload = { subject: FindUser._id }
-    let token = jwt.sign(playload, 'secretKey')
-    status.value = 200
-    status.data = { 'token': token, 'user': FindUser }
+
+    var User = await collection.find({ email: user.email }).toArray()
+    if (User.length > 0) {
+        var FindUser;
+        User.forEach(async (u) => {
+            console.log(u)
+            if (u.role == user.role) {
+                console.log("****")
+                FindUser = u;
+            } else {
+                console.log("$$$$$$$$$$")
+                return null;
+            }
+        })
+        console.log("Find User")
+
+        console.log(FindUser)
+        if (FindUser != null) {
+            var valid = await ValidPassword(user.password, FindUser.password)
+            if (valid) {
+                let playload = { subject: FindUser._id }
+                let token = jwt.sign(playload, 'secretKey')
+                status.value = 200
+                status.data = { 'token': token, 'user': FindUser }
+            } else {
+                status.value = 401
+                status.data = "invalid password"
+            }
+        } else {
+            status.value = 403
+            status.data = "invalid Role"
+        }
+
     } else {
-    status.value = 401
-    status.data = "invalid password"
+        status.value = 403
+        status.data = "invalid User"
     }
-    }else{
-    status.value = 403
-    status.data = "invalid Role"
-    }
-    
-    
-    
-    
-    
-    }else{
-    status.value = 403
-    status.data = "invalid User"
-    }
-    
-    
+
+
     return status;
-    }
+}
 
 //***  Login */
 router.post('/login', async (req, res) => {
@@ -777,29 +777,28 @@ router.post('/register', async (req, res) => {
 async function AddNewUser(user) {
     user.userinfo.password = await GenerateHashPassword(user.userinfo.password)
     let collection = db.collection("users") // collection users 
-    console.log("user",user)
-    user.SectorsByRoles.forEach(async(r)=>
-        {
-    await collection.insertOne({
-        UserID: user.userinfo.UserID,
-        name: user.userinfo.name,
-        phone: user.userinfo.phone,
-        CIN: user.userinfo.CIN,
-        role: user.userinfo.role,
-        email: user.userinfo.email,
-        password: user.userinfo.password,
-        status: user.userinfo.status,
-        role: r.role
+    console.log("user", user)
+    user.SectorsByRoles.forEach(async (r) => {
+        await collection.insertOne({
+            UserID: user.userinfo.UserID,
+            name: user.userinfo.name,
+            phone: user.userinfo.phone,
+            CIN: user.userinfo.CIN,
+            role: user.userinfo.role,
+            email: user.userinfo.email,
+            password: user.userinfo.password,
+            status: user.userinfo.status,
+            role: r.role
 
 
-    }).then(result => {
-        console.log(result.insertedId)
-        var id = result.insertedId
-            r.value.forEach(sector=>
+        }).then(result => {
+            console.log(result.insertedId)
+            var id = result.insertedId
+            r.value.forEach(sector =>
                 AddUserToSector(id, sector)
             )
-    })
         })
+    })
 }
 
 async function AddUserToSector(id, sec_name) {
@@ -1152,7 +1151,6 @@ router.get('/getAllDeleteRequests', async (req, res) => {
     list = []
     let delReq = await db.collection("DeleteRequest")
     var values = await delReq.aggregate([
-        { $sort: { created_at: -1 } },
         {
             $lookup: {
                 from: "geometries",
@@ -1162,6 +1160,7 @@ router.get('/getAllDeleteRequests', async (req, res) => {
             }
         }]).toArray();
     //res.json(values)
+    console.log(values)
     curs = values.map(async (elem) => {
         console.log(elem.created_at)
         // console.log(elem)
@@ -1202,7 +1201,7 @@ router.get('/getAllDeleteRequests', async (req, res) => {
     ////console.log(a.length)
     Promise.all(curs).then(ee => {
         console.log("---- Deleted Requestes ----")
-        list.sort((a, b) => b.created_at - a.created_at); //sort by date desc
+        list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); //sort by date desc
 
         res.json(list)
     });
@@ -1311,9 +1310,9 @@ async function getInsertedIds(result) {
 }
 
 async function putEachData(res, collection) {
-      if (res.geometry.type == "MultiPolygon") {
-        collection.updateOne({ "geometry.geometry.type": "MultiPolygon" ,"geometry.properties.idSecteur": res.properties.idSecteur }, { $set: { geometry: res } }, { upsert: true }).then(rr => console.log(rr)).catch(error => console.log(error))
-    }else{
+    if (res.geometry.type == "MultiPolygon") {
+        collection.updateOne({ "geometry.geometry.type": "MultiPolygon", "geometry.properties.idSecteur": res.properties.idSecteur }, { $set: { geometry: res } }, { upsert: true }).then(rr => console.log(rr)).catch(error => console.log(error))
+    } else {
         collection.updateOne({ "geometry.properties.Code_Client": res.properties.Code_Client }, { $set: { geometry: res } }, { upsert: true }).then().catch(error => console.log(error))
     }
 }
