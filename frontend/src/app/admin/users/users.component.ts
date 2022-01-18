@@ -10,6 +10,7 @@ import { UserInfoComponent } from '../user-info/user-info.component';
 import * as _ from 'lodash';
 import { SettingsService } from 'src/app/settings/settings.service';
 import { ClientsService } from 'src/app/clients.service';
+import { AlertDialogComponent } from 'src/app/alert-dialog/alert-dialog.component';
 
 
 
@@ -46,7 +47,7 @@ export class UsersComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-    
+    this.changeDetectorRefs.detectChanges();
     this.getUsers()
     this.getRoles()
     this.getAllSectors()
@@ -107,7 +108,10 @@ export class UsersComponent implements OnInit {
           
         })
         this.getUsers()
-        this.dataSource = new MatTableDataSource(this.users);
+        this.dataSource.data = this.users;
+        this.changeDetectorRefs.detectChanges();
+        this.openAlertDialog('The user is deleted successfully!')
+        this.selectedRole=this.selectedSector=this.selectedStatus=undefined
       }
       this.dialogRef = null;
     });
@@ -115,8 +119,20 @@ export class UsersComponent implements OnInit {
   }
 
   updateUser(user){
+    console.log(this.dataSource)
     this._router.navigateByUrl('/updateUser', { state: { dataUser:user,userid:user.UserID,userrole:user.role } });
 
+  }
+
+  openAlertDialog(message) {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        message: message,
+        buttonText: {
+          ok: 'Ok',
+        }
+      }
+    });
   }
   
   restoreUser(user){
@@ -134,7 +150,10 @@ export class UsersComponent implements OnInit {
           
         })
         this.getUsers()
-        this.dataSource = new MatTableDataSource(this.users);
+        this.dataSource.data = this.users;
+        this.changeDetectorRefs.detectChanges();
+        this.openAlertDialog('The user is restored successfully!')
+        this.selectedRole=this.selectedSector=this.selectedStatus=undefined
       }
       this.dialogRef = null;
     });

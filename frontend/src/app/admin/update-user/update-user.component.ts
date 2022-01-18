@@ -28,7 +28,7 @@ export class UpdateUserComponent implements OnInit {
   role = this.userInfo.role
   hidpass = true
   SelectedSector = [];
-  test=[]
+  test = []
   SectorsAttached = [];
   AllSectors = [];
   Sectors = []
@@ -78,10 +78,10 @@ export class UpdateUserComponent implements OnInit {
     // }
 
 
-    this.userInfo.sectors.forEach(el => {this.SelectedSector.push(el.nameSecteur)});
-    this.SectorsAttached=this.SelectedSector
+    this.userInfo.sectors.forEach(el => { this.SelectedSector.push(el.nameSecteur) });
+    this.SectorsAttached = this.SelectedSector
 
-    console.log("SelectedSector",this.SelectedSector)
+    console.log("SelectedSector", this.SelectedSector)
     this._setting.getSettings('param=role').subscribe(res => {
       this.Roles = res.details.roles
       console.log(res)
@@ -110,7 +110,7 @@ export class UpdateUserComponent implements OnInit {
 
   GenerateEmail() {
     var i = 0;
-   
+
     var last = this.LastName.replace(" ", '.')
     var l1 = this.FirstName.toLowerCase().slice(0, 1)
     var email = (l1 + "." + last.toLowerCase() + "@fgddistrib.com").replace(/\s/g, '');
@@ -118,7 +118,7 @@ export class UpdateUserComponent implements OnInit {
   }
 
   GeneratePassword() {
-  console.log(this.SelectedSector)
+    console.log(this.SelectedSector)
     this.hidpass = false
     this.generated = true;
     this.userInfo.password = (Math.random() + 1).toString(36).substring(2);
@@ -138,12 +138,10 @@ export class UpdateUserComponent implements OnInit {
 
   onChange() {
 
-    if(this.role!=this.userInfo.role)
-    {
+    if (this.role != this.userInfo.role) {
       this.SetUserID()
     }
-    if(this.role === this.userInfo.role)
-    {
+    if (this.role === this.userInfo.role) {
       this.userInfo.UserID = this.UserID
     }
 
@@ -151,12 +149,12 @@ export class UpdateUserComponent implements OnInit {
   //// Set User ID 
   SetUserID() {
     this._setting.getSettings("user=CountUser&role=" + this.userInfo.role + "").subscribe(res => {
-      console.log("res",res)
+      console.log("res", res)
       this.CountUser = res + 1
-      console.log("res",this.CountUser)
+      console.log("res", this.CountUser)
       // const RoleAfficher=this.userInfo.role
       this.userInfo.UserID = this.userInfo.role.slice(0, 2) + String(this.pad(Number(this.CountUser), 7))
-  
+
     })
   }
 
@@ -166,31 +164,31 @@ export class UpdateUserComponent implements OnInit {
     return (1e15 + a + '').slice(-b);
   }
 
-  UpdateUser(){
-    var UserInfoUp={}
-    UserInfoUp["_id"]=this.userInfo._id
-    UserInfoUp["UserID"]=this.userInfo.UserID
-    UserInfoUp["name"]=this.LastName+" "+this.FirstName
-    UserInfoUp["CIN"]=this.userInfo.CIN
-    UserInfoUp["role"]=this.userInfo.role
-    UserInfoUp["password"]=this.userInfo.password
-    UserInfoUp["email"]=this.userInfo.email
-    UserInfoUp["phone"]=this.userInfo.phone
-    UserInfoUp["status"]=this.userInfo.status
-    UserInfoUp["sectors"]=this.SelectedSector
-    UserInfoUp["generated"]=this.generated
+  UpdateUser() {
+    var UserInfoUp = {}
+    UserInfoUp["_id"] = this.userInfo._id
+    UserInfoUp["UserID"] = this.userInfo.UserID
+    UserInfoUp["name"] = this.LastName + " " + this.FirstName
+    UserInfoUp["CIN"] = this.userInfo.CIN
+    UserInfoUp["role"] = this.userInfo.role
+    UserInfoUp["password"] = this.userInfo.password
+    UserInfoUp["email"] = this.userInfo.email
+    UserInfoUp["phone"] = this.userInfo.phone
+    UserInfoUp["status"] = this.userInfo.status
+    UserInfoUp["sectors"] = this.SelectedSector
+    UserInfoUp["generated"] = this.generated
     console.log("====================================")
 
 
     const SectorDeleted = this.SectorsAttached.filter(value => !this.SelectedSector.includes(value));
     UserInfoUp["SectorDeleted"] = SectorDeleted
 
-    this._setting.UpdateUser(UserInfoUp).subscribe(res=>console.log(res))
+    this._setting.UpdateUser(UserInfoUp).subscribe(res => console.log(res))
 
-    if(this.generated){
-          this.openAlertDialog()
-    }else{
-      var message="User updated successfully!"
+    if (this.generated) {
+      this.openAlertDialog()
+    } else {
+      var message = "User updated successfully!"
       this.openSuccessDialog(message)
       this._router.navigate(['/users'])
     }
@@ -201,7 +199,7 @@ export class UpdateUserComponent implements OnInit {
   openAlertDialog() {
     const dialogRef = this.dialog.open(AlertDialogComponent, {
       data: {
-        message:"User has been updated. Please Copy this credentials before Exit \n " +"[Email:"+this.userInfo.email +"-"+"Password:"+this.userInfo.password+"]",
+        message: "User has been updated. Please Copy this credentials before Exit \n " + "[Email:" + this.userInfo.email + "-" + "Password:" + this.userInfo.password + "]",
         buttonText: {
           ok: 'Done',
         }
@@ -213,10 +211,10 @@ export class UpdateUserComponent implements OnInit {
     ;
   }
 
-  openSuccessDialog(msg){
+  openSuccessDialog(msg) {
     const dialogRef = this.dialog.open(AlertDialogComponent, {
       data: {
-        message:msg,
+        message: msg,
         buttonText: {
           ok: 'Ok',
         }
@@ -227,19 +225,19 @@ export class UpdateUserComponent implements OnInit {
 
   anotherArray = this.Sectors;
   filterListCareUnit(val) {
-          console.log(val);
-          this.Sectors = this.anotherArray.filter((unit) => unit.detail.indexOf(val) > -1);
-        }
-  
+    // console.log(val);
+    this.Sectors = this.anotherArray.filter((unit) => unit.detail.toLowerCase().indexOf(val) > -1);
+  }
+
   togglePerOne(all) {
     if (this.allSelected.selected) {
       this.allSelected.deselect();
       return false;
     }
-    if (this.searchUserForm.controls.userType.value.length == this.Sectors.length){
+    if (this.searchUserForm.controls.userType.value.length == this.Sectors.length) {
       this.allSelected.select();
-  }
-  console.log(this.Sectors)
+    }
+    console.log(this.Sectors)
   }
 
   toggleAllSelection() {
@@ -250,4 +248,5 @@ export class UpdateUserComponent implements OnInit {
       this.searchUserForm.controls.userType.patchValue([]);
     }
   }
+
 }

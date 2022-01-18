@@ -6,7 +6,7 @@ var multer = require('multer');
 var path = require('path');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-//var uri = "mongodb://localhost:27017";
+// var uri = "mongodb://localhost:27017";
 var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 // uri to your Mongo database
@@ -21,8 +21,11 @@ const jwt = require("jsonwebtoken")
 const { param } = require("express/lib/router");
 const controller = require("./controller");
 const fs = require("fs");
-var GeoJSON = require('geojson');
+
 const baseUrl = "uploads/";
+//// fetch 
+const fetch = require("node-fetch")
+
 var salt = 5 //any random value,  the salt value specifies how much time it’s gonna take to hash the password. higher the salt value, more secure the password is and more time it will take for calculation.
 // MongoDataBase
 async function run() {
@@ -55,8 +58,9 @@ run().catch(console.log)
 //         //do all database record saving activity
 //         return res.json({originalname:req.file.originalname, uploadname:req.file.filename});
 //     });
-// });
 
+
+//////************** */
 router.post("/upload", controller.upload);
 
 router.get("/files", async function (req, res) {
@@ -231,8 +235,9 @@ router.get('/getSectorByUser', verifyToken, async (req, res) => {
     values.forEach(element => {
         ListInfo.push(element.info)
     });
-    //console.log(ListInfo.length)
-    res.json(ListInfo)
+    res.status(200).json(ListInfo)
+
+
 })
 //*** Get PDV by user (I changed the structure of the Query ) */
 router.get('/getClientByUser', verifyToken, async (req, res) => {
@@ -287,7 +292,8 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
     })
     Promise.all(All_PDV).then(ee => {
         res.json(a)
-    }).catch(err => next());
+    }).catch(err =>console.log(err));
+    
 })
 
 /* GET clients Based on User */
@@ -1145,7 +1151,6 @@ router.get('/getAllDeleteRequests', async (req, res) => {
     list = []
     let delReq = await db.collection("DeleteRequest")
     var values = await delReq.aggregate([
-        { $sort: { created_at: -1 } },
         {
             $lookup: {
                 from: "geometries",
@@ -1155,6 +1160,7 @@ router.get('/getAllDeleteRequests', async (req, res) => {
             }
         }]).toArray();
     //res.json(values)
+    console.log(values)
     curs = values.map(async (elem) => {
         console.log(elem.created_at)
         // console.log(elem)
@@ -1195,7 +1201,7 @@ router.get('/getAllDeleteRequests', async (req, res) => {
     ////console.log(a.length)
     Promise.all(curs).then(ee => {
         console.log("---- Deleted Requestes ----")
-        list.sort((a, b) => b.created_at - a.created_at); //sort by date desc
+        list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); //sort by date desc
 
         res.json(list)
     });

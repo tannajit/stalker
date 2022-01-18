@@ -5,7 +5,7 @@
         </div>
         <div class="add-form">
             <!-- <div class="field"> -->
-                <!-- <label>Id User :</label>
+            <!-- <label>Id User :</label>
                 <button mat-button disabled class="matricule">{{UserID}}</button>
             </div> -->
             <div class="field">
@@ -77,7 +77,7 @@
                     </mat-select>
                 </mat-form-field> -->
             </div>
-            
+
             <div class="field" *ngIf="RoleActive()">
                 <label>Sector :</label>
                 <form [formGroup]="searchUserForm">
@@ -118,7 +118,7 @@
                         <mat-icon (click)="RemoveRole(rol)">clear</mat-icon>
                     </div>
                 </ng-container>
-                
+
             </div>
 
             <div class="btns">

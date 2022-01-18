@@ -136,6 +136,7 @@ import { UserInfoComponent } from './admin/user-info/user-info.component';
     MatSlideToggleModule,
     MatDatepickerModule,
     MatNativeDateModule,
+
     // FileUploadModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: true,
