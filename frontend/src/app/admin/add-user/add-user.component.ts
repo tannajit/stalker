@@ -279,7 +279,7 @@ export class AddUserComponent implements OnInit {
     if (this.searchUserForm.controls.userType.value.length == this.Sectors.length){
       this.allSelected.select();
   }
-  console.log(this.Sectors)
+  //console.log(this.Sectors)
   }
 
   toggleAllSelection() {
