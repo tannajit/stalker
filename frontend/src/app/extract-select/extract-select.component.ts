@@ -89,6 +89,7 @@ export class ExtractSelectComponent implements OnInit {
     console.log(infoToExtract)
     this.valueProgress=20
      this._client.extract(infoToExtract).subscribe(res => {
+       console.log("sb7an lah")
         this.startExtract=false;
         this.done=true;
         this.valueProgress=50;

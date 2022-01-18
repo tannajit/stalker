@@ -1000,8 +1000,10 @@ router.get("/image", async (req, res) => {
 
 })
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////
-router.get("/extract", async (req, res) => {
+router.post("/extract", async (req, res) => {
     let geometries = await db.collection("geometries")
+    console.log("*******************************")
+    
     let values = await geometries.aggregate([
         {
             $match: {

@@ -83,6 +83,7 @@ export class ClientsService {
   }
 
   extract(info) {
+    
     return this.http.post<any>(this._extarct, info);
   }
 
