@@ -39,8 +39,8 @@
     gap: 3%;
     margin: 5px;
 }
-.field mat-foforrm-field{
-    width:300px !important;
+.field mat-form-field{
+    width:400px !important;
 }
 
 .nmi{
@@ -100,7 +100,7 @@
     align-self: flex-end;
 }
 .roles-container{
-    margin-left: 218px;
+    margin-left: 215px;
     width: 250px;
     display: flex;
     flex-flow: column;

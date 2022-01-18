@@ -5,7 +5,7 @@
         </div>
         <div class="add-form">
             <!-- <div class="field"> -->
-                <!-- <label>Id User :</label>
+            <!-- <label>Id User :</label>
                 <button mat-button disabled class="matricule">{{UserID}}</button>
             </div> -->
             <div class="field">
@@ -57,15 +57,17 @@
 
             <div class="field">
                 <label>Role :</label>
-                <mat-form-field >
-                    <mat-select placeholder="select"  panelClass="selectPanel2"  (selectionChange)="onChange()" [(value)]="role">   
+                <mat-form-field>
+                    <mat-select placeholder="select" panelClass="selectPanel2" (selectionChange)="onChange()"
+                        [(value)]="role">
                         <div *ngFor="let rol of Roles">
                             <mat-option value="{{rol}}">{{rol}}</mat-option>
                         </div>
                     </mat-select>
                 </mat-form-field>
-                <button mat-button class="gen-btn" *ngIf="RoleSelected.length!=0" (click)="AddNewRole()">Add Role</button>
-                                
+                <button mat-button class="gen-btn" *ngIf="RoleSelected.length!=0" (click)="AddNewRole()">Add
+                    Role</button>
+
                 <!-- <label>Role Selected:</label>
                 <mat-form-field >
                     <mat-select placeholder="select"  panelClass="selectPanel2"   >
@@ -76,7 +78,7 @@
                     </mat-select>
                 </mat-form-field> -->
             </div>
-            
+
             <div class="field" *ngIf="RoleActive()">
                 <label>Sector :</label>
                 <form [formGroup]="searchUserForm">
@@ -117,7 +119,7 @@
                         <mat-icon (click)="RemoveRole(rol)">clear</mat-icon>
                     </div>
                 </ng-container>
-                
+
             </div>
 
             <div class="btns">
