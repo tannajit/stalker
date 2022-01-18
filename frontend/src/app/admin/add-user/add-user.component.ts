@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { AdminService } from '../admin.service';
 import { MatOption } from '@angular/material/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { sector } from '@turf/turf';
+import { sector, unitsFactors } from '@turf/turf';
 import { WebElement } from 'protractor';
 import { Console } from 'console';
 @Component({
@@ -21,12 +21,12 @@ export class AddUserComponent implements OnInit {
 
   constructor(private _setting: AdminService,
     private _client: ClientsService,
-    private dialog:MatDialog,
-    private _router:Router,
+    private dialog: MatDialog,
+    private _router: Router,
     private fb: FormBuilder) { }
-    
-  ListOfRoles=[];
-  RoleSelected=[];
+
+  ListOfRoles = [];
+  RoleSelected = [];
   selected
   Roles = []
   Sectors = []
@@ -61,14 +61,14 @@ export class AddUserComponent implements OnInit {
     this._setting.getSettings('param=role').subscribe(res => {
       this.Roles = res.details.roles
       console.log("ttttttttt")
-      console.log(this.Roles)    
+      console.log(this.Roles)
     })
 
-    
-   
+
+
   }
 
-  getSectors(){
+  getSectors() {
     this._client.getAllSecteurs().subscribe(res => {
       console.log(res)
       res.forEach(element => {
@@ -143,51 +143,50 @@ export class AddUserComponent implements OnInit {
     })
 
   }
-  
-  onChange() {
-    console.log("role",this.role)
-    console.log("SectorAffacted",this.AllSectors)
-     console.log(this.SelectedSector)
-     this.selected=this.role
-     const obj={role:this.role,value:null}
-     if(this.SelectedSector.length!=0)
-     {
-       obj.value=this.SelectedSector     
-      }
-      if(this.role==="Admin"||this.role==="Auditor"||this.role==="Back Office"){
-       
-       obj.value=this.AllSectors
- 
-      }
-     this.upsert(this.ListOfRoles,obj)
-  
-     console.log("ListOfRules",this.ListOfRoles)
 
-     if (!this.RoleSelected.includes(this.role)) {
+  onChange() {
+    console.log("role", this.role)
+    console.log("SectorAffacted", this.AllSectors)
+    console.log(this.SelectedSector)
+    this.selected = this.role
+    const obj = { role: this.role, value: null }
+    if (this.SelectedSector.length != 0) {
+      obj.value = this.SelectedSector
+    }
+    if (this.role === "Admin" || this.role === "Auditor" || this.role === "Back Office") {
+
+      obj.value = this.AllSectors
+
+    }
+    this.upsert(this.ListOfRoles, obj)
+
+    console.log("ListOfRules", this.ListOfRoles)
+
+    if (!this.RoleSelected.includes(this.role)) {
       this.RoleSelected.push(this.role);
     }
   }
 
-  AddRoles=[0];
-  AddNewRole(){
-    this.role=""
+  AddRoles = [0];
+  AddNewRole() {
+    this.role = ""
     // var i=1
     // this.AddRoles.push(i++);
-    
+
   }
 
-  RemoveRole(role){ 
+  RemoveRole(role) {
 
 
-      this.RoleSelected.splice(this.RoleSelected.indexOf(role),1);
-      
-      this.ListOfRoles.forEach(el=> {
+    this.RoleSelected.splice(this.RoleSelected.indexOf(role), 1);
 
-        if(el.role===role){
-          this.ListOfRoles.splice(this.ListOfRoles.indexOf(el),1);
-        }
+    this.ListOfRoles.forEach(el => {
 
-      }) 
+      if (el.role === role) {
+        this.ListOfRoles.splice(this.ListOfRoles.indexOf(el), 1);
+      }
+
+    })
 
   }
 
@@ -199,18 +198,18 @@ export class AddUserComponent implements OnInit {
     else array.push(item);
   }
 
-  
-  
+
+
   upsertRole(array, item) { // (1)
-    
+
     if (array.indexOf(item) === -1) {
       array.push(item);
     }
   }
- 
 
 
-  
+
+
   //** Generate password */
   GeneratePassword() {
     this.Password = (Math.random() + 1).toString(36).substring(2);
@@ -233,14 +232,13 @@ export class AddUserComponent implements OnInit {
         phone: this.phoneNumber,
         CIN: this.CIN,
         email: this.Email,
-        password:this.Password,
-        status:"Active"
+        password: this.Password,
+        status: "Active"
       },
-      SectorsByRoles:this.ListOfRoles
+      SectorsByRoles: this.ListOfRoles
     }
-
-    console.log("result",this.UserInfo)
-    this._setting.CreateUser(this.UserInfo).subscribe(res=>{
+    console.log("result", this.UserInfo)
+    this._setting.CreateUser(this.UserInfo).subscribe(res => {
       this.openAlertDialog()
     })
   }
@@ -263,19 +261,19 @@ export class AddUserComponent implements OnInit {
   ////////////////////// 
   anotherArray = this.Sectors;
   filterListCareUnit(val) {
-          console.log(val);
-          this.Sectors = this.anotherArray.filter((unit) => unit.detail.indexOf(val) > -1);
-        }
-  
+    console.log(val);
+    this.Sectors = this.anotherArray.filter((unit) => unit.detail.toLowerCase().indexOf(val) > -1);
+  }
+
   togglePerOne(all) {
     if (this.allSelected.selected) {
       this.allSelected.deselect();
       return false;
     }
-    if (this.searchUserForm.controls.userType.value.length == this.Sectors.length){
+    if (this.searchUserForm.controls.userType.value.length == this.Sectors.length) {
       this.allSelected.select();
-  }
-  console.log(this.Sectors)
+    }
+    console.log(this.Sectors)
   }
 
   toggleAllSelection() {
