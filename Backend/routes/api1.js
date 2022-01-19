@@ -6,8 +6,8 @@ var multer = require('multer');
 var path = require('path');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-// var uri = "mongodb://localhost:27017";
-var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+ var uri = "mongodb://localhost:27017";
+//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 // uri to your Mongo database
 var client = new MongoClient(uri);
@@ -243,13 +243,7 @@ router.get('/getSectorByUser', verifyToken, async (req, res) => {
 router.get('/getClientByUser', verifyToken, async (req, res) => {
     var userId = req.userId;
     console.log("***** Get PDV Based on User: " + userId + " *******")
-
-
-
     let collectionSec = await db.collection("secteurs") //collection where ids are stored 
-
-
-
     var values = await collectionSec.aggregate([
         {
             $match: { users: ObjectId(userId) }
@@ -275,9 +269,12 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
     });
 
     All_PDV = ListInfo.map(async (elem) => {
-        if (elem.geometry.properties.NFC) {
+        if (elem.geometry.properties.NFC!=null && elem.geometry.properties.NFC!=undefined) {
             ///data injected by script 
             elem.geometry.properties.status = "green"
+        }
+        if(elem.geometry.properties.NFC==null && elem.geometry.properties.NFC!=undefined){
+            elem.geometry.properties.status = "red"
         }
         if (elem.geometry.properties?.nfc != undefined) {
             var element = elem.geometry.properties;

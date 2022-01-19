@@ -181,21 +181,21 @@ export class MapComponent implements AfterViewInit {
               return L.marker(latlon, { icon: iconClient });
             }
           });
-          marker.addTo(this.map);
+          //marker.addTo(this.map);
 
 
-          if (Point.geometry.properties?.nfc != undefined) {
+          //if (Point.geometry.properties?.nfc != undefined) {
             marker.on('click', () => {
               
               this._serviceClient.getPosition({"Client":new L.LatLng(Point.geometry.geometry.coordinates[1],Point.geometry.geometry.coordinates[0])});
               this.content = Point.geometry;
               this.zone.run(() => this.openDialog(Point));
             });
-         } 
-         else {
-            //console.log("############# ici"+Point.geometry.properties.Nom_Client)
-            marker.bindPopup('<h1> <b>Client Information</b></h1><p><b>Name:</b> ' + String(Point.geometry.properties.Nom_Client) + '</p><p><b>Sector Name: </b>' + String(Point.geometry.properties.Nom_du_Secteur) + '</p>');
-        }
+        // } 
+        //  else {
+        //     //console.log("############# ici"+Point.geometry.properties.Nom_Client)
+        //     marker.bindPopup('<h1> <b>Client Information</b></h1><p><b>Name:</b> ' + String(Point.geometry.properties.Nom_Client) + '</p><p><b>Sector Name: </b>' + String(Point.geometry.properties.Nom_du_Secteur) + '</p>');
+        // }
 
         if(status=='deleted' && (this.user.role =="Admin" || this.user.role =="Back Office") ){
           console.log("deleted status ")
@@ -370,57 +370,187 @@ export class MapComponent implements AfterViewInit {
   }
   ////////////////////////////////////////////////////////////////////
 
+  
   ///////***** Filter Done/Not Done PDV **********///////////////////
   option_done = ""
-
+  doneCluster = new L.MarkerClusterGroup();
+  notDoneCluster = new L.MarkerClusterGroup();
+  //=new L.MarkerClusterGroup();
   onChange() {
-    console.log(this.option_done)
-    if (this.option_done == "Done") {
+    this.map.removeLayer(this.markersCluster)
+    //console.log(this.option_done)
+    if (this.grosCluster.getLayers().length > 0) {
+      console.log("delete gros cluster")
+      this.map.removeLayer(this.grosCluster)
+    }
+    if (this.detailCluster.getLayers().length > 0) {
+      console.log("delete detail cluster")
+      this.map.removeLayer(this.detailCluster)
+    }
+    if ((this.doneCluster.getLayers().length > 0)) {
+      console.log("delete done cluster")
+      this.map.removeLayer(this.doneCluster)
+    }
+    if ((this.notDoneCluster.getLayers().length > 0)) {
+      console.log("delete notDone cluster")
+      this.map.removeLayer(this.notDoneCluster)
+    }
+
+    console.log("//////////// option_retail /////////// " + this.option_retail)
+    if (this.option_done == "Not_Done") {
       console.log("Not green not validated should removed")
       this.markersCluster.eachLayer((layer: any) => {
         if (layer.feature.properties.status != "green") {
-          this.markersCluster.removeLayer(layer);
+          if (this.option_retail == "Audit") {
+            if (layer.feature.properties?.TypeDPV == "Gros") {
+              console.log("-------- Not Done Gros -----------")
+              this.notDoneCluster.addLayer(layer)
+            }
+          } else if (this.option_retail == "Audit_Retail") {
+            if (layer.feature.properties?.TypeDPV == "Detail" || layer.feature.properties?.TypeDPV == "Demi Gros") {
+              console.log("-------- Not Done Detail -----------")
+              this.notDoneCluster.addLayer(layer);
+            }
+          } else {
+            console.log("-------- Not Done ALL  TYpe -----------")
+            this.notDoneCluster.addLayer(layer);
+          }
         }
-      })
-    } else if (this.option_done == "Not_Done") {
+      });
+      //console.log("*********** Add Cluster Not Done to the map ***********")
+      this.map.addLayer(this.notDoneCluster)
+
+    } else if (this.option_done == "Done") {
       console.log("validated should be removed")
       this.markersCluster.eachLayer((layer: any) => {
         if (layer.feature.properties.status == "green") {
-          this.markersCluster.removeLayer(layer);
+          if (this.option_retail == "Audit") {
+            if (layer.feature.properties?.TypeDPV == "Gros") {
+              console.log(" !!!!!!!!! Done Gros !!!!!!!!!!!!")
+              this.doneCluster.addLayer(layer)
+            }
+          } else if (this.option_retail == "Audit_Retail") {
+            if (layer.feature.properties?.TypeDPV == "Detail" || layer.feature.properties?.TypeDPV == "Demi Gros") {
+              console.log(" !!!!!!!!! Done Detail !!!!!!!!!!!!")
+              this.doneCluster.addLayer(layer);
+            }
+          } else {
+            console.log(" !!!!!!!!! Done All TYpe !!!!!!!!!!!!")
+            this.doneCluster.addLayer(layer);
+          }
         }
-      })
+      });
+      ////
+      console.log("*********** Add Cluster  Done to the map ***********")
+      this.map.addLayer(this.doneCluster)
+      ///
+
     } else {
       console.log("All Data will be showed")
-      this.markersCluster.clearLayers();
-      this.getDataClient();
+      //console.log(this.detailCluster.getLayers().length)
+      this.markersCluster.eachLayer((layer: any) => {
+        if (this.option_retail == "Audit") {
+          if (layer.feature.properties?.TypeDPV == "Gros") {
+            console.log("--------- All  Gros  ----------")
+            this.doneCluster.addLayer(layer)
+          }
+        } else if (this.option_retail == "Audit_Retail") {
+          if (layer.feature.properties?.TypeDPV == "Detail" || layer.feature.properties?.TypeDPV == "Demi Gros") {
+            console.log("--------- All  Detail  ----------")
+            this.doneCluster.addLayer(layer);
+          }
+        } else {
+          console.log("--------- All  All type  ----------")
+          //this.doneCluster = this.markersCluster
+          //this.ma
+          this.doneCluster.addLayer(layer);
+        }
+
+      });
+      console.log(this.doneCluster.getLayers().length)
+      this.map.addLayer(this.doneCluster)
     }
   }
   ////////////////////////////////////////////////////////////////////////
 
   //////////////****************Filtrage Retail/AuditRetail ***********/////////////////
   option_retail = ""
+  detailCluster = new L.MarkerClusterGroup();
+  grosCluster = new L.MarkerClusterGroup();
+
   onChange2() {
+    this.map.removeLayer(this.markersCluster)
+    if (this.grosCluster.getLayers().length > 0) {
+      console.log("delete gros cluster")
+      this.map.removeLayer(this.grosCluster)
+    }
+    if (this.detailCluster.getLayers().length > 0) {
+      console.log("delete detail cluster")
+      this.map.removeLayer(this.detailCluster)
+    }
+    if ((this.doneCluster.getLayers().length > 0)) {
+      console.log("delete done cluster")
+      this.map.removeLayer(this.doneCluster)
+    }
+    if ((this.notDoneCluster.getLayers().length > 0)) {
+      console.log("delete notDone cluster")
+      this.map.removeLayer(this.notDoneCluster)
+    }
     console.log(this.option_retail)
     if (this.option_retail == "Audit") {
-      console.log("Gros will be showed")
+      console.log("Gros will be Showed")
       this.markersCluster.eachLayer((layer: any) => {
         if (layer.feature.properties?.TypeDPV == "Gros") {
-          console.log(layer)
-          this.markersCluster.removeLayer(layer)
+          if (this.option_done == "Done" && layer.feature.properties.status == "green") {
+            console.log("****** Gros Done ****")
+            this.grosCluster.addLayer(layer)
+          } else if (this.option_done == "Not_Done" && layer.feature.properties.status != "green") {
+            console.log("****** Gros Not Done ****")
+            this.grosCluster.addLayer(layer)
+          } else if (this.option_done == "All" || this.option_done=="") {
+            console.log("****** Gros ALL ****")
+            this.grosCluster.addLayer(layer)
+          }
+
         }
-      })
+      });
+      console.log("*********** Add Cluster Gros to the map ***********")
+      this.map.addLayer(this.grosCluster)
+
     } else if (this.option_retail == "Audit_Retail") {
-      console.log("Detail will be showed")
+    console.log("((((((((Detail and Demi gro)))))))))))")
       this.markersCluster.eachLayer((layer: any) => {
-        if (layer.feature.properties?.TypeDPV == "Detail") {
-          console.log(layer)
-          this.markersCluster.removeLayer(layer);
+        if (layer.feature.properties?.TypeDPV == "Detail" || layer.feature.properties?.TypeDPV == "Demi Gros") {
+          if (this.option_done == "Done" && layer.feature.properties.status == "green") {
+            console.log("********* Detail Done ***********")
+            this.detailCluster.addLayer(layer)
+          } else if (this.option_done == "Not_Done" && layer.feature.properties.status != "green") {
+            console.log("********* Detail Not Done ***********")
+            this.detailCluster.addLayer(layer)
+          } else if(this.option_done == "All" || this.option_done == "") {
+            console.log("********* Detail All Status ***********")
+            this.detailCluster.addLayer(layer)
+          }
         }
-      })
+      });
+      this.map.addLayer(this.detailCluster)
+
     } else {
-      console.log("All Data will be showed")
-      this.markersCluster.clearLayers();
-      this.getDataClient();
+
+      this.markersCluster.eachLayer((layer: any) => {
+        if (this.option_done == "Done" && layer.feature.properties.status == "green") {
+          console.log("********* All type  done ***********")
+          this.detailCluster.addLayer(layer)
+        } else if (this.option_done == "Not_Done" && layer.feature.properties.status != "green") {
+          console.log("********* All type  not done ***********")
+          this.detailCluster.addLayer(layer)
+        } else  {
+          console.log("********* All type   All status  ***********")
+          this.detailCluster.addLayer(layer)
+        }
+      });
+      this.map.addLayer(this.detailCluster)
+
     }
   }
   /////////////////////////////////////////////////////////////
