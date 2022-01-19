@@ -6,8 +6,8 @@ var multer = require('multer');
 var path = require('path');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
- var uri = "mongodb://localhost:27017";
-//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+ //var uri = "mongodb://localhost:27017";
+var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 // uri to your Mongo database
 var client = new MongoClient(uri);
@@ -271,11 +271,11 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
     All_PDV = ListInfo.map(async (elem) => {
         if (elem.geometry.properties.NFC!=null && elem.geometry.properties.NFC!=undefined) {
             ///data injected by script 
+           // console.log("green")
+            //console.log(elem.geometry.properties.NFC)
             elem.geometry.properties.status = "green"
         }
-        if(elem.geometry.properties.NFC==null && elem.geometry.properties.NFC!=undefined){
-            elem.geometry.properties.status = "red"
-        }
+      
         if (elem.geometry.properties?.nfc != undefined) {
             var element = elem.geometry.properties;
             await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
