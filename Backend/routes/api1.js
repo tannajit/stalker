@@ -243,13 +243,7 @@ router.get('/getSectorByUser', verifyToken, async (req, res) => {
 router.get('/getClientByUser', verifyToken, async (req, res) => {
     var userId = req.userId;
     console.log("***** Get PDV Based on User: " + userId + " *******")
-
-
-
     let collectionSec = await db.collection("secteurs") //collection where ids are stored 
-
-
-
     var values = await collectionSec.aggregate([
         {
             $match: { users: ObjectId(userId) }
@@ -275,10 +269,13 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
     });
 
     All_PDV = ListInfo.map(async (elem) => {
-        if (elem.geometry.properties.NFC) {
+        if (elem.geometry.properties.NFC != null && elem.geometry.properties.NFC != undefined) {
             ///data injected by script 
+            // console.log("green")
+            //console.log(elem.geometry.properties.NFC)
             elem.geometry.properties.status = "green"
         }
+
         if (elem.geometry.properties?.nfc != undefined) {
             var element = elem.geometry.properties;
             await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
@@ -292,8 +289,8 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
     })
     Promise.all(All_PDV).then(ee => {
         res.json(a)
-    }).catch(err =>console.log(err));
-    
+    }).catch(err => console.log(err));
+
 })
 
 /* GET clients Based on User */
@@ -449,22 +446,22 @@ async function InsertClient(client, res) {
         }).catch(error => console.log(error))
     }
     catch (error) {
-        next(error)
+        console.log(error)
     }
-    await collection.insertOne(clientinfo)
-    ////********* Add in geometries *****************/
-    let getInsertedId; //// put Id inserted
-    delete clientinfo.idGeometry;
-    var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
-    geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
-        var id = result.insertedId
-        var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
-            { $addToSet: { points: { "point": id, "route": null } } }).then(ss => {
-                res.status(200).json("Done")
-            })
-        //console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
-        //console.log(up)
-    }).catch(error => console.log(error))
+    // await collection.insertOne(clientinfo)
+    // ////********* Add in geometries *****************/
+    // let getInsertedId; //// put Id inserted
+    // delete clientinfo.idGeometry;
+    // var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
+    // geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
+    //     var id = result.insertedId
+    //     var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
+    //         { $addToSet: { points: { "point": id, "route": null } } }).then(ss => {
+    //             res.status(200).json("Done")
+    //         })
+    //     //console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
+    //     //console.log(up)
+    // }).catch(error => console.log(error))
 }
 
 async function updateClient(client) {
@@ -1000,139 +997,669 @@ router.get("/image", async (req, res) => {
 
 })
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////
-router.get("/extract", async (req, res) => {
+router.post("/extract", async (req, res) => {
+
+
+
     let geometries = await db.collection("geometries")
+  
+  
+  
+    var condition = req.body
+  
+  
+  
+    console.log(condition)
+  
+  
+  
+    var queries = []
+  
+  
+  
+    queries.push({ "geometry.geometry.type": "Point" })
+  
+  
+  
+  
+  
+    if (condition?.Sectors) {
+  
+  
+  
+        console.log("found")
+  
+  
+  
+        queries.push({
+  
+  
+  
+            "geometry.properties.Code_Secteur_OS": {
+  
+  
+  
+                $in: condition.Sectors
+  
+  
+  
+            }
+  
+  
+  
+        })
+  
+  
+  
+    }
+  
+  
+  
+    if (condition?.StartDate) {
+  
+  
+  
+        queries.push({
+  
+  
+  
+            "geometry.properties.created_at": {
+  
+  
+  
+                $gte: new Date(condition.StartDate)
+  
+  
+  
+            }
+  
+  
+  
+        })
+  
+  
+  
+    }
+  
+  
+  
+    if (condition?.EndDate) {
+  
+  
+  
+        queries.push({
+  
+  
+  
+            "geometry.properties.created_at": {
+  
+  
+  
+                $lte: new Date(condition.EndDate)
+  
+  
+  
+            }
+  
+  
+  
+        })
+  
+  
+  
+    }
+  
+  
+  
+    if (condition?.TypeDPV) {
+  
+  
+  
+        queries.push({
+  
+  
+  
+            "geometry.properties.TypeDPV": {
+  
+  
+  
+                $in: condition.TypeDPV
+  
+  
+  
+            }
+  
+  
+  
+        })
+  
+  
+  
+    }
+  
+  
+  
     let values = await geometries.aggregate([
+  
+  
+  
         {
+  
+  
+  
             $match: {
-                $and: [{ "geometry.geometry.type": "Point" }
-                ]
+  
+  
+  
+                $and:
+  
+  
+  
+                    queries
+  
+  
+  
+  
+  
             }
+  
+  
+  
         },
+  
+  
+  
         {
+  
+  
+  
             $lookup: {
+  
+  
+  
                 from: "clients",
+  
+  
+  
                 localField: "_id",
+  
+  
+  
                 foreignField: "idGeometry",
+  
+  
+  
                 as: "info"
+  
+  
+  
             }
+  
+  
+  
         }
-
+  
+  
+  
     ]).toArray();
+  
+  
+  
     all1 = []
+  
+  
+  
+    //console.log(values)
+  
+  
+  
     //res.json(values)
+  
+  
+  
     var test = values.map((elem) => {
+  
+  
+  
         elem.info.reverse();
+  
+  
+  
         audit = false;
+  
+  
+  
         seller = false;
+  
+  
+  
         all = elem.info.filter((ele) => {
+  
+  
+  
             if (ele.userRole == "Auditor" && !audit) {
+  
+  
+  
                 //console.log("auditor")
+  
+  
+  
                 audit = true;
+  
+  
+  
                 return ele;
+  
+  
+  
             } else if (ele.userRole == "Seller" && !seller) {
+  
+  
+  
                 //console.log("seller")
+  
+  
+  
                 seller = true
+  
+  
+  
                 return ele;
+  
+  
+  
             }
+  
+  
+  
         })
+  
+  
+  
         elem.info = all
+  
+  
+  
         return elem;
+  
+  
+  
     });
+  
+  
+  
     DataAll = []
+  
+  
+  
+  
+  
     var to = test.map(async (element) => {
+  
+  
+  
         var imgurl = "http://localhost:3000/api1/image?id="
+  
+  
+  
         var Data = {
+  
+  
+  
             "Identifiant system": element._id,
+  
+  
+  
             "X": element.geometry.geometry.coordinates[1],
+  
+  
+  
             "Y": element.geometry.geometry.coordinates[0],
+  
+  
+  
             "Date_Creation": element.geometry.properties.created_at,
+  
+  
+  
             "NFC_ID": (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc?.Numero_Serie,
+  
+  
+  
             "NFC_UUID": (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc?.UUID,
+  
+  
+  
             "Code_Secteur_OS": element.geometry.properties.Code_Secteur_OS,
+  
+  
+  
             "machine": (element.geometry.properties.machine != null) ? element.geometry.properties.machine : "",
+  
+  
+  
             "TypeDPV": (element.geometry.properties.TypeDPV != null) ? element.geometry.properties.TypeDPV : "",
+  
+  
+  
             "NomPrenom": (element.geometry.properties.NomPrenom != null) ? element.geometry.properties.NomPrenom : element.geometry.properties.Nom_Client,
+  
+  
+  
             "PhoneNumber": (element.geometry.properties.PhoneNumber != null) ? element.geometry.properties.PhoneNumber : element.geometry.properties.Telephone_Client,
+  
+  
+  
             "Photo_PDV": (element.geometry.properties.PVPhoto != null) ? imgurl + element.geometry.properties.PVPhoto : '',
+  
+  
+  
             "Passage_Auditeur": "NO",
+  
+  
+  
             "Auditeur_ID": "",
+  
+  
+  
             "Date_Reception_Auditor": "",
+  
+  
+  
             "Nom_Auditeur": "",
+  
+  
+  
             "TypeAuditeur": "",
+  
+  
+  
             "Phone_Auditeur": "",
+  
+  
+  
             "Photo_Auditor": "",
+  
+  
+  
             "Valid_Auditeur": "",
+  
+  
+  
             "Passage_Vendeur": "NO",
+  
+  
+  
             "SalesPerson_ID": "",
+  
+  
+  
             "Date_Reception_Vondeur": "",
+  
+  
+  
             "Nom_Vendeur": "",
+  
+  
+  
             "Type_Vendeur": "",
+  
+  
+  
             "Phone_Vendeur": "",
+  
+  
+  
             "Photo_Vendeur": "",
+  
+  
+  
             "Valid_Vondeur": "",
+  
+  
+  
             "Supprime_Audtior": "",
+  
+  
+  
             "Supprime_Vondeur": ""
+  
+  
+  
         }
+  
+  
+  
         await IsDeletedBy(ObjectId(element._id), "Seller").then(ress => {
+  
+  
+  
             //console.log(ress)
+  
+  
+  
             Data["Supprime_Vondeur"] = String(ress)
+  
+  
+  
             console.log(Data["Supprime_Vondeur"])
+  
+  
+  
         }).catch(err => {
+  
+  
+  
             Data["Supprime_Vondeur"] = String(err)
+  
+  
+  
         });
+  
+  
+  
         await IsDeletedBy(ObjectId(element._id), "Auditor").then(ress => {
+  
+  
+  
             console.log("Auditor")
+  
+  
+  
             Data["Supprime_Audtior"] = String(ress)
+  
+  
+  
         }).catch(err => {
+  
+  
+  
             Data["Supprime_Audtior"] = String(err)
+  
+  
+  
         });
+  
+  
+  
         element.info.forEach(info => {
+  
+  
+  
             if (info.userRole === "Auditor") {
+  
+  
+  
                 Data.Passage_Auditeur = "YES"
+  
+  
+  
                 Data.Auditeur_ID = info.userId
+  
+  
+  
                 Data.Nom_Auditeur = info.NomPrenom
+  
+  
+  
                 Data.Date_Reception_Auditor = info.created_at
+  
+  
+  
                 Data.TypeAuditeur = Data.TypeDPV
+  
+  
+  
                 Data.Photo_Auditor = imgurl + info.PVPhoto
+  
+  
+  
                 Data.Phone_Auditeur = info.PhoneNumber
+  
+  
+  
                 if (element.geometry.properties.status == "green") {
+  
+  
+  
                     Data.Valid_Auditeur = "YES"
+  
+  
+  
                 } else {
+  
+  
+  
                     Data.Valid_Auditeur = "NO"
+  
+  
+  
                 }
-
+  
+  
+  
+  
+  
             } else if (info.userRole === "Seller") {
+  
+  
+  
                 Data.Passage_Vendeur = "YES"
+  
+  
+  
                 Data.SalesPerson_ID = info.userId
+  
+  
+  
                 Data.Date_Reception_Vondeur = info.created_at
+  
+  
+  
                 Data.Nom_Vendeur = info.NomPrenom
+  
+  
+  
                 Data.Type_Vendeur = info.TypeDPV
+  
+  
+  
                 Data.Photo_Vendeur = imgurl + info.PVPhoto
+  
+  
+  
                 Data.Phone_Vendeur = info.PhoneNumber
+  
+  
+  
                 if (element.geometry.properties.status == "black") {
+  
+  
+  
                     Data.Valid_Vondeur = "NO"
+  
+  
+  
                 } else {
+  
+  
+  
                     Data.Valid_Vondeur = "YES"
+  
+  
+  
                 }
+  
+  
+  
             }
+  
+  
+  
         })
+  
+  
+  
         DataAll.push(Data)
+  
+  
+  
         //console.log(DataAll.length)
+  
+  
+  
         element = Data;
+  
+  
+  
         return element;
+  
+  
+  
     });
-
+  
+  
+  
+  
+  
     Promise.all(to).then(ee => {
+  
+  
+  
         ////console.log(a.length)
+  
+  
+  
         console.log("---- Extract ----")
+  
+  
+  
         //console.log(list)
+  
+  
+  
         res.status(200).json(DataAll)
+  
+  
+  
     });
+  
+  
+  
     //console.log(to)
+  
+  
+  
     //res.status(200).json("test")
+  
+  
+  
     //res.json(DataAll);
-});
+  
+  
+  
+  });
 ///*** Hafsa Function  ****///
 async function IsDeletedBy(id, role) {
     return new Promise(async (resolve, reject) => {

@@ -30,21 +30,22 @@
             <!-- =============== -->
             <div class="element-container">
                   <div class="select-input">
-                        <mat-select panelClass="selectPanel" (selectionChange)="onChange2()" [(ngModel)]="option_retail"
+                        <mat-select panelClass="selectPanel" (selectionChange)="onChange3()" [(ngModel)]="option_retail"
                               placeholder="PDV Type">
+                              <mat-option value="All">All</mat-option>
                               <mat-option value="Audit">Gros</mat-option>
                               <mat-option value="Audit_Retail">Detail</mat-option>
-                              <mat-option value="Other">All</mat-option>
+                              
                         </mat-select>
                   </div>
             </div>
             <div class="element-container">
                   <div class="select-input">
-                        <mat-select panelClass="selectPanel" (selectionChange)="onChange()" [(ngModel)]="option_done"
-                              placeholder="All">
+                        <mat-select panelClass="selectPanel" (selectionChange)="onChange4()" [(ngModel)]="option_done"
+                              placeholder="Validated filter">
                               <mat-option value="All">All</mat-option>
-                              <mat-option value="Done"> Done</mat-option>
-                              <mat-option value="Not_Done">Not Done</mat-option>
+                              <mat-option value="Done"> Validated</mat-option>
+                              <mat-option value="Not_Done">Waiting for validation</mat-option>
                         </mat-select>
                   </div>
             </div>
