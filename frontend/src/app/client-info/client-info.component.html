@@ -128,14 +128,14 @@
                     <label>Sector:</label>
                     <p>{{data.geometry.properties.Code_Secteur_OS}}</p>
                     <label>Name:</label>
-                    <p *ngIf="!data.geometry.properties?.NomPrenom; else pdvtype">null</p>
-                    <ng-template #pdvtype>
+                    <p *ngIf="!data.geometry.properties?.NomPrenom; else name">null</p>
+                    <ng-template #name>
                         <p>{{ data.geometry.properties.NomPrenom}}</p>
                     </ng-template>
                     
                     <label>Phone Number:</label>
-                    <p *ngIf="!data.geometry.properties?.PhoneNumber; else pdvtype">null</p>
-                    <ng-template #pdvtype>
+                    <p *ngIf="!data.geometry.properties?.PhoneNumber; else phone">null</p>
+                    <ng-template #phone>
                         <p>{{ data.geometry.properties.PhoneNumber}}</p>
                     </ng-template>
                     
