@@ -103,7 +103,7 @@ export class MapComponent implements AfterViewInit {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
         if (position) {
-          console.log("nmiiii nmiiii")
+          
           console.log('Latitude: ' + position.coords.latitude +
             ' Longitude: ' + position.coords.longitude);
           this.lat = position.coords.latitude;
@@ -118,7 +118,6 @@ export class MapComponent implements AfterViewInit {
           this.myCercle.addTo(this.map);
           this._serviceClient.getPosition({ "Map": new L.LatLng(this.lat, this.lon), "Raduis": this.radius });
           if (this.myMarker != undefined) {
-            console.log("remove layer ")
             this.map.removeLayer(this.myMarker)
           }
           this.myMarker = L.circleMarker([this.lat, this.lon], {
@@ -198,7 +197,7 @@ export class MapComponent implements AfterViewInit {
         }
 
         if(status=='deleted' && (this.user.role =="Admin" || this.user.role =="Back Office") ){
-          console.log("deleted status ")
+          
           console.log(this.user.role)
           this.markersCluster.addLayer(marker);
         }else if(status!='deleted'){
@@ -342,7 +341,7 @@ export class MapComponent implements AfterViewInit {
   Insid() {
     this.statusAddClient = false;
     this.AllSecteurs.forEach(elem => {
-      console.log(elem)
+      // console.log(elem)
       const lat = this.myMarker._latlng.lat;
       const lon = this.myMarker._latlng.lng;
       const test = turf.point([lon, lat]);
@@ -350,8 +349,8 @@ export class MapComponent implements AfterViewInit {
       if (turf.booleanPointInPolygon(test, poly)) {
         this.statusAddClient = true;
         this.mySector = elem.sector;
-        console.log(this.mySector);
-        console.log("In sector ")
+        // console.log(this.mySector);
+        // console.log("In sector ")
       }
     });
   }
@@ -472,7 +471,7 @@ export class MapComponent implements AfterViewInit {
 
           if(objectStoreRequest.result!=undefined){
             var elm = JSON.parse(objectStoreRequest.result.Valeur);
-            console.log(elm.geometry.coordinates)
+            // console.log(elm.geometry.coordinates)
             this.map.setView(new L.LatLng(elm.geometry.coordinates[1], elm.geometry.coordinates[0]), 30);
             }
           else{

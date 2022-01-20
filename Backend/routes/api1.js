@@ -6,8 +6,8 @@ var multer = require('multer');
 var path = require('path');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
-// var uri = "mongodb://localhost:27017";
-var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
+var uri = "mongodb://localhost:27017";
+//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 // uri to your Mongo database
 var client = new MongoClient(uri);
@@ -183,6 +183,14 @@ router.get('/clientss', async (req, res) => {
 
 });
 
+router.get('/getRoles', async (req, res)=>{
+
+    let collection = await db.collection("settings") // collection 
+    var values = await collection.find({ 'proprety': 'test' })
+    //console.log("---------  send data -----------")
+    res.json(values)
+})
+
 router.get('/secteurss', async (req, res) => {
 
     let collection = await db.collection("geometries") // collection 
@@ -239,17 +247,12 @@ router.get('/getSectorByUser', verifyToken, async (req, res) => {
 
 
 })
+
 //*** Get PDV by user (I changed the structure of the Query ) */
 router.get('/getClientByUser', verifyToken, async (req, res) => {
     var userId = req.userId;
     console.log("***** Get PDV Based on User: " + userId + " *******")
-
-
-
     let collectionSec = await db.collection("secteurs") //collection where ids are stored 
-
-
-
     var values = await collectionSec.aggregate([
         {
             $match: { users: ObjectId(userId) }
@@ -449,22 +452,9 @@ async function InsertClient(client, res) {
         }).catch(error => console.log(error))
     }
     catch (error) {
-        next(error)
+       console.log("***")
     }
-    await collection.insertOne(clientinfo)
-    ////********* Add in geometries *****************/
-    let getInsertedId; //// put Id inserted
-    delete clientinfo.idGeometry;
-    var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
-    geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
-        var id = result.insertedId
-        var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
-            { $addToSet: { points: { "point": id, "route": null } } }).then(ss => {
-                res.status(200).json("Done")
-            })
-        //console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
-        //console.log(up)
-    }).catch(error => console.log(error))
+   
 }
 
 async function updateClient(client) {
@@ -1002,13 +992,46 @@ router.get("/image", async (req, res) => {
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////
 router.post("/extract", async (req, res) => {
     let geometries = await db.collection("geometries")
-    console.log("*******************************")
-    
+    var condition = req.body
+    console.log(condition)
+    var queries = []
+    queries.push({ "geometry.geometry.type": "Point" })
+
+    if (condition?.Sectors) {
+        console.log("found")
+        queries.push({
+            "geometry.properties.Code_Secteur_OS": {
+                $in: condition.Sectors
+            }
+        })
+    }
+    if (condition?.StartDate) {
+        queries.push({
+            "geometry.properties.created_at": {
+                $gte: new Date(condition.StartDate)
+            }
+        })
+    }
+    if (condition?.EndDate) {
+        queries.push({
+            "geometry.properties.created_at": {
+                $lte: new Date(condition.EndDate)
+            }
+        })
+    }
+    if (condition?.TypeDPV) {
+        queries.push({
+            "geometry.properties.TypeDPV": {
+                $in: condition.TypeDPV
+            }
+        })
+    }
     let values = await geometries.aggregate([
         {
             $match: {
-                $and: [{ "geometry.geometry.type": "Point" }
-                ]
+                $and:
+                    queries
+
             }
         },
         {
@@ -1019,9 +1042,9 @@ router.post("/extract", async (req, res) => {
                 as: "info"
             }
         }
-
     ]).toArray();
     all1 = []
+    //console.log(values)
     //res.json(values)
     var test = values.map((elem) => {
         elem.info.reverse();
@@ -1042,6 +1065,7 @@ router.post("/extract", async (req, res) => {
         return elem;
     });
     DataAll = []
+
     var to = test.map(async (element) => {
         var imgurl = "http://localhost:3000/api1/image?id="
         var Data = {
@@ -1140,7 +1164,7 @@ async function IsDeletedBy(id, role) {
     return new Promise(async (resolve, reject) => {
         let delReq = await db.collection("DeleteRequest")
         var values = await delReq.find({ _id: id, role: role }).toArray()
-        if (values.length > 0)
+        if (values.length > 0)  
             resolve("Yes");
         else
             reject("No")

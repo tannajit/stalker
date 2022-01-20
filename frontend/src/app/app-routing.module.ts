@@ -13,12 +13,13 @@ import { UpdateClientComponent } from './update-client/update-client.component';
 import { OfflineComponent } from './offline/offline.component';
 import { SettingsComponent } from './settings/settings.component';
 import { DeleteClientComponent } from './delete-client/delete-client.component';
-import { InjectionComponent } from './injection/injection.component';
+import { InjectionComponent } from './admin/injection/injection.component';
 import { DeleteRequestsComponent } from './admin/delete-requests/delete-requests.component';
 import { AddUserComponent } from './admin/add-user/add-user.component';
 import { UsersComponent } from './admin/users/users.component';
 import { UpdateUserComponent } from './admin/update-user/update-user.component';
 import { ExtractSelectComponent } from './extract-select/extract-select.component';
+import { RolesComponent } from './admin/roles/roles.component';
 
 
 
@@ -101,6 +102,10 @@ const routes: Routes = [
   },
   {
     path: 'extract', component: ExtractSelectComponent,
+    canActivate: [AuthGaurdService]
+  },
+  {
+    path: 'roles', component: RolesComponent,
     canActivate: [AuthGaurdService]
   }
   // {

@@ -1,11 +1,11 @@
 import { Component, OnInit , ViewChild, ElementRef} from '@angular/core';
 import { Observable } from 'rxjs';
-import { ClientsService } from '../clients.service';
+import { ClientsService } from '../../clients.service';
 import { FileSelectDirective, FileUploader } from 'ng2-file-upload';
 import { saveAs } from 'file-saver';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
-import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
+import { AlertDialogComponent } from '../../alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-injection',

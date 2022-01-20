@@ -180,7 +180,7 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div class="field" *ngIf="clientInfo.TypeDPV=='Detail'">
+                <div class="field" *ngIf="clientInfo.geometry.properties.TypeDPV=='Detail'">
                     <mat-form-field>
                         <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2"
                             [(ngModel)]="clientInfo.geometry.properties.detailType">

@@ -15,10 +15,27 @@
     line-height: 35px;
 }
 
+.extract-container{
+    width: 400px;
+    display: flex;
+    flex-flow: column;
+    gap: 20px;
+}
+
+.date-field{
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+
 mat-icon {
     position: relative;
     float: right;
     top: -3px;
     cursor: pointer;
-    color: rgba(0, 0, 0, 0.54);
+    color: rgba(77, 75, 75, 0.54);
   }
+

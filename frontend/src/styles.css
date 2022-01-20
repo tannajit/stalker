@@ -8,14 +8,14 @@ body { margin: 0;  }
   }
 
 .cdk-overlay-container .cdk-overlay-pane .selectPanel{
-  margin-top: 20%;
+  margin-top: 10%;
   background-color: #fff;
-  border-radius: 15px;
+  border-radius: 10px;
 }
 
 .cdk-overlay-container .cdk-overlay-pane .selectPanel2{
-  margin-top: 20%;
+  margin-top: 10%;
   background-color: #fff;
-  border-radius: 15px;
+  border-radius: 10px;
   color: black;
 }

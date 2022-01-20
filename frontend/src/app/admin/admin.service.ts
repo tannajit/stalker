@@ -15,6 +15,7 @@ export class AdminService {
   private _user=this.uri+"/api1/register"
   private _user_email=this.uri+"/api1/GeEmail"
   private _setting =this.uri + "/api1/settings";
+  private getRolesURL = this.uri + "/api1/getRoles"
 
   private _deleteClient =this.uri+"/api1/ValidateDeleteClient"
 
@@ -29,6 +30,7 @@ export class AdminService {
   getAllUsers() {
     return this.http.get<any>(this.getUsersURL)
   }
+
 
   deleteUser(user){
     return this.http.post<any>(this.deleteUserURL,user)
@@ -67,4 +69,10 @@ export class AdminService {
     return this.http.post<any>(this._deleteClient,{request:request});
   }
   //////
+
+  // Test fadma 
+  
+  getAllRoles(){
+    return this.http.get<any>(this.getRolesURL)
+  }
 }

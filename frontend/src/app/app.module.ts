@@ -52,8 +52,9 @@ import { DeleteClientComponent } from './delete-client/delete-client.component';
 import { DeleteRequestsComponent } from './admin/delete-requests/delete-requests.component';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
-import { InjectionComponent } from './injection/injection.component'
+import { InjectionComponent } from './admin/injection/injection.component'
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 // import { MatSelectSearchModule } from 'mat-select-search';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core'
@@ -66,6 +67,7 @@ import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-
 import { UpdateUserComponent } from './admin/update-user/update-user.component'
 import {MatPaginatorModule} from '@angular/material/paginator';
 import { UserInfoComponent } from './admin/user-info/user-info.component';
+import { RolesComponent } from './admin/roles/roles.component';
 
 
 
@@ -95,6 +97,7 @@ import { UserInfoComponent } from './admin/user-info/user-info.component';
     ConfirmationDialogComponent,
     UpdateUserComponent,
     UserInfoComponent,
+    RolesComponent,
   
     
 
@@ -104,6 +107,7 @@ import { UserInfoComponent } from './admin/user-info/user-info.component';
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
+    MatCheckboxModule,
     MatToolbarModule,
     MatSidenavModule,
     MatButtonModule,

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit ,ViewEncapsulation} from '@angular/core';
 import { ClientsService } from '../clients.service';
 import { MAT_DATE_FORMATS } from '@angular/material/core';
 import { MapComponent } from '../map/map.component';
@@ -31,7 +31,12 @@ export class ExtractSelectComponent implements OnInit {
   SelectedSector = [];
   SelectedTypePDV = [];
   done=false;
-  
+  // checbox
+  startIsChecked:any=false;
+  endIsChecked:any=false;
+  startDisabled = false
+  endDisabled = false
+
   startExtract=false;
   StartDate = (new Date()).toISOString();
   EndDate = (new Date()).toISOString();
@@ -44,6 +49,7 @@ export class ExtractSelectComponent implements OnInit {
   ngOnInit(): void {
     //// get Sectors 
 
+   
     console.log("Init")
     this._client.getAllSecteurs().subscribe(res => {
       console.log(res)
@@ -64,6 +70,11 @@ export class ExtractSelectComponent implements OnInit {
     })
 
   }
+
+
+  
+  
+
 
   Extract() {
     var infoToExtract = {}
@@ -122,4 +133,5 @@ export class ExtractSelectComponent implements OnInit {
       this.SelectedTypePDV = []
     }
   }
+  
 }
