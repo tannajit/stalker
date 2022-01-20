@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { FullImageComponent } from '../full-image/full-image.component';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import { DomSanitizer } from '@angular/platform-browser';
+import { AdminService } from '../admin/admin.service';
 
 @Component({
   selector: 'app-client-info',
@@ -31,6 +32,7 @@ export class ClientInfoComponent implements OnInit {
     public dialogRef2: MatDialogRef<FullImageComponent>,
     public dialog: MatDialog,
     public _router: Router,
+    public _admin: AdminService,
     private _sanitizer: DomSanitizer) {
       this.safeURL = this._sanitizer.bypassSecurityTrustResourceUrl(this.videoURL);
      }
@@ -124,4 +126,21 @@ export class ClientInfoComponent implements OnInit {
     console.log(status1)
     console.log(status2)
   }
+
+  validateDelete(request,status) {
+    console.log(request)
+    // Write the code to change status
+    
+    request.status=status
+    this._admin.ValidateDeleteClient(request).subscribe(res => {
+      console.log(res)
+      var message = "This PDV has been deleted successfully!"
+      //this.openAlertDialog(message)
+      this.dialogRef.close();
+    })
+  }
+
+
+
+  
 }

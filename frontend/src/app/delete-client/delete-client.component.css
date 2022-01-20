@@ -95,6 +95,17 @@
     text-align: center !important;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
 }
+.btn-red{
+    margin-top: 8px;
+    background-color: #a72e26;
+    color: #fff;
+    font-size: 13px;
+    line-height: 30px;
+    /* width: 100px !important; */
+    border-radius: 40px;
+    text-align: center !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
 
 .btn-yellow:disabled{
     background-color: #C2BEBE;
@@ -129,6 +140,15 @@
     display: flex;
     flex-flow: row wrap;
     align-items: center;
+    gap: 10px;
+}
+
+.btns{
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-end;
     gap: 10px;
 }
 
