@@ -61,7 +61,7 @@ import { MatNativeDateModule } from '@angular/material/core'
 // import { FileUploadModule } from "ng2-file-upload";
 
 
-import { AddUserComponent } from './admin/add-user/add-user.component';
+import { AddUserComponent, FilterPipe } from './admin/add-user/add-user.component';
 import { UsersComponent } from './admin/users/users.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { UpdateUserComponent } from './admin/update-user/update-user.component'
@@ -99,6 +99,7 @@ import { RolesComponent } from './admin/roles/roles.component';
     UserInfoComponent,
     RolesComponent,
   
+    FilterPipe,
     
 
   ],
@@ -140,6 +141,7 @@ import { RolesComponent } from './admin/roles/roles.component';
     MatSlideToggleModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    
 
     // FileUploadModule,
     ServiceWorkerModule.register('ngsw-worker.js', {

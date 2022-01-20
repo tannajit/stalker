@@ -26,7 +26,7 @@ export class UsersComponent implements OnInit {
   selectedRole
   selectedSector
 
-  users;
+  users=[];
   roles=[]
   Sectors=[]
   AllSectors=[]
@@ -87,7 +87,13 @@ export class UsersComponent implements OnInit {
     this.adminService.getAllUsers().subscribe(res=>{
       console.log("---")
       console.log(res)
-      this.users = res
+      res.forEach(elem => {
+        var user=elem;
+        user.nameU=elem.name;
+        user.name=elem.name.replace("-"," ")
+        this.users.push(user)
+      });
+      //this.users = 
       this.dataSource = new MatTableDataSource(this.users);
       this.dataSource.data = this.users.reverse();
       this.dataSource.paginator = this.paginator;
@@ -322,7 +328,7 @@ export class UsersComponent implements OnInit {
           
         }
       })
-      this.dataSource.data = filtered
+      this.dataSource = new MatTableDataSource(filtered)
 
       
 
@@ -361,7 +367,7 @@ export class UsersComponent implements OnInit {
           
         }
     })
-    this.dataSource.data = filtered
+    this.dataSource = new MatTableDataSource(filtered)
     }
 
     

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { ViewEncapsulation } from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
@@ -15,7 +15,6 @@ import { SettingsService } from '../settings/settings.service';
 import { IndexdbService } from '../indexdb.service';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-// import { LocationService } from '../location.service';
 
 
 const incr = 1;
@@ -28,7 +27,7 @@ const incr = 1;
 
 })
 
-export class AddclientComponent implements AfterViewInit, OnDestroy {
+export class AddclientComponent implements AfterViewInit {
 
   //////////////// VARIABLE'S DECLARATION /////////////////////////
   mySector = "test";
@@ -96,7 +95,7 @@ export class AddclientComponent implements AfterViewInit, OnDestroy {
   lonclt
 
   inter;
-  acc = 34567800;
+  acc = 1222000;
   version = 6
 
   //* map*//
@@ -120,8 +119,6 @@ export class AddclientComponent implements AfterViewInit, OnDestroy {
   status;
   display;
   codeSMS
-  geoId;
-  GeoWatch;
   ///////////////////////////////////////////////////////////////////////////
 
   //////////////**************** CONSTRUCTOR ******************///////////////////
@@ -130,16 +127,10 @@ export class AddclientComponent implements AfterViewInit, OnDestroy {
     private _router: Router,
     private aroute: ActivatedRoute,
     private index: IndexdbService,
-    // private _location: LocationService,
     private dialog: MatDialog,
     private _setting: SettingsService) {
-    // this._location.ClearWatch();
 
   }
-  ngOnDestroy() {
-    console.log("destroy")
-  }
-
   ////////////////////////////////////////////////////////////////
 
   //////////////*************** INTERFACE FUNCTIONS *****************//////////
@@ -265,7 +256,6 @@ export class AddclientComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.loggedUser = JSON.parse(localStorage.getItem("user"));
-
     this.initMap();
     //this._setting.getSettings("sms")
     this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time)
@@ -291,16 +281,14 @@ export class AddclientComponent implements AfterViewInit, OnDestroy {
       maxZoom: 30,
       minZoom: 0
     });
-    ///*** Clear any watch before using it again ***/
 
-    //////////////////////////////
     tiles.addTo(this.map);
-   
 
-
-    /////
-
-    var marker = L.marker([this.lat, this.lon], { icon: this.location_icon })
+    var location_icon = L.icon({
+      iconUrl: "assets/location.png",
+      iconSize: [30, 30]
+    });
+    var marker = L.marker([this.lat, this.lon], { icon: location_icon })
     this.inter = interval(1000).subscribe(x => {
 
       if (navigator.geolocation) {
@@ -315,8 +303,8 @@ export class AddclientComponent implements AfterViewInit, OnDestroy {
           timeout: 5000,
           maximumAge: 2000
         };
-        this.geoId=navigator.geolocation
-         this.GeoWatch =  this.geoId.watchPosition((position: GeolocationPosition) => {
+        var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
+
           if (position) {
             var newlat = position.coords.latitude
             var newLon = position.coords.longitude;
@@ -325,7 +313,7 @@ export class AddclientComponent implements AfterViewInit, OnDestroy {
               this.lon = newLon
               this.list.push(position)
               if (position.coords.accuracy < this.acc) {
-               // console.log("********** Accuracy:" + position.coords.accuracy)
+                console.log("********** Accuracy:" + position.coords.accuracy)
                 this.acc = position.coords.accuracy
                 this.lat = position.coords.latitude
                 this.lon = position.coords.longitude
@@ -335,25 +323,23 @@ export class AddclientComponent implements AfterViewInit, OnDestroy {
               this.map.removeLayer(marker);
               this.show = false
               this.Status = true
-              marker = new (L.marker as any)([this.lat, this.lon], { icon: this.location_icon }).addTo(this.map);
+              marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
             }
-            //console.log(this.lat)
-            //console.log(this.lon)
+            console.log(this.lat)
+            console.log(this.lon)
             this.map.removeLayer(marker);
             this.show = false
             this.Status = true
-            marker = new (L.marker as any)([this.lat, this.lon], { icon: this.location_icon }).addTo(this.map);
+            marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
           }
         },
-          (error: GeolocationPositionError) => {}, options);
+          (error: GeolocationPositionError) => console.log(error), options);
       } else {
         alert("Geolocation is not supported by this browser.");
       }
     });
-
   }
   //////////////////////////////////////////////////////////////////////
-
 
   /////////////******** TIMER FOR FIX POSITION ********////////////////
   testTimer() {
@@ -403,7 +389,7 @@ export class AddclientComponent implements AfterViewInit, OnDestroy {
   VerifySMS() {
     if (this.verification_code === this.codeSMS) {
       this.status = "the code is correct"
-      this.clientInfos.PhoneNumber = this.PhoneNumber;
+      this.clientInfos.PhoneNumber=this.PhoneNumber;
     } else {
       this.status = "the code is incorrect"
     }
@@ -442,10 +428,6 @@ export class AddclientComponent implements AfterViewInit, OnDestroy {
   Send() {
     // this.clientInfos.UUid=UUID.UUID();
     //this.clientInfos.PhoneNumber = this.PhoneNumber
-
-    //clearInterval(this.inter);
-    //GeoWatch
-    this.geoId.clearWatch(this.GeoWatch)
     this.clientInfos.NomPrenom = this.NomPrenom
     this.clientInfos.TypeDPV = this.TypeDPV;
     this.clientInfos.detailType = this.detailType;
@@ -453,12 +435,12 @@ export class AddclientComponent implements AfterViewInit, OnDestroy {
     this.clientInfos.userRole = this.user.role;
     this.clientInfos.created_at = new Date()
     this.clientInfos.updated_at = new Date()
-    if (this.user.role == "Seller") {
+    if(this.user.role=="Seller"){
       this.clientInfos.Status = "white_red"
-    } else {
+    }else{
       this.clientInfos.Status = "red_white"
     }
-
+   
     console.log(this.clientInfos)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodo(this.clientInfos);
@@ -494,8 +476,8 @@ export class AddclientComponent implements AfterViewInit, OnDestroy {
               }
               if (i === array.length) {
                 console.log("Array I" + i)
-                this._router.navigate(['/map']).then(r => {
-                  window.location.reload();
+                this._router.navigate(['/map']).then(()=>{
+                  
                 })
               }
             });
@@ -558,7 +540,9 @@ export class AddclientComponent implements AfterViewInit, OnDestroy {
       const request = objectStore.add(geo);
       request.onsuccess = (event) => {
         console.log('done Adding');
-        this._router.navigate(['map'])
+        this._router.navigate(['map']).then(()=>{
+          
+        })
       };
     }
   }

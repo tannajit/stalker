@@ -128,11 +128,22 @@
                     <label>Sector:</label>
                     <p>{{data.geometry.properties.Code_Secteur_OS}}</p>
                     <label>Name:</label>
-                    <p>{{data.geometry.properties.NomPrenom}}</p>
+                    <p *ngIf="!data.geometry.properties?.NomPrenom; else pdvtype">null</p>
+                    <ng-template #pdvtype>
+                        <p>{{ data.geometry.properties.NomPrenom}}</p>
+                    </ng-template>
+                    
                     <label>Phone Number:</label>
-                    <p>{{data.geometry.properties.PhoneNumber}}</p>
+                    <p *ngIf="!data.geometry.properties?.PhoneNumber; else pdvtype">null</p>
+                    <ng-template #pdvtype>
+                        <p>{{ data.geometry.properties.PhoneNumber}}</p>
+                    </ng-template>
+                    
                     <label>Type PDV:</label>
-                    <p>{{ data.geometry.properties.TypeDPV}}, {{data.geometry.properties.detailType}}</p>
+                    <p *ngIf="!data.geometry.properties?.TypeDPV; else pdvtype">null</p>
+                    <ng-template #pdvtype>
+                        <p>{{ data.geometry.properties.TypeDPV}}, {{data.geometry.properties.detailType}}</p>
+                    </ng-template>
                 </div>
             </div>
             <div class="pdv-info-container">
@@ -144,10 +155,14 @@
                 </div>
                 <div class="pdv-info">
                     <label>Code NFC:</label>
-                    <p *ngIf="!data.geometry.properties.nfc.codeNFC, else nfc">null</p>
+                    <p *ngIf="!data.geometry.properties.nfc?.codeNFC; else nfc">null</p>
                     <ng-template #nfc>{{data.geometry.properties.nfc.codeNFC}}</ng-template>
+                    
+                    
+                    
                     <label>UUID:</label>
-                    <p>{{data.geometry.properties.nfc.UUID}}</p>
+                    <p *ngIf="!data.geometry.properties.nfc?.UUID; else uuid">null</p>
+                    <ng-template #uuid>{{data.geometry.properties.nfc.UUID}}</ng-template>
                 </div>
             </div>
 
@@ -156,7 +171,7 @@
     </mat-dialog-content>
     <mat-dialog-actions class="action-btns" align="center">
         <button mat-raised-button color="primary" [disabled]="ActiveTheButton()" class="btn-green" (click)="onUpdateClick()">Update Client</button>
-        <button mat-raised-button color="primary"  class="btn-red" (click)="deleteRequest()">Delete Client</button>
+        <button mat-raised-button color="primary"  [disabled]="ActiveTheButton()" class="btn-red" (click)="deleteRequest()">Delete Client</button>
     </mat-dialog-actions>
     
 </div>

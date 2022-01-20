@@ -61,8 +61,9 @@ export class UpdateUserComponent implements OnInit {
     //this.userInfo = this.adminService.getUserInfo() 
     console.log("userInfo")
     console.log(this.userInfo)
-    this.FirstName = this.userInfo.name.split(" ")[1]
-    this.LastName = this.userInfo.name.split(" ")[0]
+    this.FirstName = this.userInfo.nameU.split("-")[0]
+    this.LastName = this.userInfo.nameU.split("-")[1]
+    //console.log()
     // const UserIDAfficher= this.userInfo.UserID
     // const RoleAfficher=this.userInfo.role
     console.log("UserIDAfficher", this.UserID)
@@ -168,7 +169,7 @@ export class UpdateUserComponent implements OnInit {
     var UserInfoUp = {}
     UserInfoUp["_id"] = this.userInfo._id
     UserInfoUp["UserID"] = this.userInfo.UserID
-    UserInfoUp["name"] = this.LastName + " " + this.FirstName
+    UserInfoUp["name"] = this.FirstName + "-" + this.LastName
     UserInfoUp["CIN"] = this.userInfo.CIN
     UserInfoUp["role"] = this.userInfo.role
     UserInfoUp["password"] = this.userInfo.password

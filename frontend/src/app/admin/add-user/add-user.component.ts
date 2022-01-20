@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit,Pipe, PipeTransform, ViewChild } from '@angular/core';
 import { ClientsService } from 'src/app/clients.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ClientInfoComponent } from 'src/app/client-info/client-info.component';
@@ -48,6 +48,9 @@ export class AddUserComponent implements OnInit {
   SectorAffacted = [];
   DisableSend = true;
   searchUserForm: FormGroup;
+
+
+
 
   //dialogRef: MatDialogRef<ClientInfoComponent>;
   ngOnInit(): void {
@@ -146,56 +149,71 @@ export class AddUserComponent implements OnInit {
 
   }
   
-  
-
+  Disabled=false
   onChange() {
-    console.log("role", this.role)
-    console.log("SectorAffacted", this.AllSectors)
-    console.log(this.SelectedSector)
-    this.selected = this.role
-    const obj = { role: this.role, value: null }
-    if (this.SelectedSector.length != 0) {
-      obj.value = this.SelectedSector
-    }
-    if (this.role === "Admin" || this.role === "Auditor" || this.role === "Back Office") {
+    
+     this.selected=this.role
+     const obj={role:this.role,value:null}
+     if(this.SelectedSector.length!=0)
+     {
+       obj.value=this.SelectedSector     
+      }
+      if(this.role==="Admin"||this.role==="Controler"||this.role==="Back Office"){
+       
+       obj.value=this.AllSectors
+ 
+      }
+      console.log("this.obj",obj)
 
-      obj.value = this.AllSectors
+     this.upsert(this.ListOfRoles,obj)
+  
+     console.log("ListOfRules",this.ListOfRoles)
 
-    }
-    this.upsert(this.ListOfRoles, obj)
-
-    console.log("ListOfRules", this.ListOfRoles)
-
-    if (!this.RoleSelected.includes(this.role)) {
+     if (!this.RoleSelected.includes(this.role)) {
       this.RoleSelected.push(this.role);
     }
+    
+    console.log("RoleSelected",this.RoleSelected)
+    this.Disabled =this.RoleSelected.includes(this.role)
+    console.log("Disabled",this.Disabled)
+
+
+    
+
+    
   }
 
-  AddRoles=[0];
   AddNewRole(){
+    this.SelectedSector=[]
+    if(this.RoleSelected.includes(this.role)){
+      this.Roles.splice(this.Roles.indexOf(this.role),1);
+    }
     this.role=""
     this.SelectedSector=[]
 
     // var i=1
     // this.AddRoles.push(i++);
-
+    
   }
 
-  RemoveRole(role) {
+  RemoveRole(role){ 
 
 
-    this.RoleSelected.splice(this.RoleSelected.indexOf(role), 1);
+      this.RoleSelected.splice(this.RoleSelected.indexOf(role),1);
+      
+      this.ListOfRoles.forEach(el=> {
 
-    this.ListOfRoles.forEach(el => {
+        if(el.role===role){
+          this.ListOfRoles.splice(this.ListOfRoles.indexOf(el),1);
+        }
 
-      if (el.role === role) {
-        this.ListOfRoles.splice(this.ListOfRoles.indexOf(el), 1);
-      }
+      }) 
+      
+      this.Roles.push(role);
 
-    })
+     if(this.RoleSelected.length==0) this.role=""
 
   }
-
 
 
   upsert(array, item) { // (1)
@@ -234,7 +252,7 @@ export class AddUserComponent implements OnInit {
     this.UserInfo = {
       userinfo: {
         UserID: this.UserID,
-        name: this.FirstName + " " + this.LastName,
+        name: this.FirstName + "-" + this.LastName,
         phone: this.phoneNumber,
         CIN: this.CIN,
         email: this.Email,
@@ -289,6 +307,26 @@ export class AddUserComponent implements OnInit {
     } else {
       this.searchUserForm.controls.userType.patchValue([]);
     }
+  }
+
+}
+
+@Pipe({
+  name: 'filterUnique',
+  pure: false
+})
+export class FilterPipe implements PipeTransform {
+
+  transform(value: any, args?: any): any {
+    
+    // Remove the duplicate elements
+    // let uniqueArray = value.filter(function (el, index, array) { 
+    //   return array.indexOf(el) == index;
+    // });
+    
+    let uniqueArray = Array.from(new Set(value));
+    
+    return uniqueArray;
   }
 
 }
