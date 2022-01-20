@@ -12,7 +12,7 @@ import { ThrowStmt } from '@angular/compiler';
 import { IndexdbService } from '../indexdb.service';
 import { OnlineOfflineServiceService } from '../online-offline-service.service';
 import { AdminService } from '../admin/admin.service';
-
+import { takeUntil, switchMap } from 'rxjs/operators';
 const incr = 1;
 
 @Component({
@@ -108,8 +108,54 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
     console.log('@@@@@@@@@@@@@@@@' + this.clientInfo.NomPrenom)
   }
   //////////////////////////////////////////////////
+  private destroyed: Subject<void> = new Subject<void>();
   ngOnInit(): void {
-      this.getLocation()
+
+    // interval(1000).pipe( takeUntil(this.destroyed)).subscribe(x => {
+      //this.getLocation()
+    // })
+    if(!navigator.geolocation) console.log("Location is not supported")
+
+    else
+    {
+      navigator.geolocation.getCurrentPosition((pos)=>{
+        console.log(`latitude :${pos.coords.latitude},longitude :${pos.coords.longitude}`)
+        this.map.setView([pos.coords.latitude,pos.coords.longitude],13)
+        L.marker([pos.coords.latitude,pos.coords.longitude],{ icon: this.location_icon }).addTo(this.map)
+      })
+    }
+    this.WatchPosition();
+      
+  }
+
+    ////*************** INIT FUNCTON *************/////
+    ngAfterViewInit(): void {
+      this.initMap();
+      this.clientInfo = this.clientService.getClientInfo();
+      console.log(this.clientInfo)
+      
+
+    }
+  WatchPosition(){
+    navigator.geolocation.watchPosition((pos)=>{
+    console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
+    
+    let raduis =300;
+    L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
+    this.clientService.getPosition({"MapUp":[pos.coords.latitude, pos.coords.longitude],"Raduis":raduis});
+
+    },(err)=>{
+      console.log(`err :${err}`)
+    },
+    {enableHighAccuracy:true,
+    timeout:3000
+    })
+    
+  }
+  ngOnDestroy() {
+
+    this.destroyed.next();
+    this.destroyed.complete();
   }
   /////////************** INTERFACE FUNCTIONS **************/////////////
   manageProgress() {
@@ -221,12 +267,7 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
   }
   ///////////////////////////////////////////////////////////
 
-  ////*************** INIT FUNCTON *************/////
-  ngAfterViewInit(): void {
-    this.initMap();
-    this.clientInfo = this.clientService.getClientInfo();
-    console.log(this.clientInfo)
-  }
+
 
   ///////////*********** MAP FUNCTION **************///////
   private initMap(): void {
@@ -295,20 +336,21 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
     //console.log("Distance2 :"+this.Distance );
     return this.clientService.getDistance();
   }
-  getLocation(){
+  
+  async getLocation(){
 
-    interval(1000).subscribe(x => {
+    // interval(1000).subscribe(x => {
     console.log("yesssss")
     if (navigator.geolocation) {
-      let raduis =3;
+      let raduis =300;
       this.map.setView(new L.LatLng(this.latclt, this.lonclt), 11, { animation: true });
-      L.circle([this.latclt, this.lonclt], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
+      //L.circle([this.latclt, this.lonclt], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
   
         console.log('LatitudeOfUpadate: ' + this.latclt +' LongitudeOfUpadate: ' + this.lonclt);
-      this.clientService.getPosition({"MapUp":[this.latclt, this.lonclt],"Raduis":raduis});
+      //this.clientService.getPosition({"MapUp":[this.latclt, this.lonclt],"Raduis":raduis});
 
       }
-    })
+    // })
 
   }
   
@@ -432,6 +474,11 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
       var objectStoreRequest = objectStore.get(this.clientInfo._id);
       console.log(this.clientInfo)
       objectStoreRequest.onsuccess = (event) => {
+        
+      this.clientInfo.geometry.properties.PVP = this.clientInfos.PVPhoto
+
+      this.clientInfo.geometry.properties.NFCP = this.clientInfos.NFCPhoto
+ 
         var elm = JSON.parse(objectStoreRequest.result.Valeur);
         console.log("********************element*****************")
         console.log(objectStoreRequest.result._id)

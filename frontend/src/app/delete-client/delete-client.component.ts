@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { ClientsService } from '../clients.service';
 import { ThrowStmt } from '@angular/compiler';
 import { OnlineOfflineServiceService } from '../online-offline-service.service';
+import { takeUntil, switchMap } from 'rxjs/operators';
 
 declare var MediaRecorder: any;
 @Component({
@@ -55,7 +56,11 @@ export class DeleteClientComponent implements AfterViewInit {
   private trigger: Subject<void> = new Subject<void>();
   public webcamImage = null;
   PDVImage
-
+  private destroyed: Subject<void> = new Subject<void>();
+  location_icon = L.icon({
+    iconUrl: "assets/location.png",
+    iconSize: [30, 30]
+  });
   constructor(
     private readonly onlineOfflineService: OnlineOfflineServiceService,
     private router: Router,
@@ -67,7 +72,52 @@ export class DeleteClientComponent implements AfterViewInit {
     console.log("Lon",this.lon)
     console.log("Lat",this.latclt)
     console.log("Lon",this.lonclt)
-    this.getLocation()
+
+      // interval(1000).pipe( takeUntil(this.destroyed)).subscribe(x => {
+      //   this.getLocation()
+      // })
+
+      if(!navigator.geolocation) console.log("Location is not supported")
+
+      else
+      {
+        navigator.geolocation.getCurrentPosition((pos)=>{
+          console.log(`latitude :${pos.coords.latitude},longitude :${pos.coords.longitude}`)
+          this.map.setView([pos.coords.latitude,pos.coords.longitude],13)
+          L.marker([pos.coords.latitude,pos.coords.longitude],{ icon: this.location_icon }).addTo(this.map)
+        })
+      }
+
+      interval(3000).pipe( takeUntil(this.destroyed)).subscribe(x => {
+        this.WatchPosition()
+        })
+      this.WatchPosition()
+    
+  }
+
+  WatchPosition(){
+    
+      
+    let raduis=300
+    navigator.geolocation.watchPosition((pos)=>{
+    console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
+    
+    L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
+
+    this.clientService.getPosition({"MapUp":[pos.coords.latitude, pos.coords.longitude],"Raduis":raduis});
+    },(err)=>{
+      console.log(`err :${err}`)
+    },
+    {enableHighAccuracy:true,
+    timeout:3000,
+  }
+    )
+  }
+
+  ngOnDestroy() {
+
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 
   startRecording() {
@@ -231,6 +281,7 @@ text;
           maximumAge: 2000
         };
         //console.log(this.percentage)
+
         var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
 
           if (position) {
@@ -250,6 +301,9 @@ text;
                 this.lon = position.coords.longitude
                 this.latclt = position.coords.latitude
                 this.lonclt = position.coords.longitude
+                console.log("latclt",this.latclt)
+                console.log("lonclt",this.lonclt)
+
               }
 
               this.map.removeLayer(marker);
@@ -367,23 +421,22 @@ text;
     //console.log("Distance2 :"+this.Distance );
     return this.clientService.getDistance();
   }
-  getLocation(){
+  // getLocation(){
 
-    interval(1000).subscribe(x => {
-    console.log("yesssss")
-    if (navigator.geolocation) {
-      let raduis =3;
-      this.map.setView(new L.LatLng(this.latclt, this.lonclt), 11, { animation: true });
-      L.circle([this.latclt, this.lonclt], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
+  //   console.log("yesssss")
+  //   if (navigator.geolocation) {
+  //     let raduis =3;
+  //     this.map.setView(new L.LatLng(this.latclt, this.lonclt), 11, { animation: true });
+  //     L.circle([this.latclt, this.lonclt], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
   
-        console.log('LatitudeOfUpadate: ' + this.latclt +
-          ' LongitudeOfUpadate: ' + this.lonclt);
-      this.clientService.getPosition({"MapUp":[this.latclt, this.lonclt],"Raduis":raduis});
+  //       console.log('LatitudeOfUpadate: ' + this.latclt +
+  //         ' LongitudeOfUpadate: ' + this.lonclt);
+  //     this.clientService.getPosition({"MapUp":[this.latclt, this.lonclt],"Raduis":raduis});
 
-      }
-    })
+  //     }
 
-  }
+
+  // }
   
   SessionTerminate=false;
   ValidatePosition(){

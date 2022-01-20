@@ -86,12 +86,29 @@ export class MapComponent implements AfterViewInit {
         this.map.flyTo(new L.LatLng(params['lat'], params['long']), 18);
       } else {
         this.getLocation()
+        this.WatchPosition()
       }
     });
   }
+
+  WatchPosition(){
+    navigator.geolocation.watchPosition((pos)=>{
+    console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
+    
+    let raduis =300;
+    L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
+    this._serviceClient.getPosition({ "Map": new L.LatLng(pos.coords.latitude, pos.coords.longitude), "Raduis": raduis });
+
+    },(err)=>{
+      console.log(`err :${err}`)
+    },
+    {enableHighAccuracy:true,
+    timeout:3000
+    })
+    
+  }
   ///*** get Location */
-  radius = 50000
- 
+  // radius = 30
   getLocation() {
     var options = {
       enableHighAccuracy: false,
@@ -114,9 +131,9 @@ export class MapComponent implements AfterViewInit {
           if (this.myCercle !== undefined) {
             this.map.removeLayer(this.myCercle)
           }
-          this.myCercle = L.circle([this.lat, this.lon], { color: "blue", fillColor: "#cce6ff", radius: this.radius });
-          this.myCercle.addTo(this.map);
-          this._serviceClient.getPosition({ "Map": new L.LatLng(this.lat, this.lon), "Raduis": this.radius });
+          // this.myCercle = L.circle([this.lat, this.lon], { color: "blue", fillColor: "#cce6ff", radius: this.radius });
+          // this.myCercle.addTo(this.map);
+          //this._serviceClient.getPosition({ "Map": new L.LatLng(this.lat, this.lon), "Raduis": this.radius });
           if (this.myMarker != undefined) {
             console.log("remove layer ")
             this.map.removeLayer(this.myMarker)
@@ -146,7 +163,6 @@ export class MapComponent implements AfterViewInit {
     // this.
 
   }
-
   //////////*********** put  Client Info from IndexDB *******//////////////
 
   public getDataClient() {
@@ -181,27 +197,28 @@ export class MapComponent implements AfterViewInit {
               return L.marker(latlon, { icon: iconClient });
             }
           });
-          marker.addTo(this.map);
+          //marker.addTo(this.map);
 
 
-          if (Point.geometry.properties?.nfc != undefined) {
+         // if (Point.geometry.properties?.nfc != undefined) {
             marker.on('click', () => {
               
               this._serviceClient.getPosition({"Client":new L.LatLng(Point.geometry.geometry.coordinates[1],Point.geometry.geometry.coordinates[0])});
               this.content = Point.geometry;
               this.zone.run(() => this.openDialog(Point));
             });
-         } 
-         else {
+        // } 
+        // else {
             //console.log("############# ici"+Point.geometry.properties.Nom_Client)
-            marker.bindPopup('<h1> <b>Client Information</b></h1><p><b>Name:</b> ' + String(Point.geometry.properties.Nom_Client) + '</p><p><b>Sector Name: </b>' + String(Point.geometry.properties.Nom_du_Secteur) + '</p>');
-        }
+          //  marker.bindPopup('<h1> <b>Client Information</b></h1><p><b>Name:</b> ' + String(Point.geometry.properties.NomPrenom) + '</p><p><b>Sector Name: </b>' + String(Point.geometry.properties.Nom_Secteur) + '</p>');
+        //}
 
         if(status=='deleted' && (this.user.role =="Admin" || this.user.role =="Back Office") ){
           console.log("deleted status ")
           console.log(this.user.role)
           this.markersCluster.addLayer(marker);
         }else if(status!='deleted'){
+          console.log("status",status)
           this.markersCluster.addLayer(marker);
         }
         });

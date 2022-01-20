@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit,Pipe, PipeTransform, ViewChild } from '@angular/core';
 import { ClientsService } from 'src/app/clients.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ClientInfoComponent } from 'src/app/client-info/client-info.component';
@@ -48,6 +48,9 @@ export class AddUserComponent implements OnInit {
   SectorAffacted = [];
   DisableSend = true;
   searchUserForm: FormGroup;
+
+
+
 
   //dialogRef: MatDialogRef<ClientInfoComponent>;
   ngOnInit(): void {
@@ -305,6 +308,26 @@ export class AddUserComponent implements OnInit {
     } else {
       this.searchUserForm.controls.userType.patchValue([]);
     }
+  }
+
+}
+
+@Pipe({
+  name: 'filterUnique',
+  pure: false
+})
+export class FilterPipe implements PipeTransform {
+
+  transform(value: any, args?: any): any {
+    
+    // Remove the duplicate elements
+    // let uniqueArray = value.filter(function (el, index, array) { 
+    //   return array.indexOf(el) == index;
+    // });
+    
+    let uniqueArray = Array.from(new Set(value));
+    
+    return uniqueArray;
   }
 
 }

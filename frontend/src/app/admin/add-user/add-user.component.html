@@ -59,7 +59,7 @@
                 <label>Role :</label>
                 <mat-form-field >
                     <mat-select  placeholder="select"  panelClass="selectPanel2"  (selectionChange)="onChange()" [(value)]="role">   
-                        <div *ngFor="let rol of Roles" >
+                        <div *ngFor="let rol of Roles | filterUnique" >
                         
                         <mat-option   value="{{rol}}">{{rol}}</mat-option>
                         </div>
