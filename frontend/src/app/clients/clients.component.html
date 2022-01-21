@@ -89,13 +89,12 @@
 
     <div class="clients-list">
         <!-- *ngFor="let client of clients" -->
-        
+
         <div *ngFor="let client of dataSource | filter: IdClient | filter: PhoneNumber | filter: PDVType | filter: detailType | filter: sector | filter: validate | filter: nfc | filter: deleteStatus"
             class="card-container">
             <mat-card (click)="openDialog(client)">
                 <img mat-card-image src="{{client.geometry.properties.PVP}}" alt=""
                     *ngIf="client.geometry.properties.PVP; else nfcPhoto">
-
                 <ng-template #nfcPhoto>
                     <img mat-card-image src="assets/images/blank.jpg" alt="">
                 </ng-template>
@@ -107,9 +106,10 @@
                     <p><span>Sector:</span> {{client.geometry.properties.Code_Secteur_OS}}</p>
                     <div class="nfc">
                         NFC
-                        <mat-icon *ngIf="!client.geometry.properties.codeQR " [ngStyle]="{'color':'#FACF37'}">
-                            indeterminate_check_box</mat-icon>
-                        <mat-icon *ngIf="client.geometry.properties.codeQR " [ngStyle]="{'color':'#27AE61'}">check_box
+                        <mat-icon *ngIf="client.geometry.properties.NFC==null" [ngStyle]="{'color':'#FACF37'}">
+                            indeterminate_check_box
+                        </mat-icon>
+                        <mat-icon *ngIf="client.geometry.properties.NFC!=null" [ngStyle]="{'color':'#27AE61'}">check_box
                         </mat-icon>
                     </div>
                 </mat-card-content>

@@ -140,7 +140,7 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
     navigator.geolocation.watchPosition((pos)=>{
     console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
     
-    let raduis =300;
+    let raduis =3000;
     L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
     this.clientService.getPosition({"MapUp":[pos.coords.latitude, pos.coords.longitude],"Raduis":raduis});
 
@@ -474,11 +474,8 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
       var objectStoreRequest = objectStore.get(this.clientInfo._id);
       console.log(this.clientInfo)
       objectStoreRequest.onsuccess = (event) => {
-        
-      this.clientInfo.geometry.properties.PVP = this.clientInfos.PVPhoto
-
-      this.clientInfo.geometry.properties.NFCP = this.clientInfos.NFCPhoto
- 
+        this.clientInfo.geometry.properties.PVP =  this.clientInfo.PVPhoto
+        this.clientInfo.geometry.properties.NFCP =  this.clientInfo.NFCPhoto
         var elm = JSON.parse(objectStoreRequest.result.Valeur);
         console.log("********************element*****************")
         console.log(objectStoreRequest.result._id)
