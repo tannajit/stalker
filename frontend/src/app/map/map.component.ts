@@ -69,11 +69,17 @@ export class MapComponent implements AfterViewInit {
     tiles.addTo(this.map);
     this.getDataClient();
     this.getDataSector();
+    this.map.addLayer(this.markerClusterSector)
     this.map.addLayer(this.markersCluster);
     // this.getLocation()
     //this.getLocation1()
     this.map.addControl(L.control.zoom({ position: 'bottomleft' }));
 
+  }
+  ngOnInit(): void {
+    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+    //Add 'implements OnInit' to the class.
+    //this.WatchPosition()
   }
 
   //////////////*** Init map ////////
@@ -97,6 +103,11 @@ export class MapComponent implements AfterViewInit {
     
     let raduis =3000;
     L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
+    this.myMarker = L.circleMarker([this.lat, this.lon], {
+      color: "#163AE3 ",
+      fillOpacity: 1,
+      radius: 8.0
+    }).addTo(this.map);
     this._serviceClient.getPosition({ "Map": new L.LatLng(pos.coords.latitude, pos.coords.longitude), "Raduis": raduis });
 
     },(err)=>{
@@ -127,6 +138,7 @@ export class MapComponent implements AfterViewInit {
           console.log(this.lat);
           console.log(this.lon);
           this.map.setView(new L.LatLng(this.lat, this.lon), 18, { animation: true });
+          
           if (this.myCercle !== undefined) {
             this.map.removeLayer(this.myCercle)
           }
@@ -227,6 +239,7 @@ export class MapComponent implements AfterViewInit {
 
   ////////////******* Put Sector in Map  *****////////////////////////////////
   public getDataSector() {
+    this.markerClusterSector.clearLayers();
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
@@ -246,7 +259,7 @@ export class MapComponent implements AfterViewInit {
           const Point = { _id: element._id, geometry: elm };
           const marker = L.geoJSON(Point.geometry, { style: { color: '#CD9575', fillOpacity: 0.1 } });
           marker.bindPopup(String(Point.geometry.properties.codeRegion));
-          marker.addTo(this.map);
+          // marker.addTo(this.map);
           this.markerClusterSector.addLayer(marker);
           this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
         });
@@ -332,6 +345,7 @@ export class MapComponent implements AfterViewInit {
 
   /////////////// ********* Synchronize Action **********/////////////////////////
   async sync() {
+    this.PutDataSector()
     this.PutData();
     this.openAlertDialog();
     console.log('Synchronize (Get data from the Database)');

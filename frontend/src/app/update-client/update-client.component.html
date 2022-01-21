@@ -2,24 +2,15 @@
 
     <h2>Update Client</h2>
 
-    <ng-container *ngIf="percentage == 100; else elseTemplate">
-        <p>Position Fixed</p>
-    </ng-container>
-    <ng-template #elseTemplate>
-        <p>Fixing Position...</p>
-    </ng-template>
 
     <div>
-        <pre>pos collectés: {{list.length}}</pre>
-        <pre>Accuracy: {{acc}}</pre>
         <pre>Distance according client : {{getDistance()}}</pre>
-
     </div>
 
-    <div ng-app ng-controller="ApplicationController" class="progress-cantainer">
+    <!-- <div ng-app ng-controller="ApplicationController" class="progress-cantainer">
         <mat-progress-bar mode="determinate" [value]="percentage"></mat-progress-bar>
         <span style="position: absolute; top: 0em;" [ngStyle]="{'left': percentage + '%'}">{{percentage}}%</span>
-    </div>
+    </div> -->
 
     <div class="map-container">
         <div id="map2"></div>
@@ -27,10 +18,10 @@
 
     <div>
         <button mat-button class="btn-yellow" (click)="showcheck()"
-            [disabled]="(percentage!=100) ||  !Status">Next</button>
+            [disabled]="!Status">Next</button>
     </div>
     <ng-template  #showBtn> 
-        <button mat-button class="btn-yellow">Recalculate my position</button>
+        <button mat-button class="btn-yellow" (click)="WatchPosition()">Recalculate my position</button>
     </ng-template>
     <ng-template  [ngIf]="!ValidatePosition()" [ngIfElse]="showBtn"> 
     <div class="container" id="checkcodes" *ngIf="hide">
@@ -43,7 +34,7 @@
                     <div *ngFor="let code of ListCodes" class="qr-container">
                         <span *ngIf="code.nbr == 1">{{ code.value}}</span>
                     </div>
-                    <span *ngIf="clientInfo.geometry.properties.codeDANON==null, else scanned" style="color: red;">Not
+                    <span *ngIf="clientInfo.geometry.properties?.codeDANON==null, else scanned" style="color: red;">Not
                         scanned</span>
                     <ng-template #scanned>{{clientInfo.geometry.properties.codeDANON}}</ng-template>
                 </div>
@@ -57,7 +48,7 @@
                     <div *ngFor="let code of ListCodes" class="qr-container">
                         <span *ngIf="code.nbr == 2">{{ clientInfo.geometry.properties.codeCOLA}}</span>
                     </div>
-                    <span *ngIf="clientInfo.geometry.properties.codeCOLA==null, else scanned" style="color: red;">Not
+                    <span *ngIf="clientInfo.geometry.properties?.codeCOLA==null, else scanned" style="color: red;">Not
                         scanned</span>
                     <ng-template #scanned>{{clientInfo.geometry.properties.codeCOLA}}</ng-template>
                 </div>
@@ -71,7 +62,7 @@
                     <div *ngFor="let code of ListCodes" class="qr-container">
                         <span *ngIf="code.nbr == 3">{{ clientInfo.geometry.properties.codeFGD}}</span>
                     </div>
-                    <span *ngIf="clientInfo.geometry.properties.codeFGD==null, else scanned" style="color: red;">Not
+                    <span *ngIf="clientInfo.geometry.properties?.codeFGD==null, else scanned" style="color: red;">Not
                         scanned</span>
                     <ng-template #scanned>{{clientInfo.geometry.properties.codeFGD}}</ng-template>
                 </div>
@@ -101,7 +92,7 @@
                     <label class="input-label">NFC card puce : </label>
                     <button mat-button class="btn-green" (click)="Read()">Read</button>
                 </div>
-                <div *ngIf="clientInfo.geometry.properties.nfc.UUID!= null" class="nfc-div">
+                <div *ngIf="clientInfo.geometry.properties?.nfc?.UUID" class="nfc-div">
                     <span>UUID:</span>
                     <p>{{clientInfo.geometry.properties.nfc.UUID}}</p>
                     <span>Numero_Serie:</span>
@@ -119,7 +110,7 @@
                         <div *ngFor="let code of ListCodes" class="qr-container">
                             <span *ngIf="code.nbr == 4">{{code.value}}</span>
                         </div>
-                        <span *ngIf="clientInfo.geometry.properties.codeQR==null, else scanned" style="color: red;">Not
+                        <span *ngIf="clientInfo.geometry.properties?.codeQR==null, else scanned" style="color: red;">Not
                             scanned</span>
                         <ng-template #scanned>{{clientInfo.geometry.properties.codeQR}}</ng-template>
                     </div>
@@ -180,7 +171,7 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <div class="field" *ngIf="clientInfo.geometry.properties.TypeDPV=='Detail'">
+                <div class="field" *ngIf="clientInfo.geometry.properties?.TypeDPV=='Detail'">
                     <mat-form-field>
                         <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2"
                             [(ngModel)]="clientInfo.geometry.properties.detailType">

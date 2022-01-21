@@ -1,14 +1,8 @@
 <div class="content-body">
-    <ng-container *ngIf="percentage == 100; else elseTemplate">
-        <p>Position Fixed</p>
-    </ng-container>
-    <ng-template #elseTemplate>
-        <p>Fixing Position...</p>
-    </ng-template>
+    <h2>Delete Client</h2>
+
 
     <div>
-        <pre>pos collectés: {{list.length}}</pre>
-        <pre>Accuracy: {{acc}}</pre>
         <pre>Distance according client : {{getDistance()}}</pre>
     </div>
 
@@ -23,10 +17,10 @@
 
     <div class="action-btns">
         <ng-template  #showBtn> 
-            <button mat-button class="btn-yellow">Recalculate my position</button>
+            <button mat-button class="btn-yellow" (click)="WatchPosition()">Recalculate my position</button>
         </ng-template>
         <button mat-button class="btn-yellow" (click)="showcheck()"
-            [disabled]="(percentage!=100) ||  !Status">Next</button>
+            [disabled]="!Status">Next</button>
     </div>
     
     <ng-template  [ngIf]="!ValidatePosition()" [ngIfElse]="showBtn"> 
@@ -94,7 +88,7 @@
             </div>
         </div>
         <div class="btns">
-            <button mat-button class="btn-red">Cancel</button>
+            <button mat-button class="btn-red" routerLink="/map">Cancel</button>
             <button mat-button class="btn-yellow" (click)="Send()">Send</button>
         </div>
         

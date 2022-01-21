@@ -91,7 +91,7 @@ export class DeleteClientComponent implements AfterViewInit {
       interval(3000).pipe( takeUntil(this.destroyed)).subscribe(x => {
         this.WatchPosition()
         })
-      this.WatchPosition()
+      //this.WatchPosition()
     
   }
 
