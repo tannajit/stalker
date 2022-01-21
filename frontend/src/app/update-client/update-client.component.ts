@@ -124,7 +124,10 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
         L.marker([pos.coords.latitude,pos.coords.longitude],{ icon: this.location_icon }).addTo(this.map)
       })
     }
-    this.WatchPosition();
+    interval(3000).pipe( takeUntil(this.destroyed)).subscribe(x => {
+      this.WatchPosition()
+      })
+    //this.WatchPosition();
       
   }
 
@@ -140,7 +143,7 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
     navigator.geolocation.watchPosition((pos)=>{
     console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
     
-    let raduis =300;
+    let raduis =2;
     L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
     this.clientService.getPosition({"MapUp":[pos.coords.latitude, pos.coords.longitude],"Raduis":raduis});
 

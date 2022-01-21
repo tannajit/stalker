@@ -2,24 +2,15 @@
 
     <h2>Update Client</h2>
 
-    <ng-container *ngIf="percentage == 100; else elseTemplate">
-        <p>Position Fixed</p>
-    </ng-container>
-    <ng-template #elseTemplate>
-        <p>Fixing Position...</p>
-    </ng-template>
 
     <div>
-        <pre>pos collectés: {{list.length}}</pre>
-        <pre>Accuracy: {{acc}}</pre>
         <pre>Distance according client : {{getDistance()}}</pre>
-
     </div>
 
-    <div ng-app ng-controller="ApplicationController" class="progress-cantainer">
+    <!-- <div ng-app ng-controller="ApplicationController" class="progress-cantainer">
         <mat-progress-bar mode="determinate" [value]="percentage"></mat-progress-bar>
         <span style="position: absolute; top: 0em;" [ngStyle]="{'left': percentage + '%'}">{{percentage}}%</span>
-    </div>
+    </div> -->
 
     <div class="map-container">
         <div id="map2"></div>
@@ -27,7 +18,7 @@
 
     <div>
         <button mat-button class="btn-yellow" (click)="showcheck()"
-            [disabled]="(percentage!=100) ||  !Status">Next</button>
+            [disabled]="!Status">Next</button>
     </div>
     <ng-template  #showBtn> 
         <button mat-button class="btn-yellow">Recalculate my position</button>

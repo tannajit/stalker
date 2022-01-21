@@ -91,14 +91,14 @@ export class DeleteClientComponent implements AfterViewInit {
       interval(3000).pipe( takeUntil(this.destroyed)).subscribe(x => {
         this.WatchPosition()
         })
-      this.WatchPosition()
+      //this.WatchPosition()
     
   }
 
   WatchPosition(){
     
       
-    let raduis=300
+    let raduis=2
     navigator.geolocation.watchPosition((pos)=>{
     console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
     
