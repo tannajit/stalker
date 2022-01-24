@@ -118,11 +118,7 @@ export class MapComponent implements AfterViewInit {
     
     this.myCercle=L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
     this._serviceClient.getPosition({ "Map": new L.LatLng(pos.coords.latitude, pos.coords.longitude), "Raduis": raduis });
-    this.myMarker = L.circleMarker([pos.coords.latitude, pos.coords.longitude], {
-      color: "#163AE3 ",
-      fillOpacity: 1,
-      radius: 8.0
-    }).addTo(this.map);
+  
 
     },(err)=>{
       console.log(`err :${err}`)
