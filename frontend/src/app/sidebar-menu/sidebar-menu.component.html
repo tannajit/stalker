@@ -92,7 +92,7 @@
             </button>
 
             <div fxFlex="100%" class="flexExpand"></div>
-            <span style="font-size: 12px; color: #444242;">{{myname}}</span>
+            <span style="font-size: 12px; color: #444242;">{{myname.replace('-',' ')}}</span>
             <button mat-icon-button [matMenuTriggerFor]="logout" #menuTrigger="matMenuTrigger"
                 (click)="menuTrigger.openMenu()">
 

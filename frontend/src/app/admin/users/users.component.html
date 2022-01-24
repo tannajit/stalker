@@ -38,6 +38,9 @@
 
             <mat-form-field >
               <mat-select placeholder="Sector"  panelClass="selectPanel2" (selectionChange)="onChangeSector($event)" [(ngModel)]="selectedSector">
+                <mat-option>
+                  <ngx-mat-select-search placeholderLabel="Search" (keyup)="filterListCareUnit($event.target.value)" ></ngx-mat-select-search>
+              </mat-option>
                 <mat-option value="all">All</mat-option>
                 <ng-container *ngFor="let sector of Sectors">
                   <mat-option value="{{sector.id}}">{{sector.detail}}</mat-option>

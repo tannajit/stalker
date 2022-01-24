@@ -72,11 +72,17 @@ export class MapComponent implements AfterViewInit {
     tiles.addTo(this.map);
     this.getDataClient();
     this.getDataSector();
+    this.map.addLayer(this.markerClusterSector)
     this.map.addLayer(this.markersCluster);
     // this.getLocation()
     //this.getLocation1()
     this.map.addControl(L.control.zoom({ position: 'bottomleft' }));
 
+  }
+  ngOnInit(): void {
+    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+    //Add 'implements OnInit' to the class.
+    //this.WatchPosition()
   }
 
   //////////////*** Init map ////////
@@ -181,8 +187,8 @@ export class MapComponent implements AfterViewInit {
     // this.
 
   }
-  //////////*********** put  Client Info from IndexDB *******//////////////
-
+  //////////*********** get PDV form IndexDB and put  Client Info from IndexDB *******//////////////
+  DeletedMarkerCluster=new L.MarkerClusterGroup();
   public getDataClient() {
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
@@ -234,7 +240,8 @@ export class MapComponent implements AfterViewInit {
         if(status=='deleted' && (this.user.role =="Admin" || this.user.role =="Back Office") ){
           
           console.log(this.user.role)
-          this.markersCluster.addLayer(marker);
+          //this.markersCluster.addLayer(marker);
+          this.DeletedMarkerCluster.addLayer(marker)
         }else if(status!='deleted'){
           // console.log("status",status)
           this.markersCluster.addLayer(marker);
@@ -245,8 +252,9 @@ export class MapComponent implements AfterViewInit {
   }
 
 
-  ////////////******* Put Sector in Map  *****////////////////////////////////
+  ////////////******* Get Sector from IndexDB Put Sector in Map  *****////////////////////////////////
   public getDataSector() {
+    this.markerClusterSector.clearLayers();
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
@@ -266,7 +274,7 @@ export class MapComponent implements AfterViewInit {
           const Point = { _id: element._id, geometry: elm };
           const marker = L.geoJSON(Point.geometry, { style: { color: '#CD9575', fillOpacity: 0.1 } });
           marker.bindPopup(String(Point.geometry.properties.codeRegion));
-          marker.addTo(this.map);
+          // marker.addTo(this.map);
           this.markerClusterSector.addLayer(marker);
           this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
         });
@@ -352,6 +360,7 @@ export class MapComponent implements AfterViewInit {
 
   /////////////// ********* Synchronize Action **********/////////////////////////
   async sync() {
+    this.PutDataSector()
     this.PutData();
     this.openAlertDialog();
     console.log('Synchronize (Get data from the Database)');
@@ -418,7 +427,7 @@ export class MapComponent implements AfterViewInit {
   cluster1=new L.MarkerClusterGroup();
   onChange4(){
     this.map.removeLayer(this.markersCluster)
-
+    this.map.removeLayer(this.DeletedMarkerCluster);
     if(this.cluster1.getLayers().length > 0){
       this.cluster1.clearLayers();
       this.map.removeLayer(this.cluster1)
@@ -426,6 +435,9 @@ export class MapComponent implements AfterViewInit {
     if(this.cluster.getLayers().length > 0){
       this.cluster.clearLayers();
       this.map.removeLayer(this.cluster1)
+    }
+    if (this.option_done == "Deleted") {
+      this.map.addLayer(this.DeletedMarkerCluster)
     }
     if (this.option_done == "Not_Done") {
       this.markersCluster.eachLayer((layer: any) => {

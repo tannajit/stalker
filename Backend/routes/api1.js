@@ -480,7 +480,7 @@ async function updateClient(client) {
     let geometries = db.collection("geometries") /// geometries Collections
     let secteurs = db.collection("secteurs")
     var id_NFC, id_pv;
-    if (client.geometry.properties.NFCP == null) {
+    if (client.geometry.properties.NFCP == null ) {
         await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
         console.log("NFC photo id: " + id_NFC)
     } else {
@@ -653,7 +653,7 @@ async function getUser(user) {
 
     var status = { value: 401, data: null }
 
-    var User = await collection.find({ email: user.email }).toArray()
+    var User = await collection.find({ email: user.email, status:"Active"}).toArray()
     if (User.length > 0) {
         var FindUser;
         User.forEach(async (u) => {

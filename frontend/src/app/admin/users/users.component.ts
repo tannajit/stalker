@@ -26,6 +26,7 @@ export class UsersComponent implements OnInit {
   selectedRole
   selectedSector
 
+  
   users=[];
   roles=[]
   Sectors=[]
@@ -457,6 +458,11 @@ export class UsersComponent implements OnInit {
     }
 
   }
-
+  anotherArray = this.Sectors;
+  filterListCareUnit(val) {
+    // console.log(val);
+    
+    this.Sectors = this.anotherArray.filter((unit) => unit.detail.toLowerCase().indexOf(val) > -1);
+  }
   
 }

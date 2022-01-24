@@ -414,6 +414,7 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
 
   /////////////////////****** UPDATE CLIENT INFOS *******/////////////////
   async Update() {
+    console.log(this.clientInfos)
     // ***************** scanned codes ************* //
     if (this.ListCodes.length != 0) {
       this.ListCodes.forEach(element => {
@@ -428,12 +429,12 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
         }
       });
     }
-    if (this.clientInfos.NFCPhoto) {
+    if (this.clientInfos.NFCPhoto!=null) {
       this.clientInfo.geometry.properties.nfc.NFCPhoto = this.clientInfos.NFCPhoto
       this.clientInfo.geometry.properties.NFCP = null
     }
 
-    if (this.clientInfos.PVPhoto) {
+    if (this.clientInfos.PVPhoto != null) {
       this.clientInfo.geometry.properties.PVPhoto = this.clientInfos.PVPhoto
       this.clientInfo.geometry.properties.PVP = null
     }
@@ -477,11 +478,8 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
       var objectStoreRequest = objectStore.get(this.clientInfo._id);
       console.log(this.clientInfo)
       objectStoreRequest.onsuccess = (event) => {
-        
-      this.clientInfo.geometry.properties.PVP = this.clientInfos.PVPhoto
-
-      this.clientInfo.geometry.properties.NFCP = this.clientInfos.NFCPhoto
- 
+        this.clientInfo.geometry.properties.PVP =  this.clientInfos.PVPhoto
+        this.clientInfo.geometry.properties.NFCP =   this.clientInfos.NFCPhoto
         var elm = JSON.parse(objectStoreRequest.result.Valeur);
         console.log("********************element*****************")
         console.log(objectStoreRequest.result._id)
