@@ -12,7 +12,8 @@ import { IndexdbService } from '../indexdb.service';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import * as XLSX from 'xlsx';
 import { ExtractSelectComponent } from '../extract-select/extract-select.component';
-
+import { takeUntil, switchMap } from 'rxjs/operators';
+import { interval, Subject } from 'rxjs';
 
 
 @Component({
@@ -36,6 +37,8 @@ export class MapComponent implements AfterViewInit {
 
   dialogRef: MatDialogRef<ClientInfoComponent>;
   dialogExtract: MatDialogRef<ExtractSelectComponent>;
+  private destroyed: Subject<void> = new Subject<void>();
+
   private map;
   public content = null;
   myCercle;
@@ -86,18 +89,34 @@ export class MapComponent implements AfterViewInit {
         this.map.flyTo(new L.LatLng(params['lat'], params['long']), 18);
       } else {
         this.getLocation()
-        this.WatchPosition()
+        interval(3000).pipe( takeUntil(this.destroyed)).subscribe(x => {
+          this.WatchPosition()
+          })
       }
     });
+  }
+  ngOnDestroy() {
+
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 
   WatchPosition(){
     navigator.geolocation.watchPosition((pos)=>{
     console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
     
-    let raduis =2;
-    L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
+    let raduis =5000;
+    if (this.myCercle !== undefined) {
+      this.map.removeLayer(this.myCercle)
+    }
+    
+    this.myCercle=L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
     this._serviceClient.getPosition({ "Map": new L.LatLng(pos.coords.latitude, pos.coords.longitude), "Raduis": raduis });
+    this.myMarker = L.circleMarker([pos.coords.latitude, pos.coords.longitude], {
+      color: "#163AE3 ",
+      fillOpacity: 1,
+      radius: 8.0
+    }).addTo(this.map);
 
     },(err)=>{
       console.log(`err :${err}`)
@@ -127,9 +146,10 @@ export class MapComponent implements AfterViewInit {
           console.log(this.lat);
           console.log(this.lon);
           this.map.setView(new L.LatLng(this.lat, this.lon), 18, { animation: true });
-          if (this.myCercle !== undefined) {
-            this.map.removeLayer(this.myCercle)
-          }
+
+          // if (this.myCercle !== undefined) {
+          //   this.map.removeLayer(this.myCercle)
+          // }
           // this.myCercle = L.circle([this.lat, this.lon], { color: "blue", fillColor: "#cce6ff", radius: this.radius });
           // this.myCercle.addTo(this.map);
           //this._serviceClient.getPosition({ "Map": new L.LatLng(this.lat, this.lon), "Raduis": this.radius });

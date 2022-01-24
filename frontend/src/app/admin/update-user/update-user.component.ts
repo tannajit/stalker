@@ -45,7 +45,7 @@ export class UpdateUserComponent implements OnInit {
     private _client: ClientsService,
     private _router: Router,
     private dialog: MatDialog,
-    private fb: FormBuilder
+    private fb: FormBuilder,
 
   ) { }
 

@@ -21,7 +21,7 @@
             [disabled]="!Status">Next</button>
     </div>
     <ng-template  #showBtn> 
-        <button mat-button class="btn-yellow">Recalculate my position</button>
+        <button mat-button class="btn-yellow" (click)="WatchPosition()">Recalculate my position</button>
     </ng-template>
     <ng-template  [ngIf]="!ValidatePosition()" [ngIfElse]="showBtn"> 
     <div class="container" id="checkcodes" *ngIf="hide">
