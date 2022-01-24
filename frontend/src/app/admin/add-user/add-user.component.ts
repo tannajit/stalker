@@ -308,15 +308,14 @@ export class AddUserComponent implements OnInit {
   ///////********************* Open Dialog *********************////////
   openAlertDialog() {
     const dialogRef = this.dialog.open(AlertDialogComponent, {
-      disableClose: false,
       data: {
         message: "Please Copy this credentials and send them to the User before Exit \n " + "[Email:" + this.Email + "-" + "Password:" + this.Password + "]",
         buttonText: {
           ok: 'Ok'
           }
+          
       },
     });
-    
     dialogRef.afterClosed().subscribe(res => {
       this._router.navigate(['/users'])
     })
