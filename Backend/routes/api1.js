@@ -653,7 +653,7 @@ async function getUser(user) {
 
     var status = { value: 401, data: null }
 
-    var User = await collection.find({ email: user.email }).toArray()
+    var User = await collection.find({ email: user.email, status:"Active"}).toArray()
     if (User.length > 0) {
         var FindUser;
         User.forEach(async (u) => {

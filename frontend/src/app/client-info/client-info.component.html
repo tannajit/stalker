@@ -1,12 +1,16 @@
 <label style="font-weight: bold; color: green;">Id Client: </label><p>{{data._id}}</p>
 <div *ngIf="(loggedUser.role == 'Back Office' || loggedUser.role == 'Admin' ) && !data?.Raison">
     
-    <div *ngIf="data.geometry.properties.status=='green', else refused">
+    <div *ngIf="data.geometry.properties.status=='green'">
         <span style="color: green;">Client Validated</span>
     </div>
-    <ng-template #refused>
+    <div *ngIf="data.geometry.properties.status!='green'">
+       
         <span style="color: red;">Client Not validated</span>
-    </ng-template>
+    </div>
+    <div *ngIf="data.geometry.properties.status=='deleted'">
+        <span style="color: rgb(250, 250, 250); background-color:rgb(240, 35, 35) ;" >Client Deleted</span>
+    </div>
 
     <mat-dialog-content>
         <div class="dialog-container">
@@ -55,8 +59,8 @@
                         </div>
                     </div>
                     <div class="pdv-action-btns" *ngIf="data.geometry.properties.status !='green'">
-                        <button mat-button class="btn-valid" (click)="validate(data._id,'green')">Valid</button>
-                        <button mat-button class="btn-refus" (click)="validate(data._id,'black')">Refus</button>
+                        <button mat-button class="btn-valid" (click)="validate(data._id,'green')" [disabled]="data.geometry.properties.status=='deleted'" >Valid</button>
+                        <button mat-button class="btn-refus" (click)="validate(data._id,'black')" [disabled]="data.geometry.properties.status=='deleted'" >Refus</button>
                     </div>
 
                 </section>
@@ -105,10 +109,10 @@
     </mat-dialog-content>
 
     <mat-dialog-actions class="action-btns" align="center">
-        <button mat-raised-button color="primary" class="btn-green" (click)="onUpdateClick()">Update Client</button>
-        <button mat-raised-button color="primary" class="btn-red">Delete Client</button>
+        <button mat-raised-button color="primary" class="btn-green" (click)="onUpdateClick()" [disabled]="data.geometry.properties.status=='deleted'">Update Client</button>
+        <button mat-raised-button color="primary" class="btn-red" [disabled]="data.geometry.properties.status=='deleted'">Delete Client</button>
         <button mat-raised-button color="primary" class="btn-orange"
-            (click)="navigateToMap(data.geometry.geometry.coordinates[1],data.geometry.geometry.coordinates[0])">Navigate
+            (click)="navigateToMap(data.geometry.geometry.coordinates[1],data.geometry.geometry.coordinates[0])" [disabled]="data.geometry.properties.status=='deleted'">Navigate
             to the client</button>
     </mat-dialog-actions>
 </div>
@@ -170,7 +174,7 @@
         <!-- <p>{{data.NomPrenom}}</p> -->
     </mat-dialog-content>
     <mat-dialog-actions class="action-btns" align="center">
-        <button mat-raised-button color="primary" [disabled]="ActiveTheButton()" class="btn-green" (click)="onUpdateClick()">Update Client</button>
+        <button mat-raised-button color="primary" [disabled]="ActiveTheButton()" class="btn-green"  (click)="onUpdateClick()">Update Client</button>
         <button mat-raised-button color="primary"  [disabled]="ActiveTheButton()" class="btn-red" (click)="deleteRequest()">Delete Client</button>
     </mat-dialog-actions>
     
