@@ -173,8 +173,8 @@ export class MapComponent implements AfterViewInit {
     // this.
 
   }
-  //////////*********** put  Client Info from IndexDB *******//////////////
-
+  //////////*********** get PDV form IndexDB and put  Client Info from IndexDB *******//////////////
+  DeletedMarkerCluster=new L.MarkerClusterGroup();
   public getDataClient() {
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
@@ -226,7 +226,8 @@ export class MapComponent implements AfterViewInit {
         if(status=='deleted' && (this.user.role =="Admin" || this.user.role =="Back Office") ){
           
           console.log(this.user.role)
-          this.markersCluster.addLayer(marker);
+          //this.markersCluster.addLayer(marker);
+          this.DeletedMarkerCluster.addLayer(marker)
         }else if(status!='deleted'){
           // console.log("status",status)
           this.markersCluster.addLayer(marker);
@@ -237,7 +238,7 @@ export class MapComponent implements AfterViewInit {
   }
 
 
-  ////////////******* Put Sector in Map  *****////////////////////////////////
+  ////////////******* Get Sector from IndexDB Put Sector in Map  *****////////////////////////////////
   public getDataSector() {
     this.markerClusterSector.clearLayers();
     let db; let transaction;
@@ -412,7 +413,7 @@ export class MapComponent implements AfterViewInit {
   cluster1=new L.MarkerClusterGroup();
   onChange4(){
     this.map.removeLayer(this.markersCluster)
-
+    this.map.removeLayer(this.DeletedMarkerCluster);
     if(this.cluster1.getLayers().length > 0){
       this.cluster1.clearLayers();
       this.map.removeLayer(this.cluster1)
@@ -420,6 +421,9 @@ export class MapComponent implements AfterViewInit {
     if(this.cluster.getLayers().length > 0){
       this.cluster.clearLayers();
       this.map.removeLayer(this.cluster1)
+    }
+    if (this.option_done == "Deleted") {
+      this.map.addLayer(this.DeletedMarkerCluster)
     }
     if (this.option_done == "Not_Done") {
       this.markersCluster.eachLayer((layer: any) => {

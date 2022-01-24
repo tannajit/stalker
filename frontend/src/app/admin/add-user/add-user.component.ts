@@ -1,4 +1,4 @@
-import { Component, OnInit,Pipe, PipeTransform, ViewChild } from '@angular/core';
+import { Component, OnInit, Pipe, PipeTransform, ViewChild } from '@angular/core';
 import { ClientsService } from 'src/app/clients.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ClientInfoComponent } from 'src/app/client-info/client-info.component';
@@ -30,7 +30,7 @@ export class AddUserComponent implements OnInit {
   RoleSelected = [];
   selected
   Roles = []
-  test=[]
+  test = []
   Sectors = []
   AllEmail = []
   AllSectors = []
@@ -48,7 +48,7 @@ export class AddUserComponent implements OnInit {
   SectorAffacted = [];
   DisableSend = true;
   searchUserForm: FormGroup;
-
+  version = 6;
 
 
 
@@ -61,7 +61,8 @@ export class AddUserComponent implements OnInit {
     this.CheckEmail()
     console.log(this.RoleSelected)
     //// get Sectors 
-    this.getSectors()
+    //this.getSectors()
+    this.getDataSector()
     /// get Roles available
     this._setting.getSettings('param=role').subscribe(res => {
       this.Roles = res.details.roles
@@ -73,6 +74,7 @@ export class AddUserComponent implements OnInit {
 
   }
 
+  /// get sectors from DATABASE 
   getSectors() {
     this._client.getAllSecteurs().subscribe(res => {
       console.log(res)
@@ -91,8 +93,45 @@ export class AddUserComponent implements OnInit {
         this.Sectors.push(obj)
       });
     })
-
   }
+  /// INDEX DB ////
+  public getDataSector() {
+    let db; let transaction;
+    const request = window.indexedDB.open('off', this.version);
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+      console.log('Why didn\'t you allow my web app to use IndexedDB?!');
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
+      console.log('success');
+      console.log(db);
+      transaction = db.transaction(['sector'], 'readwrite');
+      const objectStore = transaction.objectStore('sector');
+      const objectStoreRequest = objectStore.getAll();
+      objectStoreRequest.onsuccess = event => {
+        const all = event.target.result;
+        all.forEach(elm => {
+          var  element = JSON.parse(elm.Valeur);
+          console.log(element)
+          var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
+          console.log(idSector)
+          var machine = (idSector == 0) ? "Onion" : "CMG"
+          console.log(machine)
+          var result = element.properties.idSecteur + " - " + machine + " - " + element.properties.name
+          console.log(result)
+          var obj = {
+            id: element.properties.idSecteur,
+            detail: result
+          }
+          this.AllSectors.push(element.properties.idSecteur)
+          this.Sectors.push(obj)
+        });
+      };
+    };
+  }
+
+
+  //////////
   RoleActive() {
     if (this.role == "Seller") {
       return true;
@@ -148,70 +187,69 @@ export class AddUserComponent implements OnInit {
     })
 
   }
-  
-  Disabled=false
+
+  Disabled = false
   onChange() {
-    
-     this.selected=this.role
-     const obj={role:this.role,value:null}
-     if(this.SelectedSector.length!=0)
-     {
-       obj.value=this.SelectedSector     
-      }
-      if(this.role==="Admin"||this.role==="Controler"||this.role==="Back Office"){
-       
-       obj.value=this.AllSectors
- 
-      }
-      console.log("this.obj",obj)
 
-     this.upsert(this.ListOfRoles,obj)
-  
-     console.log("ListOfRules",this.ListOfRoles)
+    this.selected = this.role
+    const obj = { role: this.role, value: null }
+    if (this.SelectedSector.length != 0) {
+      obj.value = this.SelectedSector
+    }
+    if (this.role === "Admin" || this.role === "Controler" || this.role === "Back Office") {
 
-     if (!this.RoleSelected.includes(this.role)) {
+      obj.value = this.AllSectors
+
+    }
+    console.log("this.obj", obj)
+
+    this.upsert(this.ListOfRoles, obj)
+
+    console.log("ListOfRules", this.ListOfRoles)
+
+    if (!this.RoleSelected.includes(this.role)) {
       this.RoleSelected.push(this.role);
     }
-    
-    console.log("RoleSelected",this.RoleSelected)
-    this.Disabled =this.RoleSelected.includes(this.role)
-    console.log("Disabled",this.Disabled)
+
+    console.log("RoleSelected", this.RoleSelected)
+    this.Disabled = this.RoleSelected.includes(this.role)
+    console.log("Disabled", this.Disabled)
 
 
-    
 
-    
+
+
   }
 
-  AddNewRole(){
-    this.SelectedSector=[]
-    if(this.RoleSelected.includes(this.role)){
-      this.Roles.splice(this.Roles.indexOf(this.role),1);
+  AddNewRole() {
+    this.SelectedSector = []
+    if (this.RoleSelected.includes(this.role)) {
+      this.Roles.splice(this.Roles.indexOf(this.role), 1);
     }
-    this.role=""
-    this.SelectedSector=[]
+    this.role = ""
+    this.SelectedSector = []
 
     // var i=1
     // this.AddRoles.push(i++);
-    
+
   }
 
-  RemoveRole(role){ 
+  RemoveRole(role) {
 
 
-      this.RoleSelected.splice(this.RoleSelected.indexOf(role),1);
-      
-      this.ListOfRoles.forEach(el=> {
+    this.RoleSelected.splice(this.RoleSelected.indexOf(role), 1);
 
-        if(el.role===role){
-          this.ListOfRoles.splice(this.ListOfRoles.indexOf(el),1);
-        }
+    this.ListOfRoles.forEach(el => {
 
-      }) 
-      
-      this.Roles.push(role);
+      if (el.role === role) {
+        this.ListOfRoles.splice(this.ListOfRoles.indexOf(el), 1);
+      }
 
-     if(this.RoleSelected.length==0) this.role=""
+    })
+
+    this.Roles.push(role);
+
+    if (this.RoleSelected.length == 0) this.role = ""
 
   }
 
@@ -318,14 +356,14 @@ export class AddUserComponent implements OnInit {
 export class FilterPipe implements PipeTransform {
 
   transform(value: any, args?: any): any {
-    
+
     // Remove the duplicate elements
     // let uniqueArray = value.filter(function (el, index, array) { 
     //   return array.indexOf(el) == index;
     // });
-    
+
     let uniqueArray = Array.from(new Set(value));
-    
+
     return uniqueArray;
   }
 
