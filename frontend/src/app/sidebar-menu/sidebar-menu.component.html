@@ -1,88 +1,96 @@
 <mat-sidenav-container fullscreen>
 
     <mat-sidenav #sidenav mode="side" class="example-sidenav" (click)="sidenav.toggle()" opened="false">
-        <mat-nav-list>
-            <mat-list-item routerLink="map">
-                <mat-icon mat-list-icon>home</mat-icon>
-                <div fxFlex="10"></div>
-                <div *ngIf="sidenavWidth > 6" class="sidenav-item">
-                    <span><img src="/assets/images/stalker.png" alt="" class="logo"></span>
-                </div>
-
-            </mat-list-item>
-            <mat-list-item routerLink="map" routerLinkActive="active">
-                <mat-icon mat-list-icon>location_on</mat-icon>
-                <div fxFlex="10"></div>
-                <div *ngIf="sidenavWidth > 6" class="sidenav-item">
-                    <span>Map</span>
-                </div>
-            </mat-list-item>
-
-            <mat-list-item routerLink="clients" routerLinkActive="active">
-                <mat-icon mat-list-icon>store</mat-icon>
-                <div fxFlex="10"></div>
-                <div *ngIf="sidenavWidth > 6" class="sidenav-item">
-                    <span>Clients</span>
-                </div>
-            </mat-list-item>
-
-            <mat-list-item routerLink="users" routerLinkActive="active" *ngIf="user.role == 'Admin'">
-                <mat-icon mat-list-icon>groups</mat-icon>
-                <div fxFlex="10"></div>
-                <div *ngIf="sidenavWidth > 6" class="sidenav-item">
-                    <span>Users Management</span>
-                </div>
-            </mat-list-item>
-
-            <mat-list-item routerLink="routes" routerLinkActive="active" *ngIf="user.role != 'Admin'">
-                <mat-icon mat-list-icon>route</mat-icon>
-                <div fxFlex="10"></div>
-                <div *ngIf="sidenavWidth > 6" class="sidenav-item">
-                    <span>Routes</span>
-                </div>
-            </mat-list-item>
-
-            <mat-list-item routerLink="planning" routerLinkActive="active" *ngIf="user.role != 'Admin'">
-                <mat-icon mat-list-icon>edit_calendar</mat-icon>
-                <div fxFlex="10"></div>
-                <div *ngIf="sidenavWidth> 6" class="sidenav-item">
-                    <span>Planning</span>
-                </div>
-            </mat-list-item>
-
-
-            <mat-list-item routerLink="offline" routerLinkActive="active"  *ngIf="user.role == 'Seller' || user.role == 'Auditor'">
-                <mat-icon mat-list-icon>refresh</mat-icon>
-                <div fxFlex="10"></div>
-                <div *ngIf="sidenavWidth> 6" class="sidenav-item">
-                    <span>Synchronisation</span>
-                </div>
-            </mat-list-item>
-
-            <mat-list-item routerLink="deleteRequests" routerLinkActive="active" *ngIf="user.role== 'Admin'">
-                <mat-icon mat-list-icon>auto_delete</mat-icon>
-                <div fxFlex="10"></div>
-                <div *ngIf="sidenavWidth> 6" class="sidenav-item">
-                    <span>Delete Requests</span>
-                </div>
-            </mat-list-item>
+        
+            <mat-nav-list>
             
-            <mat-list-item routerLink="settings" routerLinkActive="active" *ngIf="user.role== 'Admin'">
-                <mat-icon mat-list-icon>settings</mat-icon>
-                <div fxFlex="10"></div>
-                <div *ngIf="sidenavWidth> 6" class="sidenav-item">
-                    <span>Settings</span>
-                </div>
-            </mat-list-item>
-
-            <mat-list-item routerLink="injection" routerLinkActive="active" *ngIf="user.role== 'Admin'">
-                <mat-icon mat-list-icon>file_download</mat-icon>
-                <div fxFlex="10"></div>
-                <div *ngIf="sidenavWidth> 6" class="sidenav-item">
-                    <span>Injection</span>
-                </div>
-            </mat-list-item>
-        </mat-nav-list>
+                <mat-list-item routerLink="map">
+                    <mat-icon mat-list-icon>home</mat-icon>
+                    <div fxFlex="10"></div>
+                    <div *ngIf="sidenavWidth > 6" class="sidenav-item">
+                        <span><img src="/assets/images/stalker.png" alt="" class="logo"></span>
+                    </div>
+    
+                </mat-list-item>
+                <mat-list-item routerLink="map" routerLinkActive="active">
+                    <mat-icon mat-list-icon>location_on</mat-icon>
+                    <div fxFlex="10"></div>
+                    <div *ngIf="sidenavWidth > 6" class="sidenav-item">
+                        <span>Map</span>
+                    </div>
+                </mat-list-item>
+    
+                <mat-list-item routerLink="clients" routerLinkActive="active">
+                    <mat-icon mat-list-icon>store</mat-icon>
+                    <div fxFlex="10"></div>
+                    <div *ngIf="sidenavWidth > 6" class="sidenav-item">
+                        <span>Clients</span>
+                    </div>
+                </mat-list-item>
+    
+                <mat-list-item routerLink="users" routerLinkActive="active" *ngIf="user.role == 'Admin'">
+                    <mat-icon mat-list-icon>groups</mat-icon>
+                    <div fxFlex="10"></div>
+                    <div *ngIf="sidenavWidth > 6" class="sidenav-item">
+                        <span>Users Management</span>
+                    </div>
+                </mat-list-item>
+    
+                <mat-list-item routerLink="routes" routerLinkActive="active" *ngIf="user.role != 'Admin'">
+                    <mat-icon mat-list-icon>route</mat-icon>
+                    <div fxFlex="10"></div>
+                    <div *ngIf="sidenavWidth > 6" class="sidenav-item">
+                        <span>Routes</span>
+                    </div>
+                </mat-list-item>
+    
+                <mat-list-item routerLink="planning" routerLinkActive="active" *ngIf="user.role != 'Admin'">
+                    <mat-icon mat-list-icon>edit_calendar</mat-icon>
+                    <div fxFlex="10"></div>
+                    <div *ngIf="sidenavWidth> 6" class="sidenav-item">
+                        <span>Planning</span>
+                    </div>
+                </mat-list-item>
+    
+    
+                <mat-list-item routerLink="offline" routerLinkActive="active"  *ngIf="user.role == 'Seller' || user.role == 'Auditor'">
+                    <mat-icon mat-list-icon>refresh</mat-icon>
+                    <div fxFlex="10"></div>
+                    <div *ngIf="sidenavWidth> 6" class="sidenav-item">
+                        <span>Synchronisation</span>
+                    </div>
+                </mat-list-item>
+    
+                
+                <ng-container *ngFor="let permi of user.permissions">
+                <mat-list-item routerLink="deleteRequests" routerLinkActive="active" *ngIf="permi == 'Validate Delete Requests'">
+                    <mat-icon mat-list-icon>auto_delete</mat-icon>
+                    <div fxFlex="10"></div>
+                    <div *ngIf="sidenavWidth> 6" class="sidenav-item">
+                        <span>Delete Requests</span>
+                    </div>
+                </mat-list-item>
+                </ng-container>
+                
+                <mat-list-item routerLink="settings" routerLinkActive="active" *ngIf="user.role== 'Admin'">
+                    <mat-icon mat-list-icon>settings</mat-icon>
+                    <div fxFlex="10"></div>
+                    <div *ngIf="sidenavWidth> 6" class="sidenav-item">
+                        <span>Settings</span>
+                    </div>
+                </mat-list-item>
+    
+                <mat-list-item routerLink="injection" routerLinkActive="active" *ngIf="user.role== 'Admin'">
+                    <mat-icon mat-list-icon>file_download</mat-icon>
+                    <div fxFlex="10"></div>
+                    <div *ngIf="sidenavWidth> 6" class="sidenav-item">
+                        <span>Injection</span>
+                    </div>
+                </mat-list-item>
+            
+            </mat-nav-list>
+        
+        
     </mat-sidenav>
 
     <div class="example-sidenav-content">

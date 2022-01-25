@@ -1,135 +1,141 @@
 <label style="font-weight: bold; color: green;">Id Client: </label><p>{{data._id}}</p>
-<div *ngIf="(loggedUser.role == 'Back Office' || loggedUser.role == 'Admin' ) && !data?.Raison">
+<ng-container *ngFor="let permi of loggedUser.permissions">
+
+    <div *ngIf="permi == 'Validate Add Requests' && !data?.Raison">
     
-    <ng-container *ngIf="data.geometry.properties.status=='green'">
-        <span style="color: green;">Client Validated</span>
-    </ng-container>
-    
-    <ng-container *ngIf="data.geometry.properties.status=='purple' || data.geometry.properties.status=='red_white' || data.geometry.properties.status=='pink'">
-        <span style="color: red;">Client Not validated</span>
-    </ng-container>
-    <ng-container *ngIf="data.geometry.properties.status=='deleted'">
-        <span style="color: black;">Client Deleted</span>
-    </ng-container>
-
-    <mat-dialog-content>
-        <div class="dialog-container">
-            <div class="aud-sell-container">
-                <section class="sell-container">
-                    <span>Seller</span>
-                    <div class="pdv-info-container">
-                        <div class="pdv-img">
-                            <img *ngIf="clientOfSeller?.PVP" src="{{clientOfSeller?.PVP}}" alt=""
-                                (click)="openImage(clientOfSeller?.PVP)">
-                            <img *ngIf="!clientOfSeller?.PVP" src="assets/images/blank.jpg" alt=""
-                                (click)="openImage(clientOfSeller?.PVP)">
-                        </div>
-                        <div class="pdv-info">
-                            <label>Sector:</label>
-                            <p>{{clientOfSeller?.Code_Secteur_OS}}</p>
-                            <label>Name:</label>
-                            <p>{{clientOfSeller?.NomPrenom}}</p>
-                            <label>Phone Number:</label>
-                            <p>{{clientOfSeller?.PhoneNumber}}</p>
-                            <label>Type PDV:</label>
-                            <p>{{ clientOfSeller?.TypeDPV}}, {{clientOfSeller?.detailType}}</p>
-                        </div>
-                    </div>
-                    <div class="pdv-action-btns">
-                    </div>
-                </section>
-                <section class="aud-container">
-                    <span>Auditor</span>
-                    <div class="pdv-info-container">
-                        <div class="pdv-img">
-                            <img *ngIf="clientOfAuditor?.PVP" src="{{clientOfAuditor?.PVP}}" alt=""
-                                (click)="openImage(clientOfAuditor?.PVP)">
-                            <img *ngIf="!clientOfAuditor?.PVP" src="assets/images/blank.jpg" alt=""
-                                (click)="openImage(clientOfAuditor?.PVP)">
-                        </div>
-                        <div class="pdv-info">
-                            <label>Sector:</label>
-                            <p>{{clientOfAuditor?.Code_Secteur_OS}}</p>
-                            <label>Name:</label>
-                            <p>{{clientOfAuditor?.NomPrenom}}</p>
-                            <label>Phone Number:</label>
-                            <p>{{clientOfAuditor?.PhoneNumber}}</p>
-                            <label>Type PDV:</label>
-                            <p>{{ clientOfAuditor?.TypeDPV}}, {{clientOfAuditor?.detailType}}</p>
-                        </div>
-                    </div>
-
-                    <div class="pdv-action-btns">
-                        <ng-container *ngIf="data.geometry.properties.status =='green' || data.geometry.properties.status =='deleted'; else btns">
-                            
-                        </ng-container>
-                        <ng-template #btns>
-                            <button mat-button class="btn-valid" (click)="validate(data._id,'green')">Valid</button>
-                            <button mat-button class="btn-refus" (click)="validate(data._id,'black')">Refus</button>
-                        </ng-template>
-        
-                    </div>
-
-                </section>
-            </div>
-            <div class="validPDV-container">
-                <span>Validated Client</span>
-
-                <section class="valid-pdv-container">
-                    <div class="pdv-info-container">
-                        <div class="pdv-img">
-                            <img *ngIf="data.geometry.properties.PVP" src="{{data.geometry.properties.PVP}}" alt=""
-                                (click)="openImage(data.geometry.properties.PVP)">
-                            <img *ngIf="!data.geometry.properties.PVP" src="assets/images/blank.jpg" alt=""
-                                (click)="openImage(data.geometry.properties.PVP)">
-                        </div>
-                        <div class="pdv-info">
-                            <label>Sector:</label>
-                            <p>{{data.geometry.properties.Code_Secteur_OS}}</p>
-                            <label>Name:</label>
-                            <p>{{data.geometry.properties.NomPrenom}}</p>
-                            <label>Phone Number:</label>
-                            <p>{{data.geometry.properties.PhoneNumber}}</p>
-                            <label>Type PDV:</label>
-                            <p>{{ data.geometry.properties.TypeDPV}}, {{data.geometry.properties.detailType}}</p>
-                        </div>
-                    </div>
-                    <div class="pdv-info-container">
-                        <div class="pdv-img">
-                            <img *ngIf="data.geometry.properties.NFCP" src="{{data.geometry.properties.NFCP}}" alt=""
-                                (click)="openImage(data.geometry.properties.NFCP)">
-                            <img *ngIf="!data.geometry.properties.NFCP" src="assets/images/blank.jpg" alt=""
-                                (click)="openImage(data.geometry.properties.NFCP)">
-                        </div>
-                        <div class="pdv-info">
-                            <label>NFC UUID:</label>
-                            <p>{{data.geometry.properties?.nfc?.UUID}}</p>
-                            <label>NFC code Qr:</label>
-                            <p>{{data.geometry.properties.codeQR}}</p>
-                        </div>
-                    </div>
-                </section>
-
-            </div>
-        </div>
-        <!-- <p> {{data.NomPrenom}}</p> -->
-    </mat-dialog-content>
-
-    <mat-dialog-actions class="action-btns" align="center">
-        <ng-container *ngFor="let perm of loggedUser.permissions">
-            
-            <button *ngIf="perm == 'Update Client'" mat-raised-button color="primary" class="btn-green"
-            (click)="onUpdateClick()" [disabled]="data.geometry.properties.status=='deleted'">
-            Update Client
-            </button>
-            <button *ngIf="perm == 'Delete Client'" mat-raised-button color="primary" class="btn-red" [disabled]="data.geometry.properties.status=='deleted'">Delete Client</button>
+        <ng-container *ngIf="data.geometry.properties.status=='green'">
+            <span style="color: green;">Client Validated</span>
         </ng-container>
         
-        <button mat-raised-button color="primary" class="btn-orange"
-            (click)="navigateToMap(data.geometry.geometry.coordinates[1],data.geometry.geometry.coordinates[0])" [disabled]="data.geometry.properties.status=='deleted'">Navigate
-            to the client</button>
-    </mat-dialog-actions>
-</div>
+        <ng-container *ngIf="data.geometry.properties.status=='purple' || data.geometry.properties.status=='red_white' || data.geometry.properties.status=='pink'">
+            <span style="color: red;">Client Not validated</span>
+        </ng-container>
+        <ng-container *ngIf="data.geometry.properties.status=='deleted'">
+            <span style="color: black;">Client Deleted</span>
+        </ng-container>
+    
+        <mat-dialog-content>
+            <div class="dialog-container">
+                <div class="aud-sell-container">
+                    <section class="sell-container">
+                        <span>Seller</span>
+                        <div class="pdv-info-container">
+                            <div class="pdv-img">
+                                <img *ngIf="clientOfSeller?.PVP" src="{{clientOfSeller?.PVP}}" alt=""
+                                    (click)="openImage(clientOfSeller?.PVP)">
+                                <img *ngIf="!clientOfSeller?.PVP" src="assets/images/blank.jpg" alt=""
+                                    (click)="openImage(clientOfSeller?.PVP)">
+                            </div>
+                            <div class="pdv-info">
+                                <label>Sector:</label>
+                                <p>{{clientOfSeller?.Code_Secteur_OS}}</p>
+                                <label>Name:</label>
+                                <p>{{clientOfSeller?.NomPrenom}}</p>
+                                <label>Phone Number:</label>
+                                <p>{{clientOfSeller?.PhoneNumber}}</p>
+                                <label>Type PDV:</label>
+                                <p>{{ clientOfSeller?.TypeDPV}}, {{clientOfSeller?.detailType}}</p>
+                            </div>
+                        </div>
+                        <div class="pdv-action-btns">
+                        </div>
+                    </section>
+                    <section class="aud-container">
+                        <span>Auditor</span>
+                        <div class="pdv-info-container">
+                            <div class="pdv-img">
+                                <img *ngIf="clientOfAuditor?.PVP" src="{{clientOfAuditor?.PVP}}" alt=""
+                                    (click)="openImage(clientOfAuditor?.PVP)">
+                                <img *ngIf="!clientOfAuditor?.PVP" src="assets/images/blank.jpg" alt=""
+                                    (click)="openImage(clientOfAuditor?.PVP)">
+                            </div>
+                            <div class="pdv-info">
+                                <label>Sector:</label>
+                                <p>{{clientOfAuditor?.Code_Secteur_OS}}</p>
+                                <label>Name:</label>
+                                <p>{{clientOfAuditor?.NomPrenom}}</p>
+                                <label>Phone Number:</label>
+                                <p>{{clientOfAuditor?.PhoneNumber}}</p>
+                                <label>Type PDV:</label>
+                                <p>{{ clientOfAuditor?.TypeDPV}}, {{clientOfAuditor?.detailType}}</p>
+                            </div>
+                        </div>
+    
+                        <div class="pdv-action-btns">
+                            <ng-container *ngIf="data.geometry.properties.status =='green' || data.geometry.properties.status =='deleted'; else btns">
+                                
+                            </ng-container>
+                            <ng-template #btns>
+                                <button mat-button class="btn-valid" (click)="validate(data._id,'green')">Valid</button>
+                                <button mat-button class="btn-refus" (click)="validate(data._id,'black')">Refus</button>
+                            </ng-template>
+            
+                        </div>
+    
+                    </section>
+                </div>
+                <div class="validPDV-container">
+                    <span>Validated Client</span>
+    
+                    <section class="valid-pdv-container">
+                        <div class="pdv-info-container">
+                            <div class="pdv-img">
+                                <img *ngIf="data.geometry.properties.PVP" src="{{data.geometry.properties.PVP}}" alt=""
+                                    (click)="openImage(data.geometry.properties.PVP)">
+                                <img *ngIf="!data.geometry.properties.PVP" src="assets/images/blank.jpg" alt=""
+                                    (click)="openImage(data.geometry.properties.PVP)">
+                            </div>
+                            <div class="pdv-info">
+                                <label>Sector:</label>
+                                <p>{{data.geometry.properties.Code_Secteur_OS}}</p>
+                                <label>Name:</label>
+                                <p>{{data.geometry.properties.NomPrenom}}</p>
+                                <label>Phone Number:</label>
+                                <p>{{data.geometry.properties.PhoneNumber}}</p>
+                                <label>Type PDV:</label>
+                                <p>{{ data.geometry.properties.TypeDPV}}, {{data.geometry.properties.detailType}}</p>
+                            </div>
+                        </div>
+                        <div class="pdv-info-container">
+                            <div class="pdv-img">
+                                <img *ngIf="data.geometry.properties.NFCP" src="{{data.geometry.properties.NFCP}}" alt=""
+                                    (click)="openImage(data.geometry.properties.NFCP)">
+                                <img *ngIf="!data.geometry.properties.NFCP" src="assets/images/blank.jpg" alt=""
+                                    (click)="openImage(data.geometry.properties.NFCP)">
+                            </div>
+                            <div class="pdv-info">
+                                <label>NFC UUID:</label>
+                                <p>{{data.geometry.properties?.nfc?.UUID}}</p>
+                                <label>NFC code Qr:</label>
+                                <p>{{data.geometry.properties.codeQR}}</p>
+                            </div>
+                        </div>
+                    </section>
+    
+                </div>
+            </div>
+            <!-- <p> {{data.NomPrenom}}</p> -->
+        </mat-dialog-content>
+    
+        <mat-dialog-actions class="action-btns" align="center">
+            <ng-container *ngFor="let perm of loggedUser.permissions">
+                
+                <button *ngIf="perm == 'Update Client'" mat-raised-button color="primary" class="btn-green"
+                (click)="onUpdateClick()" [disabled]="data.geometry.properties.status=='deleted'">
+                Update Client
+                </button>
+                <button *ngIf="perm == 'Delete Client'" mat-raised-button color="primary" class="btn-red" [disabled]="data.geometry.properties.status=='deleted'">Delete Client</button>
+            </ng-container>
+            
+            <button mat-raised-button color="primary" class="btn-orange"
+                (click)="navigateToMap(data.geometry.geometry.coordinates[1],data.geometry.geometry.coordinates[0])" [disabled]="data.geometry.properties.status=='deleted'">Navigate
+                to the client</button>
+        </mat-dialog-actions>
+    </div>
+    
+</ng-container>
+
+
 
 <div *ngIf="loggedUser.role == 'Seller' || loggedUser.role == 'Auditor'">
     <mat-dialog-content class="dialog-content">
