@@ -187,7 +187,7 @@ router.get('/clientss', async (req, res) => {
 router.get('/getRoles', async (req, res)=>{
 
     let collection = await db.collection("settings") // collection 
-    var values = await collection.findOne({ 'proprety': 'test' })
+    var values = await collection.findOne({ 'proprety': 'role' })
     //console.log("---------  send data -----------")
     res.json(values)
 })
@@ -1736,7 +1736,7 @@ router.post('/updateRole', async(req,res)=>{
     //         role.permissions
     //     }}} )
     var updated= await collection.updateOne(
-        {proprety: "test","details.roles.name": role.role},
+        {proprety: "role","details.roles.name": role.role},
         {$set: {"details.roles.$.permissions" :role.permissions}} )
     console.log(updated)
     res.status(200).json(updated)
@@ -1749,7 +1749,7 @@ router.post('/addRole', async(req,res)=>{
     let collection = db.collection("settings")
 
     var updated= await collection.updateOne(
-        {proprety: "test"},
+        {proprety: "role"},
         {$addToSet : {"details.roles" : {'name' : role.role , 'permissions' : role.permissions }} } )
     console.log(updated)
     res.status(200).json(updated)
