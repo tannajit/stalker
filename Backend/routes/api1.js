@@ -670,6 +670,17 @@ async function getUser(user) {
 
         console.log(FindUser)
         if (FindUser != null) {
+            // ********* get User permissions *********
+            var permissions=[];
+            let roleCollection = db.collection("settings")
+            const doc = await roleCollection.findOne({ proprety: 'role'});
+            doc.details.roles.forEach(element => {
+                if(element.name == user.role){
+                    permissions=element.permissions
+                }
+            });
+            FindUser.permissions=permissions
+
             var valid = await ValidPassword(user.password, FindUser.password)
             if (valid) {
                 let playload = { subject: FindUser._id }
@@ -693,6 +704,8 @@ async function getUser(user) {
 
     return status;
 }
+
+
 
 //***  Login */
 router.post('/login', async (req, res) => {

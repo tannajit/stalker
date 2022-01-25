@@ -116,8 +116,15 @@
     </mat-dialog-content>
 
     <mat-dialog-actions class="action-btns" align="center">
-        <button mat-raised-button color="primary" class="btn-green" (click)="onUpdateClick()" [disabled]="data.geometry.properties.status=='deleted'">Update Client</button>
-        <button mat-raised-button color="primary" class="btn-red" [disabled]="data.geometry.properties.status=='deleted'">Delete Client</button>
+        <ng-container *ngFor="let perm of loggedUser.permissions">
+            
+            <button *ngIf="perm == 'Update Client'" mat-raised-button color="primary" class="btn-green"
+            (click)="onUpdateClick()" [disabled]="data.geometry.properties.status=='deleted'">
+            Update Client
+            </button>
+            <button *ngIf="perm == 'Delete Client'" mat-raised-button color="primary" class="btn-red" [disabled]="data.geometry.properties.status=='deleted'">Delete Client</button>
+        </ng-container>
+        
         <button mat-raised-button color="primary" class="btn-orange"
             (click)="navigateToMap(data.geometry.geometry.coordinates[1],data.geometry.geometry.coordinates[0])" [disabled]="data.geometry.properties.status=='deleted'">Navigate
             to the client</button>
@@ -181,8 +188,10 @@
         <!-- <p>{{data.NomPrenom}}</p> -->
     </mat-dialog-content>
     <mat-dialog-actions class="action-btns" align="center">
-        <button mat-raised-button color="primary" [disabled]="ActiveTheButton()" class="btn-green"  (click)="onUpdateClick()">Update Client</button>
-        <button mat-raised-button color="primary"  [disabled]="ActiveTheButton()" class="btn-red" (click)="deleteRequest()">Delete Client</button>
+        <ng-container *ngFor="let perm of loggedUser.permissions">
+            <button *ngIf="perm == 'Update Client'" mat-raised-button color="primary" [disabled]="ActiveTheButton()" class="btn-green"  (click)="onUpdateClick()">Update Client</button>
+            <button *ngIf="perm == 'Delete Client'" mat-raised-button color="primary"  [disabled]="ActiveTheButton()" class="btn-red" (click)="deleteRequest()">Delete Client</button>
+        </ng-container>
     </mat-dialog-actions>
     
 </div>
