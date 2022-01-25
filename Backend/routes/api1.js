@@ -13,7 +13,7 @@ var uri = "mongodb://localhost:27017";
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker1"
+var name_database = "stalker3"
 var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
@@ -279,21 +279,26 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
     });
 
     All_PDV = ListInfo.map(async (elem) => {
-        if (elem.geometry.properties.NFC != null && elem.geometry.properties.NFC != undefined) {
-            ///data injected by script 
-            // console.log("green")
-            //console.log(elem.geometry.properties.NFC)
+        if (elem.geometry.properties.nfc.UUID != null && elem.geometry.properties.nfc.UUID != undefined) {
             elem.geometry.properties.status = "green"
         }
 
         if (elem.geometry.properties?.nfc != undefined) {
             var element = elem.geometry.properties;
+            if(element.nfc.NFCPhoto!=null){
             await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
                 elem.geometry.properties.NFCP = re
             }).catch(err => console.log(err))
+        }else{
+            elem.geometry.properties.NFCP=null
+        }
+        if(test1(db, ObjectId(element.PVPhoto))) {
             await test1(db, ObjectId(element.PVPhoto)).then(re => {
                 elem.geometry.properties.PVP = re
             }).catch(err => console.log(err))
+        }else{
+            elem.geometry.properties.PVP=null
+        }
         }
         a.push(elem)
     })
@@ -653,7 +658,7 @@ async function getUser(user) {
 
     var status = { value: 401, data: null }
 
-    var User = await collection.find({ email: user.email, status:"Active"}).toArray()
+    var User = await collection.find({ email: user.email}).toArray()
     if (User.length > 0) {
         var FindUser;
         User.forEach(async (u) => {

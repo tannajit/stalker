@@ -111,7 +111,7 @@ export class MapComponent implements AfterViewInit {
     navigator.geolocation.watchPosition((pos)=>{
     console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
     
-    let raduis =5000;
+    let raduis =5000000;
     if (this.myCercle !== undefined) {
       this.map.removeLayer(this.myCercle)
     }
