@@ -39,13 +39,14 @@ export class UpdateUserComponent implements OnInit {
   generated = false
   setUserID
   searchUserForm: FormGroup;
+  version=6;
 
   constructor(
     private _setting: SettingsService,
     private _client: ClientsService,
     private _router: Router,
     private dialog: MatDialog,
-    private fb: FormBuilder
+    private fb: FormBuilder,
 
   ) { }
 
@@ -88,26 +89,45 @@ export class UpdateUserComponent implements OnInit {
       console.log(res)
     })
 
-    this._client.getAllSecteurs().subscribe(res => {
-      console.log(res)
-      res.forEach(element => {
-        var idSector = Number(String(element.geometry.properties.idSecteur).slice(-2, -1))
-        console.log(idSector)
-        var machine = (idSector == 0) ? "Onion" : "CMG"
-        console.log(machine)
-        var result = element.geometry.properties.idSecteur + " - " + machine + " - " + element.geometry.properties.name
-        console.log("selected", result)
-        var obj = {
-          id: element.geometry.properties.idSecteur,
-          detail: result
-        }
-        this.AllSectors.push(element.geometry.properties.idSecteur)
-        this.Sectors.push(obj)
-        console.log("sectors", this.Sectors)
-      });
-    })
+    this.getDataSector()
   }
 
+  //// get Sector from IndexDB ///
+  public getDataSector() {
+    let db; let transaction;
+    const request = window.indexedDB.open('off', this.version);
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+      console.log('Why didn\'t you allow my web app to use IndexedDB?!');
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
+      console.log('success');
+      console.log(db);
+      transaction = db.transaction(['sector'], 'readwrite');
+      const objectStore = transaction.objectStore('sector');
+      const objectStoreRequest = objectStore.getAll();
+      objectStoreRequest.onsuccess = event => {
+        const all = event.target.result;
+        all.forEach(elm => {
+          var  element = JSON.parse(elm.Valeur);
+          console.log(element)
+          var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
+          console.log(idSector)
+          var machine = (idSector == 0) ? "Onion" : "CMG"
+          console.log(machine)
+          var result = element.properties.idSecteur + " - " + machine + " - " + element.properties.name
+          console.log(result)
+          var obj = {
+            id: element.properties.idSecteur,
+            detail: result
+          }
+          this.AllSectors.push(element.properties.idSecteur)
+          this.Sectors.push(obj)
+        });
+      };
+    };
+  }
+  ////
 
   GenerateEmail() {
     var i = 0;

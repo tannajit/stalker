@@ -12,7 +12,8 @@ import { IndexdbService } from '../indexdb.service';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import * as XLSX from 'xlsx';
 import { ExtractSelectComponent } from '../extract-select/extract-select.component';
-
+import { takeUntil, switchMap } from 'rxjs/operators';
+import { interval, Subject } from 'rxjs';
 
 
 @Component({
@@ -36,6 +37,8 @@ export class MapComponent implements AfterViewInit {
 
   dialogRef: MatDialogRef<ClientInfoComponent>;
   dialogExtract: MatDialogRef<ExtractSelectComponent>;
+  private destroyed: Subject<void> = new Subject<void>();
+
   private map;
   public content = null;
   myCercle;
@@ -92,27 +95,30 @@ export class MapComponent implements AfterViewInit {
         this.map.flyTo(new L.LatLng(params['lat'], params['long']), 18);
       } else {
         this.getLocation()
-        this.WatchPosition()
+        interval(3000).pipe( takeUntil(this.destroyed)).subscribe(x => {
+          this.WatchPosition()
+          })
       }
     });
+  }
+  ngOnDestroy() {
+
+    this.destroyed.next();
+    this.destroyed.complete();
   }
 
   WatchPosition(){
     navigator.geolocation.watchPosition((pos)=>{
     console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
     
-    let raduis =3000;
+    let raduis =5000;
     if (this.myCercle !== undefined) {
       this.map.removeLayer(this.myCercle)
     }
-    this.myCercle = L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
     
-    this.myMarker = L.circleMarker([pos.coords.latitude, pos.coords.longitude], {
-      color: "#163AE3 ",
-      fillOpacity: 1,
-      radius: 8.0
-    }).addTo(this.map);
+    this.myCercle=L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
     this._serviceClient.getPosition({ "Map": new L.LatLng(pos.coords.latitude, pos.coords.longitude), "Raduis": raduis });
+  
 
     },(err)=>{
       console.log(`err :${err}`)
@@ -142,8 +148,10 @@ export class MapComponent implements AfterViewInit {
           console.log(this.lat);
           console.log(this.lon);
           this.map.setView(new L.LatLng(this.lat, this.lon), 18, { animation: true });
-          
-          
+
+          // if (this.myCercle !== undefined) {
+          //   this.map.removeLayer(this.myCercle)
+          // }
           // this.myCercle = L.circle([this.lat, this.lon], { color: "blue", fillColor: "#cce6ff", radius: this.radius });
           // this.myCercle.addTo(this.map);
           //this._serviceClient.getPosition({ "Map": new L.LatLng(this.lat, this.lon), "Raduis": this.radius });
@@ -175,8 +183,8 @@ export class MapComponent implements AfterViewInit {
     // this.
 
   }
-  //////////*********** put  Client Info from IndexDB *******//////////////
-
+  //////////*********** get PDV form IndexDB and put  Client Info from IndexDB *******//////////////
+  DeletedMarkerCluster=new L.MarkerClusterGroup();
   public getDataClient() {
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
@@ -228,7 +236,8 @@ export class MapComponent implements AfterViewInit {
         if(status=='deleted' && (this.user.role =="Admin" || this.user.role =="Back Office") ){
           
           console.log(this.user.role)
-          this.markersCluster.addLayer(marker);
+          //this.markersCluster.addLayer(marker);
+          this.DeletedMarkerCluster.addLayer(marker)
         }else if(status!='deleted'){
           // console.log("status",status)
           this.markersCluster.addLayer(marker);
@@ -239,7 +248,7 @@ export class MapComponent implements AfterViewInit {
   }
 
 
-  ////////////******* Put Sector in Map  *****////////////////////////////////
+  ////////////******* Get Sector from IndexDB Put Sector in Map  *****////////////////////////////////
   public getDataSector() {
     this.markerClusterSector.clearLayers();
     let db; let transaction;
@@ -414,7 +423,7 @@ export class MapComponent implements AfterViewInit {
   cluster1=new L.MarkerClusterGroup();
   onChange4(){
     this.map.removeLayer(this.markersCluster)
-
+    this.map.removeLayer(this.DeletedMarkerCluster);
     if(this.cluster1.getLayers().length > 0){
       this.cluster1.clearLayers();
       this.map.removeLayer(this.cluster1)
@@ -422,6 +431,9 @@ export class MapComponent implements AfterViewInit {
     if(this.cluster.getLayers().length > 0){
       this.cluster.clearLayers();
       this.map.removeLayer(this.cluster1)
+    }
+    if (this.option_done == "Deleted") {
+      this.map.addLayer(this.DeletedMarkerCluster)
     }
     if (this.option_done == "Not_Done") {
       this.markersCluster.eachLayer((layer: any) => {
