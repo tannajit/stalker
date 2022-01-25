@@ -169,7 +169,7 @@ router.get('/getAllUsers', async (req, res) => {
             }
         }]).toArray();
 
-    
+
     // let userColl = await db.collection("users")
     // var values = await userColl.find({}).toArray()
     res.json(values)
@@ -184,7 +184,7 @@ router.get('/clientss', async (req, res) => {
 
 });
 
-router.get('/getRoles', async (req, res)=>{
+router.get('/getRoles', async (req, res) => {
 
     let collection = await db.collection("settings") // collection 
     var values = await collection.find({ 'proprety': 'test' })
@@ -439,7 +439,6 @@ async function InsertClient(client, res) {
             updated_at: temp_datetime_obj
         }
 
-
         await collection.insertOne(clientinfo)
         ////********* Add in geometries *****************/
         let getInsertedId; //// put Id inserted
@@ -480,7 +479,7 @@ async function updateClient(client) {
     let geometries = db.collection("geometries") /// geometries Collections
     let secteurs = db.collection("secteurs")
     var id_NFC, id_pv;
-    if (client.geometry.properties.NFCP == null ) {
+    if (client.geometry.properties.NFCP == null) {
         await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
         console.log("NFC photo id: " + id_NFC)
     } else {
@@ -527,9 +526,7 @@ async function updateClient(client) {
             { $set: { "geometry": clientGeo } })
         console.log(updated)
         console.log("********** geometrie updated *******")
-
     })
-
 }
 
 
@@ -653,7 +650,7 @@ async function getUser(user) {
 
     var status = { value: 401, data: null }
 
-    var User = await collection.find({ email: user.email, status:"Active"}).toArray()
+    var User = await collection.find({ email: user.email, status: "Active" }).toArray()
     if (User.length > 0) {
         var FindUser;
         User.forEach(async (u) => {
@@ -667,7 +664,6 @@ async function getUser(user) {
             }
         })
         console.log("Find User")
-
         console.log(FindUser)
         if (FindUser != null) {
             var valid = await ValidPassword(user.password, FindUser.password)
@@ -689,8 +685,6 @@ async function getUser(user) {
         status.value = 403
         status.data = "invalid User"
     }
-
-
     return status;
 }
 
@@ -894,51 +888,23 @@ router.get("/GetClient/:id", async (req, res) => {
     const client = await geometries.findOne({ _id: new ObjectId(req.params.id) });
     res.status(200).send(client);
 })
-/////////////////// INJECTION API /////////////////////
 
-// router.post("/injection", async (req, res) => {
-
-//     console.log(req)
-//     const collection = await db.collection('geometries');
-//     PutDataGeometries(collection)  // put data into geomtries
-//     // insert Secteurs 
-//     var arr = await collection.find({ 'geometry.geometry.type': 'Point' }).toArray() //get goemetries that are tyepe ponits(PDVs)
-//     InjectSecteurData(arr)
-
-// })
 //////////////////////////////////////////////////////////////
 router.get('/getAllUsers', async (req, res) => {
-
-
-
     list = []
-
     let usersColl = await db.collection("users")
-
     var values = await usersColl.aggregate([
-
         {
-
             $lookup: {
-
                 from: "secteurs",
-
                 localField: "_id",
-
                 foreignField: "users",
-
                 as: "sectors"
-
             }
-
         }]).toArray();
-
-
-
     // let userColl = await db.collection("users")
 
     // var values = await userColl.find({}).toArray()
-
     res.json(values)
 
 })
@@ -965,8 +931,6 @@ router.post("/DeleteRequest", async (req, res) => {
     if (req.body.video != null) {
         await test(db, ObjectId(dataclient._id), req.body.video).then(res => { id_Video = res._id; console.log(res) }, err => console.log(err))
     }
-
-
     //client["_id"] = ObjectId(dataclient._id);
     client["NomPrenom"] = dataclient.geometry.properties.NomPrenom;
     client["Code_Secteur_OS"] = dataclient.geometry.properties.Code_Secteur_OS;
@@ -985,7 +949,6 @@ router.post("/DeleteRequest", async (req, res) => {
 })
 
 router.get("/ReadVideo/:idG", async (req, res) => {
-
     DeleteRequest = await db.collection("DeleteRequest")
     console.log("wiliwlwi ");
     client = await DeleteRequest.findOne({ _id: ObjectId(req.params.idG) });
@@ -1008,650 +971,172 @@ router.get("/image", async (req, res) => {
 })
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////
 router.post("/extract", async (req, res) => {
-
-
-
     let geometries = await db.collection("geometries")
-  
-  
-  
     var condition = req.body
-  
-  
-  
     console.log(condition)
-  
-  
-  
     var queries = []
-  
-  
-  
     queries.push({ "geometry.geometry.type": "Point" })
-  
-  
-  
-  
-  
     if (condition?.Sectors) {
-  
-  
-  
         console.log("found")
-  
-  
-  
         queries.push({
-  
-  
-  
             "geometry.properties.Code_Secteur_OS": {
-  
-  
-  
                 $in: condition.Sectors
-  
-  
-  
             }
-  
-  
-  
         })
-  
-  
-  
     }
-  
-  
-  
     if (condition?.StartDate) {
-  
-  
-  
         queries.push({
-  
-  
-  
             "geometry.properties.created_at": {
-  
-  
-  
                 $gte: new Date(condition.StartDate)
-  
-  
-  
             }
-  
-  
-  
         })
-  
-  
-  
     }
-  
-  
-  
     if (condition?.EndDate) {
-  
-  
-  
         queries.push({
-  
-  
-  
             "geometry.properties.created_at": {
-  
-  
-  
                 $lte: new Date(condition.EndDate)
-  
-  
-  
             }
-  
-  
-  
         })
-  
-  
-  
     }
-  
-  
-  
     if (condition?.TypeDPV) {
-  
-  
-  
         queries.push({
-  
-  
-  
             "geometry.properties.TypeDPV": {
-  
-  
-  
                 $in: condition.TypeDPV
-  
-  
-  
             }
-  
-  
-  
         })
-  
-  
-  
     }
-  
-  
-  
     let values = await geometries.aggregate([
-  
-  
-  
         {
-  
-  
-  
             $match: {
                 $and:
                     queries
-
             }
-  
-  
-  
         },
-  
-  
-  
         {
-  
-  
-  
             $lookup: {
-  
-  
-  
                 from: "clients",
-  
-  
-  
                 localField: "_id",
-  
-  
-  
                 foreignField: "idGeometry",
-  
-  
-  
                 as: "info"
-  
-  
-  
             }
-  
-  
-  
         }
     ]).toArray();
-  
-  
-  
     all1 = []
     //console.log(values)
     //res.json(values)
-  
-  
-  
     var test = values.map((elem) => {
-  
-  
-  
         elem.info.reverse();
-  
-  
-  
         audit = false;
-  
-  
-  
         seller = false;
-  
-  
-  
         all = elem.info.filter((ele) => {
-  
-  
-  
             if (ele.userRole == "Auditor" && !audit) {
-  
-  
-  
                 //console.log("auditor")
-  
-  
-  
                 audit = true;
-  
-  
-  
                 return ele;
-  
-  
-  
             } else if (ele.userRole == "Seller" && !seller) {
-  
-  
-  
                 //console.log("seller")
-  
-  
-  
                 seller = true
-  
-  
-  
                 return ele;
-  
-  
-  
             }
-  
-  
-  
         })
-  
-  
-  
         elem.info = all
-  
-  
-  
         return elem;
-  
-  
-  
     });
-  
-  
-  
     DataAll = []
     var to = test.map(async (element) => {
-  
-  
-  
         var imgurl = "http://localhost:3000/api1/image?id="
-  
-  
-  
         var Data = {
-  
-  
-  
             "Identifiant system": element._id,
-  
-  
-  
             "X": element.geometry.geometry.coordinates[1],
-  
-  
-  
             "Y": element.geometry.geometry.coordinates[0],
-  
-  
-  
             "Date_Creation": element.geometry.properties.created_at,
-  
-  
-  
             "NFC_ID": (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc?.Numero_Serie,
-  
-  
-  
             "NFC_UUID": (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc?.UUID,
-  
-  
-  
             "Code_Secteur_OS": element.geometry.properties.Code_Secteur_OS,
-  
-  
-  
             "machine": (element.geometry.properties.machine != null) ? element.geometry.properties.machine : "",
-  
-  
-  
             "TypeDPV": (element.geometry.properties.TypeDPV != null) ? element.geometry.properties.TypeDPV : "",
-  
-  
-  
             "NomPrenom": (element.geometry.properties.NomPrenom != null) ? element.geometry.properties.NomPrenom : element.geometry.properties.Nom_Client,
-  
-  
-  
             "PhoneNumber": (element.geometry.properties.PhoneNumber != null) ? element.geometry.properties.PhoneNumber : element.geometry.properties.Telephone_Client,
-  
-  
-  
             "Photo_PDV": (element.geometry.properties.PVPhoto != null) ? imgurl + element.geometry.properties.PVPhoto : '',
-  
-  
-  
             "Passage_Auditeur": "NO",
-  
-  
-  
             "Auditeur_ID": "",
-  
-  
-  
             "Date_Reception_Auditor": "",
-  
-  
-  
             "Nom_Auditeur": "",
-  
-  
-  
             "TypeAuditeur": "",
-  
-  
-  
             "Phone_Auditeur": "",
-  
-  
-  
             "Photo_Auditor": "",
-  
-  
-  
             "Valid_Auditeur": "",
-  
-  
-  
             "Passage_Vendeur": "NO",
-  
-  
-  
             "SalesPerson_ID": "",
-  
-  
-  
             "Date_Reception_Vondeur": "",
-  
-  
-  
             "Nom_Vendeur": "",
-  
-  
-  
             "Type_Vendeur": "",
-  
-  
-  
             "Phone_Vendeur": "",
-  
-  
-  
             "Photo_Vendeur": "",
-  
-  
-  
             "Valid_Vondeur": "",
-  
-  
-  
             "Supprime_Audtior": "",
-  
-  
-  
             "Supprime_Vondeur": ""
-  
-  
-  
         }
-  
-  
-  
         await IsDeletedBy(ObjectId(element._id), "Seller").then(ress => {
-  
-  
-  
-            //console.log(ress)
-  
-  
-  
             Data["Supprime_Vondeur"] = String(ress)
-  
-  
-  
             console.log(Data["Supprime_Vondeur"])
-  
-  
-  
         }).catch(err => {
-  
-  
-  
             Data["Supprime_Vondeur"] = String(err)
-  
-  
-  
         });
-  
-  
-  
         await IsDeletedBy(ObjectId(element._id), "Auditor").then(ress => {
-  
-  
-  
             console.log("Auditor")
-  
-  
-  
             Data["Supprime_Audtior"] = String(ress)
-  
-  
-  
         }).catch(err => {
-  
-  
-  
             Data["Supprime_Audtior"] = String(err)
-  
-  
-  
         });
-  
-  
-  
         element.info.forEach(info => {
-  
-  
-  
             if (info.userRole === "Auditor") {
-  
-  
-  
                 Data.Passage_Auditeur = "YES"
-  
-  
-  
                 Data.Auditeur_ID = info.userId
-  
-  
-  
                 Data.Nom_Auditeur = info.NomPrenom
-  
-  
-  
                 Data.Date_Reception_Auditor = info.created_at
-  
-  
-  
                 Data.TypeAuditeur = Data.TypeDPV
-  
-  
-  
                 Data.Photo_Auditor = imgurl + info.PVPhoto
-  
-  
-  
                 Data.Phone_Auditeur = info.PhoneNumber
-  
-  
-  
                 if (element.geometry.properties.status == "green") {
-  
-  
-  
                     Data.Valid_Auditeur = "YES"
-  
-  
-  
                 } else {
-  
-  
-  
                     Data.Valid_Auditeur = "NO"
-  
-  
-  
                 }
-  
-  
-  
-  
-  
             } else if (info.userRole === "Seller") {
-  
-  
-  
                 Data.Passage_Vendeur = "YES"
-  
-  
-  
                 Data.SalesPerson_ID = info.userId
-  
-  
-  
                 Data.Date_Reception_Vondeur = info.created_at
-  
-  
-  
                 Data.Nom_Vendeur = info.NomPrenom
-  
-  
-  
                 Data.Type_Vendeur = info.TypeDPV
-  
-  
-  
                 Data.Photo_Vendeur = imgurl + info.PVPhoto
-  
-  
-  
                 Data.Phone_Vendeur = info.PhoneNumber
-  
-  
-  
                 if (element.geometry.properties.status == "black") {
-  
-  
-  
                     Data.Valid_Vondeur = "NO"
-  
-  
-  
                 } else {
-  
-  
-  
                     Data.Valid_Vondeur = "YES"
-  
-  
-  
                 }
-  
-  
-  
             }
-  
-  
-  
         })
-  
-  
-  
         DataAll.push(Data)
-  
-  
-  
         //console.log(DataAll.length)
-  
-  
-  
         element = Data;
-  
-  
-  
         return element;
-  
-  
-  
     });
-  
-  
-  
-  
-  
     Promise.all(to).then(ee => {
-  
-  
-  
         ////console.log(a.length)
-  
-  
-  
         console.log("---- Extract ----")
-  
-  
-  
         //console.log(list)
-  
-  
-  
         res.status(200).json(DataAll)
-  
-  
-  
     });
-  
-  
-  
-    //console.log(to)
-  
-  
-  
-    //res.status(200).json("test")
-  
-  
-  
-    //res.json(DataAll);
-  
-  
-  
-  });
+});
+
 ///*** Hafsa Function  ****///
 async function IsDeletedBy(id, role) {
     return new Promise(async (resolve, reject) => {
         let delReq = await db.collection("DeleteRequest")
         var values = await delReq.find({ _id: id, role: role }).toArray()
-        if (values.length > 0)  
+        if (values.length > 0)
             resolve("Yes");
         else
             reject("No")
@@ -1784,6 +1269,7 @@ router.get("/VideoReadHafsa", async (req, res) => {
     var Values = await collection.find({}).toArray()
     res.json(Values[0])
 });
+
 router.put("/UpdateUser", async (req, res) => {
     user = req.body
     console.log(req.body)
@@ -1863,7 +1349,6 @@ async function InjectSecteurData(elem) {
                 }
             },
                 { upsert: true }
-
             )
         } else {
             arrNull.push(val.properties.Identifiant)
