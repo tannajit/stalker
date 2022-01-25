@@ -187,7 +187,7 @@ router.get('/clientss', async (req, res) => {
 router.get('/getRoles', async (req, res)=>{
 
     let collection = await db.collection("settings") // collection 
-    var values = await collection.find({ 'proprety': 'test' })
+    var values = await collection.findOne({ 'proprety': 'test' })
     //console.log("---------  send data -----------")
     res.json(values)
 })
@@ -1720,6 +1720,39 @@ router.get('/getAllDeleteRequests', async (req, res) => {
     });
 
     // res.json(values)
+})
+
+router.post('/updateRole', async(req,res)=>{
+
+    let role= req.body.request
+    console.log(role)
+    
+    let collection = db.collection("settings")
+    //------ this to update each element in array without duplicate---
+    // var updated= await collection.updateOne(
+    //     {proprety: "test","details.roles.name": role.role},
+    //     {$addToSet: {"details.roles.$.permissions" :{
+    //         $each:
+    //         role.permissions
+    //     }}} )
+    var updated= await collection.updateOne(
+        {proprety: "test","details.roles.name": role.role},
+        {$set: {"details.roles.$.permissions" :role.permissions}} )
+    console.log(updated)
+    res.status(200).json(updated)
+})
+
+router.post('/addRole', async(req,res)=>{
+    let role= req.body.request
+    console.log(role)
+    
+    let collection = db.collection("settings")
+
+    var updated= await collection.updateOne(
+        {proprety: "test"},
+        {$addToSet : {"details.roles" : {'name' : role.role , 'permissions' : role.permissions }} } )
+    console.log(updated)
+    res.status(200).json(updated)
 })
 
 router.post('/ValidateDeleteClient', async (req, res) => {

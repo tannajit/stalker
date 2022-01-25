@@ -1,0 +1,37 @@
+<mat-dialog-content>
+    <div class="update-form">
+        <div class="field">
+            <label>Role :</label>
+            <button mat-button class="matricule">{{data.name}}</button>
+        </div>
+    
+        <div class="field">
+            <label>Permissions :</label>
+            <mat-form-field >
+                <mat-select  placeholder="Select"  panelClass="selectPanel2" multiple [(value)]="selectedPermissions" (selectionChange)="onChange()">   
+                    <div *ngFor="let permission of permissions" >
+                    <mat-option value="{{permission}}">
+                        <div style="display:flex; justify-content: space-between">
+                            <span>{{permission}}</span>
+                            <!-- <span></span>
+                            <span (click)="deletePermission(permission)">X</span> -->
+                        </div>
+                        <!-- {{permission}} 
+                        <button mat-icon-button (click)="deletePermission()">
+                            <mat-icon>delete_outline</mat-icon>
+                        </button> -->
+                    </mat-option>
+                    
+                    </div>
+                </mat-select>
+            </mat-form-field>
+            <!-- <button mat-button class="gen-btn" *ngIf="RoleSelected.length!=0"  (click)="AddNewRole()">Add Role</button>    -->
+        </div>
+    </div>
+    
+</mat-dialog-content>
+<mat-dialog-actions align="center">
+	<!-- <button mat-raised-button mat-dialog-close tabindex="-1">{{cancelButtonText}}</button> -->
+	<button mat-raised-button style="background-color:#812317; color: white;" (click)="dialogRef.close(false)">Cancel</button>
+    <button mat-raised-button style="background-color:#27AE61; color: white;" (click)="updateRole(data.name)" tabindex="1">Update</button>
+</mat-dialog-actions>

@@ -1,12 +1,16 @@
 <label style="font-weight: bold; color: green;">Id Client: </label><p>{{data._id}}</p>
 <div *ngIf="(loggedUser.role == 'Back Office' || loggedUser.role == 'Admin' ) && !data?.Raison">
     
-    <div *ngIf="data.geometry.properties.status=='green', else refused">
+    <ng-container *ngIf="data.geometry.properties.status=='green'">
         <span style="color: green;">Client Validated</span>
-    </div>
-    <ng-template #refused>
+    </ng-container>
+    
+    <ng-container *ngIf="data.geometry.properties.status=='purple' || data.geometry.properties.status=='red_white' || data.geometry.properties.status=='pink'">
         <span style="color: red;">Client Not validated</span>
-    </ng-template>
+    </ng-container>
+    <ng-container *ngIf="data.geometry.properties.status=='deleted'">
+        <span style="color: black;">Client Deleted</span>
+    </ng-container>
 
     <mat-dialog-content>
         <div class="dialog-container">
@@ -54,9 +58,16 @@
                             <p>{{ clientOfAuditor?.TypeDPV}}, {{clientOfAuditor?.detailType}}</p>
                         </div>
                     </div>
-                    <div class="pdv-action-btns" *ngIf="data.geometry.properties.status !='green'">
-                        <button mat-button class="btn-valid" (click)="validate(data._id,'green')">Valid</button>
-                        <button mat-button class="btn-refus" (click)="validate(data._id,'black')">Refus</button>
+
+                    <div class="pdv-action-btns">
+                        <ng-container *ngIf="data.geometry.properties.status =='green' || data.geometry.properties.status =='deleted'; else btns">
+                            
+                        </ng-container>
+                        <ng-template #btns>
+                            <button mat-button class="btn-valid" (click)="validate(data._id,'green')">Valid</button>
+                            <button mat-button class="btn-refus" (click)="validate(data._id,'black')">Refus</button>
+                        </ng-template>
+        
                     </div>
 
                 </section>
@@ -92,7 +103,7 @@
                         </div>
                         <div class="pdv-info">
                             <label>NFC UUID:</label>
-                            <p>{{data.geometry.properties.nfc.UUID}}</p>
+                            <p>{{data.geometry.properties?.nfc?.UUID}}</p>
                             <label>NFC code Qr:</label>
                             <p>{{data.geometry.properties.codeQR}}</p>
                         </div>

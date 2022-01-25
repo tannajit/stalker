@@ -281,7 +281,7 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
       zoom: 14,
       zoomControl: true
     });
-    const tiles = L.tileLayer('https://map.novatis.tech/hot/{z}/{x}/{y}.png', {
+    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 30,
       minZoom: 0
     });

@@ -126,45 +126,41 @@
   
   /* Column styles */
   /* ---------------------------------------------------------- */
-  .id-column {
-    width: 10%;
-    padding-right: 3rem;
-    padding-top: 0px;
-    padding-bottom: 0px;
-  }
-  .name-column {
-    width: 15%;
-    padding-right: 3rem;
-    padding-top: 0px;
-    padding-bottom: 0px;
-  }
-  .cin-column {
-    width: 10%;
-    padding-right: 3rem;
-    padding-top: 0px;
-    padding-bottom: 0px;
-  }
-  .number-column {
-    width: 15%;
-    padding-right: 3rem;
-    padding-top: 0px;
-    padding-bottom: 0px;
-  }
-  .actions-column {
-    width: 15%;
-    padding-right: 3rem;
-    padding-top: 0px;
-    padding-bottom: 0px;
-  }
-  .email-column {
-    width: 15%;
-  }
+ 
   .role-column {
     width: 10%;
+    padding-right: 3rem;
+    padding-top: 0px;
+    padding-bottom: 0px;
   }
-  .sectors-column {
+  .permission-column {
+    width: 15%;
+    padding-right: 3rem;
+    padding-top: 0px;
+    padding-bottom: 0px;
+  }
+ 
+  .actions-column {
     width: 10%;
+    padding-right: 3rem;
+    padding-top: 0px;
+    padding-bottom: 0px;
   }
+  
+  .permission{
+    align-self: flex-start;
+    display: flex;
+    flex-flow: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    column-gap: 10px;
+    
+  }
+  .permission mat-icon{
+    color: #27AE61;
+  }
+  
   /* ---------------------------------------------------------- */
   
   /* Row styles */
@@ -185,6 +181,7 @@
   .valid-icon{
       color: #27AE61;
   }
+
   .refus-icon{
       color: #AE5827;
   }
@@ -204,4 +201,14 @@
   .role-td{
     display: flex;
     flex-flow: column;
+  }
+
+  .btn-green{
+    background-color: #27AE61;
+    color: #fff;
+    margin: auto;
+    font-size: 13px;
+    line-height: 30px;
+    border-radius: 10px;
+    text-align: center !important;
   }

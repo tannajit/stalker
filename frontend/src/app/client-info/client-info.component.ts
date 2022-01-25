@@ -88,10 +88,12 @@ export class ClientInfoComponent implements OnInit {
       var message = "Client Validated, synchronize to see the result."
       var btn = "OK"
       this.openAlertDialog(message, btn)
+      this._router.navigate(['/map'])
     } else {
       var message = "Client Refused, synchronize to see the status changed."
       var btn = "OK"
       this.openAlertDialog(message, btn)
+      this._router.navigate(['/map'])
     }
     this.dialogRef.close();
   }

@@ -102,8 +102,12 @@ export class MapComponent implements AfterViewInit {
     console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
     
     let raduis =3000;
-    L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
-    this.myMarker = L.circleMarker([this.lat, this.lon], {
+    if (this.myCercle !== undefined) {
+      this.map.removeLayer(this.myCercle)
+    }
+    this.myCercle = L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
+    
+    this.myMarker = L.circleMarker([pos.coords.latitude, pos.coords.longitude], {
       color: "#163AE3 ",
       fillOpacity: 1,
       radius: 8.0
@@ -139,9 +143,7 @@ export class MapComponent implements AfterViewInit {
           console.log(this.lon);
           this.map.setView(new L.LatLng(this.lat, this.lon), 18, { animation: true });
           
-          if (this.myCercle !== undefined) {
-            this.map.removeLayer(this.myCercle)
-          }
+          
           // this.myCercle = L.circle([this.lat, this.lon], { color: "blue", fillColor: "#cce6ff", radius: this.radius });
           // this.myCercle.addTo(this.map);
           //this._serviceClient.getPosition({ "Map": new L.LatLng(this.lat, this.lon), "Raduis": this.radius });

@@ -115,7 +115,7 @@ export class UsersComponent implements OnInit {
           
         })
         this.getUsers()
-        this.dataSource.data = this.users;
+        this.dataSource = new MatTableDataSource(this.users);
         this.changeDetectorRefs.detectChanges();
         this.openAlertDialog('The user is deleted successfully!')
         this.selectedRole=this.selectedSector=this.selectedStatus=undefined
@@ -157,7 +157,7 @@ export class UsersComponent implements OnInit {
           
         })
         this.getUsers()
-        this.dataSource.data = this.users;
+        this.dataSource = new MatTableDataSource(this.users);
         this.changeDetectorRefs.detectChanges();
         this.openAlertDialog('The user is restored successfully!')
         this.selectedRole=this.selectedSector=this.selectedStatus=undefined
@@ -237,7 +237,7 @@ export class UsersComponent implements OnInit {
 
 
       })
-      this.dataSource.data = filtered
+      this.dataSource = new MatTableDataSource(filtered)
       
       
 
@@ -279,10 +279,10 @@ export class UsersComponent implements OnInit {
           
         }
     })
-    this.dataSource.data = filtered
+    this.dataSource = new MatTableDataSource(filtered)
     
   }
-}
+  }
 
 // filterage based on role select
   onChangeRole($event){
@@ -410,7 +410,7 @@ export class UsersComponent implements OnInit {
           
         }
       })
-      this.dataSource.data = filtered
+      this.dataSource = new MatTableDataSource(filtered) 
       
 
     }else{
@@ -454,7 +454,7 @@ export class UsersComponent implements OnInit {
           
         }
     })
-    this.dataSource.data = filtered
+    this.dataSource = new MatTableDataSource(filtered)
     }
 
   }
