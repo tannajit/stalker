@@ -12,6 +12,8 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
+import { AdminService } from '../admin/admin.service';
+import { SettingsService } from '../settings/settings.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -26,6 +28,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
     private _auth: AuthenticationService,
+    private _setting: SettingsService,
     private _router: Router,
     private route: ActivatedRoute,
     private dialog: MatDialog,
@@ -33,11 +36,11 @@ export class LoginComponent implements OnInit {
     private index: IndexdbService) { }
     
     selectedRole;
-    RoleSelected=["Seller","Auditor","Admin","Supervisor","Controler","Back Office"]
+    roles;
   ngOnInit() {
     this.index.createDatabase()
     this.index.createDatabaseOffline();
-
+    this.getRoles()
   }
 
   loginForm: FormGroup = this.fb.group({
@@ -112,6 +115,14 @@ export class LoginComponent implements OnInit {
         this.PutDataSector()
       });
     }
+  }
+
+  getRoles(){
+    // get roles list
+    this._setting.getSettings('param=role').subscribe(res => {
+      this.roles = res.details.roles
+      console.log(res)
+    })
   }
 
   PutDataSector() {

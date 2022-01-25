@@ -17,8 +17,8 @@
         <div class="role-div">
           <mat-form-field >
             <mat-select placeholder="Select your role" (selectionChange)="onChange()" panelClass="selectPanel2" [(value)]="selectedRole"  >
-                <div *ngFor="let rol of RoleSelected">
-                    <mat-option  value="{{rol}}">{{rol}} </mat-option>
+                <div *ngFor="let role of roles">
+                    <mat-option  value="{{role.name}}">{{role.name}} </mat-option>
                     </div>
             </mat-select>
           </mat-form-field>
