@@ -1,7 +1,6 @@
 <label style="font-weight: bold; color: green;">Id Client: </label><p>{{data._id}}</p>
 <div *ngIf="(loggedUser.role == 'Back Office' || loggedUser.role == 'Admin' ) && !data?.Raison">
     
-<<<<<<< HEAD
     <ng-container *ngIf="data.geometry.properties.status=='green'">
         <span style="color: green;">Client Validated</span>
     </ng-container>
@@ -12,18 +11,6 @@
     <ng-container *ngIf="data.geometry.properties.status=='deleted'">
         <span style="color: black;">Client Deleted</span>
     </ng-container>
-=======
-    <div *ngIf="data.geometry.properties.status=='green'">
-        <span style="color: green;">Client Validated</span>
-    </div>
-    <div *ngIf="data.geometry.properties.status!='green'">
-       
-        <span style="color: red;">Client Not validated</span>
-    </div>
-    <div *ngIf="data.geometry.properties.status=='deleted'">
-        <span style="color: rgb(250, 250, 250); background-color:rgb(240, 35, 35) ;" >Client Deleted</span>
-    </div>
->>>>>>> a3a8d06b2e04ba2bcd2c0c63673db1c4e1b4bc5f
 
     <mat-dialog-content>
         <div class="dialog-container">
