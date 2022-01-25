@@ -94,16 +94,19 @@ export class DeleteClientComponent implements AfterViewInit {
       //this.WatchPosition()
     
   }
-
+  myCercle;
   WatchPosition(){
     
       
-    let raduis=3000
+    let raduis=5000
     navigator.geolocation.watchPosition((pos)=>{
     console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
     
-    L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
-
+    if (this.myCercle !== undefined) {
+      this.map.removeLayer(this.myCercle)
+    }
+    
+    this.myCercle=L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
     this.clientService.getPosition({"MapUp":[pos.coords.latitude, pos.coords.longitude],"Raduis":raduis});
     },(err)=>{
       console.log(`err :${err}`)

@@ -311,14 +311,17 @@ export class AddUserComponent implements OnInit {
       data: {
         message: "Please Copy this credentials and send them to the User before Exit \n " + "[Email:" + this.Email + "-" + "Password:" + this.Password + "]",
         buttonText: {
-          ok: 'Ok',
-        }
-      }
+          ok: 'Ok'
+          }
+          
+      },
     });
     dialogRef.afterClosed().subscribe(res => {
       this._router.navigate(['/users'])
     })
+
   }
+
 
   ////////////////////// 
   anotherArray = this.Sectors;
@@ -368,3 +371,5 @@ export class FilterPipe implements PipeTransform {
   }
 
 }
+
+

@@ -139,12 +139,17 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
       
 
     }
+    myCercle
   WatchPosition(){
     navigator.geolocation.watchPosition((pos)=>{
     console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
     
-    let raduis =3000;
-    L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
+    let raduis =5000;
+    if (this.myCercle !== undefined) {
+      this.map.removeLayer(this.myCercle)
+    }
+    
+    this.myCercle=L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
     this.clientService.getPosition({"MapUp":[pos.coords.latitude, pos.coords.longitude],"Raduis":raduis});
 
     },(err)=>{
@@ -281,7 +286,7 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
       zoom: 14,
       zoomControl: true
     });
-    const tiles = L.tileLayer('https://map.novatis.tech/hot/{z}/{x}/{y}.png', {
+    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 30,
       minZoom: 0
     });

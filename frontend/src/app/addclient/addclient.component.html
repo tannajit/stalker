@@ -81,67 +81,71 @@
     <div class="container" id="nfc" *ngIf="nfcShown">
 
         <div class="inputs-container">
-            <div class="nfc" *ngIf="loggedUser.role == 'Auditor'">
-                <div class="scan-field">
-                    <label class="input-label">NFC card puce : </label>
-                    <button mat-button class="btn-green" (click)="Read()">Read</button>
-                    <div *ngIf="clientInfos.nfc.UUID!= null" class="nfc-div">
-                        <span>UUID:</span>
-                        <p>{{clientInfos.nfc.UUID}}</p>
-                        <span>Numero_Serie:</span>
-                        <p>{{clientInfos.nfc.Numero_Serie}}</p>
-                        <span>Type_card:</span>
-                        <p>{{clientInfos.nfc.Type_card}}</p>
-                        <span>Technologies:</span>
-                        <p>{{clientInfos.nfc.Technologies}}</p>
-                    </div>
-                </div>
-                <div class="scan-field">
-                    <label class="input-label">Qr Code : </label>
-                    <div>
-                        <button mat-button class="btn-green"
-                            (click)="toggleShow(4,qrResultString);scan=!scan">Scan</button>
-                        <div *ngFor="let code of ListCodes" class="qr-container">
-                            <span *ngIf="code.nbr == 4">{{ code.value}}</span>
+            <ng-container *ngFor="let perm of loggedUser.permissions">
+                <div class="nfc" *ngIf="perm == 'Add NFC'">
+                    <div class="scan-field">
+                        <label class="input-label">NFC card puce : </label>
+                        <button mat-button class="btn-green" (click)="Read()">Read</button>
+                        <div *ngIf="clientInfos.nfc.UUID!= null" class="nfc-div">
+                            <span>UUID:</span>
+                            <p>{{clientInfos.nfc.UUID}}</p>
+                            <span>Numero_Serie:</span>
+                            <p>{{clientInfos.nfc.Numero_Serie}}</p>
+                            <span>Type_card:</span>
+                            <p>{{clientInfos.nfc.Type_card}}</p>
+                            <span>Technologies:</span>
+                            <p>{{clientInfos.nfc.Technologies}}</p>
                         </div>
                     </div>
-
-                </div>
-                <div *ngIf="isShown && scan " class="Scan-container">
-                    <zxing-scanner Class="small-video" (scanSuccess)="onCodeResult($event)"></zxing-scanner>
-
-                    <section class="results" *ngIf="qrResultString">
+                    <div class="scan-field">
+                        <label class="input-label">Qr Code : </label>
                         <div>
-                            <small>Result: </small>
-                            <strong>{{ qrResultString }}</strong>
+                            <button mat-button class="btn-green"
+                                (click)="toggleShow(4,qrResultString);scan=!scan">Scan</button>
+                            <div *ngFor="let code of ListCodes" class="qr-container">
+                                <span *ngIf="code.nbr == 4">{{ code.value}}</span>
+                            </div>
                         </div>
-                        <button mat-button class="btn-green" (click)="toggleShow(code.nbr,qrResultString)">Done</button>
-                    </section>
-                </div>
-                <div class="scan-field">
-                    <label class="input-label">NFC photo : </label>
-                    <button mat-button class="btn-green" (click)="displayNFCam();">
-                        <mat-icon>camera_alt</mat-icon>
-                    </button>
-                </div>
-                <div *ngIf="showNFCWebcam" class="Scan-container">
-                    <webcam [height]="200" [width]="500" [trigger]="triggerObservable"
-                        (imageCapture)="handleNFCImage($event)">
-                    </webcam>
-                    <div class="reas-nfc">
-                        <button mat-button class="btn-green" (click)="triggerSnapshot();">Click Here</button>
-                        <button mat-button class="btn-green" (click)="toggleNFCWebcam();">Close Camera</button>
+    
+                    </div>
+                    <div *ngIf="isShown && scan " class="Scan-container">
+                        <zxing-scanner Class="small-video" (scanSuccess)="onCodeResult($event)"></zxing-scanner>
+    
+                        <section class="results" *ngIf="qrResultString">
+                            <div>
+                                <small>Result: </small>
+                                <strong>{{ qrResultString }}</strong>
+                            </div>
+                            <button mat-button class="btn-green" (click)="toggleShow(code.nbr,qrResultString)">Done</button>
+                        </section>
+                    </div>
+                    <div class="scan-field">
+                        <label class="input-label">NFC photo : </label>
+                        <button mat-button class="btn-green" (click)="displayNFCam();">
+                            <mat-icon>camera_alt</mat-icon>
+                        </button>
+                    </div>
+                    <div *ngIf="showNFCWebcam" class="Scan-container">
+                        <webcam [height]="200" [width]="500" [trigger]="triggerObservable"
+                            (imageCapture)="handleNFCImage($event)">
+                        </webcam>
+                        <div class="reas-nfc">
+                            <button mat-button class="btn-green" (click)="triggerSnapshot();">Click Here</button>
+                            <button mat-button class="btn-green" (click)="toggleNFCWebcam();">Close Camera</button>
+                        </div>
+                    </div>
+    
+                    <div *ngIf="webcamNFCImage" class="Scan-container">
+                        <div class="snapshot">
+                            <img [height]="200" [width]="200" [src]="webcamNFCImage.imageAsDataUrl"
+                                style="border-radius: 8px;" />
+    
+                        </div>
                     </div>
                 </div>
-
-                <div *ngIf="webcamNFCImage" class="Scan-container">
-                    <div class="snapshot">
-                        <img [height]="200" [width]="200" [src]="webcamNFCImage.imageAsDataUrl"
-                            style="border-radius: 8px;" />
-
-                    </div>
-                </div>
-            </div>
+            </ng-container>
+            
+            
 
             <div class="pdv">
                 <div class="field">

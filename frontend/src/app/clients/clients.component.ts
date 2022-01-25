@@ -160,4 +160,5 @@ export class ClientsComponent implements OnInit {
     this.dialogRef = this.dialog.open(ClientInfoComponent, { data: content });
   }
 
+  
 }

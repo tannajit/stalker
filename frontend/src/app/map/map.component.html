@@ -8,11 +8,14 @@
                   </button>
 
             </div>
-            <button mat-button class="btn-primary" [disabled]="!statusAddClient" (click)="addPDV()"
+            <ng-container *ngFor="let perm of user.permissions">
+                  <button *ngIf="perm == 'Add Client'" mat-button class="btn-primary" [disabled]="!statusAddClient" (click)="addPDV()"
                   >Add PDV</button>
+                  <button *ngIf="perm == 'Extract Data'" mat-button class="btn-warning" style="background-color:rgb(56, 117, 231)" (click)="extract()">Extract</button>
+            </ng-container>
+            
             <button mat-button class="btn-warning" (click)="sync()">Synchronize</button>
-            <button mat-button class="btn-warning" style="background-color:rgb(56, 117, 231)" (click)="extract()"
-                  *ngIf="user.role== 'Admin' || user.role== 'Back Office'">Extract</button>
+            
       </div>
       <div class="map-top-elements">
             <!-- <button mat-raised-button class="my-location">

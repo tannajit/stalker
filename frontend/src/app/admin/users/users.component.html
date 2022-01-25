@@ -28,7 +28,7 @@
               <mat-select placeholder="Role" panelClass="selectPanel2"   (selectionChange)="onChangeRole($event)" [(ngModel)]="selectedRole">
                   <mat-option value="all">All</mat-option>
                   <ng-container *ngFor="let rol of roles">
-                    <mat-option value="{{rol}}">{{rol}}</mat-option>
+                    <mat-option value="{{rol.name}}">{{rol.name}}</mat-option>
                   </ng-container>
                    
               </mat-select>
