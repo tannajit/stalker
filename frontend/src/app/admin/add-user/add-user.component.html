@@ -54,14 +54,13 @@
                 <button mat-button class="gen-btn" (click)="GeneratePassword()">Generate Password</button>
             </div>
 
-
             <div class="field">
                 <label>Role :</label>
                 <mat-form-field >
                     <mat-select  placeholder="select"  panelClass="selectPanel2"  (selectionChange)="onChange()" [(value)]="role">   
                         <div *ngFor="let rol of Roles | filterUnique" >
                         
-                        <mat-option   value="{{rol}}">{{rol}}</mat-option>
+                        <mat-option   value="{{rol.name}}">{{rol.name}}</mat-option>
                         </div>
                     </mat-select>
                 </mat-form-field>
