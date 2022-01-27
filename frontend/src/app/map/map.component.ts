@@ -109,7 +109,7 @@ export class MapComponent implements AfterViewInit {
 
   WatchPosition(){
     navigator.geolocation.watchPosition((pos)=>{
-    console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
+   // console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
     
     let raduis =5000000;
     if (this.myCercle !== undefined) {
@@ -309,6 +309,9 @@ export class MapComponent implements AfterViewInit {
             this.markersCluster.clearLayers();
             console.log("*** done clearing****")
             res.forEach(element => {
+              if(!element.geometry.properties?.status!=undefined){
+                element.geometry.properties["status"]="red"
+              }
               const geo = { _id: element._id, Valeur: JSON.stringify(element.geometry) };
               allclient.push(geo);
               transaction = db.transaction(['data'], 'readwrite');
@@ -459,6 +462,7 @@ export class MapComponent implements AfterViewInit {
       this.map.addLayer(this.cluster1)
 
     } else if (this.option_done == "Done") {
+      
       console.log("validated should be removed")
       this.markersCluster.eachLayer((layer: any) => {
         if (layer.feature.properties.status == "green") {

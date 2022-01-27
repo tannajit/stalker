@@ -13,7 +13,7 @@ var uri = "mongodb://localhost:27017";
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker3"
+var name_database = "stalker1"
 var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
@@ -92,7 +92,7 @@ router.get("/files", async function (req, res) {
             });
         });
         res.status(200).send(fileInfos);
-        fileInfos.forEach(element => {
+        fileInfos.forEach(element => { 
             PutDataGeometries(collection, element.url)
         });
         var arr = await collection.find({ 'geometry.geometry.type': 'Point' }).toArray()
@@ -279,20 +279,25 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
     });
 
     All_PDV = ListInfo.map(async (elem) => {
-        if (elem.geometry.properties.nfc.UUID != null && elem.geometry.properties.nfc.UUID != undefined) {
+        if (elem.geometry.properties.NFC != null && elem.geometry.properties.NFC != undefined) {
             elem.geometry.properties.status = "green"
         }
-
+        
         if (elem.geometry.properties?.nfc != undefined) {
             var element = elem.geometry.properties;
             if(element.nfc.NFCPhoto!=null){
+                try{
+                console.log(element.nfc)
             await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
                 elem.geometry.properties.NFCP = re
             }).catch(err => console.log(err))
+                }catch(err){
+                   // console.log("***************")
+                }
         }else{
             elem.geometry.properties.NFCP=null
         }
-        if(test1(db, ObjectId(element.PVPhoto))) {
+        if(element?.PVPhoto!=null) {
             await test1(db, ObjectId(element.PVPhoto)).then(re => {
                 elem.geometry.properties.PVP = re
             }).catch(err => console.log(err))
@@ -304,7 +309,9 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
     })
     Promise.all(All_PDV).then(ee => {
         res.json(a)
-    }).catch(err => console.log(err));
+    }).catch(err => 
+        console.log(err)
+        );
 
 })
 
@@ -613,11 +620,13 @@ function putFileSystemItem(dbo, filename, data) {
 
 ///** Store  Image in Gridfs *****/
 async function test(db, filename, data) {
+
     return putFileSystemItem(db, filename, data)
 }
 
 ////** Get Image from Gridfs *****/
 async function test1(db, id) {
+
     return await getFileSystemItem(db, id);
 }
 

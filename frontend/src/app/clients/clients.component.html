@@ -4,7 +4,7 @@
             <div class="field">
                 <mat-form-field>
                     <mat-label>Id Client</mat-label> 
-                    <input matInput placeholder="Typing..." [(ngModel)]="IdClient"/>
+                    <input matInput placeholder="Typing..." [(ngModel)]="IdClient" />
                 </mat-form-field>
             </div>
 
@@ -17,8 +17,8 @@
             
             <div class="field">
                 <mat-form-field>
-                    <mat-select placeholder="PDV Type" panelClass="selectPanel2" [(ngModel)]="PDVType" [(value)]="typePDVselected">
-                        <mat-option value="">All</mat-option>
+                    <mat-select placeholder="PDV Type" panelClass="selectPanel2" [(ngModel)]="PDVType" (selectionChange)="onChangePDVType($event)">
+                        <mat-option value="all">All</mat-option>
                         <mat-option value="Detail">Detail</mat-option>
                         <mat-option value="Gros">Gros</mat-option>
                         <mat-option value="Demi Gros">Demi Gros</mat-option>
@@ -26,10 +26,10 @@
                 </mat-form-field>
             </div>
 
-            <div class="field" *ngIf="typePDVselected == 'Detail'">
+            <div class="field" *ngIf="PDVType == 'Detail'">
                 <mat-form-field>
                     <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2" [(ngModel)]="detailType">
-                        <mat-option value="">All</mat-option>
+                        <mat-option value="all">All</mat-option>
                         <mat-option value="Alimentation">Alimentation</mat-option>
                         <mat-option value="Superette">Superette</mat-option>
                         <mat-option value="Aattar">Aattar</mat-option>
@@ -44,21 +44,21 @@
             <div class="field">
                 <mat-form-field>
                     <mat-select placeholder="NFC" panelClass="selectPanel2" [(ngModel)]="nfc" >
-                        <mat-option value="">All</mat-option>
-                        <mat-option value="purple">Installed</mat-option>
-                        <mat-option value="red_white">Not yet installed</mat-option>
-                        <mat-option value="pink">NFC Refused</mat-option>
+                        <mat-option value="all">All</mat-option>
+                        <mat-option value="installed">Installed</mat-option>
+                        <mat-option value="not_inst">Not yet installed</mat-option>
+                        <mat-option value="refused">NFC Refused</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
 
             <div class="field">
                 <mat-form-field>
-                    <mat-select placeholder="Back Office Validation" panelClass="selectPanel2" [(ngModel)]="validate" >
-                        <mat-option value="">All</mat-option>
+                    <mat-select placeholder="Back Office Validation" panelClass="selectPanel2" [(ngModel)]="BackOfficeValid" >
+                        <mat-option value="all">All</mat-option>
                         <mat-option value="green">Validated</mat-option>
-                        <mat-option value="black">Refused</mat-option>
-                        <mat-option value="purple">Waiting</mat-option>
+                        <mat-option value="refused">Refused</mat-option>
+                        <mat-option value="waiting">Waiting</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -66,10 +66,13 @@
             <div class="field">
                 <mat-form-field>
                     <mat-select placeholder="Sector" panelClass="selectPanel2" [(ngModel)]="sector">
-                        <mat-option value="">All</mat-option>
-                       <div *ngFor="let name of sectorNames">
-                        <mat-option value="{{name}}">{{name}}</mat-option>
-                       </div>
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search" (keyup)="filterListCareUnit($event.target.value)" ></ngx-mat-select-search>
+                        </mat-option>
+                        <mat-option value="all">All</mat-option>
+                        <ng-container *ngFor="let name of sectorNames">
+                            <mat-option value="{{name.id}}">{{name.details}}</mat-option>
+                        </ng-container>
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -77,7 +80,7 @@
             <div class="field">
                 <mat-form-field>
                     <mat-select placeholder="Delete" panelClass="selectPanel2" [(ngModel)]="deleteStatus">
-                        <mat-option value="">All</mat-option>
+                        <mat-option value="all">All</mat-option>
                         <mat-option value="deleted">Deleted</mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -90,7 +93,7 @@
     <div class="clients-list">
         <!-- *ngFor="let client of clients" -->
 
-        <div *ngFor="let client of dataSource | filter: IdClient | filter: PhoneNumber | filter: PDVType | filter: detailType | filter: sector | filter: validate | filter: nfc | filter: deleteStatus"
+        <div *ngFor="let client of dataSource | filter: IdClient | filter: PhoneNumber | filter:BackOfficeValid | paginate: { itemsPerPage: 5, currentPage: currentPage } ; let i=index"
             class="card-container">
             <mat-card (click)="openDialog(client)">
                 <img mat-card-image src="{{client.geometry.properties.PVP}}" alt=""
