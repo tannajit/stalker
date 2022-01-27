@@ -13,7 +13,7 @@ var uri = "mongodb://localhost:27017";
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker3"
+var name_database = "stalker1"
 var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
@@ -43,19 +43,16 @@ router.post("/upload", controller.upload);
 
 router.get("/files", async function (req, res) {
     const collection = await db.collection('geometries');
-
     const directoryPath = "uploads/";
     const colection1 = await db.collection('backup');
     const colection2 = await db.collection('secteurs');
     collection.find({}).forEach(async (doc) => {
         await colection1.insertOne(doc.geometry);
     });
-
     colection2.find({}).forEach(async (doc) => {
         doc.points = [];
         await colection2.updateOne({ nameSecteur: doc.nameSecteur }, { $set: doc });
     });
-
     fs.readdir(directoryPath, async (err, files) => {
         if (err) {
             res.status(500).send({
@@ -75,6 +72,11 @@ router.get("/files", async function (req, res) {
         });
         var arr = await collection.find({ 'geometry.geometry.type': 'Point' }).toArray()
         InjectSecteurData(arr)
+        await collection.updateMany({"geometry.geometry.type":"Point", "geometry.properties.NFC": { $exists: true}},{$set: {"geometry.properties.nfc":{UUID:null,Numero_Serie:null,Technologies:null,Type_card:null,NFCPhoto:null}}}).then().catch(error => console.log(error))
+        await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.NFC": { $exists: true}},{ $rename: {"geometry.properties.NFC": "geometry.properties.nfc.UUID"}}).then().catch(error => console.log(error))
+        console.log("//************start updating Status************//")
+        await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.nfc.UUID":{$ne:null}},{$set:{"geometry.properties.status":"purple"}}).then().catch(error => console.log(error))
+        await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.nfc.UUID":{$eq:null}},{$set:{"geometry.properties.status":"red"}}).then().catch(error => console.log(error))
     });
 });
 
@@ -1340,9 +1342,7 @@ router.put("/UpdateUser", async (req, res) => {
     })
 
     user.SectorDeleted.forEach(async el => {
-
         await secteurs.updateOne({ nameSecteur: Number(el) }, { $pull: { users: ObjectId(user._id) } }).then(res => console.log(res))
-
     })
 
 })
@@ -1364,8 +1364,14 @@ async function putEachData(res, collection) {
     if (res.geometry.type == "MultiPolygon") {
         collection.updateOne({ "geometry.geometry.type": "MultiPolygon", "geometry.properties.idSecteur": res.properties.idSecteur }, { $set: { geometry: res } }, { upsert: true }).then(rr => console.log(rr)).catch(error => console.log(error))
     } else {
-        collection.updateOne({ "geometry.properties.Code_Client": res.properties.Code_Client }, { $set: { geometry: res } }, { upsert: true }).then().catch(error => console.log(error))
-    }
+       await collection.updateOne({ "geometry.properties.Code_Client": res.properties.Code_Client }, { $set: { geometry: res } }, { upsert: true }).then().catch(error => console.log(error))
+    //    console.log("//************start updating nfc object************//")
+    //    await collection.updateMany({"geometry.geometry.type":"Point", "geometry.properties.NFC": { $exists: true}},{$set: {"geometry.properties.nfc":{UUID:null,Numero_Serie:null,Technologies:null,Type_card:null,NFCPhoto:null}}}).then().catch(error => console.log(error))
+    //    await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.NFC": { $exists: true}},{ $rename: {"geometry.properties.NFC": "geometry.properties.nfc.UUID"}}).then().catch(error => console.log(error))
+    //    console.log("//************start updating Status************//")
+    //    await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.nfc.UUID":{$ne:null}},{$set:{"geometry.properties.status":"purple"}}).then().catch(error => console.log(error))
+    //    await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.nfc.UUID":{$eq:null}},{$set:{"geometry.properties.status":"red"}}).then().catch(error => console.log(error))
+  }
 }
 
 
@@ -1379,12 +1385,12 @@ async function PutDataGeometries(collection, file) {
     // file_onion_sectors.forEach(res => { putEachData(res, collection) }, err => console.log(err))
     // file_cmg_jointure.forEach(res => { putEachData(res, collection) }, err => console.log(err))
     // file_onion_jointure.forEach(res => { putEachData(res, collection) }, err => console.log(err))
-
     console.log("\n ------------------------ End Adding Geometries --------------------------------")
 }
 
 async function InjectSecteurData(elem) {
     console.log("\n --------------------- Start Injecting Sector Data ------------------------------")
+    var id = db.collection("users").findOne()
     var arrNull = []  // put Data that Have Null in idSecteur ( didn't join with any sector)
     elem.forEach(value => {
         var val = value.geometry;
@@ -1397,7 +1403,7 @@ async function InjectSecteurData(elem) {
                     typePDV: [],
                     machine: val.properties.machine,
                     secteur: null,
-                    users: []
+                    users: [ObjectId("61e6bcd032dd6008968e5220")]
                 }
             },
                 { upsert: true }
