@@ -92,7 +92,7 @@ router.get("/files", async function (req, res) {
             });
         });
         res.status(200).send(fileInfos);
-        fileInfos.forEach(element => { 
+        fileInfos.forEach(element => {
             PutDataGeometries(collection, element.url)
         });
         var arr = await collection.find({ 'geometry.geometry.type': 'Point' }).toArray()
@@ -169,7 +169,7 @@ router.get('/getAllUsers', async (req, res) => {
             }
         }]).toArray();
 
-    
+
     // let userColl = await db.collection("users")
     // var values = await userColl.find({}).toArray()
     res.json(values)
@@ -184,7 +184,7 @@ router.get('/clientss', async (req, res) => {
 
 });
 
-router.get('/getRoles', async (req, res)=>{
+router.get('/getRoles', async (req, res) => {
 
     let collection = await db.collection("settings") // collection 
     var values = await collection.findOne({ 'proprety': 'role' })
@@ -282,36 +282,37 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
         if (elem.geometry.properties.NFC != null && elem.geometry.properties.NFC != undefined) {
             elem.geometry.properties.status = "green"
         }
-        
+
         if (elem.geometry.properties?.nfc != undefined) {
             var element = elem.geometry.properties;
-            if(element.nfc.NFCPhoto!=null){
-                try{
-                console.log(element.nfc)
-            await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
-                elem.geometry.properties.NFCP = re
-            }).catch(err => console.log(err))
-                }catch(err){
-                   // console.log("***************")
+            if (element.nfc.NFCPhoto != null) {
+                try {
+                    console.log(element.nfc)
+                    await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
+                        elem.geometry.properties.NFCP = re
+                    }).catch(err => console.log(err))
+                } catch (err) {
+                    // console.log("***************")
                 }
-        }else{
-            elem.geometry.properties.NFCP=null
-        }
-        if(element?.PVPhoto!=null) {
-            await test1(db, ObjectId(element.PVPhoto)).then(re => {
-                elem.geometry.properties.PVP = re
-            }).catch(err => console.log(err))
-        }else{
-            elem.geometry.properties.PVP=null
-        }
+            } else {
+                elem.geometry.properties.NFCP = null
+            }
+            if (element?.PVPhoto != null) {
+                console.log(element?.PVPhoto)
+                await test1(db, ObjectId(element.PVPhoto)).then(re => {
+                    elem.geometry.properties.PVP = re
+                }).catch(err => console.log(err))
+            } else {
+                elem.geometry.properties.PVP = null
+            }
         }
         a.push(elem)
     })
     Promise.all(All_PDV).then(ee => {
         res.json(a)
-    }).catch(err => 
+    }).catch(err =>
         console.log(err)
-        );
+    );
 
 })
 
@@ -411,19 +412,22 @@ async function InsertClient(client, res) {
             if (v.nbr === 3) codeFGD = v.value
             if (v.nbr === 4) codeQR = v.value
         })
-        var id_pv, id_NFC;
+        var id_pv = null, id_NFC = null;
         //console.log("PhotoofClient"+client.PVPhoto)
-        await test(db, client.NomPrenom, client.PVPhoto).then(s => id_pv = s._id).catch(err => console.log(err))
-
-        await test(db, client.NomPrenom, client.nfc.NFCPhoto).then(s => id_NFC = s._id).catch(err => console.log(err)) //PV photo
-
+        if (client.PVPhoto != null) {
+            await test(db, client.NomPrenom, client.PVPhoto).then(s => id_pv = s._id).catch(err => console.log(err))
+        }
+        if (client.nfc.NFCPhoto != null) {
+            await test(db, client.NomPrenom, client.nfc.NFCPhoto).then(s => id_NFC = s._id).catch(err => console.log(err)) //PV photo
+        }
+        client.nfc.NFCPhoto = id_NFC
         //console.log(id_NFC)
         //console.log(id_pv);
         //console.log("-------------- " + client.lat)
         //console.log(client)
         //var id = new ObjectId();
         //console.log("=========== id" + id)
-        client.nfc.NFCPhoto = id_NFC
+        
         var id = new ObjectId();
         //console.log("=========== id" + id)
         var temp_datetime_obj = new Date();
@@ -492,7 +496,7 @@ async function updateClient(client) {
     let geometries = db.collection("geometries") /// geometries Collections
     let secteurs = db.collection("secteurs")
     var id_NFC, id_pv;
-    if (client.geometry.properties.NFCP == null ) {
+    if (client.geometry.properties.NFCP == null) {
         await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
         console.log("NFC photo id: " + id_NFC)
     } else {
@@ -667,7 +671,7 @@ async function getUser(user) {
 
     var status = { value: 401, data: null }
 
-    var User = await collection.find({ email: user.email}).toArray()
+    var User = await collection.find({ email: user.email }).toArray()
     if (User.length > 0) {
         var FindUser;
         User.forEach(async (u) => {
@@ -685,15 +689,15 @@ async function getUser(user) {
         console.log(FindUser)
         if (FindUser != null) {
             // ********* get User permissions *********
-            var permissions=[];
+            var permissions = [];
             let roleCollection = db.collection("settings")
-            const doc = await roleCollection.findOne({ proprety: 'role'});
+            const doc = await roleCollection.findOne({ proprety: 'role' });
             doc.details.roles.forEach(element => {
-                if(element.name == user.role){
-                    permissions=element.permissions
+                if (element.name == user.role) {
+                    permissions = element.permissions
                 }
             });
-            FindUser.permissions=permissions
+            FindUser.permissions = permissions
 
             var valid = await ValidPassword(user.password, FindUser.password)
             if (valid) {
@@ -750,12 +754,23 @@ async function getClientBySeller(id) {
     ).sort({ 'updated_at': -1 }).limit(1).toArray()
     var status = { clientOf: "seller", data: null }
     var cli = [];
+    
     if (client.length != 0) {
-        status.data = { 'client': client }
         cli = client[0]
+    cli.PVP=null;
+    cli.NFCP=null;
+        status.data = { 'client': client }
+        if(cli.PVPhoto!=null){
         await test1(db, ObjectId(cli.PVPhoto)).then(re => {
             cli.PVP = re
         })
+    }
+    
+    if(cli.nfc.NFCPhoto!=null){
+        await test1(db, ObjectId(cli.nfc.NFCPhoto)).then(re => {
+            cli.NFCP = re
+        })
+    }
         status.data = { 'client': cli }
     }
     return cli;
@@ -773,14 +788,24 @@ async function getClientByAuditor(id) {
         }
     ).sort({ 'updated_at': -1 }).limit(1).toArray()
     var status = { clientOf: "auditor", data: null }
+    
     if (client.length != 0) {
         cli = client[0]
-        await test1(db, ObjectId(cli.nfc.NFCPhoto)).then(re => {
-            cli.NFCP = re
-        })
+    console.log(cli)
+    cli["PVP"]=null;
+    cli["NFCP"]=null;
+        status.data = { 'client': client }
+        if(cli.PVPhoto!=null){
         await test1(db, ObjectId(cli.PVPhoto)).then(re => {
             cli.PVP = re
         })
+    }
+    
+    if(cli.nfc.NFCPhoto!=null){
+        await test1(db, ObjectId(cli.nfc.NFCPhoto)).then(re => {
+            cli.NFCP = re
+        })
+    }
         status.data = { 'client': cli }
     } else {
         al = [];
@@ -1039,646 +1064,646 @@ router.post("/extract", async (req, res) => {
 
 
     let geometries = await db.collection("geometries")
-  
-  
-  
+
+
+
     var condition = req.body
-  
-  
-  
+
+
+
     console.log(condition)
-  
-  
-  
+
+
+
     var queries = []
-  
-  
-  
+
+
+
     queries.push({ "geometry.geometry.type": "Point" })
-  
-  
-  
-  
-  
+
+
+
+
+
     if (condition?.Sectors) {
-  
-  
-  
+
+
+
         console.log("found")
-  
-  
-  
+
+
+
         queries.push({
-  
-  
-  
+
+
+
             "geometry.properties.Code_Secteur_OS": {
-  
-  
-  
+
+
+
                 $in: condition.Sectors
-  
-  
-  
+
+
+
             }
-  
-  
-  
+
+
+
         })
-  
-  
-  
+
+
+
     }
-  
-  
-  
+
+
+
     if (condition?.StartDate) {
-  
-  
-  
+
+
+
         queries.push({
-  
-  
-  
+
+
+
             "geometry.properties.created_at": {
-  
-  
-  
+
+
+
                 $gte: new Date(condition.StartDate)
-  
-  
-  
+
+
+
             }
-  
-  
-  
+
+
+
         })
-  
-  
-  
+
+
+
     }
-  
-  
-  
+
+
+
     if (condition?.EndDate) {
-  
-  
-  
+
+
+
         queries.push({
-  
-  
-  
+
+
+
             "geometry.properties.created_at": {
-  
-  
-  
+
+
+
                 $lte: new Date(condition.EndDate)
-  
-  
-  
+
+
+
             }
-  
-  
-  
+
+
+
         })
-  
-  
-  
+
+
+
     }
-  
-  
-  
+
+
+
     if (condition?.TypeDPV) {
-  
-  
-  
+
+
+
         queries.push({
-  
-  
-  
+
+
+
             "geometry.properties.TypeDPV": {
-  
-  
-  
+
+
+
                 $in: condition.TypeDPV
-  
-  
-  
+
+
+
             }
-  
-  
-  
+
+
+
         })
-  
-  
-  
+
+
+
     }
-  
-  
-  
+
+
+
     let values = await geometries.aggregate([
-  
-  
-  
+
+
+
         {
-  
-  
-  
+
+
+
             $match: {
                 $and:
                     queries
 
             }
-  
-  
-  
+
+
+
         },
-  
-  
-  
+
+
+
         {
-  
-  
-  
+
+
+
             $lookup: {
-  
-  
-  
+
+
+
                 from: "clients",
-  
-  
-  
+
+
+
                 localField: "_id",
-  
-  
-  
+
+
+
                 foreignField: "idGeometry",
-  
-  
-  
+
+
+
                 as: "info"
-  
-  
-  
+
+
+
             }
-  
-  
-  
+
+
+
         }
     ]).toArray();
-  
-  
-  
+
+
+
     all1 = []
     //console.log(values)
     //res.json(values)
-  
-  
-  
+
+
+
     var test = values.map((elem) => {
-  
-  
-  
+
+
+
         elem.info.reverse();
-  
-  
-  
+
+
+
         audit = false;
-  
-  
-  
+
+
+
         seller = false;
-  
-  
-  
+
+
+
         all = elem.info.filter((ele) => {
-  
-  
-  
+
+
+
             if (ele.userRole == "Auditor" && !audit) {
-  
-  
-  
+
+
+
                 //console.log("auditor")
-  
-  
-  
+
+
+
                 audit = true;
-  
-  
-  
+
+
+
                 return ele;
-  
-  
-  
+
+
+
             } else if (ele.userRole == "Seller" && !seller) {
-  
-  
-  
+
+
+
                 //console.log("seller")
-  
-  
-  
+
+
+
                 seller = true
-  
-  
-  
+
+
+
                 return ele;
-  
-  
-  
+
+
+
             }
-  
-  
-  
+
+
+
         })
-  
-  
-  
+
+
+
         elem.info = all
-  
-  
-  
+
+
+
         return elem;
-  
-  
-  
+
+
+
     });
-  
-  
-  
+
+
+
     DataAll = []
     var to = test.map(async (element) => {
-  
-  
-  
+
+
+
         var imgurl = "http://localhost:3000/api1/image?id="
-  
-  
-  
+
+
+
         var Data = {
-  
-  
-  
+
+
+
             "Identifiant system": element._id,
-  
-  
-  
+
+
+
             "X": element.geometry.geometry.coordinates[1],
-  
-  
-  
+
+
+
             "Y": element.geometry.geometry.coordinates[0],
-  
-  
-  
+
+
+
             "Date_Creation": element.geometry.properties.created_at,
-  
-  
-  
+
+
+
             "NFC_ID": (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc?.Numero_Serie,
-  
-  
-  
+
+
+
             "NFC_UUID": (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc?.UUID,
-  
-  
-  
+
+
+
             "Code_Secteur_OS": element.geometry.properties.Code_Secteur_OS,
-  
-  
-  
+
+
+
             "machine": (element.geometry.properties.machine != null) ? element.geometry.properties.machine : "",
-  
-  
-  
+
+
+
             "TypeDPV": (element.geometry.properties.TypeDPV != null) ? element.geometry.properties.TypeDPV : "",
-  
-  
-  
+
+
+
             "NomPrenom": (element.geometry.properties.NomPrenom != null) ? element.geometry.properties.NomPrenom : element.geometry.properties.Nom_Client,
-  
-  
-  
+
+
+
             "PhoneNumber": (element.geometry.properties.PhoneNumber != null) ? element.geometry.properties.PhoneNumber : element.geometry.properties.Telephone_Client,
-  
-  
-  
+
+
+
             "Photo_PDV": (element.geometry.properties.PVPhoto != null) ? imgurl + element.geometry.properties.PVPhoto : '',
-  
-  
-  
+
+
+
             "Passage_Auditeur": "NO",
-  
-  
-  
+
+
+
             "Auditeur_ID": "",
-  
-  
-  
+
+
+
             "Date_Reception_Auditor": "",
-  
-  
-  
+
+
+
             "Nom_Auditeur": "",
-  
-  
-  
+
+
+
             "TypeAuditeur": "",
-  
-  
-  
+
+
+
             "Phone_Auditeur": "",
-  
-  
-  
+
+
+
             "Photo_Auditor": "",
-  
-  
-  
+
+
+
             "Valid_Auditeur": "",
-  
-  
-  
+
+
+
             "Passage_Vendeur": "NO",
-  
-  
-  
+
+
+
             "SalesPerson_ID": "",
-  
-  
-  
+
+
+
             "Date_Reception_Vondeur": "",
-  
-  
-  
+
+
+
             "Nom_Vendeur": "",
-  
-  
-  
+
+
+
             "Type_Vendeur": "",
-  
-  
-  
+
+
+
             "Phone_Vendeur": "",
-  
-  
-  
+
+
+
             "Photo_Vendeur": "",
-  
-  
-  
+
+
+
             "Valid_Vondeur": "",
-  
-  
-  
+
+
+
             "Supprime_Audtior": "",
-  
-  
-  
+
+
+
             "Supprime_Vondeur": ""
-  
-  
-  
+
+
+
         }
-  
-  
-  
+
+
+
         await IsDeletedBy(ObjectId(element._id), "Seller").then(ress => {
-  
-  
-  
+
+
+
             //console.log(ress)
-  
-  
-  
+
+
+
             Data["Supprime_Vondeur"] = String(ress)
-  
-  
-  
+
+
+
             console.log(Data["Supprime_Vondeur"])
-  
-  
-  
+
+
+
         }).catch(err => {
-  
-  
-  
+
+
+
             Data["Supprime_Vondeur"] = String(err)
-  
-  
-  
+
+
+
         });
-  
-  
-  
+
+
+
         await IsDeletedBy(ObjectId(element._id), "Auditor").then(ress => {
-  
-  
-  
+
+
+
             console.log("Auditor")
-  
-  
-  
+
+
+
             Data["Supprime_Audtior"] = String(ress)
-  
-  
-  
+
+
+
         }).catch(err => {
-  
-  
-  
+
+
+
             Data["Supprime_Audtior"] = String(err)
-  
-  
-  
+
+
+
         });
-  
-  
-  
+
+
+
         element.info.forEach(info => {
-  
-  
-  
+
+
+
             if (info.userRole === "Auditor") {
-  
-  
-  
+
+
+
                 Data.Passage_Auditeur = "YES"
-  
-  
-  
+
+
+
                 Data.Auditeur_ID = info.userId
-  
-  
-  
+
+
+
                 Data.Nom_Auditeur = info.NomPrenom
-  
-  
-  
+
+
+
                 Data.Date_Reception_Auditor = info.created_at
-  
-  
-  
+
+
+
                 Data.TypeAuditeur = Data.TypeDPV
-  
-  
-  
+
+
+
                 Data.Photo_Auditor = imgurl + info.PVPhoto
-  
-  
-  
+
+
+
                 Data.Phone_Auditeur = info.PhoneNumber
-  
-  
-  
+
+
+
                 if (element.geometry.properties.status == "green") {
-  
-  
-  
+
+
+
                     Data.Valid_Auditeur = "YES"
-  
-  
-  
+
+
+
                 } else {
-  
-  
-  
+
+
+
                     Data.Valid_Auditeur = "NO"
-  
-  
-  
+
+
+
                 }
-  
-  
-  
-  
-  
+
+
+
+
+
             } else if (info.userRole === "Seller") {
-  
-  
-  
+
+
+
                 Data.Passage_Vendeur = "YES"
-  
-  
-  
+
+
+
                 Data.SalesPerson_ID = info.userId
-  
-  
-  
+
+
+
                 Data.Date_Reception_Vondeur = info.created_at
-  
-  
-  
+
+
+
                 Data.Nom_Vendeur = info.NomPrenom
-  
-  
-  
+
+
+
                 Data.Type_Vendeur = info.TypeDPV
-  
-  
-  
+
+
+
                 Data.Photo_Vendeur = imgurl + info.PVPhoto
-  
-  
-  
+
+
+
                 Data.Phone_Vendeur = info.PhoneNumber
-  
-  
-  
+
+
+
                 if (element.geometry.properties.status == "black") {
-  
-  
-  
+
+
+
                     Data.Valid_Vondeur = "NO"
-  
-  
-  
+
+
+
                 } else {
-  
-  
-  
+
+
+
                     Data.Valid_Vondeur = "YES"
-  
-  
-  
+
+
+
                 }
-  
-  
-  
+
+
+
             }
-  
-  
-  
+
+
+
         })
-  
-  
-  
+
+
+
         DataAll.push(Data)
-  
-  
-  
+
+
+
         //console.log(DataAll.length)
-  
-  
-  
+
+
+
         element = Data;
-  
-  
-  
+
+
+
         return element;
-  
-  
-  
+
+
+
     });
-  
-  
-  
-  
-  
+
+
+
+
+
     Promise.all(to).then(ee => {
-  
-  
-  
+
+
+
         ////console.log(a.length)
-  
-  
-  
+
+
+
         console.log("---- Extract ----")
-  
-  
-  
+
+
+
         //console.log(list)
-  
-  
-  
+
+
+
         res.status(200).json(DataAll)
-  
-  
-  
+
+
+
     });
-  
-  
-  
+
+
+
     //console.log(to)
-  
-  
-  
+
+
+
     //res.status(200).json("test")
-  
-  
-  
+
+
+
     //res.json(DataAll);
-  
-  
-  
-  });
+
+
+
+});
 ///*** Hafsa Function  ****///
 async function IsDeletedBy(id, role) {
     return new Promise(async (resolve, reject) => {
         let delReq = await db.collection("DeleteRequest")
         var values = await delReq.find({ _id: id, role: role }).toArray()
-        if (values.length > 0)  
+        if (values.length > 0)
             resolve("Yes");
         else
             reject("No")
@@ -1749,11 +1774,11 @@ router.get('/getAllDeleteRequests', async (req, res) => {
     // res.json(values)
 })
 
-router.post('/updateRole', async(req,res)=>{
+router.post('/updateRole', async (req, res) => {
 
-    let role= req.body.request
+    let role = req.body.request
     console.log(role)
-    
+
     let collection = db.collection("settings")
     //------ this to update each element in array without duplicate---
     // var updated= await collection.updateOne(
@@ -1762,22 +1787,22 @@ router.post('/updateRole', async(req,res)=>{
     //         $each:
     //         role.permissions
     //     }}} )
-    var updated= await collection.updateOne(
-        {proprety: "role","details.roles.name": role.role},
-        {$set: {"details.roles.$.permissions" :role.permissions}} )
+    var updated = await collection.updateOne(
+        { proprety: "role", "details.roles.name": role.role },
+        { $set: { "details.roles.$.permissions": role.permissions } })
     console.log(updated)
     res.status(200).json(updated)
 })
 
-router.post('/addRole', async(req,res)=>{
-    let role= req.body.request
+router.post('/addRole', async (req, res) => {
+    let role = req.body.request
     console.log(role)
-    
+
     let collection = db.collection("settings")
 
-    var updated= await collection.updateOne(
-        {proprety: "role"},
-        {$addToSet : {"details.roles" : {'name' : role.role , 'permissions' : role.permissions }} } )
+    var updated = await collection.updateOne(
+        { proprety: "role" },
+        { $addToSet: { "details.roles": { 'name': role.role, 'permissions': role.permissions } } })
     console.log(updated)
     res.status(200).json(updated)
 })
