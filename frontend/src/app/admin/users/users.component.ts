@@ -189,7 +189,6 @@ export class UsersComponent implements OnInit {
           
         if(this.selectedRole=='all' && !this.selectedSector){
           filtered=this.users
-          
         }if(this.selectedSector=='all' && !this.selectedRole){
           filtered=this.users
         }if(this.selectedRole=='all' && this.selectedSector=='all'){

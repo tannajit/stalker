@@ -195,7 +195,12 @@ export class AddUserComponent implements OnInit {
     if (this.SelectedSector.length != 0) {
       obj.value = this.SelectedSector
     }
-    if (this.role === "Admin" || this.role === "Controler" || this.role === "Back Office") {
+    // if (this.role === "Admin" || this.role === "Controler" || this.role === "Back Office" ) {
+
+    //   obj.value = this.AllSectors
+
+    // }
+    if (this.role != "Seller" || this.role != "Auditor" || this.role != "Supervisor" ) {
 
       obj.value = this.AllSectors
 
@@ -286,6 +291,7 @@ export class AddUserComponent implements OnInit {
       this.SectorAffacted = this.AllSectors
     }
     console.log(this.SectorAffacted)
+
     this.UserInfo = {
       userinfo: {
         UserID: this.UserID,

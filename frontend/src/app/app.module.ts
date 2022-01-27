@@ -69,7 +69,8 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import { UserInfoComponent } from './admin/user-info/user-info.component';
 import { RolesComponent } from './admin/roles/roles.component';
 import { UserRoleComponent } from './admin/user-role/user-role.component';
-import { AddRoleComponent } from './admin/add-role/add-role.component';
+import { AddRoleComponent } from './add-role/add-role.component';
+import {NgxPaginationModule} from 'ngx-pagination'; 
 
 
 
@@ -108,6 +109,7 @@ import { AddRoleComponent } from './admin/add-role/add-role.component';
 
   ],
   imports: [
+    NgxPaginationModule,
     NgxMatSelectSearchModule,
     BrowserModule,
     BrowserAnimationsModule,

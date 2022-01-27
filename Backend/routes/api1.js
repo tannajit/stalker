@@ -70,7 +70,7 @@ router.get("/files", async function (req, res) {
             });
         });
         res.status(200).send(fileInfos);
-        fileInfos.forEach(element => {
+        fileInfos.forEach(element => { 
             PutDataGeometries(collection, element.url)
         });
         var arr = await collection.find({ 'geometry.geometry.type': 'Point' }).toArray()
@@ -146,8 +146,6 @@ router.get('/getAllUsers', async (req, res) => {
                 as: "sectors"
             }
         }]).toArray();
-
-
     // let userColl = await db.collection("users")
     // var values = await userColl.find({}).toArray()
     res.json(values)
@@ -158,7 +156,6 @@ router.get('/clientss', async (req, res) => {
     let collection = await db.collection("geometries") // collection 
     var values = await collection.find({ 'geometry.geometry.type': 'Point' }).toArray()
     res.json(values)
-
 });
 
 router.get('/getRoles', async (req, res) => {
@@ -175,7 +172,6 @@ router.get('/secteurss', async (req, res) => {
     var values = await collection.find({ 'geometry.geometry.type': 'MultiPolygon' }).toArray()
     //console.log("---------  send data -----------")
     res.json(values)
-
 });
 
 /* GET Sectors Based on User */
@@ -222,8 +218,6 @@ router.get('/getSectorByUser', verifyToken, async (req, res) => {
         ListInfo.push(element.info)
     });
     res.status(200).json(ListInfo)
-
-
 })
 
 //*** Get PDV by user (I changed the structure of the Query ) */
@@ -254,29 +248,39 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
             ListInfo.push(elem)
         });
     });
-
     All_PDV = ListInfo.map(async (elem) => {
         if (elem.geometry.properties.NFC != null && elem.geometry.properties.NFC != undefined) {
-            ///data injected by script 
-            // console.log("green")
-            //console.log(elem.geometry.properties.NFC)
             elem.geometry.properties.status = "green"
         }
-
         if (elem.geometry.properties?.nfc != undefined) {
             var element = elem.geometry.properties;
+            if(element.nfc.NFCPhoto!=null){
+                try{
+                console.log(element.nfc)
             await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
                 elem.geometry.properties.NFCP = re
             }).catch(err => console.log(err))
+                }catch(err){
+                   // console.log("***************")
+                }
+        }else{
+            elem.geometry.properties.NFCP=null
+        }
+        if(element?.PVPhoto!=null) {
             await test1(db, ObjectId(element.PVPhoto)).then(re => {
                 elem.geometry.properties.PVP = re
             }).catch(err => console.log(err))
+        }else{
+            elem.geometry.properties.PVP=null
+        }
         }
         a.push(elem)
     })
     Promise.all(All_PDV).then(ee => {
         res.json(a)
-    }).catch(err => console.log(err));
+    }).catch(err => 
+        console.log(err)
+        );
 
 })
 
@@ -581,11 +585,13 @@ function putFileSystemItem(dbo, filename, data) {
 
 ///** Store  Image in Gridfs *****/
 async function test(db, filename, data) {
+
     return putFileSystemItem(db, filename, data)
 }
 
 ////** Get Image from Gridfs *****/
 async function test1(db, id) {
+
     return await getFileSystemItem(db, id);
 }
 
@@ -626,7 +632,7 @@ async function getUser(user) {
 
     var status = { value: 401, data: null }
 
-    var User = await collection.find({ email: user.email, status: "Active" }).toArray()
+    var User = await collection.find({ email: user.email}).toArray()
     if (User.length > 0) {
         var FindUser;
         User.forEach(async (u) => {

@@ -4,7 +4,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { UserRoleComponent } from '../user-role/user-role.component';
-import { AddRoleComponent } from '../add-role/add-role.component';
+import { AddRoleComponent } from '../../add-role/add-role.component';
 
 
 @Component({
