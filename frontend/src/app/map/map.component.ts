@@ -113,7 +113,7 @@ export class MapComponent implements AfterViewInit {
     navigator.geolocation.watchPosition((pos) => {
       // console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
 
-      let raduis = 10;
+      let raduis = 2000;
       if (this.myCercle !== undefined) {
         this.map.removeLayer(this.myCercle)
       }
@@ -644,7 +644,6 @@ export class MapComponent implements AfterViewInit {
       });
     }
     this.map.addLayer(this.cluster)
-
   }
 
   /////////////////////////////////////////////////////////////

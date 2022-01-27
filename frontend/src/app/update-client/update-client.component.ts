@@ -13,6 +13,7 @@ import { IndexdbService } from '../indexdb.service';
 import { OnlineOfflineServiceService } from '../online-offline-service.service';
 import { AdminService } from '../admin/admin.service';
 import { takeUntil, switchMap } from 'rxjs/operators';
+import { TouchSequence } from 'selenium-webdriver';
 const incr = 1;
 
 @Component({
@@ -105,7 +106,8 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
     private _router: Router) {
 
     this.clientInfo = clientService.getClientInfo();
-    console.log('@@@@@@@@@@@@@@@@' + this.clientInfo.NomPrenom)
+    console.log("***** this CLIENT ****")
+    console.log(this.clientInfo)
   }
   //////////////////////////////////////////////////
   private destroyed: Subject<void> = new Subject<void>();
@@ -417,6 +419,7 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
     }
   }
 
+  
   /////////////////////****** UPDATE CLIENT INFOS *******/////////////////
   async Update() {
     console.log(this.clientInfos)
@@ -435,14 +438,18 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
       });
     }
     if (this.clientInfos.NFCPhoto!=null) {
+      console.log("BDL NFC Photo")
       this.clientInfo.geometry.properties.nfc.NFCPhoto = this.clientInfos.NFCPhoto
+
       this.clientInfo.geometry.properties.NFCP = null
     }
-
     if (this.clientInfos.PVPhoto != null) {
+      console.log(" bdl1 PV Photo ")
       this.clientInfo.geometry.properties.PVPhoto = this.clientInfos.PVPhoto
       this.clientInfo.geometry.properties.PVP = null
     }
+    console.log("**********************************")
+    console.log(this.clientInfo)
     // add user ids
     this.clientInfo.geometry.properties.updatedBy = this.user._id;
     this.clientInfo.geometry.properties.userRole = this.user.role;
@@ -458,11 +465,13 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
     }
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodoUpdate(this.clientInfo)
-      this.UpdateIndexDB()
+      //this.UpdateIndexDB()
     } else {
-      this.clientService.updateClient(this.clientInfo).subscribe(res => {
+      /*this.clientService.updateClient(this.clientInfo).subscribe(res => {
         this.UpdateIndexDB()
-      })
+      })*/
+
+      this.UpdateIndexDB()
     }
   }
 
@@ -481,10 +490,18 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
       transaction = db.transaction(['data'], 'readwrite');
       var objectStore = transaction.objectStore("data");
       var objectStoreRequest = objectStore.get(this.clientInfo._id);
-      console.log(this.clientInfo)
+     // console.log(this.clientInfo)
       objectStoreRequest.onsuccess = (event) => {
-        this.clientInfo.geometry.properties.PVP =  this.clientInfos.PVPhoto
-        this.clientInfo.geometry.properties.NFCP =   this.clientInfos.NFCPhoto
+        if(this.clientInfo.geometry.properties.PVP==null){
+           this.clientInfo.geometry.properties.PVP=this.clientInfo.geometry.properties.PVPhoto
+        }
+        if(this.clientInfo.geometry.properties.NFCP==null){
+
+          this.clientInfo.geometry.properties.NFCP=this.clientInfo.geometry.properties.nfc.NFCPhoto
+          
+       }
+       console.log(this.clientInfo.geometry)
+       
         var elm = JSON.parse(objectStoreRequest.result.Valeur);
         console.log("********************element*****************")
         console.log(objectStoreRequest.result._id)
@@ -493,7 +510,9 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
         var objectStoreRequest1 = objectStore.put(client);
         objectStoreRequest1.onsuccess = (event) => {
           console.log('Done Update');
-          this._router.navigate(['/map'])
+         /* this._router.navigate(['/map']).then(()=>{
+            window.location.reload();
+          })*/
         };
       }
     };
