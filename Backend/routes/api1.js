@@ -13,7 +13,7 @@ var uri = "mongodb://localhost:27017";
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker1"
+var name_database = "stalker3"
 var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
