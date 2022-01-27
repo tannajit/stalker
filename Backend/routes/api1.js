@@ -21,7 +21,6 @@ const jwt = require("jsonwebtoken")
 const { param } = require("express/lib/router");
 const controller = require("./controller");
 const fs = require("fs");
-
 const baseUrl = "uploads/";
 //// fetch 
 const fetch = require("node-fetch")
@@ -38,27 +37,6 @@ async function run() {
     }
 }
 run().catch(console.log)
-
-// var store = multer.diskStorage({
-//     destination:function(req,file,cb){
-//         cb(null, './uploads');
-//     },
-//     filename:function(req,file,cb){
-//         cb(null, Date.now()+'.'+file.originalname);
-//     }
-// });
-
-// var upload = multer({storage:store}).single('file');
-
-// router.post('/upload', function(req,res,next){
-//     upload(req,res,function(err){
-//         if(err){
-//             return res.status(501).json({error:err});
-//         }
-//         //do all database record saving activity
-//         return res.json({originalname:req.file.originalname, uploadname:req.file.filename});
-//     });
-
 
 //////************** */
 router.post("/upload", controller.upload);
@@ -174,7 +152,6 @@ router.get('/getAllUsers', async (req, res) => {
     // var values = await userColl.find({}).toArray()
     res.json(values)
 })
-
 
 router.get('/clientss', async (req, res) => {
 
@@ -350,7 +327,6 @@ router.get('/getClientByAuditor/:id', async (req, res) => {
     var status = await getClientByAuditor(req.params.id)
     res.json(status)
 })
-
 /////////////////////////////
 router.post('/validate', async (req, res) => {
     let id = req.body.id;
@@ -698,9 +674,6 @@ async function getUser(user) {
     }
     return status;
 }
-
-
-
 //***  Login */
 router.post('/login', async (req, res) => {
 
@@ -749,7 +722,6 @@ async function getClientByAuditor(id) {
             'idGeometry': ObjectId(id),
             'userRole': 'Auditor',
             'updated_at': { $exists: true }
-
         }
     ).sort({ 'updated_at': -1 }).limit(1).toArray()
     var status = { clientOf: "auditor", data: null }
@@ -803,8 +775,6 @@ async function AddNewUser(user) {
             password: user.userinfo.password,
             status: user.userinfo.status,
             role: r.role
-
-
         }).then(result => {
             console.log(result.insertedId)
             var id = result.insertedId
@@ -901,7 +871,6 @@ router.get("/GetClient/:id", async (req, res) => {
     const client = await geometries.findOne({ _id: new ObjectId(req.params.id) });
     res.status(200).send(client);
 })
-
 //////////////////////////////////////////////////////////////
 router.get('/getAllUsers', async (req, res) => {
     list = []
@@ -1060,6 +1029,7 @@ router.post("/extract", async (req, res) => {
         var imgurl = "http://localhost:3000/api1/image?id="
         var Data = {
             "Identifiant system": element._id,
+            "code":(element.geometry.properties.Code_Client != null)? element.geometry.properties.Code_Client : "",
             "X": element.geometry.geometry.coordinates[1],
             "Y": element.geometry.geometry.coordinates[0],
             "Date_Creation": element.geometry.properties.created_at,
