@@ -72,6 +72,7 @@ router.get("/files", async function (req, res) {
         });
         var arr = await collection.find({ 'geometry.geometry.type': 'Point' }).toArray()
         InjectSecteurData(arr)
+        console.log("//************start updating nfc object************//")
         await collection.updateMany({"geometry.geometry.type":"Point", "geometry.properties.NFC": { $exists: true}},{$set: {"geometry.properties.nfc":{UUID:null,Numero_Serie:null,Technologies:null,Type_card:null,NFCPhoto:null}}}).then().catch(error => console.log(error))
         await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.NFC": { $exists: true}},{ $rename: {"geometry.properties.NFC": "geometry.properties.nfc.UUID"}}).then().catch(error => console.log(error))
         console.log("//************start updating Status************//")
