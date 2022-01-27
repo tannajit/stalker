@@ -465,13 +465,12 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
     }
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodoUpdate(this.clientInfo)
-      //this.UpdateIndexDB()
-    } else {
-      /*this.clientService.updateClient(this.clientInfo).subscribe(res => {
-        this.UpdateIndexDB()
-      })*/
-
       this.UpdateIndexDB()
+    } else {
+      this.clientService.updateClient(this.clientInfo).subscribe(res => {
+        this.UpdateIndexDB()
+      })
+      //this.UpdateIndexDB()
     }
   }
 
