@@ -249,9 +249,9 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
         });
     });
     All_PDV = ListInfo.map(async (elem) => {
-        if (elem.geometry.properties.NFC != null && elem.geometry.properties.NFC != undefined) {
-            elem.geometry.properties.status = "green"
-        }
+        // if (elem.geometry.properties.NFC != null && elem.geometry.properties.NFC != undefined) {
+        //     elem.geometry.properties.status = "green"
+        // }
         if (elem.geometry.properties?.nfc != undefined) {
             var element = elem.geometry.properties;
             if (element.nfc.NFCPhoto != null) {
@@ -286,40 +286,40 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
 })
 
 /* GET clients Based on User */
-router.get('/clients', verifyToken, async (req, res) => {
-    var userId = req.userId;
-    let collectionSec = await db.collection("secteurs") //collection where ids are stored 
-    let collectiongeom = await db.collection("geometries")
-    var values = await collectionSec.aggregate([
-        { $match: { users: ObjectId(userId) } },
-        { $project: { points: 1, _id: 0 } }
-    ]).toArray();
-    var arrv = [];
-    a = []
-    values.forEach(elm => {
-        elm.points.forEach(e => arrv.push(ObjectId(e.point)), err => console.log(err))
-    }, err => console.log(err))
-    var sec = await collectiongeom.find({ 'geometry.geometry.type': 'Point', '_id': { $in: arrv } }).toArray()
-    curs = sec.map(async (elem) => {
-        if (elem.geometry.properties.NFC) {
-            ///data injected by script 
-            elem.geometry.properties.status = "green"
-        }
-        if (elem.geometry.properties?.nfc != undefined) {
-            var element = elem.geometry.properties;
-            await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
-                elem.geometry.properties.NFCP = re
-            }).catch(err => console.log(err))
-            await test1(db, ObjectId(element.PVPhoto)).then(re => {
-                elem.geometry.properties.PVP = re
-            }).catch(err => console.log(err))
-        }
-        a.push(elem)
-    })
-    Promise.all(curs).then(ee => {
-        res.json(a)
-    }).catch(err => console.log(err));
-})
+// router.get('/clients', verifyToken, async (req, res) => {
+//     var userId = req.userId;
+//     let collectionSec = await db.collection("secteurs") //collection where ids are stored 
+//     let collectiongeom = await db.collection("geometries")
+//     var values = await collectionSec.aggregate([
+//         { $match: { users: ObjectId(userId) } },
+//         { $project: { points: 1, _id: 0 } }
+//     ]).toArray();
+//     var arrv = [];
+//     a = []
+//     values.forEach(elm => {
+//         elm.points.forEach(e => arrv.push(ObjectId(e.point)), err => console.log(err))
+//     }, err => console.log(err))
+//     var sec = await collectiongeom.find({ 'geometry.geometry.type': 'Point', '_id': { $in: arrv } }).toArray()
+//     curs = sec.map(async (elem) => {
+//         if (elem.geometry.properties.NFC) {
+//             ///data injected by script 
+//             elem.geometry.properties.status = "green"
+//         }
+//         if (elem.geometry.properties?.nfc != undefined) {
+//             var element = elem.geometry.properties;
+//             await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
+//                 elem.geometry.properties.NFCP = re
+//             }).catch(err => console.log(err))
+//             await test1(db, ObjectId(element.PVPhoto)).then(re => {
+//                 elem.geometry.properties.PVP = re
+//             }).catch(err => console.log(err))
+//         }
+//         a.push(elem)
+//     })
+//     Promise.all(curs).then(ee => {
+//         res.json(a)
+//     }).catch(err => console.log(err));
+// })
 
 // get client by seller   (Fadma's code)
 router.get('/getClientBySeller/:id', async (req, res) => {

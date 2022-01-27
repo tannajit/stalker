@@ -204,14 +204,9 @@ export class MapComponent implements AfterViewInit {
           var marker;
           const elm = JSON.parse(element.Valeur);
           const Point = { _id: element._id, geometry: elm };
-          var status = "red"
-          //console.log(element._id)
-          if (Point.geometry.properties?.status != undefined) {
-            status = Point.geometry.properties.status
-          }
-          //console.log("status: "+status)
           const geojsonPoint: geojson.Point = Point.geometry;
-          var iconClient = L.icon({ iconUrl: 'assets/' + status + '.png', iconSize: [8, 8] });
+          console.log(Point.geometry.properties?.status)
+          var iconClient = L.icon({ iconUrl: 'assets/' + Point.geometry.properties?.status + '.png', iconSize: [8, 8] });
           marker = L.geoJSON(geojsonPoint, {
             pointToLayer: (point, latlon) => {
               return L.marker(latlon, { icon: iconClient });
@@ -233,12 +228,12 @@ export class MapComponent implements AfterViewInit {
           //  marker.bindPopup('<h1> <b>Client Information</b></h1><p><b>Name:</b> ' + String(Point.geometry.properties.NomPrenom) + '</p><p><b>Sector Name: </b>' + String(Point.geometry.properties.Nom_Secteur) + '</p>');
         //}
 
-        if(status=='deleted' && (this.user.role =="Admin" || this.user.role =="Back Office") ){
+        if(Point.geometry.properties?.status=='deleted' && (this.user.role =="Admin" || this.user.role =="Back Office") ){
           
           console.log(this.user.role)
           //this.markersCluster.addLayer(marker);
           this.DeletedMarkerCluster.addLayer(marker)
-        }else if(status!='deleted'){
+        }else if(Point.geometry.properties?.status!='deleted'){
           // console.log("status",status)
           this.markersCluster.addLayer(marker);
         }
@@ -309,9 +304,6 @@ export class MapComponent implements AfterViewInit {
             this.markersCluster.clearLayers();
             console.log("*** done clearing****")
             res.forEach(element => {
-              if(!element.geometry.properties?.status!=undefined){
-                element.geometry.properties["status"]="red"
-              }
               const geo = { _id: element._id, Valeur: JSON.stringify(element.geometry) };
               allclient.push(geo);
               transaction = db.transaction(['data'], 'readwrite');
