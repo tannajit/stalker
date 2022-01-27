@@ -245,8 +245,6 @@ router.get('/getSectorByUser', verifyToken, async (req, res) => {
         ListInfo.push(element.info)
     });
     res.status(200).json(ListInfo)
-
-
 })
 
 //*** Get PDV by user (I changed the structure of the Query ) */
@@ -279,25 +277,23 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
     });
 
     All_PDV = ListInfo.map(async (elem) => {
-        if (elem.geometry.properties.nfc.UUID != null && elem.geometry.properties.nfc.UUID != undefined) {
-            elem.geometry.properties.status = "green"
-        }
 
         if (elem.geometry.properties?.nfc != undefined) {
             var element = elem.geometry.properties;
             if(element.nfc.NFCPhoto!=null){
+                console.log(" NOT null",element.nfc.NFCPhoto)
             await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
                 elem.geometry.properties.NFCP = re
             }).catch(err => console.log(err))
         }else{
-            elem.geometry.properties.NFCP=null
+            elem.geometry.properties.NFCP=""
         }
-        if(test1(db, ObjectId(element.PVPhoto))) {
+        if(element?.PVPhoto!=null) {
             await test1(db, ObjectId(element.PVPhoto)).then(re => {
                 elem.geometry.properties.PVP = re
             }).catch(err => console.log(err))
         }else{
-            elem.geometry.properties.PVP=null
+            elem.geometry.properties.PVP="null"
         }
         }
         a.push(elem)
