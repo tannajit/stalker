@@ -93,7 +93,7 @@
     <div class="clients-list">
         <!-- *ngFor="let client of clients" -->
 
-        <div *ngFor="let client of dataSource | filter: IdClient | filter: PhoneNumber | filter:BackOfficeValid | filter: sector| filter: deleteStatus | filter: PDVType| filter: detailType| paginate: { itemsPerPage: 50, currentPage: currentPage } ; let i=index"
+        <div *ngFor="let client of dataSource | filter: IdClient | filter: PhoneNumber | filter:BackOfficeValid | filter: sector| filter: deleteStatus | filter: PDVType| filter: detailType"
             class="card-container">
             <mat-card (click)="openDialog(client)">
                 <img mat-card-image src="{{client.geometry.properties.PVP}}" alt=""

@@ -466,16 +466,21 @@ async function updateClient(client) {
     let geometries = db.collection("geometries") /// geometries Collections
     let secteurs = db.collection("secteurs")
     var id_NFC, id_pv;
+    console.log("********************")
     if (client.geometry.properties.NFCP == null) {
+        console.log(client.geometry.properties.nfc.NFCPhoto)
         await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
         console.log("NFC photo id: " + id_NFC)
     } else {
+         console.log(client.geometry.properties.nfc.NFCPhoto)
         id_NFC = ObjectId(client.geometry.properties.nfc.NFCPhoto);
     }
     if (client.geometry.properties.PVP == null) {
+        console.log(client.geometry.properties.PVPhoto)
         await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
         console.log("PV photo id: " + id_pv);
     } else {
+        console.log(client.geometry.properties.PVPhoto);
         id_pv = ObjectId(client.geometry.properties.PVPhoto);
     }
     console.log(client)
