@@ -24,7 +24,6 @@
               </mat-select>
             </mat-form-field>
             
-
             <mat-form-field>
               <mat-select placeholder="Role" panelClass="selectPanel2"   (selectionChange)="onChangeRole($event)" [(ngModel)]="selectedRole">
                   <mat-option value="all">All</mat-option>
@@ -32,7 +31,6 @@
                     <mat-option value="{{rol.name}}">{{rol.name}}</mat-option>
                   </ng-container>
                    
-              
               </mat-select>
             </mat-form-field>
 
@@ -62,7 +60,7 @@
           </ng-container> -->
           
           <ng-container matColumnDef="Name">
-            <th class="header name-column" mat-header-cell *matHeaderCellDef>
+            <th class="header name-column" mat-header-cell *matHeaderCellDef >
               <span>Name</span>
               <!-- <button mat-button class="float-right btn-icon">
                 <mat-icon class="sort-icon" ></mat-icon>

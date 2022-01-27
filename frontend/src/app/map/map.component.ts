@@ -109,14 +109,18 @@ export class MapComponent implements AfterViewInit {
     this.destroyed.complete();
   }
 
-  WatchPosition() {
-    navigator.geolocation.watchPosition((pos) => {
-      console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
-
-      let raduis = 5000000;
-      if (this.myCercle !== undefined) {
-        this.map.removeLayer(this.myCercle)
-      }
+  WatchPosition(){
+    navigator.geolocation.watchPosition((pos)=>{
+   // console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
+    
+    let raduis =5000000;
+    if (this.myCercle !== undefined) {
+      this.map.removeLayer(this.myCercle)
+    }
+    
+    this.myCercle=L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
+    this._serviceClient.getPosition({ "Map": new L.LatLng(pos.coords.latitude, pos.coords.longitude), "Raduis": raduis });
+  
 
       this.myCercle = L.circle([pos.coords.latitude, pos.coords.longitude], { color: "blue", fillColor: "#cce6ff", radius: raduis }).addTo(this.map);
       this._serviceClient.getPosition({ "Map": new L.LatLng(pos.coords.latitude, pos.coords.longitude), "Raduis": raduis });
@@ -214,14 +218,9 @@ export class MapComponent implements AfterViewInit {
          }
           const elm = JSON.parse(element.Valeur);
           const Point = { _id: element._id, geometry: elm };
-          //var status = "red"
-          //console.log(element._id)
-          /*if (Point.geometry.properties?.status != undefined) {
-            status = Point.geometry.properties.status
-          }*/
-          //console.log("status: "+status)
           const geojsonPoint: geojson.Point = Point.geometry;
-          var iconClient = L.icon({ iconUrl: 'assets/' + Point.geometry.properties.status + '.png', iconSize: [8, 8] });
+          console.log(Point.geometry.properties?.status)
+          var iconClient = L.icon({ iconUrl: 'assets/' + Point.geometry.properties?.status + '.png', iconSize: [8, 8] });
           marker = L.geoJSON(geojsonPoint, {
             pointToLayer: (point, latlon) => {
               return L.marker(latlon, { icon: iconClient });
@@ -239,18 +238,17 @@ export class MapComponent implements AfterViewInit {
           // else {
           //console.log("############# ici"+Point.geometry.properties.Nom_Client)
           //  marker.bindPopup('<h1> <b>Client Information</b></h1><p><b>Name:</b> ' + String(Point.geometry.properties.NomPrenom) + '</p><p><b>Sector Name: </b>' + String(Point.geometry.properties.Nom_Secteur) + '</p>');
-          //}
+        //}
 
-          if (Point.geometry.properties.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
-
-            console.log(this.user.role)
-            //this.markersCluster.addLayer(marker);
-            this.DeletedMarkerCluster.addLayer(marker)
-          } else if (Point.geometry.properties.status != 'deleted') {
-            // console.log("status",status)
-            this.markersCluster.addLayer(marker);
-          }
-
+        if(Point.geometry.properties?.status=='deleted' && (this.user.role =="Admin" || this.user.role =="Back Office") ){
+          
+          console.log(this.user.role)
+          //this.markersCluster.addLayer(marker);
+          this.DeletedMarkerCluster.addLayer(marker)
+        }else if(Point.geometry.properties?.status!='deleted'){
+          // console.log("status",status)
+          this.markersCluster.addLayer(marker);
+        }
         });
         
       };
@@ -484,6 +482,7 @@ export class MapComponent implements AfterViewInit {
       this.map.addLayer(this.cluster1)
 
     } else if (this.option_done == "Done") {
+      
       console.log("validated should be removed")
       this.markersCluster.eachLayer((layer: any) => {
         if (layer.feature.properties.status == "green") {

@@ -73,7 +73,7 @@ export class InjectionComponent implements OnInit {
     this.clientservice.getFiles().subscribe(res=>{
       console.log("test")
     });
-    var message = "We have runned the scripts!"
+    var message = "the script is running ! this operation will take some time.."
     this.openAlertDialog(message)
   }
 

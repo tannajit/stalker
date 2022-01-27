@@ -4,7 +4,7 @@
             <div class="field">
                 <mat-form-field>
                     <mat-label>Id Client</mat-label> 
-                    <input matInput placeholder="Typing..." [(ngModel)]="IdClient"/>
+                    <input matInput placeholder="Typing..." [(ngModel)]="IdClient" />
                 </mat-form-field>
             </div>
 
@@ -17,16 +17,16 @@
             
             <div class="field">
                 <mat-form-field>
-                    <mat-select placeholder="PDV Type" panelClass="selectPanel2" [(ngModel)]="PDVType" [(value)]="typePDVselected">
+                    <mat-select placeholder="PDV Type" panelClass="selectPanel2" [(ngModel)]="PDVType">
                         <mat-option value="">All</mat-option>
                         <mat-option value="Detail">Detail</mat-option>
                         <mat-option value="Gros">Gros</mat-option>
-                        <mat-option value="Demi Gros">Demi Gros</mat-option>
+                        <mat-option value="Demi">Demi Gros</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
 
-            <div class="field" *ngIf="typePDVselected == 'Detail'">
+            <div class="field" *ngIf="PDVType == 'Detail'">
                 <mat-form-field>
                     <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2" [(ngModel)]="detailType">
                         <mat-option value="">All</mat-option>
@@ -54,11 +54,11 @@
 
             <div class="field">
                 <mat-form-field>
-                    <mat-select placeholder="Back Office Validation" panelClass="selectPanel2" [(ngModel)]="validate" >
+                    <mat-select placeholder="Back Office Validation" panelClass="selectPanel2" [(ngModel)]="BackOfficeValid" >
                         <mat-option value="">All</mat-option>
                         <mat-option value="green">Validated</mat-option>
-                        <mat-option value="black">Refused</mat-option>
-                        <mat-option value="purple">Waiting</mat-option>
+                        <mat-option value="refused">Refused</mat-option>
+                        <mat-option value="red_white">Waiting</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -66,10 +66,13 @@
             <div class="field">
                 <mat-form-field>
                     <mat-select placeholder="Sector" panelClass="selectPanel2" [(ngModel)]="sector">
+                        <mat-option>
+                            <ngx-mat-select-search placeholderLabel="Search" (keyup)="filterListCareUnit($event.target.value)" ></ngx-mat-select-search>
+                        </mat-option>
                         <mat-option value="">All</mat-option>
-                       <div *ngFor="let name of sectorNames">
-                        <mat-option value="{{name}}">{{name}}</mat-option>
-                       </div>
+                        <ng-container *ngFor="let name of sectorNames">
+                            <mat-option value="{{name.id}}">{{name.details}}</mat-option>
+                        </ng-container>
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -90,7 +93,7 @@
     <div class="clients-list">
         <!-- *ngFor="let client of clients" -->
 
-        <div *ngFor="let client of dataSource | filter: IdClient | filter: PhoneNumber | filter: PDVType | filter: detailType | filter: sector | filter: validate | filter: nfc | filter: deleteStatus"
+        <div *ngFor="let client of dataSource | filter: IdClient | filter: PhoneNumber | filter:BackOfficeValid | filter: sector| filter: deleteStatus | filter: PDVType| filter: detailType| paginate: { itemsPerPage: 50, currentPage: currentPage } ; let i=index"
             class="card-container">
             <mat-card (click)="openDialog(client)">
                 <img mat-card-image src="{{client.geometry.properties.PVP}}" alt=""
