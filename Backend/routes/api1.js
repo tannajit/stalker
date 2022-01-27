@@ -70,7 +70,7 @@ router.get("/files", async function (req, res) {
             });
         });
         res.status(200).send(fileInfos);
-        fileInfos.forEach(element => { 
+        fileInfos.forEach(element => {
             PutDataGeometries(collection, element.url)
         });
         var arr = await collection.find({ 'geometry.geometry.type': 'Point' }).toArray()
@@ -254,33 +254,34 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
         }
         if (elem.geometry.properties?.nfc != undefined) {
             var element = elem.geometry.properties;
-            if(element.nfc.NFCPhoto!=null){
-                try{
-                console.log(element.nfc)
-            await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
-                elem.geometry.properties.NFCP = re
-            }).catch(err => console.log(err))
-                }catch(err){
-                   // console.log("***************")
+            if (element.nfc.NFCPhoto != null) {
+                try {
+                    console.log(element.nfc)
+                    await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
+                        elem.geometry.properties.NFCP = re
+                    }).catch(err => console.log(err))
+                } catch (err) {
+                    // console.log("***************")
                 }
-        }else{
-            elem.geometry.properties.NFCP=null
-        }
-        if(element?.PVPhoto!=null) {
-            await test1(db, ObjectId(element.PVPhoto)).then(re => {
-                elem.geometry.properties.PVP = re
-            }).catch(err => console.log(err))
-        }else{
-            elem.geometry.properties.PVP=null
-        }
+            } else {
+                elem.geometry.properties.NFCP = null
+            }
+            if (element?.PVPhoto != null) {
+                console.log(element?.PVPhoto)
+                await test1(db, ObjectId(element.PVPhoto)).then(re => {
+                    elem.geometry.properties.PVP = re
+                }).catch(err => console.log(err))
+            } else {
+                elem.geometry.properties.PVP = null
+            }
         }
         a.push(elem)
     })
     Promise.all(All_PDV).then(ee => {
         res.json(a)
-    }).catch(err => 
+    }).catch(err =>
         console.log(err)
-        );
+    );
 
 })
 
@@ -379,19 +380,22 @@ async function InsertClient(client, res) {
             if (v.nbr === 3) codeFGD = v.value
             if (v.nbr === 4) codeQR = v.value
         })
-        var id_pv, id_NFC;
+        var id_pv = null, id_NFC = null;
         //console.log("PhotoofClient"+client.PVPhoto)
-        await test(db, client.NomPrenom, client.PVPhoto).then(s => id_pv = s._id).catch(err => console.log(err))
-
-        await test(db, client.NomPrenom, client.nfc.NFCPhoto).then(s => id_NFC = s._id).catch(err => console.log(err)) //PV photo
-
+        if (client.PVPhoto != null) {
+            await test(db, client.NomPrenom, client.PVPhoto).then(s => id_pv = s._id).catch(err => console.log(err))
+        }
+        if (client.nfc.NFCPhoto != null) {
+            await test(db, client.NomPrenom, client.nfc.NFCPhoto).then(s => id_NFC = s._id).catch(err => console.log(err)) //PV photo
+        }
+        client.nfc.NFCPhoto = id_NFC
         //console.log(id_NFC)
         //console.log(id_pv);
         //console.log("-------------- " + client.lat)
         //console.log(client)
         //var id = new ObjectId();
         //console.log("=========== id" + id)
-        client.nfc.NFCPhoto = id_NFC
+        
         var id = new ObjectId();
         //console.log("=========== id" + id)
         var temp_datetime_obj = new Date();
@@ -632,7 +636,7 @@ async function getUser(user) {
 
     var status = { value: 401, data: null }
 
-    var User = await collection.find({ email: user.email}).toArray()
+    var User = await collection.find({ email: user.email }).toArray()
     if (User.length > 0) {
         var FindUser;
         User.forEach(async (u) => {
@@ -649,15 +653,15 @@ async function getUser(user) {
         console.log(FindUser)
         if (FindUser != null) {
             // ********* get User permissions *********
-            var permissions=[];
+            var permissions = [];
             let roleCollection = db.collection("settings")
-            const doc = await roleCollection.findOne({ proprety: 'role'});
+            const doc = await roleCollection.findOne({ proprety: 'role' });
             doc.details.roles.forEach(element => {
-                if(element.name == user.role){
-                    permissions=element.permissions
+                if (element.name == user.role) {
+                    permissions = element.permissions
                 }
             });
-            FindUser.permissions=permissions
+            FindUser.permissions = permissions
 
             var valid = await ValidPassword(user.password, FindUser.password)
             if (valid) {
@@ -709,12 +713,23 @@ async function getClientBySeller(id) {
     ).sort({ 'updated_at': -1 }).limit(1).toArray()
     var status = { clientOf: "seller", data: null }
     var cli = [];
+    
     if (client.length != 0) {
-        status.data = { 'client': client }
         cli = client[0]
+    cli.PVP=null;
+    cli.NFCP=null;
+        status.data = { 'client': client }
+        if(cli.PVPhoto!=null){
         await test1(db, ObjectId(cli.PVPhoto)).then(re => {
             cli.PVP = re
         })
+    }
+    
+    if(cli.nfc.NFCPhoto!=null){
+        await test1(db, ObjectId(cli.nfc.NFCPhoto)).then(re => {
+            cli.NFCP = re
+        })
+    }
         status.data = { 'client': cli }
     }
     return cli;
@@ -731,14 +746,24 @@ async function getClientByAuditor(id) {
         }
     ).sort({ 'updated_at': -1 }).limit(1).toArray()
     var status = { clientOf: "auditor", data: null }
+    
     if (client.length != 0) {
         cli = client[0]
-        await test1(db, ObjectId(cli.nfc.NFCPhoto)).then(re => {
-            cli.NFCP = re
-        })
+    console.log(cli)
+    cli["PVP"]=null;
+    cli["NFCP"]=null;
+        status.data = { 'client': client }
+        if(cli.PVPhoto!=null){
         await test1(db, ObjectId(cli.PVPhoto)).then(re => {
             cli.PVP = re
         })
+    }
+    
+    if(cli.nfc.NFCPhoto!=null){
+        await test1(db, ObjectId(cli.nfc.NFCPhoto)).then(re => {
+            cli.NFCP = re
+        })
+    }
         status.data = { 'client': cli }
     } else {
         al = [];
@@ -1196,11 +1221,11 @@ router.get('/getAllDeleteRequests', async (req, res) => {
     // res.json(values)
 })
 
-router.post('/updateRole', async(req,res)=>{
+router.post('/updateRole', async (req, res) => {
 
-    let role= req.body.request
+    let role = req.body.request
     console.log(role)
-    
+
     let collection = db.collection("settings")
     //------ this to update each element in array without duplicate---
     // var updated= await collection.updateOne(
@@ -1209,22 +1234,22 @@ router.post('/updateRole', async(req,res)=>{
     //         $each:
     //         role.permissions
     //     }}} )
-    var updated= await collection.updateOne(
-        {proprety: "role","details.roles.name": role.role},
-        {$set: {"details.roles.$.permissions" :role.permissions}} )
+    var updated = await collection.updateOne(
+        { proprety: "role", "details.roles.name": role.role },
+        { $set: { "details.roles.$.permissions": role.permissions } })
     console.log(updated)
     res.status(200).json(updated)
 })
 
-router.post('/addRole', async(req,res)=>{
-    let role= req.body.request
+router.post('/addRole', async (req, res) => {
+    let role = req.body.request
     console.log(role)
-    
+
     let collection = db.collection("settings")
 
-    var updated= await collection.updateOne(
-        {proprety: "role"},
-        {$addToSet : {"details.roles" : {'name' : role.role , 'permissions' : role.permissions }} } )
+    var updated = await collection.updateOne(
+        { proprety: "role" },
+        { $addToSet: { "details.roles": { 'name': role.role, 'permissions': role.permissions } } })
     console.log(updated)
     res.status(200).json(updated)
 })
