@@ -76,6 +76,7 @@ export class MapComponent implements AfterViewInit {
     this.getDataSector();
     this.map.addLayer(this.markerClusterSector)
     this.map.addLayer(this.markersCluster);
+    this.map.addLayer(this.DeletedMarkerCluster);
     //this.map.addLayer(this.markersCluster);
     // this.getLocation()
     //this.getLocation1()
