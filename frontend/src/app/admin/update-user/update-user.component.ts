@@ -134,13 +134,6 @@ export class UpdateUserComponent implements OnInit {
 
   SendUser() {
 
-    // if (this.role2 == 'Seller' || this.role2 == 'Auditor' || this.role2 == 'Supervisor') {
-    //   this.SectorAffacted = this.SelectedSector
-    // } else {
-    //   this.SectorAffacted = this.AllSectors
-    // }
-    // console.log(this.SectorAffacted)
-
     this.UserInfo2 = {
       userinfo: {
         UserID: this.userInfo.UserID,
@@ -156,7 +149,7 @@ export class UpdateUserComponent implements OnInit {
     }
     console.log("result", this.UserInfo2)
     this._setting.CreateUser(this.UserInfo2).subscribe(res => {
-      this.openAlertDialog()
+      this.openAlertDialog2()
     })
 
   }
@@ -165,6 +158,7 @@ export class UpdateUserComponent implements OnInit {
 
   //// get Sector from IndexDB ///
   // public getDataSector() {
+  //   console.log(" **************** GET sectors ***************")
   //   let db; let transaction;
   //   const request = window.indexedDB.open('off', this.version);
   //   request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
@@ -173,7 +167,7 @@ export class UpdateUserComponent implements OnInit {
   //   request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
   //     db = event.target.result;
   //     console.log('success');
-  //     console.log(db);
+  //     //console.log(db);
   //     transaction = db.transaction(['sector'], 'readwrite');
   //     const objectStore = transaction.objectStore('sector');
   //     const objectStoreRequest = objectStore.getAll();
@@ -181,11 +175,11 @@ export class UpdateUserComponent implements OnInit {
   //       const all = event.target.result;
   //       all.forEach(elm => {
   //         var  element = JSON.parse(elm.Valeur);
-  //         console.log(element)
+  //         //console.log(element)
   //         var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
-  //         console.log(idSector)
+  //         //console.log(idSector)
   //         var machine = (idSector == 0) ? "Onion" : "CMG"
-  //         console.log(machine)
+  //         //console.log(machine)
   //         var result = element.properties.idSecteur + " - " + machine + " - " + element.properties.name
   //         console.log(result)
   //         var obj = {
@@ -193,14 +187,13 @@ export class UpdateUserComponent implements OnInit {
   //           detail: result
   //         }
   //         this.AllSectors.push(element.properties.idSecteur)
+          
   //         this.Sectors.push(obj)
   //       });
   //     };
   //   };
   // }
-  ////
   public getDataSector() {
-    console.log(" **************** GET sectors ***************")
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
@@ -209,7 +202,7 @@ export class UpdateUserComponent implements OnInit {
     request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
       db = event.target.result;
       console.log('success');
-      //console.log(db);
+      console.log(db);
       transaction = db.transaction(['sector'], 'readwrite');
       const objectStore = transaction.objectStore('sector');
       const objectStoreRequest = objectStore.getAll();
@@ -221,7 +214,7 @@ export class UpdateUserComponent implements OnInit {
           /*var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
           console.log(idSector)
           var machine = (idSector == 0) ? "Onion" : "CMG"
-          //console.log(machine)
+          console.log(machine)
           var result = element.properties.idSecteur + " - " + machine + " - " + element.properties.name
           console.log(result)*/
           var obj = {
@@ -234,8 +227,7 @@ export class UpdateUserComponent implements OnInit {
       };
     };
   }
-
-  ///
+  ////
 
   
 
@@ -312,13 +304,19 @@ export class UpdateUserComponent implements OnInit {
  
 
   onChange() {
+    console.log("this.SelectedSector",this.SelectedSector)
+    console.log("this.SelectedSector",this.AllSectors)
 
-    if (this.role != this.userInfo.role) {
-      this.SetUserID()
+    if(!this.RoleActive()){
+
+      this.SelectedSector=this.AllSectors
     }
-    if (this.role === this.userInfo.role) {
-      this.userInfo.UserID = this.UserID
-    }
+    // if (this.role != this.userInfo.role) {
+    //   this.SetUserID()
+    // }
+    // if (this.role === this.userInfo.role) {
+    //   this.userInfo.UserID = this.UserID
+    // }
 
   }
   //// Set User ID 
@@ -372,6 +370,21 @@ export class UpdateUserComponent implements OnInit {
 
 
   openAlertDialog() {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        message: "User has been added sucssefuly. Please Copy this credentials before Exit \n " + "[Email:" + this.userInfo.email + "-" + "Password:" + this.userInfo.password + "]",
+        buttonText: {
+          ok: 'Done',
+        }
+      }
+
+    }).afterClosed().subscribe(result => {
+      this._router.navigate(['/users'])
+    });
+    ;
+  }
+
+  openAlertDialog2() {
     const dialogRef = this.dialog.open(AlertDialogComponent, {
       data: {
         message: "User has been added successfully",
@@ -430,14 +443,19 @@ export class UpdateUserComponent implements OnInit {
     this.selected = this.role2
     console.log("ùùùùùùùùùùùùùùùùùùùùùùù",this.SelectedSector2)
     const obj = { role: this.role2, value: null }
-    if (this.SelectedSector2.length != 0) {
-      obj.value = this.SelectedSector2
+    if (this.SelectedSector.length != 0) {
+      obj.value = this.SelectedSector
     }
-    if (this.role === "Admin" || this.role === "Controler" || this.role === "Back Office" ) {
+    if (this.SelectedSector.length ==0 ) {
 
       obj.value = this.AllSectors
 
     }
+    // if (this.role === "Admin" || this.role === "Controler" || this.role === "Back Office" ) {
+
+    //   obj.value = this.AllSectors
+
+    // }
     // if (this.role2 != "Seller" || this.role2 != "Auditor" || this.role2 != "Supervisor" ) {
 
     //   obj.value = this.AllSectors
