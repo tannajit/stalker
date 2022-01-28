@@ -84,10 +84,11 @@
 
     </div>
 
-    <div class="container" id="nfc" *ngIf="nfcShown">
+    <div class="container" id="nfc" *ngIf="!nfcShown">
 
         <div class="inputs-container">
-            <div class="nfc">
+            <ng-container *ngFor="let perm of loggedUser.permissions">
+            <div class="nfc" *ngIf="perm == 'Add NFC'">
                 <div class="scan-field">
                     <label class="input-label">NFC card puce : </label>
                     <button mat-button class="btn-green" (click)="Read()">Read</button>
@@ -158,16 +159,17 @@
                     </div>
                 </div>
             </div>
+            </ng-container>
 
             <div class="pdv">
 
                 <div class="field">
                     <mat-form-field>
                         <mat-select placeholder="PDV Type*" panelClass="selectPanel2"
-                            [(ngModel)]="clientInfo.geometry.properties.TypeDPV">
-                            <mat-option value="Detail">Detail</mat-option>
-                            <mat-option value="Gros">Gros</mat-option>
-                            <mat-option value="Demi Gros">Demi Gros</mat-option>
+                            [(ngModel)]="clientInfo.geometry.properties.TypeDPV" >
+                            <div *ngFor="let type of TypesPDVs" >
+                                <mat-option  value="{{type}}">{{type}}</mat-option>
+                            </div>
                         </mat-select>
                     </mat-form-field>
                 </div>

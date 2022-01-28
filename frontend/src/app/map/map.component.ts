@@ -215,7 +215,6 @@ export class MapComponent implements AfterViewInit {
           const elm = JSON.parse(element.Valeur);
           const Point = { _id: element._id, geometry: elm };
           const geojsonPoint: geojson.Point = Point.geometry;
-          console.log(Point.geometry.properties?.status)
           var iconClient = L.icon({ iconUrl: 'assets/' + Point.geometry.properties?.status + '.png', iconSize: [8, 8] });
           marker = L.geoJSON(geojsonPoint, {
             pointToLayer: (point, latlon) => {
@@ -272,7 +271,7 @@ export class MapComponent implements AfterViewInit {
         this.markerClusterSector.clearLayers();
         all.forEach(element => {
           const elm = JSON.parse(element.Valeur);
-          const Point = { _id: element._id, geometry: elm };
+          const Point = { _id: element._id, geometry: elm.info.geometry};
           const marker = L.geoJSON(Point.geometry, { style: { color: '#CD9575', fillOpacity: 0.1 } });
           marker.bindPopup(String(Point.geometry.properties.codeRegion));
           // marker.addTo(this.map);
@@ -312,9 +311,6 @@ export class MapComponent implements AfterViewInit {
             console.log("Data Cleared")
             console.log("*** done clearing****")
             res.forEach(element => {
-              if (element.geometry.properties?.status == null) {
-                element.geometry.properties["status"] = "red"
-              }
               const geo = { _id: element._id, Valeur: JSON.stringify(element.geometry) };
               allclient.push(geo);
               transaction = db.transaction(['data'], 'readwrite');
@@ -351,8 +347,11 @@ export class MapComponent implements AfterViewInit {
           console.log("Data Cleared")
           res.forEach(element => {
             console.log('***sector***');
-            // console.log(element);
-            const geo = { _id: element._id, Valeur: JSON.stringify(element.geometry) };
+            console.log(element);
+              delete element.points 
+              delete element.users
+            ///
+            const geo = { _id: element.nameSecteur, Valeur: JSON.stringify(element) };
             allclient.push(geo);
             transaction = db.transaction(['sector'], 'readwrite');
             const objectStore = transaction.objectStore('sector');

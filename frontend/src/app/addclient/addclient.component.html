@@ -149,12 +149,17 @@
 
             <div class="pdv">
                 <div class="field">
-                    <mat-form-field>
+                    <mat-form-field    >
                         <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="TypeDPV"
                             [(value)]="selected">
-                            <mat-option value="Detail">Detail</mat-option>
+
+                            <div *ngFor="let type of TypesPDVs" >
+                        
+                                <mat-option  value="{{type}}">{{type}}</mat-option>
+                            </div>
+                            <!-- <mat-option value="Detail">Detail</mat-option>
                             <mat-option value="Gros">Gros</mat-option>
-                            <mat-option value="Demi Gros">Demi Gros</mat-option>
+                            <mat-option value="Demi Gros">Demi Gros</mat-option> -->
                         </mat-select>
                     </mat-form-field>
                 </div>

@@ -212,12 +212,10 @@ router.get('/getSectorByUser', verifyToken, async (req, res) => {
         },
         { "$unwind": "$info" },
         { "$match": { "info.geometry.geometry.type": "MultiPolygon" } },
-        { $project: { info: 1, _id: 0 } }
-
     ]).toArray();
     ListInfo = []
     values.forEach(element => {
-        ListInfo.push(element.info)
+        ListInfo.push(element)
     });
     res.status(200).json(ListInfo)
 })

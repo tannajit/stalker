@@ -21,7 +21,7 @@ const incr = 1;
   templateUrl: './update-client.component.html',
   styleUrls: ['./update-client.component.css']
 })
-export class UpdateClientComponent implements AfterViewInit,OnInit {
+export class UpdateClientComponent implements AfterViewInit, OnInit {
 
   ////******************** VARIABLE'S DECLARATION ****************/////
   progress = 0;
@@ -69,7 +69,7 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
   public webcamNFCImage = null;
   public webcamPDVImage = null;
   private trigger: Subject<void> = new Subject<void>();
-
+  loggedUser;
   clientInfo;
   codeNFC: null;
   TypeDPV: null;
@@ -97,14 +97,15 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
   markersCluster = new L.MarkerClusterGroup();
   inter;
   acc = 1222000;
+  TypesPDVs=[]
   verification_code = null; status; codeSMS;
   //////////////////////////////////////////////////////////////
 
   ////********* CONSTUCTOR **********/////////
   constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,
-    private clientService: ClientsService,private adminService: AdminService,
+    private clientService: ClientsService, private adminService: AdminService,
     private _router: Router) {
-
+    this.loggedUser = JSON.parse(localStorage.getItem("user"));
     this.clientInfo = clientService.getClientInfo();
     console.log("***** this CLIENT ****")
     console.log(this.clientInfo)
@@ -112,55 +113,80 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
   //////////////////////////////////////////////////
   private destroyed: Subject<void> = new Subject<void>();
   ngOnInit(): void {
+   ///// Sector change 
 
+   var db, transaction;
+   var request = window.indexedDB.open("off", this.version)
+   request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+     console.log("Why didn't you allow my web app to use IndexedDB?!");
+   };
+   request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+     db = event.target.result;
+     transaction = db.transaction(['sector'], 'readwrite');
+     var objectStore = transaction.objectStore("sector");
+       var objectStoreRequest = objectStore.get(Number(this.clientInfo.geometry.properties.Code_Secteur_OS));
+       objectStoreRequest.onsuccess = (event) => {
+         //console.log(objectStoreRequest.result)
+         var element=JSON.parse(objectStoreRequest.result.Valeur)
+         console.log(element)
+         this.clientInfos.TypeDPV=element.typePDV[0]
+        //this.selected=this.clientInfos.TypeDPV
+         element.typePDV.forEach(type => {
+           this.TypesPDVs.push(type)
+         });
+         this.selected=this.TypesPDVs[0]
+         this.TypeDPV=this.TypesPDVs[0]
+       }
+   }
+    ////
     // interval(1000).pipe( takeUntil(this.destroyed)).subscribe(x => {
-      //this.getLocation()
+    //this.getLocation()
     // })
-    if(!navigator.geolocation) console.log("Location is not supported")
+    if (!navigator.geolocation) console.log("Location is not supported")
 
-    else
-    {
-      navigator.geolocation.getCurrentPosition((pos)=>{
+    else {
+      navigator.geolocation.getCurrentPosition((pos) => {
         console.log(`latitude :${pos.coords.latitude},longitude :${pos.coords.longitude}`)
-        this.map.setView([pos.coords.latitude,pos.coords.longitude],13)
-        L.marker([pos.coords.latitude,pos.coords.longitude],{ icon: this.location_icon }).addTo(this.map)
+        this.map.setView([pos.coords.latitude, pos.coords.longitude], 13)
+        L.marker([pos.coords.latitude, pos.coords.longitude], { icon: this.location_icon }).addTo(this.map)
       })
     }
-    interval(3000).pipe( takeUntil(this.destroyed)).subscribe(x => {
+    interval(3000).pipe(takeUntil(this.destroyed)).subscribe(x => {
       this.WatchPosition()
-      })
+    })
     //this.WatchPosition();
-      
+
   }
 
-    ////*************** INIT FUNCTON *************/////
-    ngAfterViewInit(): void {
-      this.initMap();
-      this.clientInfo = this.clientService.getClientInfo();
-      console.log(this.clientInfo)
-      
+  ////*************** INIT FUNCTON *************/////
+  ngAfterViewInit(): void {
+    this.initMap();
+    this.clientInfo = this.clientService.getClientInfo();
+    console.log(this.clientInfo)
 
-    }
-    myCercle
-  WatchPosition(){
-    navigator.geolocation.watchPosition((pos)=>{
-    console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
-    
-    let raduis =5000;
-    if (this.myCercle !== undefined) {
-      this.map.removeLayer(this.myCercle)
-    }
-    
-    this.myCercle=L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
-    this.clientService.getPosition({"MapUp":[pos.coords.latitude, pos.coords.longitude],"Raduis":raduis});
 
-    },(err)=>{
+  }
+  myCercle
+  WatchPosition() {
+    navigator.geolocation.watchPosition((pos) => {
+      console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
+
+      let raduis = 5000;
+      if (this.myCercle !== undefined) {
+        this.map.removeLayer(this.myCercle)
+      }
+
+      this.myCercle = L.circle([pos.coords.latitude, pos.coords.longitude], { color: "blue", fillColor: "#cce6ff", radius: raduis }).addTo(this.map);
+      this.clientService.getPosition({ "MapUp": [pos.coords.latitude, pos.coords.longitude], "Raduis": raduis });
+
+    }, (err) => {
       console.log(`err :${err}`)
     },
-    {enableHighAccuracy:true,
-    timeout:3000
-    })
-    
+      {
+        enableHighAccuracy: true,
+        timeout: 3000
+      })
+
   }
   ngOnDestroy() {
 
@@ -282,6 +308,8 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
   ///////////*********** MAP FUNCTION **************///////
   private initMap(): void {
     this.Status = true
+
+
     this.testTimer()
     this.map = L.map('map2', {
       center: [this.lat, this.lon],
@@ -342,34 +370,34 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
   }
 
   // distance;
-  getDistance(){
+  getDistance() {
     //console.log("Distance2 :"+this.Distance );
     return this.clientService.getDistance();
   }
-  
-  async getLocation(){
+
+  async getLocation() {
 
     // interval(1000).subscribe(x => {
     console.log("yesssss")
     if (navigator.geolocation) {
-      let raduis =300;
+      let raduis = 300;
       this.map.setView(new L.LatLng(this.latclt, this.lonclt), 11, { animation: true });
       //L.circle([this.latclt, this.lonclt], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
-  
-        console.log('LatitudeOfUpadate: ' + this.latclt +' LongitudeOfUpadate: ' + this.lonclt);
+
+      console.log('LatitudeOfUpadate: ' + this.latclt + ' LongitudeOfUpadate: ' + this.lonclt);
       //this.clientService.getPosition({"MapUp":[this.latclt, this.lonclt],"Raduis":raduis});
 
-      }
+    }
     // })
 
   }
-  
-  SessionTerminate=false;
-  ValidatePosition(){
+
+  SessionTerminate = false;
+  ValidatePosition() {
 
     return this.clientService.ActiveTheButton();
   }
-  
+
   ////////////////////////////////////////////////////////////////////
 
   /////*********** TIMER FUNCTION *******/////////
@@ -419,7 +447,7 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
     }
   }
 
-  
+
   /////////////////////****** UPDATE CLIENT INFOS *******/////////////////
   async Update() {
     console.log(this.clientInfos)
@@ -437,7 +465,7 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
         }
       });
     }
-    if (this.clientInfos.NFCPhoto!=null) {
+    if (this.clientInfos.NFCPhoto != null) {
       console.log("BDL NFC Photo")
       this.clientInfo.geometry.properties.nfc.NFCPhoto = this.clientInfos.NFCPhoto
 
@@ -457,11 +485,14 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
     this.clientInfo.geometry.properties.created_at = this.clientInfo.geometry.properties.created_at;
     console.log('########## Updated Client ##########')
     console.log(this.clientInfo)
-    if (this.clientInfo.geometry.properties.codeQR === null) {
-      this.clientInfo.geometry.properties.status = "pink"
-    }
-    else {
-      this.clientInfo.geometry.properties.status = "purple"
+
+    if (this.loggedUser.permissions.includes("Add NFC")) {
+      if (this.clientInfo.geometry.properties.codeQR === null) {
+        this.clientInfo.geometry.properties.status = "pink"
+      }
+      else {
+        this.clientInfo.geometry.properties.status = "purple"
+      }
     }
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodoUpdate(this.clientInfo)
@@ -489,18 +520,18 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
       transaction = db.transaction(['data'], 'readwrite');
       var objectStore = transaction.objectStore("data");
       var objectStoreRequest = objectStore.get(this.clientInfo._id);
-     // console.log(this.clientInfo)
+      // console.log(this.clientInfo)
       objectStoreRequest.onsuccess = (event) => {
-        if(this.clientInfo.geometry.properties.PVP==null){
-           this.clientInfo.geometry.properties.PVP=this.clientInfo.geometry.properties.PVPhoto
+        if (this.clientInfo.geometry.properties.PVP == null) {
+          this.clientInfo.geometry.properties.PVP = this.clientInfo.geometry.properties.PVPhoto
         }
-        if(this.clientInfo.geometry.properties.NFCP==null){
+        if (this.clientInfo.geometry.properties.NFCP == null) {
 
-          this.clientInfo.geometry.properties.NFCP=this.clientInfo.geometry.properties.nfc.NFCPhoto
-          
-       }
-       console.log(this.clientInfo.geometry)
-       
+          this.clientInfo.geometry.properties.NFCP = this.clientInfo.geometry.properties.nfc.NFCPhoto
+
+        }
+        console.log(this.clientInfo.geometry)
+
         var elm = JSON.parse(objectStoreRequest.result.Valeur);
         console.log("********************element*****************")
         console.log(objectStoreRequest.result._id)
@@ -509,15 +540,15 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
         var objectStoreRequest1 = objectStore.put(client);
         objectStoreRequest1.onsuccess = (event) => {
           console.log('Done Update');
-         /* this._router.navigate(['/map']).then(()=>{
+          this._router.navigate(['/map']).then(() => {
             window.location.reload();
-          })*/
+          })
         };
       }
     };
   }
- 
 
- 
+
+
 
 }

@@ -79,6 +79,7 @@ export class AddUserComponent implements OnInit {
     this._client.getAllSecteurs().subscribe(res => {
       console.log(res)
       res.forEach(element => {
+        
         var idSector = Number(String(element.geometry.properties.idSecteur).slice(-2, -1))
         console.log(idSector)
         var machine = (idSector == 0) ? "Onion" : "CMG"
@@ -111,19 +112,19 @@ export class AddUserComponent implements OnInit {
       objectStoreRequest.onsuccess = event => {
         const all = event.target.result;
         all.forEach(elm => {
+          //console.log(elm)
           var element = JSON.parse(elm.Valeur);
-          console.log(element)
-          var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
+          /*var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
           console.log(idSector)
           var machine = (idSector == 0) ? "Onion" : "CMG"
           console.log(machine)
           var result = element.properties.idSecteur + " - " + machine + " - " + element.properties.name
-          console.log(result)
+          console.log(result)*/
           var obj = {
-            id: element.properties.idSecteur,
-            detail: result
+            id: element.nameSecteur,
+            detail: element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
           }
-          this.AllSectors.push(element.properties.idSecteur)
+          this.AllSectors.push(obj.id)
           this.Sectors.push(obj)
         });
       };
