@@ -509,15 +509,12 @@ export class UpdateClientComponent implements AfterViewInit,OnInit {
         var objectStoreRequest1 = objectStore.put(client);
         objectStoreRequest1.onsuccess = (event) => {
           console.log('Done Update');
-         /* this._router.navigate(['/map']).then(()=>{
+         this._router.navigate(['/map']).then(()=>{
             window.location.reload();
-          })*/
+          })
         };
       }
     };
   }
- 
-
- 
-
+  
 }
