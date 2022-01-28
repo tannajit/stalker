@@ -74,8 +74,8 @@ export class AddUserComponent implements OnInit {
   
       // })
       
-      console.log("tttttttttttttttttt")
-      console.log(this.Roles)
+      // console.log("tttttttttttttttttt")
+      // console.log(this.Roles)
     })
 
 
@@ -85,9 +85,9 @@ export class AddUserComponent implements OnInit {
   /// get sectors from DATABASE 
   getSectors() {
     this._client.getAllSecteurs().subscribe(res => {
-      console.log(res)
       res.forEach(element => {
-        
+        console.log("elementgetSectors",element)
+
         var idSector = Number(String(element.geometry.properties.idSecteur).slice(-2, -1))
         console.log(idSector)
         var machine = (idSector == 0) ? "Onion" : "CMG"
@@ -112,8 +112,10 @@ export class AddUserComponent implements OnInit {
     };
     request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
       db = event.target.result;
-      console.log('success');
-      console.log(db);
+      console.log("resgetSectors",db)
+
+      // console.log('success');
+      // console.log(db);
       transaction = db.transaction(['sector'], 'readwrite');
       const objectStore = transaction.objectStore('sector');
       const objectStoreRequest = objectStore.getAll();
@@ -121,13 +123,9 @@ export class AddUserComponent implements OnInit {
         const all = event.target.result;
         all.forEach(elm => {
           //console.log(elm)
+          console.log("elmSectors",elm.Valeur)
+
           var element = JSON.parse(elm.Valeur);
-          /*var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
-          console.log(idSector)
-          var machine = (idSector == 0) ? "Onion" : "CMG"
-          console.log(machine)
-          var result = element.properties.idSecteur + " - " + machine + " - " + element.properties.name
-          console.log(result)*/
           var obj = {
             id: element.nameSecteur,
             detail: element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
@@ -145,7 +143,7 @@ export class AddUserComponent implements OnInit {
     var active;
     this.RolesSource.forEach(el => {
       
-      console.log("sectors",el)
+      // console.log("sectors",el)
 
       if(el.name==this.role ) {
      
@@ -159,7 +157,7 @@ export class AddUserComponent implements OnInit {
     }
 
     });
-    console.log("active",active);
+    //console.log("active",active);
     return active;
   }
 
