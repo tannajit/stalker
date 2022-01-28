@@ -6,10 +6,10 @@
         <pre>Distance according client : {{getDistance()}}</pre>
     </div>
 
-    <div ng-app ng-controller="ApplicationController" class="progress-cantainer">
+ <div ng-app ng-controller="ApplicationController" class="progress-cantainer">
         <mat-progress-bar mode="determinate" [value]="percentage"></mat-progress-bar>
         <span style="position: absolute; top: 0em;" [ngStyle]="{'left': percentage + '%'}">{{percentage}}%</span>
-    </div>
+    </div> 
 
     <div class="map-container">
         <div id="map2"></div>
