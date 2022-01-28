@@ -328,7 +328,8 @@ export class AddclientComponent implements AfterViewInit {
           timeout: 5000,
           maximumAge: 2000
         };
-        var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
+       
+        navigator.geolocation.watchPosition((position: GeolocationPosition) => {
 
           if (position) {
             var newlat = position.coords.latitude
@@ -358,7 +359,10 @@ export class AddclientComponent implements AfterViewInit {
             marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
           }
         },
-          (error: GeolocationPositionError) => console.log(error), options);
+          (error: GeolocationPositionError) => {
+            this.percentage=0;
+            console.log(error)
+          }, options);
       } else {
         alert("Geolocation is not supported by this browser.");
       }
@@ -371,7 +375,7 @@ export class AddclientComponent implements AfterViewInit {
     this.percentage = 0
     interval(300).subscribe(x => {
       if (this.percentage < 100) {
-        this.percentage += 4
+        this.percentage += 10
       }
     });
   }
