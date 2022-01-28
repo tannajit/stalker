@@ -18,6 +18,7 @@ export class AdminService {
   private getRolesURL = this.uri + "/api1/getRoles"
   private _updateRole = this.uri + "/api1/updateRole"
   private _addRole = this.uri + "/api1/addRole"
+  private _getUserRoles = this.uri + "/api1/UserRoles"
   private _deleteClient =this.uri+"/api1/ValidateDeleteClient"
 
   currentUser;
@@ -85,5 +86,8 @@ export class AdminService {
   addRole(role){
     console.log(role)
     return this.http.post<any>(this._addRole,{request:role});
+  }
+  getUserRoles(email){
+    return this.http.get(this._getUserRoles+"/"+email)
   }
 }

@@ -23,6 +23,8 @@ const incr = 1;
 })
 export class UpdateClientComponent implements AfterViewInit, OnInit {
 
+        
+
   ////******************** VARIABLE'S DECLARATION ****************/////
   progress = 0;
   selected = null;

@@ -156,8 +156,22 @@ export class UsersComponent implements OnInit {
   }
 
   updateUser(user){
-    console.log(this.dataSource)
-    this._router.navigateByUrl('/updateUser', { state: { dataUser:user,userid:user.UserID,userrole:user.role } });
+    this._setting.getSettings('param=role').subscribe(res => {
+      var Roles = res.details.roles
+      console.log("Roles",Roles);
+      this._router.navigateByUrl('/updateUser', { state: { dataUser:user,AddRole:false,userid:user.UserID,userrole:user.role,roles:Roles} });
+
+    })
+
+}
+  AddNewuser(){
+
+    this._setting.getSettings('param=role').subscribe(res => {
+      var Roles = res.details.roles
+      this._router.navigateByUrl('/addUser', { state: { roles:Roles} });
+
+    })
+  
   }
 
   openAlertDialog(message) {
@@ -492,5 +506,7 @@ export class UsersComponent implements OnInit {
     
     this.Sectors = this.anotherArray.filter((unit) => unit.detail.toLowerCase().indexOf(val) > -1);
   }
+
+  
   
 }

@@ -797,7 +797,12 @@ router.post('/register', async (req, res) => {
 })
 
 async function AddNewUser(user) {
-    user.userinfo.password = await GenerateHashPassword(user.userinfo.password)
+    var pass
+    if(user.userinfo.existe){
+        pass=user.userinfo.password
+    }else{
+        pass = await GenerateHashPassword(user.userinfo.password)
+    }
     let collection = db.collection("users") // collection users 
     console.log("user", user)
     user.SectorsByRoles.forEach(async (r) => {
@@ -808,7 +813,7 @@ async function AddNewUser(user) {
             CIN: user.userinfo.CIN,
             role: user.userinfo.role,
             email: user.userinfo.email,
-            password: user.userinfo.password,
+            password: pass,
             status: user.userinfo.status,
             role: r.role
         }).then(result => {
@@ -1257,6 +1262,24 @@ router.post('/addRole', async (req, res) => {
         { $addToSet: { "details.roles": { 'name': role.role, 'permissions': role.permissions } } })
     console.log(updated)
     res.status(200).json(updated)
+})
+
+router.get('/UserRoles/:email', async(req,res)=>{
+    let email= req.params.email
+    let listOfRoles =[]
+    users = await db.collection("users")
+
+    roles = await users.find({"email":email}).toArray()
+    roles.forEach( el=>{
+        // let listOfRoles=[]
+        listOfRoles.push(el.role)
+        // console.log("roles",listOfRoles)
+
+    })
+    
+    console.log("roles2",listOfRoles)
+    res.send(listOfRoles).status(200)
+
 })
 
 router.post('/ValidateDeleteClient', async (req, res) => {
