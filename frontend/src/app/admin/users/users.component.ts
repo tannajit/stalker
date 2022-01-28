@@ -121,7 +121,6 @@ export class UsersComponent implements OnInit {
   }
 
   updateUser(user){
-<<<<<<< HEAD
     this._setting.getSettings('param=role').subscribe(res => {
       var Roles = res.details.roles
       console.log("Roles",Roles);
@@ -138,10 +137,6 @@ export class UsersComponent implements OnInit {
 
     })
   
-=======
-    console.log(this.dataSource)
-    this._router.navigateByUrl('/updateUser', { state: { dataUser:user,userid:user.UserID,userrole:user.role } });
->>>>>>> 1397f6c51817111773b656d24feb694b9aa427ac
   }
 
   openAlertDialog(message) {

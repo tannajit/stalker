@@ -251,16 +251,9 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
         });
     });
     All_PDV = ListInfo.map(async (elem) => {
-<<<<<<< HEAD
-        if (elem.geometry.properties.NFC != null && elem.geometry.properties.NFC != undefined) {
-            elem.geometry.properties.status = "green"
-        }
-
-=======
         // if (elem.geometry.properties.NFC != null && elem.geometry.properties.NFC != undefined) {
         //     elem.geometry.properties.status = "green"
         // }
->>>>>>> 1397f6c51817111773b656d24feb694b9aa427ac
         if (elem.geometry.properties?.nfc != undefined) {
             var element = elem.geometry.properties;
             if (element.nfc.NFCPhoto != null) {
