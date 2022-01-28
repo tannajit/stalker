@@ -210,9 +210,18 @@ export class UsersComponent implements OnInit {
       
     
   }
+  
 
   viewUserDetails(user){
-    this.dialogRef2 = this.dialog.open(UserInfoComponent, { data: user });
+
+    this._setting.getSettings('param=role').subscribe(res => {
+      var Roles = res.details.roles
+      console.log("Roles",Roles);
+      this.dialogRef2 = this.dialog.open(UserInfoComponent, { data:{data:user,roles:Roles} });
+
+      //this._router.navigateByUrl('/updateUser', { state: { dataUser:user,AddRole:false,userid:user.UserID,userrole:user.role,roles:Roles} });
+
+    })
   }
 
   // search input

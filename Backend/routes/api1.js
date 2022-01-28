@@ -13,7 +13,7 @@ var uri = "mongodb://localhost:27017";
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker1"
+var name_database = "stalker3"
 var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
@@ -76,8 +76,8 @@ router.get("/files", async function (req, res) {
         await collection.updateMany({"geometry.geometry.type":"Point", "geometry.properties.NFC": { $exists: true}},{$set: {"geometry.properties.nfc":{UUID:null,Numero_Serie:null,Technologies:null,Type_card:null,NFCPhoto:null}}}).then().catch(error => console.log(error))
         await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.NFC": { $exists: true}},{ $rename: {"geometry.properties.NFC": "geometry.properties.nfc.UUID"}}).then().catch(error => console.log(error))
         console.log("//************start updating Status************//")
-        await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.nfc.UUID":{$ne:null}},{$set:{"geometry.properties.status":"purple"}}).then().catch(error => console.log(error))
-        await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.nfc.UUID":{$eq:null}},{$set:{"geometry.properties.status":"red"}}).then().catch(error => console.log(error))
+        await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.nfc.UUID": { $ne: null } }, { $set: { "geometry.properties.status": "purple" } }).then().catch(error => console.log(error))
+        await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.nfc.UUID": { $eq: null } }, { $set: { "geometry.properties.status": "red" } }).then().catch(error => console.log(error))
     });
 });
 
@@ -121,14 +121,19 @@ router.get('/addedClients', async function (req, res) {
         a = []
         curs = cursor.map(async (elem) => {
             var values;
-            await test1(db, ObjectId(elem.nfc.NFCPhoto)).then(re => {
-                elem.NFCP = re
-            }).catch(err => console.log(err))
-            await test1(db, ObjectId(elem.PVPhoto)).then(re => {
-                elem.PVP = re
-            }).catch(err => console.log(err))
+            if (elem.nfc.NFCPhoto != null) {
+                await test1(db, ObjectId(elem.nfc.NFCPhoto)).then(re => {
+                    elem.NFCP = re
+                }).catch(err => console.log(err))
+            }
+            if (elem.PVPhoto != null) {
+                await test1(db, ObjectId(elem.PVPhoto)).then(re => {
+                    elem.PVP = re
+                }).catch(err => console.log(err))
+            }
             a.push(elem)
         })
+
         Promise.all(curs).then(ee => res.json(a)).catch(err => {
             console.log(error)
         });
@@ -396,7 +401,7 @@ async function InsertClient(client, res) {
         //console.log(client)
         //var id = new ObjectId();
         //console.log("=========== id" + id)
-        
+
         var id = new ObjectId();
         //console.log("=========== id" + id)
         var temp_datetime_obj = new Date();
@@ -470,7 +475,7 @@ async function updateClient(client) {
         await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
         console.log("NFC photo id: " + id_NFC)
     } else {
-         console.log(client.geometry.properties.nfc.NFCPhoto)
+        console.log(client.geometry.properties.nfc.NFCPhoto)
         id_NFC = ObjectId(client.geometry.properties.nfc.NFCPhoto);
     }
     if (client.geometry.properties.PVP == null) {
@@ -719,23 +724,23 @@ async function getClientBySeller(id) {
     ).sort({ 'updated_at': -1 }).limit(1).toArray()
     var status = { clientOf: "seller", data: null }
     var cli = [];
-    
+
     if (client.length != 0) {
         cli = client[0]
-    cli.PVP=null;
-    cli.NFCP=null;
+        cli.PVP = null;
+        cli.NFCP = null;
         status.data = { 'client': client }
-        if(cli.PVPhoto!=null){
-        await test1(db, ObjectId(cli.PVPhoto)).then(re => {
-            cli.PVP = re
-        })
-    }
-    
-    if(cli.nfc.NFCPhoto!=null){
-        await test1(db, ObjectId(cli.nfc.NFCPhoto)).then(re => {
-            cli.NFCP = re
-        })
-    }
+        if (cli.PVPhoto != null) {
+            await test1(db, ObjectId(cli.PVPhoto)).then(re => {
+                cli.PVP = re
+            })
+        }
+
+        if (cli.nfc.NFCPhoto != null) {
+            await test1(db, ObjectId(cli.nfc.NFCPhoto)).then(re => {
+                cli.NFCP = re
+            })
+        }
         status.data = { 'client': cli }
     }
     return cli;
@@ -752,24 +757,24 @@ async function getClientByAuditor(id) {
         }
     ).sort({ 'updated_at': -1 }).limit(1).toArray()
     var status = { clientOf: "auditor", data: null }
-    
+
     if (client.length != 0) {
         cli = client[0]
-    console.log(cli)
-    cli["PVP"]=null;
-    cli["NFCP"]=null;
+        console.log(cli)
+        cli["PVP"] = null;
+        cli["NFCP"] = null;
         status.data = { 'client': client }
-        if(cli.PVPhoto!=null){
-        await test1(db, ObjectId(cli.PVPhoto)).then(re => {
-            cli.PVP = re
-        })
-    }
-    
-    if(cli.nfc.NFCPhoto!=null){
-        await test1(db, ObjectId(cli.nfc.NFCPhoto)).then(re => {
-            cli.NFCP = re
-        })
-    }
+        if (cli.PVPhoto != null) {
+            await test1(db, ObjectId(cli.PVPhoto)).then(re => {
+                cli.PVP = re
+            })
+        }
+
+        if (cli.nfc.NFCPhoto != null) {
+            await test1(db, ObjectId(cli.nfc.NFCPhoto)).then(re => {
+                cli.NFCP = re
+            })
+        }
         status.data = { 'client': cli }
     } else {
         al = [];
@@ -799,9 +804,9 @@ router.post('/register', async (req, res) => {
 
 async function AddNewUser(user) {
     var pass
-    if(user.userinfo.existe){
-        pass=user.userinfo.password
-    }else{
+    if (user.userinfo.existe) {
+        pass = user.userinfo.password
+    } else {
         pass = await GenerateHashPassword(user.userinfo.password)
     }
     let collection = db.collection("users") // collection users 
@@ -948,7 +953,7 @@ router.post("/DeleteRequest", async (req, res) => {
 
 
     if (req.body.Photo._imageAsDataUrl != null) {
-        photo = req.body.Photo._imageAsDataUrl
+        var photo = req.body.Photo._imageAsDataUrl
         await test(db, ObjectId(dataclient._id), photo).then(res => id_Photo = res._id, err => console.log(err))
     }
 
@@ -1071,7 +1076,7 @@ router.post("/extract", async (req, res) => {
         var imgurl = "http://localhost:3000/api1/image?id="
         var Data = {
             "Identifiant system": element._id,
-            "code":(element.geometry.properties.Code_Client != null)? element.geometry.properties.Code_Client : "",
+            "code": (element.geometry.properties.Code_Client != null) ? element.geometry.properties.Code_Client : "",
             "X": element.geometry.geometry.coordinates[1],
             "Y": element.geometry.geometry.coordinates[0],
             "Date_Creation": element.geometry.properties.created_at,
@@ -1193,15 +1198,18 @@ router.get('/getAllDeleteRequests', async (req, res) => {
         if (elem.PDV[0].geometry.properties?.nfc != undefined) {
             var element = elem.PDV[0].geometry.properties;
             //elem.geometry.properties.status="red_white"
-            await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
-                //console.log("hna 1")
-                elem.PDV[0].geometry.properties.NFCP = re
-            })
-
-            await test1(db, ObjectId(element.PVPhoto)).then(re => {
-                //console.log("hna 2")
-                elem.PDV[0].geometry.properties.PVP = re
-            });
+            if (element.nfc.NFCPhoto != null) {
+                await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
+                    //console.log("hna 1")
+                    elem.PDV[0].geometry.properties.NFCP = re
+                })
+            }
+            if (element.PVPhoto != null) {
+                await test1(db, ObjectId(element.PVPhoto)).then(re => {
+                    //console.log("hna 2")
+                    elem.PDV[0].geometry.properties.PVP = re
+                });
+            }
             if (id_raison != null) {
                 await test1(db, id_raison).then(re => {
                     console.log("------------- get -------")
@@ -1265,20 +1273,20 @@ router.post('/addRole', async (req, res) => {
     res.status(200).json(updated)
 })
 
-router.get('/UserRoles/:email', async(req,res)=>{
-    let email= req.params.email
-    let listOfRoles =[]
+router.get('/UserRoles/:email', async (req, res) => {
+    let email = req.params.email
+    let listOfRoles = []
     users = await db.collection("users")
 
-    roles = await users.find({"email":email}).toArray()
-    roles.forEach( el=>{
+    roles = await users.find({ "email": email }).toArray()
+    roles.forEach(el => {
         // let listOfRoles=[]
         listOfRoles.push(el.role)
         // console.log("roles",listOfRoles)
 
     })
-    
-    console.log("roles2",listOfRoles)
+
+    console.log("roles2", listOfRoles)
     res.send(listOfRoles).status(200)
 
 })
@@ -1386,14 +1394,14 @@ async function putEachData(res, collection) {
     if (res.geometry.type == "MultiPolygon") {
         collection.updateOne({ "geometry.geometry.type": "MultiPolygon", "geometry.properties.idSecteur": res.properties.idSecteur }, { $set: { geometry: res } }, { upsert: true }).then(rr => console.log(rr)).catch(error => console.log(error))
     } else {
-       await collection.updateOne({ "geometry.properties.Code_Client": res.properties.Code_Client }, { $set: { geometry: res } }, { upsert: true }).then().catch(error => console.log(error))
-    //    console.log("//************start updating nfc object************//")
-    //    await collection.updateMany({"geometry.geometry.type":"Point", "geometry.properties.NFC": { $exists: true}},{$set: {"geometry.properties.nfc":{UUID:null,Numero_Serie:null,Technologies:null,Type_card:null,NFCPhoto:null}}}).then().catch(error => console.log(error))
-    //    await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.NFC": { $exists: true}},{ $rename: {"geometry.properties.NFC": "geometry.properties.nfc.UUID"}}).then().catch(error => console.log(error))
-    //    console.log("//************start updating Status************//")
-    //    await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.nfc.UUID":{$ne:null}},{$set:{"geometry.properties.status":"purple"}}).then().catch(error => console.log(error))
-    //    await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.nfc.UUID":{$eq:null}},{$set:{"geometry.properties.status":"red"}}).then().catch(error => console.log(error))
-  }
+        await collection.updateOne({ "geometry.properties.Code_Client": res.properties.Code_Client }, { $set: { geometry: res } }, { upsert: true }).then().catch(error => console.log(error))
+        //    console.log("//************start updating nfc object************//")
+        //    await collection.updateMany({"geometry.geometry.type":"Point", "geometry.properties.NFC": { $exists: true}},{$set: {"geometry.properties.nfc":{UUID:null,Numero_Serie:null,Technologies:null,Type_card:null,NFCPhoto:null}}}).then().catch(error => console.log(error))
+        //    await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.NFC": { $exists: true}},{ $rename: {"geometry.properties.NFC": "geometry.properties.nfc.UUID"}}).then().catch(error => console.log(error))
+        //    console.log("//************start updating Status************//")
+        //    await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.nfc.UUID":{$ne:null}},{$set:{"geometry.properties.status":"purple"}}).then().catch(error => console.log(error))
+        //    await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.nfc.UUID":{$eq:null}},{$set:{"geometry.properties.status":"red"}}).then().catch(error => console.log(error))
+    }
 }
 
 

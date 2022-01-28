@@ -77,7 +77,6 @@ export class MapComponent implements AfterViewInit {
     this.map.addLayer(this.markerClusterSector)
     this.map.addLayer(this.markersCluster);
     this.map.addLayer(this.DeletedMarkerCluster);
-    //this.map.addLayer(this.markersCluster);
     // this.getLocation()
     //this.getLocation1()
     this.map.addControl(L.control.zoom({ position: 'bottomleft' }));
@@ -98,10 +97,13 @@ export class MapComponent implements AfterViewInit {
         console.log("loooooooooooooooong: " + params['long'])
         this.map.flyTo(new L.LatLng(params['lat'], params['long']), 18);
       } else {
+
         this.getLocation()
-        interval(3000).pipe(takeUntil(this.destroyed)).subscribe(x => {
+        interval(1000).pipe(takeUntil(this.destroyed)).subscribe(x => {
           this.WatchPosition()
+          // 
         })
+
       }
     });
   }
@@ -113,14 +115,27 @@ export class MapComponent implements AfterViewInit {
   WatchPosition() {
     navigator.geolocation.watchPosition((pos) => {
       // console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
-
+      console.log("watch")
       let raduis = 2000;
       if (this.myCercle !== undefined) {
         this.map.removeLayer(this.myCercle)
       }
-
-      this.myCercle = L.circle([pos.coords.latitude, pos.coords.longitude], { color: "blue", fillColor: "#cce6ff", radius: raduis }).addTo(this.map);
+      this.lat = pos.coords.latitude
+      this.lon = pos.coords.longitude
+      this.myCercle = L.circle([pos.coords.latitude, pos.coords.longitude], { color: "blue", fillColor: "#C9EAFA", radius: raduis }).addTo(this.map);
       this._serviceClient.getPosition({ "Map": new L.LatLng(pos.coords.latitude, pos.coords.longitude), "Raduis": raduis });
+      if (this.myMarker != undefined) {
+        this.map.removeLayer(this.myMarker)
+      }
+
+      if (this.myMarker == undefined) {
+        this.map.setView(new L.LatLng(this.lat, this.lon), 17, { animation: true });
+      }
+      this.myMarker = L.circleMarker([this.lat, this.lon], {
+        color: "#163AE3 ",
+        fillOpacity: 1,
+        radius: 8.0
+      }).addTo(this.map);
 
     }, (err) => {
       console.log(`err :${err}`)
@@ -150,7 +165,7 @@ export class MapComponent implements AfterViewInit {
           this.lon = position.coords.longitude;
           console.log(this.lat);
           console.log(this.lon);
-          this.map.setView(new L.LatLng(this.lat, this.lon), 18, { animation: true });
+          this.map.setView(new L.LatLng(this.lat, this.lon), 17, { animation: true });
           if (this.myMarker != undefined) {
             this.map.removeLayer(this.myMarker)
           }
@@ -209,7 +224,10 @@ export class MapComponent implements AfterViewInit {
           const elm = JSON.parse(element.Valeur);
           const Point = { _id: element._id, geometry: elm };
           const geojsonPoint: geojson.Point = Point.geometry;
+
           var iconClient = L.icon({ iconUrl: 'assets/' + Point.geometry.properties?.status + '.png', iconSize: [8, 8] });
+
+
           marker = L.geoJSON(geojsonPoint, {
             pointToLayer: (point, latlon) => {
               return L.marker(latlon, { icon: iconClient });
@@ -230,7 +248,6 @@ export class MapComponent implements AfterViewInit {
           //}
 
           if (Point.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
-
             console.log(this.user.role)
             //this.markersCluster.addLayer(marker);
             this.DeletedMarkerCluster.addLayer(marker)
@@ -265,7 +282,7 @@ export class MapComponent implements AfterViewInit {
         this.markerClusterSector.clearLayers();
         all.forEach(element => {
           const elm = JSON.parse(element.Valeur);
-          const Point = { _id: element._id, geometry: elm.info.geometry};
+          const Point = { _id: element._id, geometry: elm.info.geometry };
           const marker = L.geoJSON(Point.geometry, { style: { color: '#CD9575', fillOpacity: 0.1 } });
           marker.bindPopup(String(Point.geometry.properties.codeRegion));
           // marker.addTo(this.map);
@@ -342,8 +359,8 @@ export class MapComponent implements AfterViewInit {
           res.forEach(element => {
             console.log('***sector***');
             console.log(element);
-              delete element.points 
-              delete element.users
+            delete element.points
+            delete element.users
             ///
             const geo = { _id: element.nameSecteur, Valeur: JSON.stringify(element) };
             allclient.push(geo);
@@ -409,6 +426,7 @@ export class MapComponent implements AfterViewInit {
   }
 
   addPDV() {
+    //this._router.navigate(['/addclient', this.mySector])
     this._router.navigate(['/addclient', this.mySector]).then(() => {
       window.location.reload();
     });
@@ -619,21 +637,21 @@ export class MapComponent implements AfterViewInit {
 
     } else {
       this.markersCluster.eachLayer((layer: any) => {
-        
-          console.log("*** sb7an lah *** ")
-          if (this.option_done == "Validated" && layer.feature.properties.status == "green") {
-            console.log("**************** Gros Done ***************")
-            this.cluster.addLayer(layer)
-          } else if (this.option_done == "Done" && (layer.feature.properties.status == "purple" || layer.feature.properties.status == "green")) {
-            this.cluster.addLayer(layer)
-          }
-          else if (this.option_done == "Not_Done" && (layer.feature.properties.status != "green" && layer.feature.properties.status != "purple")) {
-            console.log("******************* Gros Not Done *********************")
-            this.cluster.addLayer(layer)
-          } else if (this.option_done == "All" || this.option_done == "") {
-            console.log("************************ Gros ALL ***********************")
-            this.cluster.addLayer(layer)
-          }
+
+        console.log("*** sb7an lah *** ")
+        if (this.option_done == "Validated" && layer.feature.properties.status == "green") {
+          console.log("**************** Gros Done ***************")
+          this.cluster.addLayer(layer)
+        } else if (this.option_done == "Done" && (layer.feature.properties.status == "purple" || layer.feature.properties.status == "green")) {
+          this.cluster.addLayer(layer)
+        }
+        else if (this.option_done == "Not_Done" && (layer.feature.properties.status != "green" && layer.feature.properties.status != "purple")) {
+          console.log("******************* Gros Not Done *********************")
+          this.cluster.addLayer(layer)
+        } else if (this.option_done == "All" || this.option_done == "") {
+          console.log("************************ Gros ALL ***********************")
+          this.cluster.addLayer(layer)
+        }
       });
     }
     this.map.addLayer(this.cluster)
