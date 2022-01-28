@@ -148,13 +148,6 @@ export class MapComponent implements AfterViewInit {
           console.log(this.lat);
           console.log(this.lon);
           this.map.setView(new L.LatLng(this.lat, this.lon), 18, { animation: true });
-
-          // if (this.myCercle !== undefined) {
-          //   this.map.removeLayer(this.myCercle)
-          // }
-          // this.myCercle = L.circle([this.lat, this.lon], { color: "blue", fillColor: "#cce6ff", radius: this.radius });
-          // this.myCercle.addTo(this.map);
-          //this._serviceClient.getPosition({ "Map": new L.LatLng(this.lat, this.lon), "Raduis": this.radius });
           if (this.myMarker != undefined) {
             this.map.removeLayer(this.myMarker)
           }

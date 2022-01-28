@@ -4,6 +4,7 @@ import { Inject } from '@angular/core';
 import { AdminService } from '../admin.service';
 import { Router } from '@angular/router';
 import { ConfirmationDialogComponent } from 'src/app/confirmation-dialog/confirmation-dialog.component';
+import { SettingsService } from 'src/app/settings/settings.service';
 
 @Component({
   selector: 'app-user-info',
@@ -21,6 +22,7 @@ export class UserInfoComponent implements OnInit {
     private adminService: AdminService,
     public dialog: MatDialog,
     private _router: Router,
+    private _setting: SettingsService
   ) { 
     
   }
@@ -86,10 +88,26 @@ export class UserInfoComponent implements OnInit {
   }
 
   updateUser(user){
-    // this.adminService.setUserInfo(user)
-    // this._router.navigate(['/updateUser'])
-    this._router.navigateByUrl('/updateUser', { state: { dataUser:user,userid:user.UserID,userrole:user.role } });
+      this._setting.getSettings('param=role').subscribe(res => {
+        var Roles = res.details.roles
+        console.log("Roles",Roles);
+        this._router.navigateByUrl('/updateUser', { state: { dataUser:user,AddRole:false,userid:user.UserID,userrole:user.role,roles:Roles} });
 
+      })
+
+}
+  
+  addNewRole(data){
+    
+    this.adminService.getUserRoles(data.email).subscribe(rolesSelected=>{
+      this._setting.getSettings('param=role').subscribe(res => { 
+        var Roles = res.details.roles
+        this._router.navigateByUrl('/updateUser', { state: { dataUser:data,AddRole:true,rolesSelected:rolesSelected,roles:Roles } });
+
+      })
+
+    })
+    // console.log("userroles",this.roles)
   }
 
 }

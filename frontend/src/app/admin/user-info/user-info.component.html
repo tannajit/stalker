@@ -89,6 +89,7 @@
 
 <mat-dialog-actions class="action-btns" align="center">
     <button mat-raised-button color="primary" class="btn-green" (click)="updateUser(data)" mat-dialog-close>Update User</button>
+    <button *ngIf="data.status=='Active'" mat-raised-button color="primary" class="btn-green" (click)="addNewRole(data)" mat-dialog-close>Add New Role</button>
     <button *ngIf="data.status=='Active'" mat-raised-button color="primary" class="btn-red" (click)="deleteUser(data)" mat-dialog-close>Delete User</button>
     <button *ngIf="data.status=='out of work'" mat-raised-button color="primary" class="btn-orange" (click)="restoreUser(data)" mat-dialog-close>Restore this User</button>
 </mat-dialog-actions>
