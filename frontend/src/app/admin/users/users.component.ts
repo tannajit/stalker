@@ -25,8 +25,6 @@ export class UsersComponent implements OnInit {
   selectedStatus
   selectedRole
   selectedSector
-
-  
   users=[];
   roles=[]
   Sectors=[]
@@ -106,13 +104,11 @@ export class UsersComponent implements OnInit {
       disableClose: false
     });
     this.dialogRef.componentInstance.confirmMessage = "Are you sure you want to delete this user?"
-
     this.dialogRef.afterClosed().subscribe(result => {
       if(result) {
         // do confirmation actions (delete)
         // console.log("clicked yes")
         this.adminService.deleteUser(user).subscribe(res=>{
-          
         })
         this.getUsers()
         this.dataSource = new MatTableDataSource(this.users);
@@ -122,10 +118,10 @@ export class UsersComponent implements OnInit {
       }
       this.dialogRef = null;
     });
-    
   }
 
   updateUser(user){
+<<<<<<< HEAD
     this._setting.getSettings('param=role').subscribe(res => {
       var Roles = res.details.roles
       console.log("Roles",Roles);
@@ -142,6 +138,10 @@ export class UsersComponent implements OnInit {
 
     })
   
+=======
+    console.log(this.dataSource)
+    this._router.navigateByUrl('/updateUser', { state: { dataUser:user,userid:user.UserID,userrole:user.role } });
+>>>>>>> 1397f6c51817111773b656d24feb694b9aa427ac
   }
 
   openAlertDialog(message) {
@@ -208,7 +208,6 @@ export class UsersComponent implements OnInit {
           
         if(this.selectedRole=='all' && !this.selectedSector){
           filtered=this.users
-          
         }if(this.selectedSector=='all' && !this.selectedRole){
           filtered=this.users
         }if(this.selectedRole=='all' && this.selectedSector=='all'){

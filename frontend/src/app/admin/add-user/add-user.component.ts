@@ -119,7 +119,7 @@ export class AddUserComponent implements OnInit {
       objectStoreRequest.onsuccess = event => {
         const all = event.target.result;
         all.forEach(elm => {
-          var  element = JSON.parse(elm.Valeur);
+          var element = JSON.parse(elm.Valeur);
           console.log(element)
           var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
           console.log(idSector)
@@ -203,7 +203,6 @@ export class AddUserComponent implements OnInit {
         this.AllEmail.push(element.email)
       });
     })
-
   }
 
   Disabled = false
@@ -332,8 +331,8 @@ export class AddUserComponent implements OnInit {
         message: "Please Copy this credentials and send them to the User before Exit \n " + "[Email:" + this.Email + "-" + "Password:" + this.Password + "]",
         buttonText: {
           ok: 'Ok'
-          }
-          
+        }
+
       },
     });
     dialogRef.afterClosed().subscribe(res => {

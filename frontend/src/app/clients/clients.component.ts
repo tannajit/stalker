@@ -4,6 +4,7 @@ import { ClientInfoComponent } from '../client-info/client-info.component';
 import { ClientsService } from '../clients.service';
 import { MatPaginator, PageEvent} from '@angular/material/paginator'
 import { MatTableDataSource } from '@angular/material/table';
+import * as _ from 'lodash';
 import { Observable } from 'rxjs';
 
 
@@ -33,14 +34,13 @@ export class ClientsComponent implements OnInit {
   sectorNames = [];
   loggedUser;
   NomPrenom;
-  typePDVselected;
   detailType;
   IdClient;
   PhoneNumber;
   PDVType;
   sector;
   deleteStatus;
-  validate;
+  BackOfficeValid;
   nfc;
 
   ////*********** CONSTRUCTOR ********///////////// 
@@ -67,6 +67,7 @@ export class ClientsComponent implements OnInit {
   getClients() {
     // Replace with HTTP call
     this.dataSource = new MatTableDataSource<any>(this.clients.reverse());
+    console.log(this.dataSource)
     this.dataSource.paginator = this.paginator;
     this.data = this.clients;
     this.totalSize = this.data.length;
@@ -87,7 +88,6 @@ export class ClientsComponent implements OnInit {
     this.dataSource = part;
   }
 
-  //////////////////////////////////////////////
 
   ////*********** GET CLIENTS INFOS ***********/////
   public getAllClients() {
@@ -148,7 +148,11 @@ export class ClientsComponent implements OnInit {
         all.forEach(element => {
           console.log('---');
           const elm = JSON.parse(element.Valeur);
-          this.sectorNames.push(elm.properties.idSecteur)
+          var sect = {
+            'id': elm.properties.idSecteur,
+            'details': elm.properties.name +", "+elm.properties.idSecteur
+          }
+          this.sectorNames.push(sect)
           //this.AllSecteurs.push(elm.idSecteur);
         });
       };
@@ -158,6 +162,80 @@ export class ClientsComponent implements OnInit {
 
   openDialog(content) {
     this.dialogRef = this.dialog.open(ClientInfoComponent, { data: content });
+  }
+
+
+  searchID(filterValue: String){
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    console.log(this.dataSource.filter);
+    
+  }
+  // filterage based on pdv type select
+  onChangePDVType($event){
+    console.log($event.value)
+    if($event.value == 'all'){
+      console.log("pdv type = all")
+      // when we select all for pdvType 
+      let filtered=[]
+      _.filter(this.clients,(item) =>{
+        // console.log(item)
+          if( (this.nfc == 'all' || !this.nfc) && (this.sector == 'all' || !this.sector) && (this.BackOfficeValid == 'all' || !this.BackOfficeValid) && (this.deleteStatus == 'all' || !this.deleteStatus)){
+            // if we select all for pdv type and all others ar not selected
+            filtered = this.clients
+          }if(this.nfc && this.nfc != 'all' && (this.sector == 'all' || !this.sector) && (this.BackOfficeValid == 'all' || !this.BackOfficeValid) && (this.deleteStatus == 'all' || !this.deleteStatus)){
+            // if we select all for pdv type and select nfc only 
+            if(this.nfc == 'installed'){
+              if(item.geometry.properties.NFC != null){
+                filtered.push(item)
+              }
+            }if(this.nfc == 'not_inst'){
+              if(item.geometry.properties.NFC == null){
+                filtered.push(item)
+              }
+            }if(this.nfc == 'refused'){
+              
+              // status == pink
+                filtered.push(item)
+              
+            }
+            
+          }if((this.sector && this.sector != 'all') && (this.nfc == 'all' || !this.nfc) &&  (this.BackOfficeValid == 'all' || !this.BackOfficeValid) && (this.deleteStatus == 'all' || !this.deleteStatus)){
+            // if we select all for pdv type and select sector only
+            if(item.geometry.properties.idSecteur == this.sector){
+              filtered.push(item)
+            }
+          }if((this.BackOfficeValid && this.BackOfficeValid != 'all') && (this.sector == 'all' || !this.sector) && (this.nfc == 'all' || !this.nfc) &&  (this.deleteStatus == 'all' || !this.deleteStatus)){
+            // if we select all for pdv type and select back office validation only
+            if(this.BackOfficeValid=='valid'){
+              // status green
+            }if(this.BackOfficeValid=='refused'){
+              // status black
+            }if(this.BackOfficeValid=='waiting'){
+              // status purple
+            }
+          }if((this.deleteStatus  && this.deleteStatus != 'all') && (this.sector=='all' || !this.sector) && (this.nfc == 'all' || !this.nfc) &&  (this.BackOfficeValid == 'all' || !this.BackOfficeValid)){
+            // if we select all for pdv type and select sector only
+            if(this.deleteStatus=='deleted'){
+              // status deleted
+              filtered.push(item)
+
+            }
+          }
+      })
+      this.dataSource = new MatTableDataSource(filtered)
+      this.dataSource.paginator = this.paginator;
+      this.data = filtered;
+      this.totalSize = this.data.length;
+      console.log(this.totalSize)
+      this.iterator(); 
+    }
+  }
+
+  anotherArray = this.sectorNames;
+  filterListCareUnit(val) {
+    // console.log(val);
+    
+    this.sectorNames = this.anotherArray.filter((unit) => unit.details.toLowerCase().indexOf(val) > -1);
   }
 
   

@@ -88,7 +88,10 @@ export class LoginComponent implements OnInit {
     console.log("----localStorage----")
     console.log(localStorage)
     ///******* GET DATA  ******/
-    this.PutDataClient()
+   // this.PutDataClient()
+   this._router.navigate(['/map']).then(() => {
+    window.location.reload();
+  });
   }
 
   PutDataClient() {

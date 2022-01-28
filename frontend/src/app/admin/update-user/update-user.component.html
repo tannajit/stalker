@@ -62,6 +62,20 @@
                 </mat-form-field>                
                 
                 <button mat-button class="gen-btn" (click)="GeneratePassword()">Generate Password</button>
+<<<<<<< HEAD
+=======
+            </div>  
+            <div class="field"> 
+                 <label>Role :</label>
+                <mat-form-field>
+                    <mat-select  panelClass="selectPanel2"   (selectionChange)="onChange()" [(value)]="userInfo.role" >
+                        
+                        <div *ngFor="let rol of Roles" >
+                            <mat-option  value="{{rol.name}}">{{rol.name}}</mat-option>
+                            </div>
+                    </mat-select>
+                </mat-form-field>
+>>>>>>> 1397f6c51817111773b656d24feb694b9aa427ac
             </div>
             
 

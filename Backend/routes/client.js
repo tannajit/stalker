@@ -72,10 +72,7 @@ router.get('/', async function(req,res){
 
   }
   console.log(cursor)
-
   res.json(cursor)
-
-
 });
 
 router.post('/Add',async(req,res)=>{
@@ -86,11 +83,9 @@ router.post('/Add',async(req,res)=>{
 
 })
 
-
 router.post('/addClient',async (req,res)=>{
     res.status(200).json("done")
 })
-
 
 /// gridFS script 
 function getFileSystemItem(dbo,id) {
