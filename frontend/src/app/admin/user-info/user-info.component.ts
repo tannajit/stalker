@@ -100,7 +100,6 @@ export class UserInfoComponent implements OnInit {
           });
         });
 
-        console.log("idssssssss",this.Sectors)
 
         };
       };
@@ -109,35 +108,6 @@ export class UserInfoComponent implements OnInit {
       }   
     }
 
-  getSector() {
-    var sectors=this.data.data.sectors
-    if(!this.RoleActive()) {
-      sectors.forEach(element => {
-        console.log("idssssssss",element.nameSecteur)
-
-      });
-    }
-
-    // this._client.getAllSecteurs().subscribe(res => {
-    //   console.log(res)
-    //   res.forEach(element => {
-        
-    //     var idSector = Number(String(element.geometry.properties.idSecteur).slice(-2, -1))
-    //     console.log(idSector)
-    //     var machine = (idSector == 0) ? "Onion" : "CMG"
-    //     console.log(machine)
-    //     var result = element.geometry.properties.idSecteur + " - " + machine + " - " + element.geometry.properties.name
-    //     console.log(result)
-    //     var obj = {
-    //       id: element.geometry.properties.idSecteur,
-    //       detail: result
-    //     }
-    //     this.AllSectors.push(element.geometry.properties.idSecteur)
-    //     this.Sectors.push(obj)
-    //   });
-    // })
-
-  }
 
 
   deleteUser(user){
