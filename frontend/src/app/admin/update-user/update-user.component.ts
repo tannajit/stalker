@@ -175,7 +175,7 @@ export class UpdateUserComponent implements OnInit {
         const all = event.target.result;
         all.forEach(elm => {
           //console.log(elm)
-          var element = JSON.parse(elm.Valeur);
+          var element = elm.Valeur;
           /*var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
           console.log(idSector)
           var machine = (idSector == 0) ? "Onion" : "CMG"

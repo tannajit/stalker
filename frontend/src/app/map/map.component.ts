@@ -76,7 +76,7 @@ export class MapComponent implements AfterViewInit {
     this.getDataSector();
     this.map.addLayer(this.markerClusterSector)
     this.map.addLayer(this.markersCluster);
-    this.map.addLayer(this.DeletedMarkerCluster);
+    //this.map.addLayer(this.DeletedMarkerCluster);
     // this.getLocation()
     //this.getLocation1()
     this.map.addControl(L.control.zoom({ position: 'bottomleft' }));
@@ -211,10 +211,7 @@ export class MapComponent implements AfterViewInit {
       objectStoreRequest.onsuccess = event => {
         const all = event.target.result;
         this.markersCluster.clearLayers();
-        var i = 0;
         all.forEach((element, idx, array) => {
-          var marker;
-          i++;
           if (idx === array.length - 1) {
             if (this.dialogConf) {
               this.dialogConf.close()
@@ -224,11 +221,8 @@ export class MapComponent implements AfterViewInit {
           const elm = JSON.parse(element.Valeur);
           const Point = { _id: element._id, geometry: elm };
           const geojsonPoint: geojson.Point = Point.geometry;
-
           var iconClient = L.icon({ iconUrl: 'assets/' + Point.geometry.properties?.status + '.png', iconSize: [8, 8] });
-
-
-          marker = L.geoJSON(geojsonPoint, {
+         var  marker = L.geoJSON(geojsonPoint, {
             pointToLayer: (point, latlon) => {
               return L.marker(latlon, { icon: iconClient });
             }
@@ -281,11 +275,15 @@ export class MapComponent implements AfterViewInit {
         const all = event.target.result;
         this.markerClusterSector.clearLayers();
         all.forEach(element => {
-          const elm = JSON.parse(element.Valeur);
-          const Point = { _id: element._id, geometry: elm.info.geometry };
-          const marker = L.geoJSON(Point.geometry, { style: { color: '#CD9575', fillOpacity: 0.1 } });
-          marker.bindPopup(String(Point.geometry.properties.codeRegion));
-          // marker.addTo(this.map);
+          // var elm = JSON.parse(element.Valeur);
+          
+          //console.log(element)
+          var  Point = { _id: element._id, geometry: element.Valeur.info.geometry };
+          var  marker = L.geoJSON(Point.geometry, {  onEachFeature:  (feature, layer)=> {
+            layer.bindPopup(String(element._id));
+          },style: { color: '#CD9575', fillOpacity: 0.1 } });
+         // marker.bindPopup("<b>Hello world!</b><br>I am a popup.");
+      
           this.markerClusterSector.addLayer(marker);
           this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
         });
@@ -327,9 +325,6 @@ export class MapComponent implements AfterViewInit {
               transaction = db.transaction(['data'], 'readwrite');
               const objectStore = transaction.objectStore('data');
               const request = objectStore.put(geo);
-              request.onsuccess = function (event) {
-                console.log('done Adding');
-              };
             });
             this.getDataClient();
             // this.openAlertDialog("Synchronozation in process Please wait ")
@@ -357,19 +352,17 @@ export class MapComponent implements AfterViewInit {
         objectStoreRequest.onsuccess = (event) => {
           console.log("Data Cleared")
           res.forEach(element => {
-            console.log('***sector***');
-            console.log(element);
             delete element.points
             delete element.users
             ///
-            const geo = { _id: element.nameSecteur, Valeur: JSON.stringify(element) };
+            const geo = {_id: element.nameSecteur, Valeur: element };
             allclient.push(geo);
             transaction = db.transaction(['sector'], 'readwrite');
             const objectStore = transaction.objectStore('sector');
             const request = objectStore.put(geo);
-            request.onsuccess = function (event) {
-              console.log('done Adding Sector login');
-            };
+           /* request.onsuccess = function (event) {
+              //console.log('done Adding Sector ');
+            };*/
           });
           this.getDataSector();
         }
@@ -385,7 +378,7 @@ export class MapComponent implements AfterViewInit {
     this.PutDataSector()
     this.PutData();
     this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
-      disableClose: true
+      disableClose: false
     });
     this.dialogConf.componentInstance.confirmMessage = "sync"
     console.log('Synchronize (Get data from the Database)');

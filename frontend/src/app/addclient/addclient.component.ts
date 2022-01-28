@@ -276,7 +276,7 @@ export class AddclientComponent implements AfterViewInit {
         var objectStoreRequest = objectStore.get(Number(this.mySector));
         objectStoreRequest.onsuccess = (event) => {
           //console.log(objectStoreRequest.result)
-          var element=JSON.parse(objectStoreRequest.result.Valeur)
+          var element=objectStoreRequest.result.Valeur
           console.log(element)
           this.clientInfos.TypeDPV=element.typePDV[0]
          //this.selected=this.clientInfos.TypeDPV

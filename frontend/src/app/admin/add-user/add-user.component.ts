@@ -125,7 +125,7 @@ export class AddUserComponent implements OnInit {
           //console.log(elm)
           console.log("elmSectors",elm.Valeur)
 
-          var element = JSON.parse(elm.Valeur);
+          var element = elm.Valeur;
           var obj = {
             id: element.nameSecteur,
             detail: element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
