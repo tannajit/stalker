@@ -63,6 +63,18 @@
                 
                 <button mat-button class="gen-btn" (click)="GeneratePassword()">Generate Password</button>
             </div>
+
+            <div class="field" >
+                <label>Roles assigned :</label>
+                <mat-form-field >
+                    <mat-select  placeholder="Roles assigned : {{RolesOfUser.length}}"  panelClass="selectPanel2"  >   
+                        <div *ngFor="let rol of RolesOfUser | filterUnique" >
+                        
+                        <mat-option  disabled  value="{{rol}}">{{rol}}</mat-option>
+                        </div>
+                    </mat-select>
+                </mat-form-field>
+            </div>
             
 
 
@@ -73,7 +85,7 @@
                         <mat-select  panelClass="selectPanel2"   (selectionChange)="onChange()" [(value)]="userInfo.role" >
                             
                             <div *ngFor="let rol of Roles" >
-                                <mat-option  value="{{rol.name}}">{{rol.name}}</mat-option>
+                                <mat-option  value="{{rol}}">{{rol}}</mat-option>
                                 </div>
                         </mat-select>
                     </mat-form-field>
@@ -103,7 +115,7 @@
             </ng-template>
             <ng-template #showBlock2>
 
-                <div class="field" >
+                <!-- <div class="field" >
                     <label>Roles assigned :</label>
                     <mat-form-field >
                         <mat-select  placeholder="Roles assigned : {{RolesOfUser.length}}"  panelClass="selectPanel2"  >   
@@ -113,7 +125,7 @@
                             </div>
                         </mat-select>
                     </mat-form-field>
-                </div>
+                </div> -->
                 <div class="field" >
                     <label>Role  :</label>
                     <mat-form-field >

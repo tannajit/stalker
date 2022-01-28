@@ -158,12 +158,15 @@ export class UserInfoComponent implements OnInit {
   }
 
   updateUser(user){
+    this.adminService.getUserRoles(user.email).subscribe(rolesSelected=>{
+
       this._setting.getSettings('param=role').subscribe(res => {
         var Roles = res.details.roles
         console.log("Roles",Roles);
-        this._router.navigateByUrl('/updateUser', { state: { dataUser:user,AddRole:false,userid:user.UserID,userrole:user.role,roles:Roles} });
+        this._router.navigateByUrl('/updateUser', { state: { dataUser:user,AddRole:false,rolesSelected:rolesSelected,userid:user.UserID,userrole:user.role,roles:Roles} });
 
       })
+    })
 
 }
   

@@ -21,7 +21,7 @@ export class UpdateUserComponent implements OnInit {
 
   userInfo = this._router.getCurrentNavigation().extras.state.dataUser
   addNewRole = this._router.getCurrentNavigation().extras.state.AddRole
-  dataSource = this._router.getCurrentNavigation().extras.state.dataSource
+  // dataSource = this._router.getCurrentNavigation().extras.state.dataSource
   RolesOfUser= this._router.getCurrentNavigation().extras.state.rolesSelected
   ListOfRoles = [];
   RoleSelected = [];
@@ -61,12 +61,25 @@ export class UpdateUserComponent implements OnInit {
     this.searchUserForm = this.fb.group({
       userType: new FormControl('')
     });
-    if(!this.addNewRole){
 
-      this._setting.getSettings('param=role').subscribe(res => {
-        console.log("zmmme")
-        this.Roles = res.details.roles
-      })
+    this.RolesSource.forEach(element => {
+          
+      this.Roles.push(element.name)
+
+    });
+
+
+    this.RolesOfUser.forEach(element => {
+      console.log("gggggggg",element)
+      this.Roles.splice(this.Roles.indexOf(element),1)
+
+    });
+
+
+    console.log("this.RolesOfUser",this.RolesOfUser)
+
+    if(!this.addNewRole){
+      this.Roles.unshift(this.userInfo.role)
 
     }
     
@@ -77,16 +90,16 @@ export class UpdateUserComponent implements OnInit {
       // this.userInfo.role=null
       // this.SelectedSector=[]
       this.disabled=true;
-      this.RolesSource.forEach(element => {
+      // this.RolesSource.forEach(element => {
           
-        this.Roles.push(element.name)
+      //   this.Roles.push(element.name)
   
-      });
-      this.RolesOfUser.forEach(element => {
-        console.log("gggggggg",element)
-        this.Roles.splice(this.Roles.indexOf(element),1)
+      // });
+      // this.RolesOfUser.forEach(element => {
+      //   console.log("gggggggg",element)
+      //   this.Roles.splice(this.Roles.indexOf(element),1)
   
-      });
+      // });
     }
     
     console.log("#### DATASOURCE #####")
@@ -100,17 +113,7 @@ export class UpdateUserComponent implements OnInit {
     //console.log("this.Roles",this.Roles)
     this.FirstName = this.userInfo.nameU.split("-")[0]
     this.LastName = this.userInfo.nameU.split("-")[1]
-    //console.log()
-    // const UserIDAfficher= this.userInfo.UserID
-    // const RoleAfficher=this.userInfo.role
-    console.log("UserIDAfficher", this.UserID)
-    // console.log("RoleAfficher",RoleAfficher)
-    console.log("this.userInfo.role", this.role)
-    console.log("hdsddsddsdkdhfhh")
-    console.log("$$$$$$$$$$$$$$$$yarbi fawtoka amari fla takilni ila nafessi tarftata rayn")
-    console.log("those sectors hddjsk")
-    console.log(this.userInfo.sectors)
-    console.log("those sectors ")
+
     if(!this.addNewRole){
       this.userInfo.sectors.forEach(
 
@@ -154,45 +157,7 @@ export class UpdateUserComponent implements OnInit {
 
   }
 
- 
 
-  //// get Sector from IndexDB ///
-  // public getDataSector() {
-  //   console.log(" **************** GET sectors ***************")
-  //   let db; let transaction;
-  //   const request = window.indexedDB.open('off', this.version);
-  //   request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-  //     console.log('Why didn\'t you allow my web app to use IndexedDB?!');
-  //   };
-  //   request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-  //     db = event.target.result;
-  //     console.log('success');
-  //     //console.log(db);
-  //     transaction = db.transaction(['sector'], 'readwrite');
-  //     const objectStore = transaction.objectStore('sector');
-  //     const objectStoreRequest = objectStore.getAll();
-  //     objectStoreRequest.onsuccess = event => {
-  //       const all = event.target.result;
-  //       all.forEach(elm => {
-  //         var  element = JSON.parse(elm.Valeur);
-  //         //console.log(element)
-  //         var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
-  //         //console.log(idSector)
-  //         var machine = (idSector == 0) ? "Onion" : "CMG"
-  //         //console.log(machine)
-  //         var result = element.properties.idSecteur + " - " + machine + " - " + element.properties.name
-  //         console.log(result)
-  //         var obj = {
-  //           id: element.properties.idSecteur,
-  //           detail: result
-  //         }
-  //         this.AllSectors.push(element.properties.idSecteur)
-          
-  //         this.Sectors.push(obj)
-  //       });
-  //     };
-  //   };
-  // }
   public getDataSector() {
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
@@ -275,7 +240,7 @@ export class UpdateUserComponent implements OnInit {
     }
 
     });
-    console.log("active",active);
+    // console.log("active",active);
     return active;
   }
 
@@ -297,20 +262,18 @@ export class UpdateUserComponent implements OnInit {
     }
 
     });
-    console.log("active",active);
     return active;
   }
  
  
 
   onChange() {
-    console.log("this.SelectedSector",this.SelectedSector)
-    console.log("this.SelectedSector",this.AllSectors)
 
     if(!this.RoleActive()){
 
       this.SelectedSector=this.AllSectors
     }
+    console.log("this.SelectedSector",this.SelectedSector)
     // if (this.role != this.userInfo.role) {
     //   this.SetUserID()
     // }
