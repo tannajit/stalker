@@ -29,6 +29,7 @@ export class UsersComponent implements OnInit {
   roles=[]
   Sectors=[]
   AllSectors=[]
+  version=6;
   dataSource;
   columnsToDisplay = ['Name','CIN','Phone Number', 'Email', 'Role','Status', 'Actions'];
   dataSubject = new BehaviorSubject<Element[]>([]);
@@ -53,24 +54,58 @@ export class UsersComponent implements OnInit {
     console.log("###"+this.selectedStatus)
   }
 
-  getAllSectors(){
-    this._client.getAllSecteurs().subscribe(res => {
-      console.log(res)
-      res.forEach(element => {
-        var idSector = Number(String(element.geometry.properties.idSecteur).slice(-2, -1))
-        //console.log(idSector)
-        var machine = (idSector == 0) ? "Onion" : "CMG"
-        //console.log(machine)
-        var result = element.geometry.properties.idSecteur + " - " + machine + " - " + element.geometry.properties.name
-        //console.log(result)
-        var obj={
-          id:element.geometry.properties.idSecteur,
-          detail:result
-        }
-        this.AllSectors.push(element.geometry.properties.idSecteur)
-        this.Sectors.push(obj)
-      });
-    })
+  // getAllSectors(){
+  //   this._client.getAllSecteurs().subscribe(res => {
+  //     console.log(res)
+  //     res.forEach(element => {
+  //       var idSector = Number(String(element.geometry.properties.idSecteur).slice(-2, -1))
+  //       //console.log(idSector)
+  //       var machine = (idSector == 0) ? "Onion" : "CMG"
+  //       //console.log(machine)
+  //       var result = element.geometry.properties.idSecteur + " - " + machine + " - " + element.geometry.properties.name
+  //       //console.log(result)
+  //       var obj={
+  //         id:element.geometry.properties.idSecteur,
+  //         detail:result
+  //       }
+  //       this.AllSectors.push(element.geometry.properties.idSecteur)
+  //       this.Sectors.push(obj)
+  //     });
+  //   })
+  // }
+  public getAllSectors() {
+    let db; let transaction;
+    const request = window.indexedDB.open('off', this.version);
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+      console.log('Why didn\'t you allow my web app to use IndexedDB?!');
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
+      console.log('success');
+      console.log(db);
+      transaction = db.transaction(['sector'], 'readwrite');
+      const objectStore = transaction.objectStore('sector');
+      const objectStoreRequest = objectStore.getAll();
+      objectStoreRequest.onsuccess = event => {
+        const all = event.target.result;
+        all.forEach(elm => {
+          //console.log(elm)
+          var element = JSON.parse(elm.Valeur);
+          /*var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
+          console.log(idSector)
+          var machine = (idSector == 0) ? "Onion" : "CMG"
+          console.log(machine)
+          var result = element.properties.idSecteur + " - " + machine + " - " + element.properties.name
+          console.log(result)*/
+          var obj = {
+            id: element.nameSecteur,
+            detail: element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
+          }
+          this.AllSectors.push(obj.id)
+          this.Sectors.push(obj)
+        });
+      };
+    };
   }
 
   getRoles(){
