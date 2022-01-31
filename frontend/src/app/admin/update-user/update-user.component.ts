@@ -273,6 +273,11 @@ export class UpdateUserComponent implements OnInit {
 
       this.SelectedSector=this.AllSectors
     }
+
+    if(this.RoleActive()){
+
+      this.SelectedSector=[]
+    }
     console.log("this.SelectedSector",this.SelectedSector)
     // if (this.role != this.userInfo.role) {
     //   this.SetUserID()
@@ -440,8 +445,7 @@ export class UpdateUserComponent implements OnInit {
 
   AddNewRole() {
     console.log("mmmmmmmmmmmmmmmm")
-    this.SelectedSector2 = []
-    if (this.RoleSelected.includes(this.role2)) {
+     if (this.RoleSelected.includes(this.role2)) {
       this.Roles.splice(this.Roles.indexOf(this.role2), 1);
     }
     this.role2 = ""

@@ -95,7 +95,7 @@
                     <label>Sector :</label>
                     <form [formGroup]="searchUserForm">
                         <mat-form-field>
-                            <mat-select placeholder="select" formControlName="userType" multiple [(ngModel)]="SelectedSector">
+                            <mat-select placeholder="select" formControlName="userType"  multiple [(ngModel)]="SelectedSector">
                                 <mat-option>
                                     <ngx-mat-select-search placeholderLabel="Search" (keyup)="filterListCareUnit($event.target.value)" ></ngx-mat-select-search>
                                 </mat-option>
