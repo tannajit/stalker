@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AlertDialogComponent } from 'src/app/alert-dialog/alert-dialog.component';
-import { AdminService } from '../admin/admin.service';
-import { UserRoleComponent } from '../admin/user-role/user-role.component';
+import { AdminService } from '../admin.service';
+import { UserRoleComponent } from '../user-role/user-role.component';
 
 @Component({
   selector: 'app-add-role',
@@ -22,6 +22,7 @@ export class AddRoleComponent implements OnInit {
   ]
 
   role
+  sectors
   selectedPermissions = [];
   constructor(
     private _admin: AdminService,
@@ -35,6 +36,7 @@ export class AddRoleComponent implements OnInit {
   addRole(){
     var roleToAdd={
       'role': this.role,
+      'sectors': this.sectors,
       'permissions': this.selectedPermissions
     }
     this._admin.addRole(roleToAdd).subscribe(res=>{

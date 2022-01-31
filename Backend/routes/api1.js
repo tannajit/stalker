@@ -1254,7 +1254,7 @@ router.post('/updateRole', async (req, res) => {
     //     }}} )
     var updated = await collection.updateOne(
         { proprety: "role", "details.roles.name": role.role },
-        { $set: { "details.roles.$.permissions": role.permissions } })
+        { $set: { "details.roles.$.permissions": role.permissions,"details.roles.$.sectors": role.sectors} })
     console.log(updated)
     res.status(200).json(updated)
 })
@@ -1267,11 +1267,22 @@ router.post('/addRole', async (req, res) => {
 
     var updated = await collection.updateOne(
         { proprety: "role" },
-        { $addToSet: { "details.roles": { 'name': role.role, 'permissions': role.permissions } } })
+        { $addToSet: { "details.roles": { 'name': role.role, 'permissions': role.permissions, 'sectors': role.sectors } } })
     console.log(updated)
     res.status(200).json(updated)
 })
 
+router.post('/deleteRole', async(req,res)=>{
+    let role = req.body.request
+    console.log(role)
+    let collection = db.collection("settings")
+    var updated = await collection.updateOne(
+        { proprety: "role" },
+        { $pull:{ "details.roles": {name: role.name}}})
+    console.log(updated)
+    res.status(200).json(updated)
+    
+})
 router.get('/UserRoles/:email', async (req, res) => {
     let email = req.params.email
     let listOfRoles = []

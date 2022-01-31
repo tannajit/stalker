@@ -20,6 +20,7 @@ export class AdminService {
   private _addRole = this.uri + "/api1/addRole"
   private _getUserRoles = this.uri + "/api1/UserRoles"
   private _deleteClient =this.uri+"/api1/ValidateDeleteClient"
+  private _deleteRole = this.uri+"/api1/deleteRole"
 
   currentUser;
 
@@ -81,6 +82,10 @@ export class AdminService {
   updateRole(role){
     console.log(role)
     return this.http.post<any>(this._updateRole,{request:role});
+  }
+  deleteRole(role){
+    console.log(role)
+    return this.http.post<any>(this._deleteRole, {request:role});
   }
 
   addRole(role){
