@@ -110,13 +110,14 @@ export class MapComponent implements AfterViewInit {
   ngOnDestroy() {
     this.destroyed.next();
     this.destroyed.complete();
+    
   }
 
   WatchPosition() {
     navigator.geolocation.watchPosition((pos) => {
       // console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
       console.log("watch")
-      let raduis = 2000;
+      let raduis = 5000;
       if (this.myCercle !== undefined) {
         this.map.removeLayer(this.myCercle)
       }
@@ -221,6 +222,7 @@ export class MapComponent implements AfterViewInit {
           const elm = JSON.parse(element.Valeur);
           const Point = { _id: element._id, geometry: elm };
           const geojsonPoint: geojson.Point = Point.geometry;
+          console.log(Point.geometry.properties?.status)
           var iconClient = L.icon({ iconUrl: 'assets/' + Point.geometry.properties?.status + '.png', iconSize: [8, 8] });
          var  marker = L.geoJSON(geojsonPoint, {
             pointToLayer: (point, latlon) => {

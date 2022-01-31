@@ -87,27 +87,14 @@ export class UpdateUserComponent implements OnInit {
     
     
     if(this.addNewRole){
-      // this.userInfo.role=null
-      // this.SelectedSector=[]
+
       this.disabled=true;
-      // this.RolesSource.forEach(element => {
-          
-      //   this.Roles.push(element.name)
-  
-      // });
-      // this.RolesOfUser.forEach(element => {
-      //   console.log("gggggggg",element)
-      //   this.Roles.splice(this.Roles.indexOf(element),1)
-  
-      // });
+
     }
     
     console.log("#### DATASOURCE #####")
     console.log(this.userInfo)
-    
-    //this.adminService.getAllUsers().subscribe(res=>{console.log("sectors",res)})
 
-    //this.userInfo = this.adminService.getUserInfo() 
     console.log("userInfo")
     console.log("this.Roles",this.Roles)
     //console.log("this.Roles",this.Roles)
@@ -174,14 +161,8 @@ export class UpdateUserComponent implements OnInit {
       objectStoreRequest.onsuccess = event => {
         const all = event.target.result;
         all.forEach(elm => {
-          //console.log(elm)
           var element = elm.Valeur;
-          /*var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
-          console.log(idSector)
-          var machine = (idSector == 0) ? "Onion" : "CMG"
-          console.log(machine)
-          var result = element.properties.idSecteur + " - " + machine + " - " + element.properties.name
-          console.log(result)*/
+
           var obj = {
             id: element.nameSecteur,
             detail: element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
@@ -211,18 +192,7 @@ export class UpdateUserComponent implements OnInit {
     this.userInfo.password = (Math.random() + 1).toString(36).substring(2);
 
   }
-  // RoleActive() {
-  //   if (this.userInfo.role === "Seller") {
-  //     return true;
-  //   }
-  //   else if (this.userInfo.role === "Supervisor") { return true; }
-  //   else if (this.userInfo.role === "Auditor") { return true; }
-  //   else {
-  //     //this.SectorAffacted=this.AllSectors;
-  //     return false;
-  //   }
-    
-  // }
+
 
   RoleActive() {
     var active;
@@ -279,12 +249,7 @@ export class UpdateUserComponent implements OnInit {
       this.SelectedSector=[]
     }
     console.log("this.SelectedSector",this.SelectedSector)
-    // if (this.role != this.userInfo.role) {
-    //   this.SetUserID()
-    // }
-    // if (this.role === this.userInfo.role) {
-    //   this.userInfo.UserID = this.UserID
-    // }
+
 
   }
   //// Set User ID 
@@ -419,16 +384,7 @@ export class UpdateUserComponent implements OnInit {
       obj.value = this.AllSectors
 
     }
-    // if (this.role === "Admin" || this.role === "Controler" || this.role === "Back Office" ) {
 
-    //   obj.value = this.AllSectors
-
-    // }
-    // if (this.role2 != "Seller" || this.role2 != "Auditor" || this.role2 != "Supervisor" ) {
-
-    //   obj.value = this.AllSectors
-
-    // }
     console.log("this.obj", obj)
 
     this.upsert(this.ListOfRoles, obj)
