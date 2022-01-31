@@ -20,15 +20,21 @@ export class UpdateUserComponent implements OnInit {
   @ViewChild('allSelected') private allSelected: MatOption;
 
   userInfo = this._router.getCurrentNavigation().extras.state.dataUser
-  dataSource = this._router.getCurrentNavigation().extras.state.dataSource
+  addNewRole = this._router.getCurrentNavigation().extras.state.AddRole
+  // dataSource = this._router.getCurrentNavigation().extras.state.dataSource
+  RolesOfUser= this._router.getCurrentNavigation().extras.state.rolesSelected
+  ListOfRoles = [];
+  RoleSelected = [];
   UserInfoUp
   FirstName;
   LastName;
-  Roles;
+  RolesSource = this._router.getCurrentNavigation().extras.state.roles;
+  Roles =[];
   role = this.userInfo.role
+  role2;
+  SelectedSector2=[];
   hidpass = true
   SelectedSector = [];
-  test = []
   SectorsAttached = [];
   AllSectors = [];
   Sectors = []
@@ -40,6 +46,7 @@ export class UpdateUserComponent implements OnInit {
   setUserID
   searchUserForm: FormGroup;
   version=6;
+  disabled=false
 
   constructor(
     private _setting: SettingsService,
@@ -55,44 +62,102 @@ export class UpdateUserComponent implements OnInit {
       userType: new FormControl('')
     });
 
+    this.RolesSource.forEach(element => {
+          
+      this.Roles.push(element.name)
+
+    });
+
+
+    this.RolesOfUser.forEach(element => {
+      console.log("gggggggg",element)
+      this.Roles.splice(this.Roles.indexOf(element),1)
+
+    });
+
+
+    console.log("this.RolesOfUser",this.RolesOfUser)
+
+    if(!this.addNewRole){
+      this.Roles.unshift(this.userInfo.role)
+
+    }
+    
+    
+    
+    
+    if(this.addNewRole){
+      // this.userInfo.role=null
+      // this.SelectedSector=[]
+      this.disabled=true;
+      // this.RolesSource.forEach(element => {
+          
+      //   this.Roles.push(element.name)
+  
+      // });
+      // this.RolesOfUser.forEach(element => {
+      //   console.log("gggggggg",element)
+      //   this.Roles.splice(this.Roles.indexOf(element),1)
+  
+      // });
+    }
+    
     console.log("#### DATASOURCE #####")
-    console.log(this.dataSource)
+    console.log(this.userInfo)
+    
     //this.adminService.getAllUsers().subscribe(res=>{console.log("sectors",res)})
 
     //this.userInfo = this.adminService.getUserInfo() 
     console.log("userInfo")
-    console.log(this.userInfo)
+    console.log("this.Roles",this.Roles)
+    //console.log("this.Roles",this.Roles)
     this.FirstName = this.userInfo.nameU.split("-")[0]
     this.LastName = this.userInfo.nameU.split("-")[1]
-    //console.log()
-    // const UserIDAfficher= this.userInfo.UserID
-    // const RoleAfficher=this.userInfo.role
-    console.log("UserIDAfficher", this.UserID)
-    // console.log("RoleAfficher",RoleAfficher)
-    console.log("this.userInfo.role", this.role)
 
-    // if(RoleAfficher!=this.userInfo.role){
-    //   this.userInfo.UserID=this.userInfo.UserID
+    if(!this.addNewRole){
+      this.userInfo.sectors.forEach(
 
-    // }if(RoleAfficher === this.userInfo.role){
-    //   this.userInfo.UserID = UserIDAfficher
+      el => 
+      { 
+      console.log(el)
+      console.log("those 1 ")
+      this.SelectedSector.push(el.nameSecteur) 
+      }
 
-    // }
-
-
-    this.userInfo.sectors.forEach(el => { this.SelectedSector.push(el.nameSecteur) });
-    this.SectorsAttached = this.SelectedSector
-
-    console.log("SelectedSector", this.SelectedSector)
-    this._setting.getSettings('param=role').subscribe(res => {
-      this.Roles = res.details.roles
-      console.log(res)
-    })
+    );
+      this.SectorsAttached = this.SelectedSector
+    }
+    
 
     this.getDataSector()
   }
+  SectorAffacted;
+  
+  UserInfo2
 
-  //// get Sector from IndexDB ///
+  SendUser() {
+
+    this.UserInfo2 = {
+      userinfo: {
+        UserID: this.userInfo.UserID,
+        name: this.FirstName + "-" + this.LastName,
+        phone: this.userInfo.phone,
+        CIN: this.userInfo.CIN,
+        email: this.userInfo.email,
+        password: this.userInfo.password,
+        status: "Active",
+        existe:true
+      },
+      SectorsByRoles: this.ListOfRoles
+    }
+    console.log("result", this.UserInfo2)
+    this._setting.CreateUser(this.UserInfo2).subscribe(res => {
+      this.openAlertDialog2()
+    })
+
+  }
+
+
   public getDataSector() {
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
@@ -109,25 +174,27 @@ export class UpdateUserComponent implements OnInit {
       objectStoreRequest.onsuccess = event => {
         const all = event.target.result;
         all.forEach(elm => {
-          var  element = JSON.parse(elm.Valeur);
-          console.log(element)
-          var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
+          //console.log(elm)
+          var element = elm.Valeur;
+          /*var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
           console.log(idSector)
           var machine = (idSector == 0) ? "Onion" : "CMG"
           console.log(machine)
           var result = element.properties.idSecteur + " - " + machine + " - " + element.properties.name
-          console.log(result)
+          console.log(result)*/
           var obj = {
-            id: element.properties.idSecteur,
-            detail: result
+            id: element.nameSecteur,
+            detail: element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
           }
-          this.AllSectors.push(element.properties.idSecteur)
+          this.AllSectors.push(obj.id)
           this.Sectors.push(obj)
         });
       };
     };
   }
   ////
+
+  
 
   GenerateEmail() {
     var i = 0;
@@ -139,32 +206,80 @@ export class UpdateUserComponent implements OnInit {
   }
 
   GeneratePassword() {
-    console.log(this.SelectedSector)
     this.hidpass = false
     this.generated = true;
     this.userInfo.password = (Math.random() + 1).toString(36).substring(2);
 
   }
+  // RoleActive() {
+  //   if (this.userInfo.role === "Seller") {
+  //     return true;
+  //   }
+  //   else if (this.userInfo.role === "Supervisor") { return true; }
+  //   else if (this.userInfo.role === "Auditor") { return true; }
+  //   else {
+  //     //this.SectorAffacted=this.AllSectors;
+  //     return false;
+  //   }
+    
+  // }
+
   RoleActive() {
-    if (this.userInfo.role == "Seller") {
-      return true;
+    var active;
+    this.RolesSource.forEach(el => {
+      
+      if(el.name==this.userInfo.role) {
+     
+      switch(el.sectors){
+
+        case 'limited':active= true;
+        break;
+        case 'all':active = false;
+        break;
+      } 
     }
-    else if (this.userInfo.role == "Supervisor") { return true; }
-    else if (this.userInfo.role == "Auditor") { return true; }
-    else {
-      //this.SectorAffacted=this.AllSectors;
-      return false;
-    }
+
+    });
+    // console.log("active",active);
+    return active;
   }
+
+  RoleActive2() {
+    var active;
+    this.RolesSource.forEach(el => {
+      
+      console.log("sectors",el)
+
+      if(el.name==this.role2) {
+     
+      switch(el.sectors){
+
+        case 'limited':active= true;
+        break;
+        case 'all':active = false;
+        break;
+      } 
+    }
+
+    });
+    return active;
+  }
+ 
+ 
 
   onChange() {
 
-    if (this.role != this.userInfo.role) {
-      this.SetUserID()
+    if(!this.RoleActive()){
+
+      this.SelectedSector=this.AllSectors
     }
-    if (this.role === this.userInfo.role) {
-      this.userInfo.UserID = this.UserID
-    }
+    console.log("this.SelectedSector",this.SelectedSector)
+    // if (this.role != this.userInfo.role) {
+    //   this.SetUserID()
+    // }
+    // if (this.role === this.userInfo.role) {
+    //   this.userInfo.UserID = this.UserID
+    // }
 
   }
   //// Set User ID 
@@ -220,7 +335,22 @@ export class UpdateUserComponent implements OnInit {
   openAlertDialog() {
     const dialogRef = this.dialog.open(AlertDialogComponent, {
       data: {
-        message: "User has been updated. Please Copy this credentials before Exit \n " + "[Email:" + this.userInfo.email + "-" + "Password:" + this.userInfo.password + "]",
+        message: "User has been added sucssefuly. Please Copy this credentials before Exit \n " + "[Email:" + this.userInfo.email + "-" + "Password:" + this.userInfo.password + "]",
+        buttonText: {
+          ok: 'Done',
+        }
+      }
+
+    }).afterClosed().subscribe(result => {
+      this._router.navigate(['/users'])
+    });
+    ;
+  }
+
+  openAlertDialog2() {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        message: "User has been added successfully",
         buttonText: {
           ok: 'Done',
         }
@@ -269,5 +399,92 @@ export class UpdateUserComponent implements OnInit {
       this.searchUserForm.controls.userType.patchValue([]);
     }
   }
+  Disabled = false
+
+  onChange2() {
+
+    this.selected = this.role2
+    console.log("ùùùùùùùùùùùùùùùùùùùùùùù",this.SelectedSector2)
+    const obj = { role: this.role2, value: null }
+    if (this.SelectedSector.length != 0) {
+      obj.value = this.SelectedSector
+    }
+    if (this.SelectedSector.length ==0 ) {
+
+      obj.value = this.AllSectors
+
+    }
+    // if (this.role === "Admin" || this.role === "Controler" || this.role === "Back Office" ) {
+
+    //   obj.value = this.AllSectors
+
+    // }
+    // if (this.role2 != "Seller" || this.role2 != "Auditor" || this.role2 != "Supervisor" ) {
+
+    //   obj.value = this.AllSectors
+
+    // }
+    console.log("this.obj", obj)
+
+    this.upsert(this.ListOfRoles, obj)
+
+    console.log("ListOfRules", this.ListOfRoles)
+
+    if (!this.RoleSelected.includes(this.role2)) {
+      this.RoleSelected.push(this.role2);
+    }
+
+    this.Disabled = this.RoleSelected.includes(this.role2)
+
+  }
+
+  AddNewRole() {
+    console.log("mmmmmmmmmmmmmmmm")
+    this.SelectedSector2 = []
+    if (this.RoleSelected.includes(this.role2)) {
+      this.Roles.splice(this.Roles.indexOf(this.role2), 1);
+    }
+    this.role2 = ""
+
+    // var i=1
+    // this.AddRoles.push(i++);
+
+  }
+
+  RemoveRole(role2) {
+
+
+    this.RoleSelected.splice(this.RoleSelected.indexOf(role2), 1);
+
+    this.ListOfRoles.forEach(el => {
+
+      if (el.role === role2) {
+        this.ListOfRoles.splice(this.ListOfRoles.indexOf(el), 1);
+      }
+
+    })
+
+    this.Roles.push(role2);
+
+    if (this.RoleSelected.length == 0) this.role2 = ""
+
+  }
+
+
+  upsert(array, item) { // (1)
+    const i = array.findIndex(_item => _item.role === item.role);
+    if (i > -1) array[i] = item; // (2)
+    else array.push(item);
+  }
+
+
+
+  upsertRole(array, item) { // (1)
+
+    if (array.indexOf(item) === -1) {
+      array.push(item);
+    }
+  }
+
 
 }

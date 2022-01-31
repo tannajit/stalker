@@ -1,7 +1,13 @@
 <div class="adduser-container">
     <div class="holder">
         <div class="title-holder">
-            <h1 class="title">Update User</h1>
+            <ng-template  [ngIf]="addNewRole!=1"  [ngIfElse]="showBlock"> 
+                <h1 class="title">Update User</h1>
+            </ng-template>
+            <ng-template #showBlock>
+                <h1 class="title">Add New Role</h1>
+            </ng-template>
+
         </div>
         <div class="add-form">
             
@@ -9,39 +15,40 @@
                 <label>First Name :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input placeholder="Type the First name..." matInput [(ngModel)]="FirstName" />
+                <input [disabled]="disabled" placeholder="Type the First name..." matInput [(ngModel)]="FirstName" />
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>Last Name :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input placeholder="Type the Last name..." matInput [(ngModel)]="LastName" />
+                    <input [disabled]="disabled" placeholder="Type the Last name..." matInput [(ngModel)]="LastName" />
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>CIN :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input placeholder="Type the CIN..." matInput [(ngModel)]="userInfo.CIN" />
+                    <input [disabled]="disabled" placeholder="Type the CIN..." matInput [(ngModel)]="userInfo.CIN" />
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>Phone Number :</label>
                 <mat-form-field>
                     <!-- <mat-label>Id User</mat-label> -->
-                    <input placeholder="Type the phone number..." matInput [(ngModel)]="userInfo.phone" />
+                    <input [disabled]="disabled" placeholder="Type the phone number..." matInput [(ngModel)]="userInfo.phone" />
                 </mat-form-field>
             </div>
             <div class="field">
                 <label>Email :</label>
                 <mat-form-field>
                     <mat-label>Id User</mat-label>
-                    <input matInput placeholder="Type the email" type="email" [(ngModel)]="userInfo.email" disabled />
+                    <input [disabled]="disabled" matInput placeholder="Type the email" type="email" [(ngModel)]="userInfo.email" disabled />
                 </mat-form-field>
                 <!-- <button mat-button class="gen-btn" (click)="GenerateEmail()">Generate Email</button> -->
             </div>
-            <div class="field">
+            
+            <div *ngIf="!addNewRole" class="field">
                 <label>Password :</label>
                     <mat-form-field >
                         <mat-label>Id User</mat-label> 
@@ -55,49 +62,122 @@
                 </mat-form-field>                
                 
                 <button mat-button class="gen-btn" (click)="GeneratePassword()">Generate Password</button>
-            </div>  
-            <div class="field"> 
-                 <label>Role :</label>
-                <mat-form-field>
-                    <mat-select  panelClass="selectPanel2"   (selectionChange)="onChange()" [(value)]="userInfo.role" >
+            </div>
+
+            <div class="field" >
+                <label>Roles assigned :</label>
+                <mat-form-field >
+                    <mat-select  placeholder="Roles assigned : {{RolesOfUser.length}}"  panelClass="selectPanel2"  >   
+                        <div *ngFor="let rol of RolesOfUser | filterUnique" >
                         
-                        <div *ngFor="let rol of Roles" >
-                            <mat-option  value="{{rol.name}}">{{rol.name}}</mat-option>
-                            </div>
+                        <mat-option  disabled  value="{{rol}}">{{rol}}</mat-option>
+                        </div>
                     </mat-select>
                 </mat-form-field>
             </div>
-            <!-- <div class="field" *ngIf="RoleActive()">
-                <label>Sector :</label>
-                <mat-form-field >
-                    <mat-select placeholder="select" multiple  panelClass="selectPanel2" value="SelectedSector" [(ngModel)]="SelectedSector">
-                        <div *ngFor="let sector of Sectors">
-                            <mat-option value="{{sector.id}}">{{sector.detail}}</mat-option>
-                            </div>
-                    </mat-select>
-                </mat-form-field>
-            </div> -->
-            <div class="field" *ngIf="RoleActive()">
-                <label>Sector :</label>
-                <form [formGroup]="searchUserForm">
+            
+
+
+            <ng-template  [ngIf]="!addNewRole" [ngIfElse]="showBlock2"> 
+                <div class="field" > 
+                     <label>Role :</label>
                     <mat-form-field>
-                        <mat-select placeholder="select" formControlName="userType" multiple [(ngModel)]="SelectedSector">
-                            <mat-option>
-                                <ngx-mat-select-search placeholderLabel="Search" (keyup)="filterListCareUnit($event.target.value)" ></ngx-mat-select-search>
-                            </mat-option>
-                            <mat-option #allSelected (click)="toggleAllSelection()" [value]="0">Select all</mat-option>
-                            <mat-option *ngFor="let sector of Sectors" [value]="sector.id"
-                                (click)="togglePerOne(allSelected.viewValue)">
-                                {{sector.detail}}
-                            </mat-option>
+                        <mat-select  panelClass="selectPanel2"   (selectionChange)="onChange()" [(value)]="userInfo.role" >
+                            
+                            <div *ngFor="let rol of Roles" >
+                                <mat-option  value="{{rol}}">{{rol}}</mat-option>
+                                </div>
                         </mat-select>
                     </mat-form-field>
-                </form>
-                <!-- <label>Total of Sector :</label> -->
-                <input type="text" value="Number of sectors  : {{SelectedSector.length}}" disabled />
+                </div>
 
-            </div>
-            <div class="btns">
+                <div class="field" *ngIf="RoleActive()">
+                    <label>Sector :</label>
+                    <form [formGroup]="searchUserForm">
+                        <mat-form-field>
+                            <mat-select placeholder="select" formControlName="userType" multiple [(ngModel)]="SelectedSector">
+                                <mat-option>
+                                    <ngx-mat-select-search placeholderLabel="Search" (keyup)="filterListCareUnit($event.target.value)" ></ngx-mat-select-search>
+                                </mat-option>
+                                <mat-option #allSelected (click)="toggleAllSelection()" [value]="0">Select all</mat-option>
+                                <mat-option *ngFor="let sector of Sectors" [value]="sector.id"
+                                    (click)="togglePerOne(allSelected.viewValue)">
+                                    {{sector.detail}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </form>
+                    <input type="text" value="Number of sectors  : {{SelectedSector.length}}" disabled />
+    
+                </div>
+
+
+            </ng-template>
+            <ng-template #showBlock2>
+
+                <!-- <div class="field" >
+                    <label>Roles assigned :</label>
+                    <mat-form-field >
+                        <mat-select  placeholder="Roles assigned : {{RolesOfUser.length}}"  panelClass="selectPanel2"  >   
+                            <div *ngFor="let rol of RolesOfUser | filterUnique" >
+                            
+                            <mat-option  disabled  value="{{rol}}">{{rol}}</mat-option>
+                            </div>
+                        </mat-select>
+                    </mat-form-field>
+                </div> -->
+                <div class="field" >
+                    <label>Role  :</label>
+                    <mat-form-field >
+                        <mat-select  placeholder="select"  panelClass="selectPanel2"  (selectionChange)="onChange2()" [(ngModel)]="role2" >   
+                            <div *ngFor="let rol of Roles | filterUnique" >
+                            <mat-option   value="{{rol}}">{{rol}}</mat-option> 
+                            </div>
+                        </mat-select>
+                    </mat-form-field>
+                    <button mat-button class="gen-btn" *ngIf="RoleSelected.length!=0"  (click)="AddNewRole()">Add Role</button>
+
+                </div>
+                <div class="field" *ngIf="RoleActive2()">
+                    <label>Sector :</label>
+                    <form [formGroup]="searchUserForm">
+                        <mat-form-field>
+                            <mat-select placeholder="select" formControlName="userType" multiple (selectionChange)="onChange2()" [(ngModel)]="SelectedSector2">
+                                <!-- <mat-label>Filter</mat-label>
+                                <input class="nmi" placeholder="Ex.901010181" matInput (keyup)="filterListCareUnit($event.target.value)" > -->
+                                <mat-option>
+                                    <ngx-mat-select-search placeholderLabel="Search" (keyup)="filterListCareUnit($event.target.value)" ></ngx-mat-select-search>
+                                </mat-option>
+                                <mat-option #allSelected (click)="toggleAllSelection()" [value]="0">Select all</mat-option>
+                                <mat-option  *ngFor="let sector of Sectors" [value]="sector.id"
+                                    (click)="togglePerOne(allSelected.viewValue)">
+                                    {{sector.detail}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </form>
+                    <input type="text" value="Number of sectors  : {{SelectedSector2.length}}" disabled />
+
+                </div>
+
+                <div class="roles-container" *ngIf="RoleSelected.length!=0">
+                    <ng-container *ngFor="let rol of RoleSelected">
+                        <div class="role-row">
+                            <p>{{rol}}</p>
+                            <mat-icon (click)="RemoveRole(rol)">clear</mat-icon>
+                        </div>
+                    </ng-container>
+    
+                </div>
+
+                <div class="btns" *ngIf="addNewRole" >
+                    <button class="btn-red" mat-button routerLink="/users">Cancel</button>
+                    <button class="btn-green" mat-button (click)="SendUser()">Add</button>
+                </div>
+
+            </ng-template>  
+    
+            <div class="btns" *ngIf="!addNewRole">
                 <button class="btn-red" mat-button routerLink="/users">Cancel</button>
                 <button class="btn-green" mat-button (click)="UpdateUser()">Update</button>
             </div>

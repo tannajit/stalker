@@ -41,6 +41,7 @@ export class AddclientComponent implements AfterViewInit {
   nfcShown: boolean = false;
   hide: boolean = false;// hidden by default
   test: boolean = false;
+  TypesPDVs=[]
   map;
   loggedUser;
   lat = 33.2607691
@@ -263,7 +264,31 @@ export class AddclientComponent implements AfterViewInit {
       this.mySector = params.get('sector')
       console.log("mysector" + this.mySector)
       this.clientInfos.sector = this.mySector
+      var db, transaction;
+    var request = window.indexedDB.open("off", this.version)
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+      console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
+      transaction = db.transaction(['sector'], 'readwrite');
+      var objectStore = transaction.objectStore("sector");
+        var objectStoreRequest = objectStore.get(Number(this.mySector));
+        objectStoreRequest.onsuccess = (event) => {
+          //console.log(objectStoreRequest.result)
+          var element=objectStoreRequest.result.Valeur
+          console.log(element)
+          this.clientInfos.TypeDPV=element.typePDV[0]
+         //this.selected=this.clientInfos.TypeDPV
+          element.typePDV.forEach(type => {
+            this.TypesPDVs.push(type)
+          });
+          this.selected=this.TypesPDVs[0]
+          this.TypeDPV=this.TypesPDVs[0]
+        }
+    }
     })
+
   }
 
   ///////////////////////////// MAP FUNCTION /////////////////////////////
@@ -303,7 +328,8 @@ export class AddclientComponent implements AfterViewInit {
           timeout: 5000,
           maximumAge: 2000
         };
-        var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
+       
+        navigator.geolocation.watchPosition((position: GeolocationPosition) => {
 
           if (position) {
             var newlat = position.coords.latitude
@@ -333,7 +359,10 @@ export class AddclientComponent implements AfterViewInit {
             marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
           }
         },
-          (error: GeolocationPositionError) => console.log(error), options);
+          (error: GeolocationPositionError) => {
+            this.percentage=0;
+            console.log(error)
+          }, options);
       } else {
         alert("Geolocation is not supported by this browser.");
       }
@@ -346,7 +375,7 @@ export class AddclientComponent implements AfterViewInit {
     this.percentage = 0
     interval(300).subscribe(x => {
       if (this.percentage < 100) {
-        this.percentage += 4
+        this.percentage += 10
       }
     });
   }

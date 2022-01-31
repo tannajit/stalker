@@ -49,7 +49,7 @@ export class AddUserComponent implements OnInit {
   DisableSend = true;
   searchUserForm: FormGroup;
   version = 6;
-
+  RolesSource = this._router.getCurrentNavigation().extras.state.roles;
 
 
   //dialogRef: MatDialogRef<ClientInfoComponent>;
@@ -57,17 +57,25 @@ export class AddUserComponent implements OnInit {
     this.searchUserForm = this.fb.group({
       userType: new FormControl('')
     });
+    this.getDataSector()
     /// get All Email from Database to prevenet Email duplication
     this.CheckEmail()
     console.log(this.RoleSelected)
     //// get Sectors 
     //this.getSectors()
-    this.getDataSector()
+    
     /// get Roles available
-    this._setting.getSettings('param=role').subscribe(res => {
-      this.Roles = res.details.roles
-      console.log("ttttttttt")
-      console.log(this.Roles)
+    // this._setting.getSettings('param=role').subscribe(res => {
+    //   var RolesSource = res.details.roles
+      
+      this.RolesSource.forEach(element => {
+          
+        this.Roles.push(element.name)
+  
+      // })
+      
+      // console.log("tttttttttttttttttt")
+      // console.log(this.Roles)
     })
 
 
@@ -77,8 +85,9 @@ export class AddUserComponent implements OnInit {
   /// get sectors from DATABASE 
   getSectors() {
     this._client.getAllSecteurs().subscribe(res => {
-      console.log(res)
       res.forEach(element => {
+        console.log("elementgetSectors",element)
+
         var idSector = Number(String(element.geometry.properties.idSecteur).slice(-2, -1))
         console.log(idSector)
         var machine = (idSector == 0) ? "Onion" : "CMG"
@@ -103,27 +112,25 @@ export class AddUserComponent implements OnInit {
     };
     request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
       db = event.target.result;
-      console.log('success');
-      console.log(db);
+      console.log("resgetSectors",db)
+
+      // console.log('success');
+      // console.log(db);
       transaction = db.transaction(['sector'], 'readwrite');
       const objectStore = transaction.objectStore('sector');
       const objectStoreRequest = objectStore.getAll();
       objectStoreRequest.onsuccess = event => {
         const all = event.target.result;
         all.forEach(elm => {
-          var  element = JSON.parse(elm.Valeur);
-          console.log(element)
-          var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
-          console.log(idSector)
-          var machine = (idSector == 0) ? "Onion" : "CMG"
-          console.log(machine)
-          var result = element.properties.idSecteur + " - " + machine + " - " + element.properties.name
-          console.log(result)
+          //console.log(elm)
+          console.log("elmSectors",elm.Valeur)
+
+          var element = elm.Valeur;
           var obj = {
-            id: element.properties.idSecteur,
-            detail: result
+            id: element.nameSecteur,
+            detail: element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
           }
-          this.AllSectors.push(element.properties.idSecteur)
+          this.AllSectors.push(obj.id)
           this.Sectors.push(obj)
         });
       };
@@ -133,15 +140,25 @@ export class AddUserComponent implements OnInit {
 
   //////////
   RoleActive() {
-    if (this.role == "Seller") {
-      return true;
+    var active;
+    this.RolesSource.forEach(el => {
+      
+      // console.log("sectors",el)
+
+      if(el.name==this.role ) {
+     
+      switch(el.sectors){
+
+        case 'limited':active= true;
+        break;
+        case 'all':active = false;
+        break;
+      } 
     }
-    else if (this.role == "Supervisor") { return true; }
-    else if (this.role == "Auditor") { return true; }
-    else {
-      //this.SectorAffacted=this.AllSectors;
-      return false;
-    }
+
+    });
+    //console.log("active",active);
+    return active;
   }
 
   //// Set User ID 
@@ -185,7 +202,6 @@ export class AddUserComponent implements OnInit {
         this.AllEmail.push(element.email)
       });
     })
-
   }
 
   Disabled = false
@@ -196,16 +212,12 @@ export class AddUserComponent implements OnInit {
     if (this.SelectedSector.length != 0) {
       obj.value = this.SelectedSector
     }
-    // if (this.role === "Admin" || this.role === "Controler" || this.role === "Back Office" ) {
-
-    //   obj.value = this.AllSectors
-
-    // }
-    if (this.SelectedSector.length == 0 ) {
+    if (this.SelectedSector.length ==0 ) {
 
       obj.value = this.AllSectors
 
     }
+   
     console.log("this.obj", obj)
 
     this.upsert(this.ListOfRoles, obj)
@@ -286,12 +298,12 @@ export class AddUserComponent implements OnInit {
   ///
   SendUser() {
 
-    if (this.role == 'Seller' || this.role == 'Auditor' || this.role == 'Supervisor') {
-      this.SectorAffacted = this.SelectedSector
-    } else {
-      this.SectorAffacted = this.AllSectors
-    }
-    console.log(this.SectorAffacted)
+    // if (this.role == 'Seller' || this.role == 'Auditor' || this.role == 'Supervisor') {
+    //   this.SectorAffacted = this.SelectedSector
+    // } else {
+    //   this.SectorAffacted = this.AllSectors
+    // }
+    // console.log(this.SectorAffacted)
 
     this.UserInfo = {
       userinfo: {
@@ -318,8 +330,8 @@ export class AddUserComponent implements OnInit {
         message: "Please Copy this credentials and send them to the User before Exit \n " + "[Email:" + this.Email + "-" + "Password:" + this.Password + "]",
         buttonText: {
           ok: 'Ok'
-          }
-          
+        }
+
       },
     });
     dialogRef.afterClosed().subscribe(res => {

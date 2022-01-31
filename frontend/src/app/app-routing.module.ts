@@ -26,7 +26,6 @@ import { RolesComponent } from './admin/roles/roles.component';
 
 
 const routes: Routes = [
-
   { path: '', redirectTo: 'map', pathMatch: 'full' },
   {
     path:'login',
@@ -108,9 +107,6 @@ const routes: Routes = [
     path: 'roles', component: RolesComponent,
     canActivate: [AuthGaurdService]
   }
-  // {
-  //   path: 'upper', component: UpperMenuComponent
-  // }
 ];
 
 @NgModule({

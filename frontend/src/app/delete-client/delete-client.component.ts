@@ -8,6 +8,7 @@ import { ClientsService } from '../clients.service';
 import { ThrowStmt } from '@angular/compiler';
 import { OnlineOfflineServiceService } from '../online-offline-service.service';
 import { takeUntil, switchMap } from 'rxjs/operators';
+import { TouchSequence } from 'selenium-webdriver';
 
 declare var MediaRecorder: any;
 @Component({
@@ -89,6 +90,7 @@ export class DeleteClientComponent implements AfterViewInit {
       }
 
       interval(3000).pipe( takeUntil(this.destroyed)).subscribe(x => {
+        
         this.WatchPosition()
         })
       //this.WatchPosition()
@@ -97,7 +99,6 @@ export class DeleteClientComponent implements AfterViewInit {
   myCercle;
   WatchPosition(){
     
-      
     let raduis=5000
     navigator.geolocation.watchPosition((pos)=>{
     console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
@@ -105,8 +106,10 @@ export class DeleteClientComponent implements AfterViewInit {
     if (this.myCercle !== undefined) {
       this.map.removeLayer(this.myCercle)
     }
-    
     this.myCercle=L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
+    if(this.myCercle){
+      this.percentage=100
+    }
     this.clientService.getPosition({"MapUp":[pos.coords.latitude, pos.coords.longitude],"Raduis":raduis});
     },(err)=>{
       console.log(`err :${err}`)
@@ -329,7 +332,7 @@ text;
     this.percentage = 0
     interval(300).subscribe(x => {
       if (this.percentage < 100) {
-        this.percentage += 50
+        this.percentage += 10
       }
     });
   }

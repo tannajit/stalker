@@ -54,14 +54,13 @@
                 <button mat-button class="gen-btn" (click)="GeneratePassword()">Generate Password</button>
             </div>
 
-
             <div class="field">
                 <label>Role :</label>
                 <mat-form-field >
                     <mat-select  placeholder="select"  panelClass="selectPanel2"  (selectionChange)="onChange()" [(value)]="role">   
                         <div *ngFor="let rol of Roles | filterUnique" >
                         
-                        <mat-option   value="{{rol.name}}">{{rol.name}}</mat-option>
+                        <mat-option   value="{{rol}}">{{rol}}</mat-option>
                         </div>
                     </mat-select>
                 </mat-form-field>
@@ -97,6 +96,7 @@
                         </mat-select>
                     </mat-form-field>
                 </form>
+                <input type="text" value="Number of sectors  : {{SelectedSector.length}}" disabled />
             </div>
 
             <!-- <div class="field" *ngIf="RoleActive()">
@@ -118,7 +118,6 @@
                         <mat-icon (click)="RemoveRole(rol)">clear</mat-icon>
                     </div>
                 </ng-container>
-
             </div>
 
             <div class="btns">

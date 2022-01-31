@@ -23,6 +23,7 @@ export class SettingsService {
     return this.http.get<any>(this._setting+"?"+params);
   }
   CreateUser(user){
+
     return this.http.post<any>(this._user,user)
   }
   CheckEmail(){
