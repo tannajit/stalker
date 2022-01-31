@@ -1,12 +1,12 @@
-import { Component, OnInit , ViewChild} from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ClientInfoComponent } from '../client-info/client-info.component';
 import { ClientsService } from '../clients.service';
-import { MatPaginator, PageEvent} from '@angular/material/paginator'
+import { MatPaginator, PageEvent } from '@angular/material/paginator'
 import { MatTableDataSource } from '@angular/material/table';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
-
+import Dexie from 'dexie';
 
 
 @Component({
@@ -49,19 +49,17 @@ export class ClientsComponent implements OnInit {
     private dialog: MatDialog
   ) {
     this.loggedUser = JSON.parse(localStorage.getItem("user"))
+    this.GetSectors();
+    this.getAllClients()
+    
   }
   //////////////////////////////////////////////////
 
   ///////********* INIT FUNCTION *********///////
 
   ngOnInit(): void {
-    this.getDataSector()
-    console.log("############# sectors names########")
-    console.log(this.sectorNames)
-    
-    this.getAllClients()
-    console.log(this.clients)
-    
+    //this.getDataSector()
+   
   }
 
   getClients() {
@@ -72,7 +70,7 @@ export class ClientsComponent implements OnInit {
     this.data = this.clients;
     this.totalSize = this.data.length;
     console.log(this.totalSize)
-    this.iterator(); 
+    this.iterator();
   }
 
   handlePage(event?: PageEvent) {
@@ -90,7 +88,7 @@ export class ClientsComponent implements OnInit {
 
 
   ////*********** GET CLIENTS INFOS ***********/////
-  public getAllClients() {
+  public getAllClients1() {
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
@@ -108,23 +106,39 @@ export class ClientsComponent implements OnInit {
         all.forEach(element => {
           // console.log("******************")
           const elm = JSON.parse(element.Valeur);
-          var  Point = { _id: element._id, geometry: elm };
-          if(this.loggedUser.role=='Admin' || this.loggedUser.role=='Back Office'){
+          var Point = { _id: element._id, geometry: elm };
+          if (this.loggedUser.role == 'Admin' || this.loggedUser.role == 'Back Office') {
             // console.log("deleted")
             // console.log(this.loggedUser.role)
             this.clients.push(Point);
             // console.log(Point.geometry.properties.status);
-         }
-         else if((this.loggedUser.role=='Seller' || this.loggedUser.role=='Auditor') && Point.geometry.properties.status!="deleted"){
-          this.clients.push(Point);
-          // console.log(this.loggedUser.role)
-          // console.log(Point.geometry.properties.status);
-         }
+          }
+          else if ((this.loggedUser.role == 'Seller' || this.loggedUser.role == 'Auditor') && Point.geometry.properties.status != "deleted") {
+            this.clients.push(Point);
+            // console.log(this.loggedUser.role)
+            // console.log(Point.geometry.properties.status);
+          }
         });
         this.getClients();
 
       };
     };
+  }
+
+  async getAllClients() {
+    var db = new Dexie("off").open().then((res) => {
+      console.log("***")
+      res.table("pdvs").each((element) => {
+        if (this.loggedUser.role == 'Admin' || this.loggedUser.role == 'Back Office') {
+          this.clients.push(element);
+        }
+        else if ((this.loggedUser.role == 'Seller' || this.loggedUser.role == 'Auditor') && element.geometry.properties.status != "deleted") {
+          this.clients.push(element);
+        }
+      });
+      this.getClients();
+    });
+    
   }
   //////////////////////////////////////////////////////////
 
@@ -184,12 +198,26 @@ export class ClientsComponent implements OnInit {
           console.log(result)*/
           var obj = {
             id: element.nameSecteur,
-            detail: element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
+            detail: element.nameSecteur + " - " + element.machine + " - " + element.info.geometry.properties.name
           }
           this.sectorNames.push(obj)
         });
       };
     };
+  }
+
+  async GetSectors() {
+
+    var db = new Dexie("off").open().then((res) => {
+      res.table("sector").each(element => {
+        // console.log(element)
+        var obj = {
+          id: element.nameSecteur,
+          detail: element.nameSecteur + " - " + element.machine + " - " + element.info.geometry.properties.name
+        }
+        this.sectorNames.push(obj)
+      })
+    });
   }
   /////////////////////////////////////////////////////////////////
 
@@ -198,78 +226,78 @@ export class ClientsComponent implements OnInit {
   }
 
 
-  searchID(filterValue: String){
+  searchID(filterValue: String) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
     console.log(this.dataSource.filter);
-    
+
   }
   // filterage based on pdv type select
-  onChangePDVType($event){
+  onChangePDVType($event) {
     console.log($event.value)
-    if($event.value == 'all'){
+    if ($event.value == 'all') {
       console.log("pdv type = all")
       // when we select all for pdvType 
-      let filtered=[]
-      _.filter(this.clients,(item) =>{
+      let filtered = []
+      _.filter(this.clients, (item) => {
         // console.log(item)
-          if( (this.nfc == 'all' || !this.nfc) && (this.sector == 'all' || !this.sector) && (this.BackOfficeValid == 'all' || !this.BackOfficeValid) && (this.deleteStatus == 'all' || !this.deleteStatus)){
-            // if we select all for pdv type and all others ar not selected
-            filtered = this.clients
-          }if(this.nfc && this.nfc != 'all' && (this.sector == 'all' || !this.sector) && (this.BackOfficeValid == 'all' || !this.BackOfficeValid) && (this.deleteStatus == 'all' || !this.deleteStatus)){
-            // if we select all for pdv type and select nfc only 
-            if(this.nfc == 'installed'){
-              if(item.geometry.properties.NFC != null){
-                filtered.push(item)
-              }
-            }if(this.nfc == 'not_inst'){
-              if(item.geometry.properties.NFC == null){
-                filtered.push(item)
-              }
-            }if(this.nfc == 'refused'){
-              
-              // status == pink
-                filtered.push(item)
-              
-            }
-            
-          }if((this.sector && this.sector != 'all') && (this.nfc == 'all' || !this.nfc) &&  (this.BackOfficeValid == 'all' || !this.BackOfficeValid) && (this.deleteStatus == 'all' || !this.deleteStatus)){
-            // if we select all for pdv type and select sector only
-            if(item.geometry.properties.idSecteur == this.sector){
+        if ((this.nfc == 'all' || !this.nfc) && (this.sector == 'all' || !this.sector) && (this.BackOfficeValid == 'all' || !this.BackOfficeValid) && (this.deleteStatus == 'all' || !this.deleteStatus)) {
+          // if we select all for pdv type and all others ar not selected
+          filtered = this.clients
+        } if (this.nfc && this.nfc != 'all' && (this.sector == 'all' || !this.sector) && (this.BackOfficeValid == 'all' || !this.BackOfficeValid) && (this.deleteStatus == 'all' || !this.deleteStatus)) {
+          // if we select all for pdv type and select nfc only 
+          if (this.nfc == 'installed') {
+            if (item.geometry.properties.NFC != null) {
               filtered.push(item)
             }
-          }if((this.BackOfficeValid && this.BackOfficeValid != 'all') && (this.sector == 'all' || !this.sector) && (this.nfc == 'all' || !this.nfc) &&  (this.deleteStatus == 'all' || !this.deleteStatus)){
-            // if we select all for pdv type and select back office validation only
-            if(this.BackOfficeValid=='valid'){
-              // status green
-            }if(this.BackOfficeValid=='refused'){
-              // status black
-            }if(this.BackOfficeValid=='waiting'){
-              // status purple
-            }
-          }if((this.deleteStatus  && this.deleteStatus != 'all') && (this.sector=='all' || !this.sector) && (this.nfc == 'all' || !this.nfc) &&  (this.BackOfficeValid == 'all' || !this.BackOfficeValid)){
-            // if we select all for pdv type and select sector only
-            if(this.deleteStatus=='deleted'){
-              // status deleted
+          } if (this.nfc == 'not_inst') {
+            if (item.geometry.properties.NFC == null) {
               filtered.push(item)
+            }
+          } if (this.nfc == 'refused') {
 
-            }
+            // status == pink
+            filtered.push(item)
+
           }
+
+        } if ((this.sector && this.sector != 'all') && (this.nfc == 'all' || !this.nfc) && (this.BackOfficeValid == 'all' || !this.BackOfficeValid) && (this.deleteStatus == 'all' || !this.deleteStatus)) {
+          // if we select all for pdv type and select sector only
+          if (item.geometry.properties.idSecteur == this.sector) {
+            filtered.push(item)
+          }
+        } if ((this.BackOfficeValid && this.BackOfficeValid != 'all') && (this.sector == 'all' || !this.sector) && (this.nfc == 'all' || !this.nfc) && (this.deleteStatus == 'all' || !this.deleteStatus)) {
+          // if we select all for pdv type and select back office validation only
+          if (this.BackOfficeValid == 'valid') {
+            // status green
+          } if (this.BackOfficeValid == 'refused') {
+            // status black
+          } if (this.BackOfficeValid == 'waiting') {
+            // status purple
+          }
+        } if ((this.deleteStatus && this.deleteStatus != 'all') && (this.sector == 'all' || !this.sector) && (this.nfc == 'all' || !this.nfc) && (this.BackOfficeValid == 'all' || !this.BackOfficeValid)) {
+          // if we select all for pdv type and select sector only
+          if (this.deleteStatus == 'deleted') {
+            // status deleted
+            filtered.push(item)
+
+          }
+        }
       })
       this.dataSource = new MatTableDataSource(filtered)
       this.dataSource.paginator = this.paginator;
       this.data = filtered;
       this.totalSize = this.data.length;
       console.log(this.totalSize)
-      this.iterator(); 
+      this.iterator();
     }
   }
 
   anotherArray = this.sectorNames;
   filterListCareUnit(val) {
     // console.log(val);
-    
+
     this.sectorNames = this.anotherArray.filter((unit) => unit.details.toLowerCase().indexOf(val) > -1);
   }
 
-  
+
 }

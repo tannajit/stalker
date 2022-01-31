@@ -15,8 +15,7 @@ import { SettingsService } from '../settings/settings.service';
 import { IndexdbService } from '../indexdb.service';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-
-
+import Dexie from 'dexie';
 const incr = 1;
 
 @Component({
@@ -264,30 +263,17 @@ export class AddclientComponent implements AfterViewInit {
       this.mySector = params.get('sector')
       console.log("mysector" + this.mySector)
       this.clientInfos.sector = this.mySector
-      var db, transaction;
-    var request = window.indexedDB.open("off", this.version)
-    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      console.log("Why didn't you allow my web app to use IndexedDB?!");
-    };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      db = event.target.result;
-      transaction = db.transaction(['sector'], 'readwrite');
-      var objectStore = transaction.objectStore("sector");
-        var objectStoreRequest = objectStore.get(Number(this.mySector));
-        objectStoreRequest.onsuccess = (event) => {
-          //console.log(objectStoreRequest.result)
-          var element=objectStoreRequest.result.Valeur
-          console.log(element)
-          this.clientInfos.TypeDPV=element.typePDV[0]
-         //this.selected=this.clientInfos.TypeDPV
-          element.typePDV.forEach(type => {
-            this.TypesPDVs.push(type)
-          });
-          this.selected=this.TypesPDVs[0]
-          this.TypeDPV=this.TypesPDVs[0]
-        }
-    }
     })
+    var db = new Dexie("off").open().then((res) => {
+      res.table("sector").get({"nameSecteur":Number(this.mySector)}).then(r=>{
+        console.log(r)
+        r.typePDV.forEach(type => {
+          this.TypesPDVs.push(type)
+        });
+        this.selected=this.TypesPDVs[0]
+        this.TypeDPV=this.TypesPDVs[0]
+      })
+    });
 
   }
 

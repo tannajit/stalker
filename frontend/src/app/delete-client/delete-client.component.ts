@@ -376,6 +376,7 @@ text;
     //var test=new Uint8Array(this.Video1  as ArrayBuffer)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodoDelete(this.checkInfos)
+      this.router.navigate(['/map'])
     } else {
       this.clientService.DeleteRequest(this.checkInfos).subscribe(res => { console.log(res)
       

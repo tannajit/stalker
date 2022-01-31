@@ -95,6 +95,7 @@
 
         <div *ngFor="let client of dataSource | filter: IdClient | filter: PhoneNumber | filter:BackOfficeValid | filter: sector| filter: deleteStatus | filter: PDVType| filter: detailType"
             class="card-container">
+            <label>{{client._id}}</label>
             <mat-card (click)="openDialog(client)">
                 <img mat-card-image src="{{client.geometry.properties.PVP}}" alt=""
                     *ngIf="client.geometry.properties.PVP; else nfcPhoto">

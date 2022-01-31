@@ -288,8 +288,96 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
         console.log(err)
     );
 
+
 })
 
+router.get('/getClientByUser1/:type', verifyToken,async (req, res) => {
+    var userId = req.userId;
+    var type = [req.params.type]
+    console.log(type)
+    //var test=type[0].replace("_"," ")
+    //console.log(test)
+   // var userId = "61cecdb5c23903ede07d8870"
+    console.log("***** Get PDV Based on User: " + userId + " *******")
+    let collectionSec = await db.collection("secteurs") //collection where ids are stored 
+    var values = await collectionSec.aggregate([
+        {
+            $match: {
+                users: ObjectId(userId)
+            }
+        },
+        {
+            $lookup: {
+                from: "geometries",
+                let: { "point": "$points.point" },
+                as: "info",
+                "pipeline": [
+                    {
+                        $match: {
+                            $expr: {
+                            $and:[
+                                {$in:["$_id", "$$point"]},
+                                { $eq:["$geometry.properties.TypeDPV",String(type)]}
+                                ]
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        { $project: { info: 1, _id:0} },
+        { $unwind : "$info" }
+
+    ]).toArray();
+
+    //res.json(values)
+    
+     ListInfo = []
+    a = []
+    
+    // console.log("reqclientvalues",values)
+    values.forEach(elemm => {
+        // elemm.info.forEach(async (elem) => {
+        //     ListInfo.push(elem)
+        // });
+        ListInfo.push(elemm.info)
+    });
+    All_PDV = ListInfo.map(async (elem) => {
+        // if (elem.geometry.properties.NFC != null && elem.geometry.properties.NFC != undefined) {
+        //     elem.geometry.properties.status = "green"
+        // }
+        if (elem.geometry.properties?.nfc != undefined) {
+            var element = elem.geometry.properties;
+            if (element.nfc.NFCPhoto != null) {
+                try {
+                    
+                    await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
+                        elem.geometry.properties.NFCP = re
+                    }).catch(err => console.log(err))
+                } catch (err) {
+                    // console.log("***************")
+                }
+            } else {
+                elem.geometry.properties.NFCP = null
+            }
+            if (element?.PVPhoto != null) {
+                
+                await test1(db, ObjectId(element.PVPhoto)).then(re => {
+                    elem.geometry.properties.PVP = re
+                }).catch(err => console.log(err))
+            } else {
+                elem.geometry.properties.PVP = null
+            }
+        }
+        a.push(elem)
+    })
+    Promise.all(All_PDV).then(ee => {
+        res.json(a)
+    }).catch(err =>
+        console.log(err)
+    );
+
+})
 /* GET clients Based on User */
 // router.get('/clients', verifyToken, async (req, res) => {
 //     var userId = req.userId;
