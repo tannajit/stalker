@@ -22,6 +22,7 @@ export class UserRoleComponent implements OnInit {
     "Extract Data"
   ]
 
+  sectors
   selectedPermissions = [];
 
   constructor(
@@ -35,6 +36,8 @@ export class UserRoleComponent implements OnInit {
     this.data.permissions.forEach(element => {
       this.selectedPermissions.push(element)
     });
+
+    this.sectors= this.data.sectors
   }
 
   deletePermission(perm){
@@ -49,11 +52,12 @@ export class UserRoleComponent implements OnInit {
   updateRole(role){
     var roleToUpdate={
       'role': role,
-      'permissions': this.selectedPermissions
+      'permissions': this.selectedPermissions,
+      'sectors': this.sectors
     }
     this._admin.updateRole(roleToUpdate).subscribe(res=>{
       console.log(res)
-      if( res.modifiedCount==1){
+      if(res.modifiedCount){
         var msg = "The role is updated successfully!"
         this.openAlertDialog(msg)
         this.dialogRef.close()

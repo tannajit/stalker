@@ -114,3 +114,12 @@ color:#27AE61 !important;
 :host ::ng-deep  .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
     background-color: #27AE61 ;
 }
+
+.filter-actions{
+    margin-top: 0;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}

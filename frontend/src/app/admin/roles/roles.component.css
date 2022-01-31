@@ -206,7 +206,17 @@
   .btn-green{
     background-color: #27AE61;
     color: #fff;
-    margin: auto;
+    margin: 5px;
+    font-size: 13px;
+    line-height: 30px;
+    border-radius: 10px;
+    text-align: center !important;
+  }
+
+  .btn-red{
+    background-color: #963416;
+    color: #fff;
+    margin: 5px;
     font-size: 13px;
     line-height: 30px;
     border-radius: 10px;

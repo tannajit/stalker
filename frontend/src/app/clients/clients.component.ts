@@ -18,7 +18,10 @@ import { Observable } from 'rxjs';
 export class ClientsComponent implements OnInit {
 
   ////**********VARIABLE'S DECLARATION ******/////
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  obs: Observable<any>;
+// Card is whatever type you use for your datasource, DATA is your data
+  
+  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   public data: any[];
   public dataSource: any;
   public pageSize = 10;
@@ -27,10 +30,13 @@ export class ClientsComponent implements OnInit {
   pageEvent: PageEvent
 
   clients = [];
+  filterSelectObj = [];
+  filterValues = {};
 
   version = 6;
   showFilterage = true
   dialogRef: MatDialogRef<ClientInfoComponent>;
+  
   sectorNames = [];
   loggedUser;
   NomPrenom;
@@ -43,12 +49,52 @@ export class ClientsComponent implements OnInit {
   BackOfficeValid;
   nfc;
 
+ 
+  
+
   ////*********** CONSTRUCTOR ********///////////// 
 
   constructor(private _serviceClient: ClientsService,
     private dialog: MatDialog
   ) {
     this.loggedUser = JSON.parse(localStorage.getItem("user"))
+
+    // Object to create Filter for
+    this.filterSelectObj = [
+      {
+        name: 'ID',
+        columnProp: 'id',
+        options: []
+      }, {
+        name: 'NAME',
+        columnProp: 'name',
+        options: []
+      }, {
+        name: 'PHONE NUMBER',
+        columnProp: 'username',
+        options: []
+      }, {
+        name: 'PDV',
+        columnProp: 'email',
+        options: []
+      }, {
+        name: 'NFC',
+        columnProp: 'status',
+        options: []
+      }, {
+        name: 'VALID',
+        columnProp: 'status',
+        options: []
+      }, {
+        name: 'DELETE',
+        columnProp: 'status',
+        options: []
+      }, {
+        name: 'SECTOR',
+        columnProp: 'status',
+        options: []
+      }
+    ]
   }
   //////////////////////////////////////////////////
 
@@ -58,7 +104,6 @@ export class ClientsComponent implements OnInit {
     this.getDataSector()
     console.log("############# sectors names########")
     console.log(this.sectorNames)
-    
     this.getAllClients()
     console.log(this.clients)
     
@@ -66,14 +111,19 @@ export class ClientsComponent implements OnInit {
 
   getClients() {
     // Replace with HTTP call
-    this.dataSource = new MatTableDataSource<any>(this.clients.reverse());
-    console.log(this.dataSource)
+    
+    this.dataSource = new MatTableDataSource<any>(this.clients);
+    this.dataSource.data = this.clients.reverse();
+    this.obs = this.dataSource.connect();
     this.dataSource.paginator = this.paginator;
-    this.data = this.clients;
-    this.totalSize = this.data.length;
-    console.log(this.totalSize)
-    this.iterator(); 
+    console.log(this.dataSource)
+    // this.data = this.clients;
+    // this.totalSize = this.data.length;
+    // console.log(this.totalSize)
+    // this.iterator(); 
   }
+
+  
 
   handlePage(event?: PageEvent) {
     this.currentPage = event.pageIndex;
@@ -165,71 +215,45 @@ export class ClientsComponent implements OnInit {
   }
 
 
-  searchID(filterValue: String){
+  searchId(filterValue: string){
+    console.log(filterValue)
     this.dataSource.filter = filterValue.trim().toLowerCase();
     console.log(this.dataSource.filter);
-    
-  }
-  // filterage based on pdv type select
-  onChangePDVType($event){
-    console.log($event.value)
-    if($event.value == 'all'){
-      console.log("pdv type = all")
-      // when we select all for pdvType 
-      let filtered=[]
-      _.filter(this.clients,(item) =>{
-        // console.log(item)
-          if( (this.nfc == 'all' || !this.nfc) && (this.sector == 'all' || !this.sector) && (this.BackOfficeValid == 'all' || !this.BackOfficeValid) && (this.deleteStatus == 'all' || !this.deleteStatus)){
-            // if we select all for pdv type and all others ar not selected
-            filtered = this.clients
-          }if(this.nfc && this.nfc != 'all' && (this.sector == 'all' || !this.sector) && (this.BackOfficeValid == 'all' || !this.BackOfficeValid) && (this.deleteStatus == 'all' || !this.deleteStatus)){
-            // if we select all for pdv type and select nfc only 
-            if(this.nfc == 'installed'){
-              if(item.geometry.properties.NFC != null){
-                filtered.push(item)
-              }
-            }if(this.nfc == 'not_inst'){
-              if(item.geometry.properties.NFC == null){
-                filtered.push(item)
-              }
-            }if(this.nfc == 'refused'){
-              
-              // status == pink
-                filtered.push(item)
-              
-            }
-            
-          }if((this.sector && this.sector != 'all') && (this.nfc == 'all' || !this.nfc) &&  (this.BackOfficeValid == 'all' || !this.BackOfficeValid) && (this.deleteStatus == 'all' || !this.deleteStatus)){
-            // if we select all for pdv type and select sector only
-            if(item.geometry.properties.idSecteur == this.sector){
-              filtered.push(item)
-            }
-          }if((this.BackOfficeValid && this.BackOfficeValid != 'all') && (this.sector == 'all' || !this.sector) && (this.nfc == 'all' || !this.nfc) &&  (this.deleteStatus == 'all' || !this.deleteStatus)){
-            // if we select all for pdv type and select back office validation only
-            if(this.BackOfficeValid=='valid'){
-              // status green
-            }if(this.BackOfficeValid=='refused'){
-              // status black
-            }if(this.BackOfficeValid=='waiting'){
-              // status purple
-            }
-          }if((this.deleteStatus  && this.deleteStatus != 'all') && (this.sector=='all' || !this.sector) && (this.nfc == 'all' || !this.nfc) &&  (this.BackOfficeValid == 'all' || !this.BackOfficeValid)){
-            // if we select all for pdv type and select sector only
-            if(this.deleteStatus=='deleted'){
-              // status deleted
-              filtered.push(item)
-
-            }
-          }
-      })
-      this.dataSource = new MatTableDataSource(filtered)
-      this.dataSource.paginator = this.paginator;
-      this.data = filtered;
-      this.totalSize = this.data.length;
-      console.log(this.totalSize)
-      this.iterator(); 
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
   }
+  
+  onSelectSector($event){
+    var sectorsCopy = [];
+    console.log(this.dataSource)
+    if($event.value != 'all'){
+
+      sectorsCopy = this.clients.filter(
+        x => x.geometry.properties.Code_Secteur_OS == $event.value);
+  
+      this.dataSource.data = sectorsCopy.reverse();
+      this.obs = this.dataSource.connect();
+      this.dataSource.paginator = this.paginator;
+      console.log(this.sector);
+      console.log(sectorsCopy.length)
+      console.log(this.dataSource);
+
+    }if($event.value == 'all'){
+
+      
+      this.dataSource.data = this.clients.reverse();
+      this.obs = this.dataSource.connect();
+      this.dataSource.paginator = this.paginator;
+      console.log(this.clients.length)
+      console.log(this.dataSource)
+      // this.getAllClients()
+    }
+    
+
+  }
+
+  
 
   anotherArray = this.sectorNames;
   filterListCareUnit(val) {
@@ -238,5 +262,206 @@ export class ClientsComponent implements OnInit {
     this.sectorNames = this.anotherArray.filter((unit) => unit.details.toLowerCase().indexOf(val) > -1);
   }
 
+
+  copyData = this.clients
+
+  filterAll(){
+
+    this.clients = this.copyData
+
+    let filterList= {
+      'id': this.IdClient,
+      'phone': this.PhoneNumber,
+      'nfc': this.nfc,
+      'sector': this.sector,
+      'PDVType': this.PDVType,
+      'detailType': this.detailType,
+      'BackValid': this.BackOfficeValid,
+      'delete': this.deleteStatus
+    }
+
+    if(filterList.id){
+
+      this.clients = this.clients.filter(item=> item._id == filterList.id)
+      this.dataSource = new MatTableDataSource<any>(this.clients);
+      this.dataSource.data = this.clients.reverse();
+      this.obs = this.dataSource.connect();
+      this.dataSource.paginator = this.paginator;
+      console.log(this.dataSource)
+      // this.dataSource.filter = filterList.id.trim().toLowerCase();
+      // console.log(this.dataSource.filter);
+      // if (this.dataSource.paginator) {
+      //   this.dataSource.paginator.firstPage();
+      // }
+    }
+
+    if(filterList.phone){
+      this.clients = this.clients.filter(item=> item.geometry.properties.PhoneNumber == filterList.phone)
+      this.dataSource = new MatTableDataSource<any>(this.clients);
+      this.dataSource.data = this.clients.reverse();
+      this.obs = this.dataSource.connect();
+      this.dataSource.paginator = this.paginator;
+      console.log(this.dataSource)
+    }
+
+    if(filterList.sector){
+
+      if(filterList.sector=='all'){
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+      }else{
+        this.clients = this.clients.filter(item=> item.geometry.properties.Code_Secteur_OS == filterList.sector)
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+      }
+      
+    }
+    if(filterList.nfc){
+
+      if(filterList.nfc=='all'){
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+      }else if(filterList.nfc == 'installed'){
+        this.clients = this.clients.filter(item=> item.geometry.properties.status == 'purple' || item.geometry.properties.status == 'green')
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+      }else if(filterList.nfc == 'not_install'){
+        this.clients = this.clients.filter(item=> item.geometry.properties.status != 'purple' || item.geometry.properties.status != 'green')
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+      }else if(filterList.nfc == 'refused'){
+        this.clients = this.clients.filter(item=> item.geometry.properties.status == 'pink')
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+      }
+
+     
+    }
+
+    if(filterList.PDVType){
+
+      if(filterList.PDVType=='all'){
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+      }else{
+        this.clients = this.clients.filter(item=> item.geometry.properties.TypeDPV == filterList.PDVType)
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+      }
+
+      
+    }
+
+    if(filterList.BackValid){
+
+      if(filterList.BackValid=='all'){
+
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+
+      }else if(filterList.BackValid == 'valid'){
+
+        this.clients = this.clients.filter(item=> item.geometry.properties.status == 'green')
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+
+      }else if(filterList.BackValid == 'refused' || filterList.BackValid == 'waiting'){
+
+        this.clients = this.clients.filter(item=> item.geometry.properties.status != 'green')
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+      }
+
+     
+    }
+
+    if(filterList.detailType){
+
+      if(filterList.detailType=='all' && filterList.PDVType){
+
+        this.clients = this.clients.filter(item=> item.geometry.properties.TypeDPV == filterList.PDVType)
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+      }else if(filterList.detailType=='all' && !filterList.PDVType){
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+      }else{
+        this.clients = this.clients.filter(item=> item.geometry.properties.detailType == filterList.detailType)
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+      }
+    }
+
+    if(filterList.delete){
+
+      if(filterList.delete=='all'){
+
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+
+      }else{
+
+        this.clients = this.clients.filter(item=> item.geometry.properties.status == filterList.delete)
+        this.dataSource = new MatTableDataSource<any>(this.clients);
+        this.dataSource.data = this.clients.reverse();
+        this.obs = this.dataSource.connect();
+        this.dataSource.paginator = this.paginator;
+        console.log(this.dataSource)
+
+      }
+
+      
+    }
+  }
   
+
+  clearFilter(){
+    this.PDVType = this.IdClient = this.PhoneNumber = this.PDVType = this.nfc = 
+    this.sector = this.BackOfficeValid = this.deleteStatus = undefined
+  }
 }

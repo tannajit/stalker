@@ -7,6 +7,16 @@
                 <input placeholder="Type role..." matInput [(ngModel)]="role" />
             </mat-form-field>
         </div>
+        <div class="field">
+            <label>Affect Sectors :</label>
+            <mat-form-field>
+                <!-- <mat-label>Id User</mat-label> -->
+                <mat-select placeholder="Select"  panelClass="selectPanel2" [(value)]="sectors" >
+                    <mat-option value="all">All</mat-option>
+                    <mat-option value="limited">Limited</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
     
         <div class="field">
             <label>Permissions :</label>

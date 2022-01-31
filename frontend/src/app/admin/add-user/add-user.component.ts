@@ -201,7 +201,7 @@ export class AddUserComponent implements OnInit {
     //   obj.value = this.AllSectors
 
     // }
-    if (this.role != "Seller" || this.role != "Auditor" || this.role != "Supervisor" ) {
+    if (this.SelectedSector.length == 0 ) {
 
       obj.value = this.AllSectors
 
