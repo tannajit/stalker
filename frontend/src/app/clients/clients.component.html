@@ -4,32 +4,33 @@
             <div class="field">
                 <mat-form-field>
                     <mat-label>Id Client</mat-label> 
-                    <input matInput placeholder="Typing..." [(ngModel)]="IdClient" />
+                    <input matInput placeholder="Typing..." [(ngModel)]="IdClient" (keyup)="searchId(IdClient)"/>
                 </mat-form-field>
             </div>
 
             <div class="field">
                 <mat-form-field>
                     <mat-label>Phone Number</mat-label>
-                    <input matInput placeholder="+212" [(ngModel)]="PhoneNumber"/>
+                    <input matInput placeholder="+212" [(ngModel)]="PhoneNumber" (keyup)="searchId(PhoneNumber)"/>
                 </mat-form-field>
             </div>
             
             <div class="field">
                 <mat-form-field>
                     <mat-select placeholder="PDV Type" panelClass="selectPanel2" [(ngModel)]="PDVType">
-                        <mat-option value="">All</mat-option>
+                        <mat-option value="all">All</mat-option>
                         <mat-option value="Detail">Detail</mat-option>
                         <mat-option value="Gros">Gros</mat-option>
-                        <mat-option value="Demi">Demi Gros</mat-option>
+                        <mat-option value="Demi Gros">Demi Gros</mat-option>
                     </mat-select>
                 </mat-form-field>
+                
             </div>
 
             <div class="field" *ngIf="PDVType == 'Detail'">
                 <mat-form-field>
                     <mat-select placeholder="PDV Detail Type*" panelClass="selectPanel2" [(ngModel)]="detailType">
-                        <mat-option value="">All</mat-option>
+                        <mat-option value="all">All</mat-option>
                         <mat-option value="Alimentation">Alimentation</mat-option>
                         <mat-option value="Superette">Superette</mat-option>
                         <mat-option value="Aattar">Aattar</mat-option>
@@ -44,10 +45,10 @@
             <div class="field">
                 <mat-form-field>
                     <mat-select placeholder="NFC" panelClass="selectPanel2" [(ngModel)]="nfc" >
-                        <mat-option value="">All</mat-option>
-                        <mat-option value="purple">Installed</mat-option>
-                        <mat-option value="red_white">Not yet installed</mat-option>
-                        <mat-option value="pink">NFC Refused</mat-option>
+                        <mat-option value="all">All</mat-option>
+                        <mat-option value="installed">Installed</mat-option>
+                        <mat-option value="not_install">Not yet installed</mat-option>
+                        <mat-option value="refused">NFC Refused</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -55,21 +56,21 @@
             <div class="field">
                 <mat-form-field>
                     <mat-select placeholder="Back Office Validation" panelClass="selectPanel2" [(ngModel)]="BackOfficeValid" >
-                        <mat-option value="">All</mat-option>
-                        <mat-option value="green">Validated</mat-option>
+                        <mat-option value="all">All</mat-option>
+                        <mat-option value="valid">Validated</mat-option>
                         <mat-option value="refused">Refused</mat-option>
-                        <mat-option value="red_white">Waiting</mat-option>
+                        <mat-option value="waiting">Waiting</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
 
             <div class="field">
                 <mat-form-field>
-                    <mat-select placeholder="Sector" panelClass="selectPanel2" [(ngModel)]="sector">
+                    <mat-select placeholder="Sector" panelClass="selectPanel2" [(ngModel)]="sector" (selectionChange)="onSelectSector($event)">
                         <mat-option>
                             <ngx-mat-select-search placeholderLabel="Search" (keyup)="filterListCareUnit($event.target.value)" ></ngx-mat-select-search>
                         </mat-option>
-                        <mat-option value="">All</mat-option>
+                        <mat-option value="all">All</mat-option>
                         <ng-container *ngFor="let name of sectorNames">
                             <mat-option value="{{name.id}}">{{name.detail}}</mat-option>
                         </ng-container>
@@ -80,22 +81,33 @@
             <div class="field">
                 <mat-form-field>
                     <mat-select placeholder="Delete" panelClass="selectPanel2" [(ngModel)]="deleteStatus">
-                        <mat-option value="">All</mat-option>
+                        <mat-option value="all">All</mat-option>
                         <mat-option value="deleted">Deleted</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
 
+            
+
         <!-- </div> -->
 
     </div>
+    <div class="filter-actions">
+        <button mat-icon-button (click)="filterAll()">
+            <mat-icon>filter</mat-icon>
+            Apply Filter
+        </button>
+        <button mat-icon-button (click)="clearFilter()">
+            <mat-icon>clear</mat-icon>
+            Clear Filter
+        </button>
+    </div>
+    
 
     <div class="clients-list">
         <!-- *ngFor="let client of clients" -->
 
-        <div *ngFor="let client of dataSource | filter: IdClient | filter: PhoneNumber | filter:BackOfficeValid | filter: sector| filter: deleteStatus | filter: PDVType| filter: detailType"
-            class="card-container">
-            <label>{{client._id}}</label>
+        <div *ngFor="let client of obs | async " class="card-container">
             <mat-card (click)="openDialog(client)">
                 <img mat-card-image src="{{client.geometry.properties.PVP}}" alt=""
                     *ngIf="client.geometry.properties.PVP; else nfcPhoto">
@@ -110,10 +122,10 @@
                     <p><span>Sector:</span> {{client.geometry.properties.Code_Secteur_OS}}</p>
                     <div class="nfc">
                         NFC
-                        <mat-icon *ngIf="client.geometry.properties.NFC==null" [ngStyle]="{'color':'#FACF37'}">
+                        <mat-icon *ngIf="client.geometry.properties.nfc.UUID==null" [ngStyle]="{'color':'#FACF37'}">
                             indeterminate_check_box
                         </mat-icon>
-                        <mat-icon *ngIf="client.geometry.properties.NFC!=null" [ngStyle]="{'color':'#27AE61'}">check_box
+                        <mat-icon *ngIf="client.geometry.properties.nfc.UUID!=null" [ngStyle]="{'color':'#27AE61'}">check_box
                         </mat-icon>
                     </div>
                 </mat-card-content>
@@ -123,7 +135,7 @@
         
 
     </div>
-    <mat-paginator #paginator [pageSize]="pageSize" [pageSizeOptions]="[10, 20, 30, 50]" [showFirstLastButtons]="true" [length]="totalSize"
-    [pageIndex]="currentPage" (page)="handlePage($event)">
+    <mat-paginator [pageSizeOptions]="[30, 50, 200, 300]" [showFirstLastButtons]="true" 
+    >
     </mat-paginator>
 </div>

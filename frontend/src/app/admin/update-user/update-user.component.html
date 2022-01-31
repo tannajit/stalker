@@ -95,7 +95,7 @@
                     <label>Sector :</label>
                     <form [formGroup]="searchUserForm">
                         <mat-form-field>
-                            <mat-select placeholder="select" formControlName="userType" multiple [(ngModel)]="SelectedSector">
+                            <mat-select placeholder="select" formControlName="userType"  multiple [(ngModel)]="SelectedSector">
                                 <mat-option>
                                     <ngx-mat-select-search placeholderLabel="Search" (keyup)="filterListCareUnit($event.target.value)" ></ngx-mat-select-search>
                                 </mat-option>
@@ -115,17 +115,6 @@
             </ng-template>
             <ng-template #showBlock2>
 
-                <!-- <div class="field" >
-                    <label>Roles assigned :</label>
-                    <mat-form-field >
-                        <mat-select  placeholder="Roles assigned : {{RolesOfUser.length}}"  panelClass="selectPanel2"  >   
-                            <div *ngFor="let rol of RolesOfUser | filterUnique" >
-                            
-                            <mat-option  disabled  value="{{rol}}">{{rol}}</mat-option>
-                            </div>
-                        </mat-select>
-                    </mat-form-field>
-                </div> -->
                 <div class="field" >
                     <label>Role  :</label>
                     <mat-form-field >

@@ -89,8 +89,9 @@ export class UserInfoComponent implements OnInit {
           var detail
           sectors.forEach(el => {
           all.forEach(elm => {
-            var element = JSON.parse(elm.Valeur);
-
+            console.log("elm",elm.Valeur)
+           // var element = JSON.parse(elm.Valeur);
+            var element = elm.Valeur
             if(el.nameSecteur==element.nameSecteur) {
               console.log("yess")
               detail= element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name

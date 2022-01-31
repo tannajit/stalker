@@ -114,6 +114,7 @@ export class MapComponent implements AfterViewInit {
   ngOnDestroy() {
     this.destroyed.next();
     this.destroyed.complete();
+    
   }
 
   WatchPosition() {
@@ -232,6 +233,7 @@ export class MapComponent implements AfterViewInit {
           const elm = JSON.parse(element.Valeur);
           const Point = { _id: element._id, geometry: elm };
           const geojsonPoint: geojson.Point = Point.geometry;
+          console.log(Point.geometry.properties?.status)
           var iconClient = L.icon({ iconUrl: 'assets/' + Point.geometry.properties?.status + '.png', iconSize: [8, 8] });
           var marker = L.geoJSON(geojsonPoint, {
             pointToLayer: (point, latlon) => {
