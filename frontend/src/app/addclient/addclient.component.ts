@@ -498,18 +498,19 @@ export class AddclientComponent implements AfterViewInit {
       //     });
       //   }
       // });
+     // this.AddNewClient();
+      this.clientService.SendClient(this.clientInfos).subscribe((res) => {
       this.clientService.getAllClient().subscribe(async (res1) => {
         // console.log(res)
          var db = new Dexie("off").open().then((res) => {
            res.table("pdvs").clear().then((l)=>{
              res.table("pdvs").bulkAdd(res1).then((lastKey)=>{
-                   //console.log(lastKey)
                    this._router.navigate(['/map'])
                 });
            }) 
          });
        });
-     // this.AddNewClient()
+      });
     }
   }
   ////////////////////////////////////////////////////////////////

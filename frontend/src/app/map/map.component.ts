@@ -548,7 +548,7 @@ export class MapComponent implements AfterViewInit {
       // console.log(res)
       this.markersCluster.clearLayers();
       //console.log(ress)
-      this.ArrayIDS=[]
+      //this.ArrayIDS=[]
       ress.forEach((element, idx, array) => {
         //const Point = { _id: element._id, geometry: element.geometry };
         const geojsonPoint: geojson.Point = element.geometry;
@@ -574,7 +574,8 @@ export class MapComponent implements AfterViewInit {
       });
       var db = new Dexie("off").open().then((res) => {
         ///
-        console.log(this.ArrayIDS.length)
+        console.log(this.ArrayIDS)
+        //console
         res.table("pdvs").bulkDelete(this.ArrayIDS).then((hh)=>{
           console.log("$$$$$$$ DONE Clearing $$$$$$$$")
           res.table("pdvs").bulkPut(ress).then((lastKey) => {
