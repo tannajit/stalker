@@ -545,14 +545,6 @@ export class MapComponent implements AfterViewInit {
       this.markersCluster.clearLayers();
       //console.log(ress)
       ress.forEach((element, idx, array) => {
-        if (idx === array.length - 1) {
-          if (this.dialogConf) {
-            this.dialogConf.close()
-            this.openAlertDialog("Sync is Done")
-            //console.log(" -------------------------------- ", this.option_retail)
-
-          }
-        }
         //const Point = { _id: element._id, geometry: element.geometry };
         const geojsonPoint: geojson.Point = element.geometry;
         var iconClient = L.icon({ iconUrl: 'assets/' + element.geometry.properties?.status + '.png', iconSize: [8, 8] });
@@ -590,6 +582,12 @@ export class MapComponent implements AfterViewInit {
             console.log("Data Cleared form PDVs")
             res.table("pdvs").bulkAdd(ress).then((lastKey) => {
               console.log("Add PDVs")
+              if (this.dialogConf) {
+                this.dialogConf.close()
+                this.openAlertDialog("Sync is Done")
+                //console.log(" -------------------------------- ", this.option_retail)
+    
+              }
 
             });
           }
