@@ -181,15 +181,29 @@ export class ClientsComponent implements OnInit {
   async getAllClients() {
     var db = new Dexie("off").open().then((res) => {
       console.log("***")
+     var test= res.table("pdvs").count();
+     var all;
+     console.log("test")
+     test.then(r=>{
+      all=r
+      console.log(r)
+     });
+     var i=0;
       res.table("pdvs").each((element) => {
+        i++;
         if (this.loggedUser.role == 'Admin' || this.loggedUser.role == 'Back Office') {
           this.clients.push(element);
         }
         else if ((this.loggedUser.role == 'Seller' || this.loggedUser.role == 'Auditor') && element.geometry.properties.status != "deleted") {
           this.clients.push(element);
         }
+        if(i==all){
+          console.log("nnn")
+          this.getClients();
+        }
       });
-      this.getClients(); /// until get all data  TO DO 
+      
+       /// until get all data  TO DO 
     });
     
   }
