@@ -1,15 +1,22 @@
 <div class="content-body">
-    <h2>Delete Client</h2>
+    <span 
+    style="
+            font-weight: bold;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 30px;
+            color: green;
+            margin-top: 20px;
+            ">Delete Client</span>
 
 
     <div>
         <pre>Distance according client : {{getDistance()}}</pre>
     </div>
 
- <div ng-app ng-controller="ApplicationController" class="progress-cantainer">
+ <!-- <div ng-app ng-controller="ApplicationController" class="progress-cantainer">
         <mat-progress-bar mode="determinate" [value]="percentage"></mat-progress-bar>
         <span style="position: absolute; top: 0em;" [ngStyle]="{'left': percentage + '%'}">{{percentage}}%</span>
-    </div> 
+</div>  -->
 
     <div class="map-container">
         <div id="map2"></div>
@@ -42,11 +49,7 @@
 
             <div class="scan-field" *ngIf="selected=='Not exist'">
                 <label class="input-label">PDV location video : </label>
-                <div>
-
-                    <button mat-button class="btn-green" *ngIf="!isRecording" (click)="displayVideo()">Record Video</button>
-
-                </div>
+                <button mat-button class="btn-green" *ngIf="!isRecording" (click)="displayVideo()">Record Video</button>
             </div>
             
 
@@ -78,21 +81,29 @@
         
         <div class="scan-field" *ngIf="showVideo"> 
             <label class="input-label">PDV location video : </label>
-            <div style="text-align:center">
-                <video class="video" #video autoplay controls></video>
-                <span class="m-1"></span>
-                <video class="video" style="width:360 !important;" controls #recordedVideo></video>
-                <br>
-                <button class="btn btn-primary btn-lg" *ngIf="!isRecording" (click)="startRecording()">Start Recording</button>
-                <button class="btn btn-warning btn-lg" *ngIf="isRecording" (click)="stopRecording()">Stop Recording</button>
+            <div class="video-container">
+
+                <div class="video1">
+                    <video class="video" #video autoplay controls></video>
+                </div>
+                
+                <div class="video1">
+                    <video class="video" controls #recordedVideo></video>
+                </div>
+                
+                <div class="btns">
+                    <button mat-button class="btn-green" *ngIf="!isRecording" (click)="startRecording()">Start Recording</button>
+                    <button mat-button class="btn-red" *ngIf="isRecording" (click)="stopRecording()">Stop Recording</button>
+                </div>
+                
             </div>
         </div>
+        
         <div class="btns">
             <button mat-button class="btn-red" routerLink="/map">Cancel</button>
             <button mat-button class="btn-yellow" (click)="Send()">Send</button>
         </div>
         
-
        </div>
     </ng-template> 
         

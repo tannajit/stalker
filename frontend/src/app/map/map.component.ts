@@ -325,6 +325,10 @@ export class MapComponent implements AfterViewInit {
               transaction = db.transaction(['data'], 'readwrite');
               const objectStore = transaction.objectStore('data');
               const request = objectStore.put(geo);
+              request.onsuccess = function (event) {
+                console.log('done Adding PDV ');
+              }
+
             });
             this.getDataClient();
             // this.openAlertDialog("Synchronozation in process Please wait ")
@@ -336,7 +340,8 @@ export class MapComponent implements AfterViewInit {
   }
   /////////***** Fill in indexDB with Sector info ******///////
   PutDataSector() {
-    let db; let transaction;
+    let db; 
+    let transaction;
     const request = window.indexedDB.open('off', this.version);
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
       console.log('Why didn\'t you allow my web app to use IndexedDB?!');
@@ -360,9 +365,9 @@ export class MapComponent implements AfterViewInit {
             transaction = db.transaction(['sector'], 'readwrite');
             const objectStore = transaction.objectStore('sector');
             const request = objectStore.put(geo);
-           /* request.onsuccess = function (event) {
-              //console.log('done Adding Sector ');
-            };*/
+            request.onsuccess = function (event) {
+              console.log('done Adding Sector ');
+            }
           });
           this.getDataSector();
         }
@@ -378,7 +383,7 @@ export class MapComponent implements AfterViewInit {
     this.PutDataSector()
     this.PutData();
     this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
-      disableClose: false
+      disableClose: true
     });
     this.dialogConf.componentInstance.confirmMessage = "sync"
     console.log('Synchronize (Get data from the Database)');

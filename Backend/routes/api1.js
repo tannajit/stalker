@@ -13,7 +13,7 @@ var uri = "mongodb://localhost:27017";
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker3"
+var name_database = "stalker1"
 var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
@@ -845,6 +845,7 @@ async function AddUserToSector(id, sec_name) {
 
 // Insert User 
 async function InsertUser(user) {
+
     user.password = await GenerateHashPassword(user.password)
     //console.log(user)
     let collection = db.collection("users") // collection users 
@@ -885,7 +886,6 @@ router.post("/settings", async (req, res) => {
         }, { upsert: true })
 
     res.status(200).json("SMS time set successfully")
-
 });
 
 router.get("/settings", async (req, res) => {
@@ -905,10 +905,12 @@ router.get("/settings", async (req, res) => {
         var values = await collection.find({ "proprety": proprety }).toArray()
         response = values[0]
     }
+
     console.log(values)
     res.json(response)
 
 })
+
 //////////***********************************////////////////////////
 //////////***********************************////////////////////////
 router.get("/GetClient/:id", async (req, res) => {
