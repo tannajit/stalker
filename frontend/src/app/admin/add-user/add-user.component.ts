@@ -11,6 +11,7 @@ import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { sector, unitsFactors } from '@turf/turf';
 import { WebElement } from 'protractor';
 import { Console } from 'console';
+import Dexie from 'dexie';
 @Component({
   selector: 'app-add-user',
   templateUrl: './add-user.component.html',
@@ -52,30 +53,19 @@ export class AddUserComponent implements OnInit {
   RolesSource = this._router.getCurrentNavigation().extras.state.roles;
 
 
-  //dialogRef: MatDialogRef<ClientInfoComponent>;
   ngOnInit(): void {
     this.searchUserForm = this.fb.group({
       userType: new FormControl('')
     });
-    this.getDataSector()
-    /// get All Email from Database to prevenet Email duplication
+    //this.getDataSector()
+    this.GetSectors()
     this.CheckEmail()
     console.log(this.RoleSelected)
-    //// get Sectors 
-    //this.getSectors()
-    
-    /// get Roles available
-    // this._setting.getSettings('param=role').subscribe(res => {
-    //   var RolesSource = res.details.roles
+
       
       this.RolesSource.forEach(element => {
-          
         this.Roles.push(element.name)
-  
-      // })
-      
-      // console.log("tttttttttttttttttt")
-      // console.log(this.Roles)
+
     })
 
 
@@ -136,7 +126,21 @@ export class AddUserComponent implements OnInit {
       };
     };
   }
+  
+  async GetSectors() {
 
+    var db = new Dexie("off").open().then((res) => {
+      res.table("sector").each(element => {
+        // console.log(element)
+        var obj = {
+          id: element.nameSecteur,
+          detail: element.nameSecteur + " - " + element.machine + " - " + element.info.geometry.properties.name
+        }
+        this.AllSectors.push(obj.id)
+        this.Sectors.push(obj)
+      })
+    });
+  }
 
   //////////
   RoleActive() {
@@ -298,12 +302,6 @@ export class AddUserComponent implements OnInit {
   ///
   SendUser() {
 
-    // if (this.role == 'Seller' || this.role == 'Auditor' || this.role == 'Supervisor') {
-    //   this.SectorAffacted = this.SelectedSector
-    // } else {
-    //   this.SectorAffacted = this.AllSectors
-    // }
-    // console.log(this.SectorAffacted)
 
     this.UserInfo = {
       userinfo: {

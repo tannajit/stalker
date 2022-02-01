@@ -68,7 +68,9 @@ export class DeleteClientComponent implements AfterViewInit {
     private clientService: ClientsService
   ) { }
 
-  async ngOnInit() {
+  async ngAfterViewInit() {
+    this.initMap();
+
     console.log("Lat",this.lat)
     console.log("Lon",this.lon)
     console.log("Lat",this.latclt)
@@ -107,9 +109,9 @@ export class DeleteClientComponent implements AfterViewInit {
       this.map.removeLayer(this.myCercle)
     }
     this.myCercle=L.circle([pos.coords.latitude, pos.coords.longitude], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
-    if(this.myCercle){
-      this.percentage=100
-    }
+    // if(this.myCercle){
+    //   this.percentage=100
+    // }
     this.clientService.getPosition({"MapUp":[pos.coords.latitude, pos.coords.longitude],"Raduis":raduis});
     },(err)=>{
       console.log(`err :${err}`)
@@ -124,6 +126,9 @@ export class DeleteClientComponent implements AfterViewInit {
 
     this.destroyed.next();
     this.destroyed.complete();
+    if(this.stream?.getVideoTracks()!=undefined)
+   { this.stream.getVideoTracks()[0].stop();}
+
   }
 
   startRecording() {
@@ -141,21 +146,14 @@ export class DeleteClientComponent implements AfterViewInit {
     this.onDataAvailableEvent();
     this.onStopRecordingEvent();
   }
-thestream;
 
   stopRecording() {
     this.mediaRecorder.stop();
-    //   console.log("Strem:"+ this.stream.getTracks()[0].stop())
-    //   console.log("blobs:"+ this.recordedBlobs)
-
-    //   this.thestream=this.stream.getTracks()[0].stop()
-    //   var blob = new Blob(this.recordedBlobs, {type: "video/webm"});
-    // var url = (window.URL || window.webkitURL).createObjectURL(blob);
-    // console.log("!!!"+url)
-    // console.log("!!!"+blob)
 
     this.isRecording = !this.isRecording;
     console.log('Recorded Blobs: ', this.recordedBlobs);
+
+
   }
 
   playRecording() {
@@ -238,10 +236,10 @@ text;
 
   }
 
-  ngAfterViewInit(): void {
-    this.initMap();
+  // ngAfterViewInit(): void {
+  //   this.initMap();
 
-  }
+  // }
 
   showcheck() {
     this.Status = true
@@ -270,62 +268,62 @@ text;
       iconUrl: "assets/location.png",
       iconSize: [30, 30]
     });
-    var marker = L.marker([this.lat, this.lon], { icon: location_icon })
-    this.inter = interval(1000).subscribe(x => {
+    // var marker = L.marker([this.lat, this.lon], { icon: location_icon }).addTo(this.map)
+    // this.inter = interval(1000).subscribe(x => {
 
-      if (navigator.geolocation) {
-        if (this.percentage == 100) {
-          this.inter.unsubscribe();
-          this.clientInfos.lat = this.latclt
-          this.clientInfos.lon = this.lonclt
-          //console.log(this.clientInfos)
-        }
+    //   if (navigator.geolocation) {
+    //     if (this.percentage == 100) {
+    //       this.inter.unsubscribe();
+    //       this.clientInfos.lat = this.latclt
+    //       this.clientInfos.lon = this.lonclt
+    //       //console.log(this.clientInfos)
+    //     }
 
-        var options = {
-          enableHighAccuracy: false,
-          timeout: 5000,
-          maximumAge: 2000
-        };
-        //console.log(this.percentage)
+    //     var options = {
+    //       enableHighAccuracy: false,
+    //       timeout: 5000,
+    //       maximumAge: 2000
+    //     };
+    //     //console.log(this.percentage)
 
-        var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
+    //     var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
 
-          if (position) {
+    //       if (position) {
 
-            var newlat = position.coords.latitude
-            var newLon = position.coords.longitude;
+    //         var newlat = position.coords.latitude
+    //         var newLon = position.coords.longitude;
 
-            if (newlat != this.lat || newLon != this.lat) {
+    //         if (newlat != this.lat || newLon != this.lat) {
 
-              this.lat = newlat
-              this.lon = newLon
-              this.list.push(position)
+    //           this.lat = newlat
+    //           this.lon = newLon
+    //           this.list.push(position)
 
-              if (position.coords.accuracy < this.acc) {
-                this.acc = position.coords.accuracy
-                this.lat = position.coords.latitude
-                this.lon = position.coords.longitude
-                this.latclt = position.coords.latitude
-                this.lonclt = position.coords.longitude
-                console.log("latclt",this.latclt)
-                console.log("lonclt",this.lonclt)
+    //           if (position.coords.accuracy < this.acc) {
+    //             this.acc = position.coords.accuracy
+    //             this.lat = position.coords.latitude
+    //             this.lon = position.coords.longitude
+    //             this.latclt = position.coords.latitude
+    //             this.lonclt = position.coords.longitude
+    //             console.log("latclt",this.latclt)
+    //             console.log("lonclt",this.lonclt)
 
-              }
+    //           }
 
-              this.map.removeLayer(marker);
-              this.show = false
-              this.Status = true
-              marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
-            }
-          }
-        },
-          (error: GeolocationPositionError) => console.log(error), options);
-        // console.log('Clear watch called');
-        // window.navigator.geolocation.clearWatch(geoId);
-      } else {
-        alert("Geolocation is not supported by this browser.");
-      }
-    });
+    //           this.map.removeLayer(marker);
+    //           this.show = false
+    //           this.Status = true
+    //           marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
+    //         }
+    //       }
+    //     },
+    //       (error: GeolocationPositionError) => console.log(error), options);
+    //     // console.log('Clear watch called');
+    //     // window.navigator.geolocation.clearWatch(geoId);
+    //   } else {
+    //     alert("Geolocation is not supported by this browser.");
+    //   }
+    // });
   }
 
   testTimer() {
@@ -376,6 +374,7 @@ text;
     //var test=new Uint8Array(this.Video1  as ArrayBuffer)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodoDelete(this.checkInfos)
+      this.router.navigate(['/map'])
     } else {
       this.clientService.DeleteRequest(this.checkInfos).subscribe(res => { console.log(res)
       

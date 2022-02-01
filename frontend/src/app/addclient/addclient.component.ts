@@ -15,8 +15,7 @@ import { SettingsService } from '../settings/settings.service';
 import { IndexdbService } from '../indexdb.service';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-
-
+import Dexie from 'dexie';
 const incr = 1;
 
 @Component({
@@ -264,30 +263,17 @@ export class AddclientComponent implements AfterViewInit {
       this.mySector = params.get('sector')
       console.log("mysector" + this.mySector)
       this.clientInfos.sector = this.mySector
-      var db, transaction;
-    var request = window.indexedDB.open("off", this.version)
-    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      console.log("Why didn't you allow my web app to use IndexedDB?!");
-    };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      db = event.target.result;
-      transaction = db.transaction(['sector'], 'readwrite');
-      var objectStore = transaction.objectStore("sector");
-        var objectStoreRequest = objectStore.get(Number(this.mySector));
-        objectStoreRequest.onsuccess = (event) => {
-          //console.log(objectStoreRequest.result)
-          var element=objectStoreRequest.result.Valeur
-          console.log(element)
-          this.clientInfos.TypeDPV=element.typePDV[0]
-         //this.selected=this.clientInfos.TypeDPV
-          element.typePDV.forEach(type => {
-            this.TypesPDVs.push(type)
-          });
-          this.selected=this.TypesPDVs[0]
-          this.TypeDPV=this.TypesPDVs[0]
-        }
-    }
     })
+    var db = new Dexie("off").open().then((res) => {
+      res.table("sector").get({"nameSecteur":Number(this.mySector)}).then(r=>{
+        console.log(r)
+        r.typePDV.forEach(type => {
+          this.TypesPDVs.push(type)
+        });
+        this.selected=this.TypesPDVs[0]
+        this.TypeDPV=this.TypesPDVs[0]
+      })
+    });
 
   }
 
@@ -469,58 +455,107 @@ export class AddclientComponent implements AfterViewInit {
     }else{
       this.clientInfos.Status = "red_white"
     }
-   
     console.log(this.clientInfos)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodo(this.clientInfos);
-      this.AddNewClientIndexDB()
+      //this.AddNewClientIndexDB()
+      this.AddNewClient()
     } else {
-      this.clientService.SendClient(this.clientInfos).subscribe((res) => {
-        console.log("\n **********Response form API************")
-        console.log(res)
-        //this.index.ClearData();
-        var db, transaction;
-        var request = window.indexedDB.open("off", this.version)
-        request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-          console.log("Why didn't you allow my web app to use IndexedDB?!");
-        };
-        request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-          db = event.target.result;
-          console.log("$$$$$$$$$$$$$$$$ Success Add client $$$$$$$$$$$$$$$$$$")
-          this.clientService.getAllClient().subscribe((res) => {
-            console.log("\n get all element After Adding New Client \n ")
-            console.log(res)
-            var i = 0;
-            res.forEach((element, index, array) => {
-              i++;
-              console.log("-----------------------------------")
-              console.log(element)
-              console.log("-----------------------------------")
-              var geo = { _id: element._id, Valeur: JSON.stringify(element.geometry) }
-              transaction = db.transaction(['data'], 'readwrite');
-              var objectStore = transaction.objectStore("data");
-              var request = objectStore.put(geo)
-              request.onsuccess = (event) => {
-                console.log("****************** done Adding to Database After Adding Client *******************")
-              }
-              if (i === array.length) {
-                console.log("Array I" + i)
-                this._router.navigate(['/map']).then(()=>{
-                  
-                })
-              }
-            });
-
-          });
-
-        }
-
-      });
+      // this.clientService.SendClient(this.clientInfos).subscribe((res) => {
+      //   console.log("\n **********Response form API************")
+      //   console.log(res)
+      //   //this.index.ClearData();
+      //   var db, transaction;
+      //   var request = window.indexedDB.open("off", this.version)
+      //   request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+      //     console.log("Why didn't you allow my web app to use IndexedDB?!");
+      //   };
+      //   request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      //     db = event.target.result;
+      //     console.log("$$$$$$$$$$$$$$$$ Success Add client $$$$$$$$$$$$$$$$$$")
+      //     this.clientService.getAllClient().subscribe((res) => {
+      //       console.log("\n get all element After Adding New Client \n ")
+      //       console.log(res)
+      //       var i = 0;
+      //       res.forEach((element, index, array) => {
+      //         i++;
+      //         console.log("-----------------------------------")
+      //         console.log(element)
+      //         console.log("-----------------------------------")
+      //         var geo = { _id: element._id, Valeur: JSON.stringify(element.geometry) }
+      //         transaction = db.transaction(['data'], 'readwrite');
+      //         var objectStore = transaction.objectStore("data");
+      //         var request = objectStore.put(geo)
+      //         request.onsuccess = (event) => {
+      //           console.log("****************** done Adding to Database After Adding Client *******************")
+      //         }
+      //         if (i === array.length) {
+      //           console.log("Array I" + i)
+      //           this._router.navigate(['/map']).then(()=>{
+      //           })
+      //         }
+      //       });
+      //     });
+      //   }
+      // });
+      this.clientService.getAllClient().subscribe(async (res1) => {
+        // console.log(res)
+         var db = new Dexie("off").open().then((res) => {
+           res.table("pdvs").clear().then((l)=>{
+             res.table("pdvs").bulkAdd(res1).then((lastKey)=>{
+                   //console.log(lastKey)
+                   this._router.navigate(['/map'])
+                });
+           }) 
+         });
+       });
+     // this.AddNewClient()
     }
   }
   ////////////////////////////////////////////////////////////////
 
   ////////////********** ADD CLIENT IN OFFLINE MODE **************/////////////////
+  AddNewClient(){
+    var db = new Dexie("off").open().then((res) => {
+      console.log("***")
+      var _id = UUID.UUID();
+      var codeSector = this.mySector.slice(0, 3)
+      ///////
+      var geom = {
+        "geometry": {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [this.clientInfos["lon"], this.clientInfos["lat"]]
+          },
+          "properties": {
+            "codeDANON": this.clientInfos.codes[0],
+            "codeCOLA": this.clientInfos.codes[1],
+            "codeFGD": this.clientInfos.codes[2],
+            "codeQR": this.clientInfos.codeNFC,
+            "NFCP":this.clientInfos.NFCPhoto,
+            "nfc": this.nfcObject,
+            "Code_Region": parseInt(codeSector),
+            "Code_Secteur_OS": parseInt(this.mySector),
+            "machine": "CMG",
+            "TypeDPV": this.TypeDPV,
+            "detailType": this.detailType,
+            "userId": this.loggedUser._id,
+            "userRole": this.loggedUser.role,
+            "NomPrenom": this.NomPrenom,
+            "PhoneNumber": this.PhoneNumber,
+            "PVP": this.clientInfos.PVPhoto,
+            "status": "red"
+          }
+        },
+        "_id": _id
+      }
+      res.table("pdvs").add(geom).then(r=>{
+        this._router.navigate(['/map'])
+      })
+    });
+  }
+
   AddNewClientIndexDB() {
     var db, transaction;
     var request = window.indexedDB.open("off", this.version)
@@ -552,11 +587,11 @@ export class AddclientComponent implements AfterViewInit {
             "TypeDPV": this.TypeDPV,
             "detailType": this.detailType,
             "userId": 'test',
-            "userRole": "seller",
+            "userRole": this.loggedUser.role,
             "NomPrenom": this.NomPrenom,
             "PhoneNumber": this.PhoneNumber,
             "PVP": this.clientInfos.PVPhoto,
-            "status": "white_red"
+            "status": "red"
           }
         },
         "_id": _id

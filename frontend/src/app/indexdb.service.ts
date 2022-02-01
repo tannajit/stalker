@@ -27,8 +27,10 @@ export class IndexdbService {
       console.log("upgrade")
       var objectStore = this.db.createObjectStore("data", { keyPath: '_id' });
       console.log("create Sector ")
-      var objectt = this.db.createObjectStore("sector", { keyPath: '_id' });
-      console.log(objectt)
+      var objectt = this.db.createObjectStore("sector", { keyPath: '_id'});
+      objectt.createIndex( "nameSecteur","nameSecteur", { unique: false });
+      var objectto = this.db.createObjectStore("pdvs", { keyPath: '_id' });
+      //console.log(objectt)
     }
     request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
       this.db = event.target.result;

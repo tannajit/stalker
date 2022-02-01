@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { ConfirmationDialogComponent } from 'src/app/confirmation-dialog/confirmation-dialog.component';
 import { SettingsService } from 'src/app/settings/settings.service';
 import { ClientsService } from 'src/app/clients.service';
-
+import Dexie from 'dexie';
 @Component({
   selector: 'app-user-info',
   templateUrl: './user-info.component.html',
@@ -29,7 +29,8 @@ export class UserInfoComponent implements OnInit {
   ) { }
   ngOnInit(): void {
     this.getSectorsByUser()
-    this.getDataSector()
+   //this.getDataSector()
+   this.GetSectors()
     //console.log("this.data._id",this.data.data)
   }
 
@@ -89,8 +90,9 @@ export class UserInfoComponent implements OnInit {
           var detail
           sectors.forEach(el => {
           all.forEach(elm => {
-            var element = elm.Valeur;
-
+            console.log("elm",elm.Valeur)
+           // var element = JSON.parse(elm.Valeur);
+            var element = elm.Valeur
             if(el.nameSecteur==element.nameSecteur) {
               console.log("yess")
               detail= element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
@@ -109,6 +111,32 @@ export class UserInfoComponent implements OnInit {
     }
 
 
+    ///  Dexie 
+    async GetSectors() {
+      var sectors=this.data.data.sectors
+      if(!this.RoleActive()) {
+      var db = new Dexie("off").open().then((res) => {
+        res.table("sector").each(element => {
+          // console.log(element)
+          sectors.forEach(el => {
+          var obj = {
+            id: element.nameSecteur,
+            detail: element.nameSecteur + " - " + element.machine + " - " + element.info.geometry.properties.name
+          }
+          if(el.nameSecteur==element.nameSecteur) {
+            console.log("yess")
+            //var detail= element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
+            this.Sectors.push(obj.detail)
+          }
+          //this.AllSectors.push(obj.id)
+          //this.Sectors.push(obj)
+        })
+      });
+      });
+    }
+    }
+
+    ///
 
   deleteUser(user){
     this.dialogRef = this.dialog.open(ConfirmationDialogComponent, {

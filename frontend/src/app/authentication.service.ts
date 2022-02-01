@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { IndexdbService } from './indexdb.service';
-
+import Dexie from 'dexie';
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +12,7 @@ export class AuthenticationService {
   constructor(private http: HttpClient,
     private _router: Router,
     private _index: IndexdbService) { }
-  getUserLogin(data,httpOptions) {
+  getUserLogin(data, httpOptions) {
     return this.http.post<any>(this._UsersUrl, data)
   }
   getToken() {
@@ -26,7 +26,16 @@ export class AuthenticationService {
     localStorage.removeItem('token')
     //this._index.ClearData()
     //this._index.ClearDataSector()
-    this.ClearData();
+    //this.ClearData();
+    var db = new Dexie("off").open().then((res) => {
+      res.table("pdvs").clear().then((l) => {
+      })
+      res.table("sector").clear().then((l) => {
+        this._router.navigate(['login']).then(() => {
+          window.location.reload();
+        })
+      })
+    });
     //ClearDataSector()
   }
   db; ///database
@@ -63,7 +72,7 @@ export class AuthenticationService {
       var objectStoreRequest = objectStore.clear();
       objectStoreRequest.onsuccess = (event) => {
         console.log("Data Sector Cleared")
-        this._router.navigate(['login']).then(()=>{
+        this._router.navigate(['login']).then(() => {
           window.location.reload();
         })
       }

@@ -9,7 +9,7 @@ const MongoClient = require("mongodb").MongoClient;
 var uri = "mongodb://localhost:27017";
 //var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
-// uri to your Mongo database
+//uri to your Mongo database
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
@@ -288,8 +288,96 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
         console.log(err)
     );
 
+
 })
 
+router.get('/getClientByUser1/:type', verifyToken,async (req, res) => {
+    var userId = req.userId;
+    var type = [req.params.type]
+    console.log(type)
+    //var test=type[0].replace("_"," ")
+    //console.log(test)
+   // var userId = "61cecdb5c23903ede07d8870"
+    console.log("***** Get PDV Based on User: " + userId + " *******")
+    let collectionSec = await db.collection("secteurs") //collection where ids are stored 
+    var values = await collectionSec.aggregate([
+        {
+            $match: {
+                users: ObjectId(userId)
+            }
+        },
+        {
+            $lookup: {
+                from: "geometries",
+                let: { "point": "$points.point" },
+                as: "info",
+                "pipeline": [
+                    {
+                        $match: {
+                            $expr: {
+                            $and:[
+                                {$in:["$_id", "$$point"]},
+                                { $eq:["$geometry.properties.TypeDPV",String(type)]}
+                                ]
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        { $project: { info: 1, _id:0} },
+        { $unwind : "$info" }
+
+    ]).toArray();
+
+    //res.json(values)
+    
+     ListInfo = []
+    a = []
+    
+    // console.log("reqclientvalues",values)
+    values.forEach(elemm => {
+        // elemm.info.forEach(async (elem) => {
+        //     ListInfo.push(elem)
+        // });
+        ListInfo.push(elemm.info)
+    });
+    All_PDV = ListInfo.map(async (elem) => {
+        // if (elem.geometry.properties.NFC != null && elem.geometry.properties.NFC != undefined) {
+        //     elem.geometry.properties.status = "green"
+        // }
+        if (elem.geometry.properties?.nfc != undefined) {
+            var element = elem.geometry.properties;
+            if (element.nfc.NFCPhoto != null) {
+                try {
+                    
+                    await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
+                        elem.geometry.properties.NFCP = re
+                    }).catch(err => console.log(err))
+                } catch (err) {
+                    // console.log("***************")
+                }
+            } else {
+                elem.geometry.properties.NFCP = null
+            }
+            if (element?.PVPhoto != null) {
+                
+                await test1(db, ObjectId(element.PVPhoto)).then(re => {
+                    elem.geometry.properties.PVP = re
+                }).catch(err => console.log(err))
+            } else {
+                elem.geometry.properties.PVP = null
+            }
+        }
+        a.push(elem)
+    })
+    Promise.all(All_PDV).then(ee => {
+        res.json(a)
+    }).catch(err =>
+        console.log(err)
+    );
+
+})
 /* GET clients Based on User */
 // router.get('/clients', verifyToken, async (req, res) => {
 //     var userId = req.userId;
@@ -1368,23 +1456,22 @@ router.get("/VideoReadHafsa", async (req, res) => {
 
 router.put("/UpdateUser", async (req, res) => {
     user = req.body
-    console.log(req.body)
+    console.log("UpdateUser",req.body)
 
     users = await db.collection("users")
     secteurs = await db.collection("secteurs")
     if (user.generated) {
         user.password = await GenerateHashPassword(user.password)
     }
-    console.log(req.body)
     await users.updateMany({ _id: ObjectId(user._id) }, { $set: { "UserID": user.UserID, "name": user.name, "phone": user.phone, "CIN": user.CIN, "role": user.role, "email": user.email, "password": user.password } }).then(res => console.log(res))
     user.sectors.forEach(async el => {
 
-        await secteurs.updateOne({ nameSecteur: Number(el) }, { $addToSet: { users: ObjectId(user._id) } }).then(res => console.log(res))
+        await secteurs.updateMany({ nameSecteur: Number(el) }, { $addToSet: { users: ObjectId(user._id) } }).then(res => console.log(`user ${user._id} a été ajouter vers sector ${el}`,res))
 
     })
 
     user.SectorDeleted.forEach(async el => {
-        await secteurs.updateOne({ nameSecteur: Number(el) }, { $pull: { users: ObjectId(user._id) } }).then(res => console.log(res))
+        await secteurs.updateMany({ nameSecteur: Number(el) }, { $pull: { users:{$in:[ObjectId(user._id)]}  } }).then(res => console.log(`user ${user._id} a été suprimer au sector ${el}`,res))
     })
 
 })

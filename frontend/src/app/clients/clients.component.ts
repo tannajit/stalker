@@ -1,12 +1,12 @@
-import { Component, OnInit , ViewChild} from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ClientInfoComponent } from '../client-info/client-info.component';
 import { ClientsService } from '../clients.service';
-import { MatPaginator, PageEvent} from '@angular/material/paginator'
+import { MatPaginator, PageEvent } from '@angular/material/paginator'
 import { MatTableDataSource } from '@angular/material/table';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
-
+import Dexie from 'dexie';
 
 
 @Component({
@@ -101,18 +101,20 @@ export class ClientsComponent implements OnInit {
   ///////********* INIT FUNCTION *********///////
 
   ngOnInit(): void {
-    this.getDataSector()
+  //this.getDataSector()
+    this.GetSectors()
     console.log("############# sectors names########")
-    console.log(this.sectorNames)
+    //console.log(this.sectorNames)
     this.getAllClients()
-    console.log(this.clients)
+    console.log(this.clients.length)
     
   }
 
   getClients() {
     // Replace with HTTP call
-    
+    console.log(this.clients.length)
     this.dataSource = new MatTableDataSource<any>(this.clients);
+    console.log(this.dataSource)
     this.dataSource.data = this.clients.reverse();
     this.obs = this.dataSource.connect();
     this.dataSource.paginator = this.paginator;
@@ -140,7 +142,7 @@ export class ClientsComponent implements OnInit {
 
 
   ////*********** GET CLIENTS INFOS ***********/////
-  public getAllClients() {
+  public getAllClients1() {
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
@@ -158,23 +160,40 @@ export class ClientsComponent implements OnInit {
         all.forEach(element => {
           // console.log("******************")
           const elm = JSON.parse(element.Valeur);
-          var  Point = { _id: element._id, geometry: elm };
-          if(this.loggedUser.role=='Admin' || this.loggedUser.role=='Back Office'){
+          var Point = { _id: element._id, geometry: elm };
+          if (this.loggedUser.role == 'Admin' || this.loggedUser.role == 'Back Office') {
             // console.log("deleted")
             // console.log(this.loggedUser.role)
             this.clients.push(Point);
+            
             // console.log(Point.geometry.properties.status);
-         }
-         else if((this.loggedUser.role=='Seller' || this.loggedUser.role=='Auditor') && Point.geometry.properties.status!="deleted"){
-          this.clients.push(Point);
-          // console.log(this.loggedUser.role)
-          // console.log(Point.geometry.properties.status);
-         }
+          }
+          else if ((this.loggedUser.role == 'Seller' || this.loggedUser.role == 'Auditor') && Point.geometry.properties.status != "deleted") {
+            this.clients.push(Point);
+            // console.log(this.loggedUser.role)
+            // console.log(Point.geometry.properties.status);
+          }
         });
         this.getClients();
 
       };
     };
+  }
+
+  async getAllClients() {
+    var db = new Dexie("off").open().then((res) => {
+      console.log("***")
+      res.table("pdvs").each((element) => {
+        if (this.loggedUser.role == 'Admin' || this.loggedUser.role == 'Back Office') {
+          this.clients.push(element);
+        }
+        else if ((this.loggedUser.role == 'Seller' || this.loggedUser.role == 'Auditor') && element.geometry.properties.status != "deleted") {
+          this.clients.push(element);
+        }
+      });
+      this.getClients(); 
+    });
+    
   }
   //////////////////////////////////////////////////////////
 
@@ -234,12 +253,26 @@ export class ClientsComponent implements OnInit {
           console.log(result)*/
           var obj = {
             id: element.nameSecteur,
-            detail: element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
+            detail: element.nameSecteur + " - " + element.machine + " - " + element.info.geometry.properties.name
           }
           this.sectorNames.push(obj)
         });
       };
     };
+  }
+
+  async GetSectors() {
+
+    var db = new Dexie("off").open().then((res) => {
+      res.table("sector").each(element => {
+        // console.log(element)
+        var obj = {
+          id: element.nameSecteur,
+          detail: element.nameSecteur + " - " + element.machine + " - " + element.info.geometry.properties.name
+        }
+        this.sectorNames.push(obj)
+      })
+    });
   }
   /////////////////////////////////////////////////////////////////
 
@@ -291,7 +324,7 @@ export class ClientsComponent implements OnInit {
   anotherArray = this.sectorNames;
   filterListCareUnit(val) {
     // console.log(val);
-    
+
     this.sectorNames = this.anotherArray.filter((unit) => unit.details.toLowerCase().indexOf(val) > -1);
   }
 
