@@ -189,7 +189,7 @@ export class ClientsComponent implements OnInit {
           this.clients.push(element);
         }
       });
-      this.getClients();
+      this.getClients(); /// until get all data  TO DO 
     });
     
   }
