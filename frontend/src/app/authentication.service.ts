@@ -11,7 +11,9 @@ export class AuthenticationService {
 
   constructor(private http: HttpClient,
     private _router: Router,
-    private _index: IndexdbService) { }
+    private _index: IndexdbService) { 
+      this.version=this._index.version
+    }
   getUserLogin(data, httpOptions) {
     return this.http.post<any>(this._UsersUrl, data)
   }
@@ -35,7 +37,7 @@ export class AuthenticationService {
     //ClearDataSector()
   }
   db; ///database
-  version = 6; ///version of the database
+  version; ///version of the database
   ClearData() {
     var request = window.indexedDB.open("off", this.version)
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {

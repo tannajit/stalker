@@ -12,6 +12,7 @@ import { SettingsService } from 'src/app/settings/settings.service';
 import { ClientsService } from 'src/app/clients.service';
 import { AlertDialogComponent } from 'src/app/alert-dialog/alert-dialog.component';
 import Dexie from 'dexie';
+import { IndexdbService } from 'src/app/indexdb.service';
 
 
 @Component({
@@ -40,11 +41,14 @@ export class UsersComponent implements OnInit {
     private adminService: AdminService,
     public dialog: MatDialog,
     private _router: Router,
+    private index:IndexdbService,
     private changeDetectorRefs: ChangeDetectorRef,
     private _setting: SettingsService,
     private _admin: AdminService,
     private _client: ClientsService
-  ) { }
+  ) { 
+    this.version=this.index.version
+  }
 
   ngOnInit(): void {
     this.changeDetectorRefs.detectChanges();

@@ -7,6 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
 import Dexie from 'dexie';
+import { IndexdbService } from '../indexdb.service';
 
 
 @Component({
@@ -55,10 +56,11 @@ export class ClientsComponent implements OnInit {
   ////*********** CONSTRUCTOR ********///////////// 
 
   constructor(private _serviceClient: ClientsService,
+    private index:IndexdbService,
     private dialog: MatDialog
   ) {
     this.loggedUser = JSON.parse(localStorage.getItem("user"))
-
+    this.version=this.index.version
     // Object to create Filter for
     this.filterSelectObj = [
       {

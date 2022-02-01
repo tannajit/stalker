@@ -36,6 +36,7 @@ export class MapComponent implements AfterViewInit {
     private dialog: MatDialog) {
     //this.index.createDatabase();
     this.user = JSON.parse(localStorage.getItem("user"))
+    this.version=index.version;
   }
 
   dialogRef: MatDialogRef<ClientInfoComponent>;
@@ -45,6 +46,7 @@ export class MapComponent implements AfterViewInit {
 
   private map;
   public content = null;
+  ArrayIDS=[]
   myCercle;
   mySector = 'hello';
   IDGeomerty;
@@ -95,6 +97,7 @@ export class MapComponent implements AfterViewInit {
   //////////////*** Init map ////////
   ngAfterViewInit(): void {
     this.initMap();
+    
     this.aroute.params.subscribe(params => {
       if (params['lat']) {
         console.log("laaaaaaaaaaaaaaaaaaaaaaat: " + params['lat'])
@@ -511,9 +514,10 @@ export class MapComponent implements AfterViewInit {
         this.openAlertDialog("Sync is Done")
         //console.log(" -------------------------------- ", this.option_retail)  
       }
+      this.ArrayIDS=[]
       res.table("pdvs").each((element) => {
-
         const Point = { _id: element._id, geometry: element.geometry };
+        this.ArrayIDS.push(element._id)
         const geojsonPoint: geojson.Point = Point.geometry;
         var iconClient = L.icon({ iconUrl: 'assets/' + Point.geometry.properties?.status + '.png', iconSize: [8, 8] });
         var marker = L.geoJSON(geojsonPoint, {
@@ -544,9 +548,11 @@ export class MapComponent implements AfterViewInit {
       // console.log(res)
       this.markersCluster.clearLayers();
       //console.log(ress)
+      this.ArrayIDS=[]
       ress.forEach((element, idx, array) => {
         //const Point = { _id: element._id, geometry: element.geometry };
         const geojsonPoint: geojson.Point = element.geometry;
+        //this.ArrayIDS.push(element._id)
         var iconClient = L.icon({ iconUrl: 'assets/' + element.geometry.properties?.status + '.png', iconSize: [8, 8] });
         var marker = L.geoJSON(geojsonPoint, {
           pointToLayer: (point, latlon) => {
@@ -567,31 +573,47 @@ export class MapComponent implements AfterViewInit {
         }
       });
       var db = new Dexie("off").open().then((res) => {
-        let dbb; let transaction;
-        var request = window.indexedDB.open("off", this.version)
-        request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-          console.log("Why didn't you allow my web app to use IndexedDB?!");
-        };
-        request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-          dbb = event.target.result;
-          console.log("success inside Clear")
-          var transaction = dbb.transaction(['pdvs'], 'readwrite');
-          var objectStore = transaction.objectStore("pdvs");
-          var objectStoreRequest = objectStore.clear(); /// clear database
-          objectStoreRequest.onsuccess = (event) => {
-            console.log("Data Cleared form PDVs")
-            res.table("pdvs").bulkAdd(ress).then((lastKey) => {
-              console.log("Add PDVs")
-              if (this.dialogConf) {
-                this.dialogConf.close()
-                this.openAlertDialog("Sync is Done")
-                //console.log(" -------------------------------- ", this.option_retail)
-    
-              }
+        ///
+        console.log(this.ArrayIDS.length)
+        res.table("pdvs").bulkDelete(this.ArrayIDS).then((hh)=>{
+          console.log("$$$$$$$ DONE Clearing $$$$$$$$")
+          res.table("pdvs").bulkPut(ress).then((lastKey) => {
+            console.log("Add PDVs")
+            if (this.dialogConf) {
+              this.dialogConf.close()
+              this.openAlertDialog("Sync is Done")
+              //console.log(" -------------------------------- ", this.option_retail)
+            }
+  
+          });
+        })
+        
+        ///
+        // let dbb; let transaction;
+        // var request = window.indexedDB.open("off", this.version)
+        // request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+        //   console.log("Why didn't you allow my web app to use IndexedDB?!");
+        // };
+        // request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+        //   dbb = event.target.result;
+        //   console.log("success inside Clear")
+        //   var transaction = dbb.transaction(['pdvs'], 'readwrite');
+        //   var objectStore = transaction.objectStore("pdvs");
+        //   var objectStoreRequest = objectStore.clear(); /// clear database
+        //   objectStoreRequest.onsuccess = (event) => {
+        //     console.log("Data Cleared form PDVs")
+        //     res.table("pdvs").bulkAdd(ress).then((lastKey) => {
+        //       console.log("Add PDVs")
+        //       if (this.dialogConf) {
+        //         console.log(this.ArrayIDS)
+        //         this.dialogConf.close()
+        //         this.openAlertDialog("Sync is Done")
+        //         //console.log(" -------------------------------- ", this.option_retail)
+        //       }
 
-            });
-          }
-        }
+        //     });
+        //   }
+        // }
         // res.table("pdvs").clear().then((l) => {
 
         // })
@@ -621,7 +643,7 @@ export class MapComponent implements AfterViewInit {
     this._serviceClient.getAllSecteurs().subscribe(res1 => {
       var db = new Dexie("off").open().then((res) => {
         res.table("sector").clear().then((l) => {
-          res.table("sector").bulkAdd(res1).then((lastKey) => {
+          res.table("sector").bulkPut(res1).then((lastKey) => {
             //console.log(lastKey)
             this.PutSectorDataInMap()
           });

@@ -7,6 +7,7 @@ import { ConfirmationDialogComponent } from 'src/app/confirmation-dialog/confirm
 import { SettingsService } from 'src/app/settings/settings.service';
 import { ClientsService } from 'src/app/clients.service';
 import Dexie from 'dexie';
+import { IndexdbService } from 'src/app/indexdb.service';
 @Component({
   selector: 'app-user-info',
   templateUrl: './user-info.component.html',
@@ -23,10 +24,13 @@ export class UserInfoComponent implements OnInit {
     private adminService: AdminService,
     public dialog: MatDialog,
     private _router: Router,
+    private index:IndexdbService,
     private _setting: SettingsService,    
     private _client: ClientsService
 
-  ) { }
+  ) { 
+    this.version=this.index.version
+  }
   ngOnInit(): void {
     this.getSectorsByUser()
    //this.getDataSector()
