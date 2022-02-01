@@ -492,7 +492,8 @@ export class MapComponent implements AfterViewInit {
         var Point = { _id: element._id, geometry: element.info.geometry };
         var marker = L.geoJSON(Point.geometry, {
           onEachFeature: (feature, layer) => {
-            layer.bindPopup(String(element._id));
+            //console.log(element.nameSecteur)
+            layer.bindPopup(String(element.nameSecteur));
           }, style: { color: '#CD9575', fillOpacity: 0.1 }
         });
         this.markerClusterSector.addLayer(marker);
@@ -576,7 +577,7 @@ export class MapComponent implements AfterViewInit {
     //   console.log('Synchronize (Get data from the Database)');
     //   
     this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
-         disableClose: false
+      disableClose: true
        });
         this.dialogConf.componentInstance.confirmMessage = "sync"
   }
@@ -909,13 +910,7 @@ export class MapComponent implements AfterViewInit {
             var mess = "Be sure of the id :" + IDGeomerty
             this.openAlertSearch(mess);
           }
-
         }
-
-
-
-
-
       } else {
         var mess = "Please Enter the ID"
         this.openAlertSearch(mess)
@@ -929,7 +924,9 @@ export class MapComponent implements AfterViewInit {
 
   /////////////*********** EXTRACT DATA ******/////////////////
   extract() {
-    this.dialogExtract = this.dialog.open(ExtractSelectComponent);
+    this.dialogExtract = this.dialog.open(ExtractSelectComponent,{
+      disableClose: true
+    });
   }
 
 

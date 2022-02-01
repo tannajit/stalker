@@ -126,7 +126,8 @@ export class DeleteClientComponent implements AfterViewInit {
 
     this.destroyed.next();
     this.destroyed.complete();
-    this.stream.getVideoTracks()[0].stop();
+    if(this.stream?.getVideoTracks()!=undefined)
+   { this.stream.getVideoTracks()[0].stop();}
 
   }
 

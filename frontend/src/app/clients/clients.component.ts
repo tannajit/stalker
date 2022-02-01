@@ -101,7 +101,8 @@ export class ClientsComponent implements OnInit {
   ///////********* INIT FUNCTION *********///////
 
   ngOnInit(): void {
-    //this.getDataSector()
+  //this.getDataSector()
+    this.GetSectors()
     console.log("############# sectors names########")
     //console.log(this.sectorNames)
     this.getAllClients()

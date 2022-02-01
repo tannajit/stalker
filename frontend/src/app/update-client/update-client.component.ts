@@ -157,7 +157,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
 
     else {
       navigator.geolocation.getCurrentPosition((pos) => {
-        console.log(`latitude :${pos.coords.latitude},longitude :${pos.coords.longitude}`)
+        //console.log(`latitude :${pos.coords.latitude},longitude :${pos.coords.longitude}`)
         this.map.setView([pos.coords.latitude, pos.coords.longitude], 13)
         L.marker([pos.coords.latitude, pos.coords.longitude], { icon: this.location_icon }).addTo(this.map)
       })
@@ -180,7 +180,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   myCercle
   WatchPosition() {
     navigator.geolocation.watchPosition((pos) => {
-      console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
+      //console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
 
       let raduis = 5000;
       if (this.myCercle !== undefined) {
@@ -191,7 +191,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
       this.clientService.getPosition({ "MapUp": [pos.coords.latitude, pos.coords.longitude], "Raduis": raduis });
 
     }, (err) => {
-      console.log(`err :${err}`)
+      //console.log(`err :${err}`)
     },
       {
         enableHighAccuracy: true,
@@ -389,13 +389,13 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   async getLocation() {
 
     // interval(1000).subscribe(x => {
-    console.log("yesssss")
+    //console.log("yesssss")
     if (navigator.geolocation) {
       let raduis = 300;
       this.map.setView(new L.LatLng(this.latclt, this.lonclt), 11, { animation: true });
       //L.circle([this.latclt, this.lonclt], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
 
-      console.log('LatitudeOfUpadate: ' + this.latclt + ' LongitudeOfUpadate: ' + this.lonclt);
+      //console.log('LatitudeOfUpadate: ' + this.latclt + ' LongitudeOfUpadate: ' + this.lonclt);
       //this.clientService.getPosition({"MapUp":[this.latclt, this.lonclt],"Raduis":raduis});
 
     }
@@ -476,6 +476,10 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
         }
       });
     }
+
+    if(this.clientInfo.geometry.properties.TypeDPV!="Detail"){
+      this.clientInfo.geometry.properties.detailType=null
+    }
     if (this.clientInfos.NFCPhoto != null) {
       console.log("BDL NFC Photo")
       this.clientInfo.geometry.properties.nfc.NFCPhoto = this.clientInfos.NFCPhoto
@@ -507,17 +511,36 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
     }
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodoUpdate(this.clientInfo)
-      this.UpdateIndexDB()
+      this.UpdateDexie()
+      //this.UpdateIndexDB()
     } else {
       this.clientService.updateClient(this.clientInfo).subscribe(res => {
-        this.UpdateIndexDB()
+        this.UpdateDexie()
       })
+     
       //this.UpdateIndexDB()
     }
   }
 
   //////////************ UPDATE CLIENT IN INDEXEDB ************/////////////
   version = 6;
+  UpdateDexie(){
+    var db = new Dexie("off").open().then((res) => {
+      if (this.clientInfo.geometry.properties.PVP == null) {
+        this.clientInfo.geometry.properties.PVP = this.clientInfo.geometry.properties.PVPhoto
+      }
+      if (this.clientInfo.geometry.properties.NFCP == null) {
+        this.clientInfo.geometry.properties.NFCP = this.clientInfo.geometry.properties.nfc.NFCPhoto
+      }
+      var client = { _id: this.clientInfo._id, Valeur:this.clientInfo }
+      console.log(client)
+      res.table("pdvs").update(this.clientInfo._id,this.clientInfo).then(r=>{
+        console.log(r)
+        this._router.navigate(['/map'])
+      });
+    
+    });
+  }
   UpdateIndexDB() {
     // this.index.ClearData();
     console.log("Update in IndexedDB")

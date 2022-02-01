@@ -8,7 +8,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { UsersComponent } from '../users/users.component';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
-
+import Dexie from 'dexie';
 
 @Component({
   selector: 'app-update-user',
@@ -22,17 +22,17 @@ export class UpdateUserComponent implements OnInit {
   userInfo = this._router.getCurrentNavigation().extras.state.dataUser
   addNewRole = this._router.getCurrentNavigation().extras.state.AddRole
   // dataSource = this._router.getCurrentNavigation().extras.state.dataSource
-  RolesOfUser= this._router.getCurrentNavigation().extras.state.rolesSelected
+  RolesOfUser = this._router.getCurrentNavigation().extras.state.rolesSelected
   ListOfRoles = [];
   RoleSelected = [];
   UserInfoUp
   FirstName;
   LastName;
   RolesSource = this._router.getCurrentNavigation().extras.state.roles;
-  Roles =[];
+  Roles = [];
   role = this.userInfo.role
   role2;
-  SelectedSector2=[];
+  SelectedSector2 = [];
   hidpass = true
   SelectedSector = [];
   SectorsAttached = [];
@@ -45,8 +45,8 @@ export class UpdateUserComponent implements OnInit {
   generated = false
   setUserID
   searchUserForm: FormGroup;
-  version=6;
-  disabled=false
+  version = 6;
+  disabled = false
 
   constructor(
     private _setting: SettingsService,
@@ -63,63 +63,63 @@ export class UpdateUserComponent implements OnInit {
     });
 
     this.RolesSource.forEach(element => {
-          
+
       this.Roles.push(element.name)
 
     });
 
 
     this.RolesOfUser.forEach(element => {
-      console.log("gggggggg",element)
-      this.Roles.splice(this.Roles.indexOf(element),1)
+      console.log("gggggggg", element)
+      this.Roles.splice(this.Roles.indexOf(element), 1)
 
     });
 
 
-    console.log("this.RolesOfUser",this.RolesOfUser)
+    console.log("this.RolesOfUser", this.RolesOfUser)
 
-    if(!this.addNewRole){
+    if (!this.addNewRole) {
       this.Roles.unshift(this.userInfo.role)
 
     }
-    
-    
-    
-    
-    if(this.addNewRole){
 
-      this.disabled=true;
+
+
+
+    if (this.addNewRole) {
+
+      this.disabled = true;
 
     }
-    
+
     console.log("#### DATASOURCE #####")
     console.log(this.userInfo)
 
     console.log("userInfo")
-    console.log("this.Roles",this.Roles)
+    console.log("this.Roles", this.Roles)
     //console.log("this.Roles",this.Roles)
     this.FirstName = this.userInfo.nameU.split("-")[0]
     this.LastName = this.userInfo.nameU.split("-")[1]
 
-    if(!this.addNewRole){
+    if (!this.addNewRole) {
       this.userInfo.sectors.forEach(
 
-      el => 
-      { 
-      console.log(el)
-      console.log("those 1 ")
-      this.SelectedSector.push(el.nameSecteur) 
-      }
+        el => {
+          console.log(el)
+          console.log("those 1 ")
+          this.SelectedSector.push(el.nameSecteur)
+        }
 
-    );
+      );
       this.SectorsAttached = this.SelectedSector
     }
-    
 
-    this.getDataSector()
+
+    //this.getDataSector()
+    this.GetSectors()
   }
   SectorAffacted;
-  
+
   UserInfo2
 
   SendUser() {
@@ -133,7 +133,7 @@ export class UpdateUserComponent implements OnInit {
         email: this.userInfo.email,
         password: this.userInfo.password,
         status: "Active",
-        existe:true
+        existe: true
       },
       SectorsByRoles: this.ListOfRoles
     }
@@ -144,7 +144,22 @@ export class UpdateUserComponent implements OnInit {
 
   }
 
+  ///
+  async GetSectors() {
 
+    var db = new Dexie("off").open().then((res) => {
+      res.table("sector").each(element => {
+        // console.log(element)
+        var obj = {
+          id: element.nameSecteur,
+          detail: element.nameSecteur + " - " + element.machine + " - " + element.info.geometry.properties.name
+        }
+        this.AllSectors.push(obj.id)
+        this.Sectors.push(obj)
+      })
+    });
+  }
+  ///
   public getDataSector() {
     let db; let transaction;
     const request = window.indexedDB.open('off', this.version);
@@ -165,7 +180,7 @@ export class UpdateUserComponent implements OnInit {
 
           var obj = {
             id: element.nameSecteur,
-            detail: element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
+            detail: element.nameSecteur + " - " + element.machine + " - " + element.info.geometry.properties.name
           }
           this.AllSectors.push(obj.id)
           this.Sectors.push(obj)
@@ -175,7 +190,7 @@ export class UpdateUserComponent implements OnInit {
   }
   ////
 
-  
+
 
   GenerateEmail() {
     var i = 0;
@@ -197,17 +212,17 @@ export class UpdateUserComponent implements OnInit {
   RoleActive() {
     var active;
     this.RolesSource.forEach(el => {
-      
-      if(el.name==this.userInfo.role) {
-     
-      switch(el.sectors){
 
-        case 'limited':active= true;
-        break;
-        case 'all':active = false;
-        break;
-      } 
-    }
+      if (el.name == this.userInfo.role) {
+
+        switch (el.sectors) {
+
+          case 'limited': active = true;
+            break;
+          case 'all': active = false;
+            break;
+        }
+      }
 
     });
     // console.log("active",active);
@@ -217,38 +232,38 @@ export class UpdateUserComponent implements OnInit {
   RoleActive2() {
     var active;
     this.RolesSource.forEach(el => {
-      
-      console.log("sectors",el)
 
-      if(el.name==this.role2) {
-     
-      switch(el.sectors){
+      console.log("sectors", el)
 
-        case 'limited':active= true;
-        break;
-        case 'all':active = false;
-        break;
-      } 
-    }
+      if (el.name == this.role2) {
+
+        switch (el.sectors) {
+
+          case 'limited': active = true;
+            break;
+          case 'all': active = false;
+            break;
+        }
+      }
 
     });
     return active;
   }
- 
- 
+
+
 
   onChange() {
 
-    if(!this.RoleActive()){
+    if (!this.RoleActive()) {
 
-      this.SelectedSector=this.AllSectors
+      this.SelectedSector = this.AllSectors
     }
 
-    if(this.RoleActive()){
+    if (this.RoleActive()) {
 
-      this.SelectedSector=[]
+      this.SelectedSector = []
     }
-    console.log("this.SelectedSector",this.SelectedSector)
+    console.log("this.SelectedSector", this.SelectedSector)
 
 
   }
@@ -374,12 +389,12 @@ export class UpdateUserComponent implements OnInit {
   onChange2() {
 
     this.selected = this.role2
-    console.log("ùùùùùùùùùùùùùùùùùùùùùùù",this.SelectedSector2)
+    console.log("ùùùùùùùùùùùùùùùùùùùùùùù", this.SelectedSector2)
     const obj = { role: this.role2, value: null }
     if (this.SelectedSector.length != 0) {
       obj.value = this.SelectedSector
     }
-    if (this.SelectedSector.length ==0 ) {
+    if (this.SelectedSector.length == 0) {
 
       obj.value = this.AllSectors
 
@@ -401,7 +416,7 @@ export class UpdateUserComponent implements OnInit {
 
   AddNewRole() {
     console.log("mmmmmmmmmmmmmmmm")
-     if (this.RoleSelected.includes(this.role2)) {
+    if (this.RoleSelected.includes(this.role2)) {
       this.Roles.splice(this.Roles.indexOf(this.role2), 1);
     }
     this.role2 = ""

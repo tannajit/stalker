@@ -11,6 +11,7 @@ import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { sector, unitsFactors } from '@turf/turf';
 import { WebElement } from 'protractor';
 import { Console } from 'console';
+import Dexie from 'dexie';
 @Component({
   selector: 'app-add-user',
   templateUrl: './add-user.component.html',
@@ -56,15 +57,14 @@ export class AddUserComponent implements OnInit {
     this.searchUserForm = this.fb.group({
       userType: new FormControl('')
     });
-    this.getDataSector()
+    //this.getDataSector()
+    this.GetSectors()
     this.CheckEmail()
     console.log(this.RoleSelected)
 
       
       this.RolesSource.forEach(element => {
-          
         this.Roles.push(element.name)
-  
 
     })
 
@@ -127,7 +127,20 @@ export class AddUserComponent implements OnInit {
     };
   }
   
+  async GetSectors() {
 
+    var db = new Dexie("off").open().then((res) => {
+      res.table("sector").each(element => {
+        // console.log(element)
+        var obj = {
+          id: element.nameSecteur,
+          detail: element.nameSecteur + " - " + element.machine + " - " + element.info.geometry.properties.name
+        }
+        this.AllSectors.push(obj.id)
+        this.Sectors.push(obj)
+      })
+    });
+  }
 
   //////////
   RoleActive() {
