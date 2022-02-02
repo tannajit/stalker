@@ -13,7 +13,7 @@ var uri = "mongodb://localhost:27017";
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker1"
+var name_database = "stalker3"
 var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
@@ -50,6 +50,7 @@ router.get("/files", async function (req, res) {
         await colection1.insertOne(doc.geometry);
     });
     colection2.find({}).forEach(async (doc) => {
+        delete doc._id;
         doc.points = [];
         await colection2.updateOne({ nameSecteur: doc.nameSecteur }, { $set: doc });
     });
@@ -77,6 +78,7 @@ router.get("/files", async function (req, res) {
         console.log("//************start updating Status************//")
         await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.nfc.UUID": { $ne: null } }, { $set: { "geometry.properties.status": "purple" } }).then().catch(error => console.log(error))
         await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.nfc.UUID": { $eq: null } }, { $set: { "geometry.properties.status": "red" } }).then().catch(error => console.log(error))
+        await colection2.updateMany({},{$addToSet:{ typePDV: "Detail" }})
     });
 });
 
@@ -734,7 +736,7 @@ async function getUser(user) {
 
     var status = { value: 401, data: null }
 
-    var User = await collection.find({ email: user.email }).toArray()
+    var User = await collection.find({ email: user.email,status:"Active" }).toArray()
     if (User.length > 0) {
         var FindUser;
         User.forEach(async (u) => {
@@ -1491,7 +1493,25 @@ async function getInsertedIds(result) {
 
 async function putEachData(res, collection) {
     if (res.geometry.type == "MultiPolygon") {
-        collection.updateOne({ "geometry.geometry.type": "MultiPolygon", "geometry.properties.idSecteur": res.properties.idSecteur }, { $set: { geometry: res } }, { upsert: true }).then(rr => console.log(rr)).catch(error => console.log(error))
+        var id = await db.collection("users").find({role:"Admin"}).toArray();
+        //console.log(id[0]._id)
+        var user=id[0]._id;
+        await collection.updateOne({ "geometry.geometry.type": "MultiPolygon", "geometry.properties.idSecteur": res.properties.idSecteur }, { $set: { geometry: res } }, { upsert: true }).then(rr => console.log(rr)).catch(error => console.log(error))
+        await db.collection("secteurs").updateOne(
+            { "nameSecteur": res.properties.idSecteur }, {
+            $addToSet: { users:id[0]._id},
+            $setOnInsert: {
+                routes: [],
+                points:[],
+                typePDV: [],
+                machine: null,
+                secteur: null,  
+            }
+        },
+            { upsert: true }
+        ).then(r=>{
+            console.log(r)
+        })
     } else {
         await collection.updateOne({ "geometry.properties.Code_Client": res.properties.Code_Client }, { $set: { geometry: res } }, { upsert: true }).then().catch(error => console.log(error))
         //    console.log("//************start updating nfc object************//")
@@ -1519,24 +1539,29 @@ async function PutDataGeometries(collection, file) {
 
 async function InjectSecteurData(elem) {
     console.log("\n --------------------- Start Injecting Sector Data ------------------------------")
-    var id = db.collection("users").findOne()
+    var id = await db.collection("users").find({role:"Admin"}).toArray();
+    console.log(id[0]._id)
+    var user=id[0]._id;
     var arrNull = []  // put Data that Have Null in idSecteur ( didn't join with any sector)
-    elem.forEach(value => {
+    elem.forEach(async (value) => {
         var val = value.geometry;
         if (val.properties.idSecteur != null) {
-            db.collection("secteurs").updateOne(
+            await db.collection("secteurs").updateOne(
                 { "nameSecteur": val.properties.idSecteur }, {
-                $addToSet: { points: { "point": value._id, "route": null } },
+                $addToSet: { points: { "point": value._id, "route": null },users:id[0]._id},
+                $set:{
+                    machine: val.properties.machine,
+                },
                 $setOnInsert: {
                     routes: [],
                     typePDV: [],
-                    machine: val.properties.machine,
-                    secteur: null,
-                    users: [ObjectId("61e6bcd032dd6008968e5220")]
+                    secteur: null,  
                 }
             },
                 { upsert: true }
             )
+           
+
         } else {
             arrNull.push(val.properties.Identifiant)
         }

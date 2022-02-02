@@ -96,7 +96,8 @@ export class OfflineComponent implements OnInit {
       this.clientService.sendItemsDeleted(id)
       var index = this.idsdeletes.indexOf(id);
       if (index > -1) {
-        this.idsupdates.splice(index, 1);
+        this.idsdeletes.splice(index, 1);
+        console.log("hehehehe")
       }
       var message = "data sent successfuly";
       var btn = "Continue"

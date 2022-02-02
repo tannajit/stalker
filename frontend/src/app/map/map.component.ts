@@ -982,17 +982,37 @@ export class MapComponent implements AfterViewInit {
         res.table("pdvs").get({ "_id": IDGeomerty }).then(r => {
           console.log(r)
           if (r != undefined) {
-            this.map.setView(new L.LatLng(r.geometry.geometry.coordinates[1], r.geometry.geometry.coordinates[0]), 30);
-          }else{
+            if(r.geometry.properties?.status!="deleted"){
+              this.map.setView(new L.LatLng(r.geometry.geometry.coordinates[1], r.geometry.geometry.coordinates[0]), 30);
+
+         
+
+        }else{
+
+          var mess = "No Such ID : " + IDGeomerty
+
+          this.openAlertSearch(mess);
+
+        }  }else{
+
             var mess = "No Such ID : " + IDGeomerty
+
             this.openAlertSearch(mess);
+
           }
+
         });
+
       });
+
     } else {
+
       var mess = "Please Enter the ID"
+
       this.openAlertSearch(mess)
+
     }
+
   }
   SearchIndexDBA(IDGeomerty) {
     console.log("Update in IndexedDB")

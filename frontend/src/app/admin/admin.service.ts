@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 })
 export class AdminService {
 
-  uri = "http://localhost:3000";
+  uri = "https://stalker.noor-sbg.com:60443";
   private getUsersURL = this.uri+"/api1/getAllUsers"
   private deleteUserURL = this.uri+"/api1/deleteUser"
   private restoreUserURL = this.uri+"/api1/restoreUser"

@@ -340,8 +340,8 @@ export class ClientsComponent implements OnInit {
   anotherArray = this.sectorNames;
   filterListCareUnit(val) {
     // console.log(val);
-
-    this.sectorNames = this.anotherArray.filter((unit) => unit.details.toLowerCase().indexOf(val) > -1);
+    // console.log(this.anotherArray)
+    this.sectorNames = this.anotherArray.filter((unit) => unit.detail.toLowerCase().indexOf(val) > -1);
   }
 
 
