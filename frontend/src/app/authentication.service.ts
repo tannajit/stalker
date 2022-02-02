@@ -7,7 +7,7 @@ import Dexie from 'dexie';
   providedIn: 'root'
 })
 export class AuthenticationService {
-  private _UsersUrl = "http://192.168.0.156:3000/api1/login"
+  private _UsersUrl = "http://localhost:3000/api1/login"
 
   constructor(private http: HttpClient,
     private _router: Router,

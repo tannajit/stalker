@@ -105,7 +105,7 @@ export class ClientsComponent implements OnInit {
     this.GetSectors()
     console.log("############# sectors names########")
     //console.log(this.sectorNames)
-    this.getAllClients()
+    this.getAllClients1()
     console.log(this.clients.length)
     
   }
@@ -143,15 +143,15 @@ export class ClientsComponent implements OnInit {
       db = event.target.result;
       // console.log('success');
       // console.log(db);
-      transaction = db.transaction(['data'], 'readwrite');
-      const objectStore = transaction.objectStore('data');
+      transaction = db.transaction(['pdvs'], 'readwrite');
+      const objectStore = transaction.objectStore('pdvs');
       const objectStoreRequest = objectStore.getAll();
       objectStoreRequest.onsuccess = event => {
         const all = event.target.result;
         all.forEach(element => {
           // console.log("******************")
-          const elm = JSON.parse(element.Valeur);
-          var Point = { _id: element._id, geometry: elm };
+          // const elm = JSON.parse(element.Valeur);
+          var Point = { _id: element._id, geometry: element.geometry };
           if (this.loggedUser.role == 'Admin' || this.loggedUser.role == 'Back Office') {
             // console.log("deleted")
             // console.log(this.loggedUser.role)

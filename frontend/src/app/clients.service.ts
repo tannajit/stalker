@@ -25,7 +25,7 @@ export class ClientsService {
   items
 
   private currentClient;
-  uri = "http://192.168.0.156:3000";
+  uri = "http://localhost:3000";
   private _clientUrl = this.uri + "/api1/getClientByUser";
   private _secteurUrl = this.uri + "/api1/getSectorByUser";
   private _addclient = this.uri + "/api1/AddClient";
