@@ -298,6 +298,11 @@
         height: 20px;
         font-size: 12px;
     }
+
+    .video{
+        width: 900px !important;
+        border-radius: 6px;
+    }
     
     /* .NFC-container{
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
@@ -608,6 +613,11 @@
             height: 20px;
             font-size: 10px;
         }
+
+        .video{
+            width: 600px !important;
+            border-radius: 6px;
+        }
     
         
     }
@@ -787,7 +797,7 @@
         
         .map-container{ 
         
-            width: 500px;
+            width: 550px;
             height: 200px;
             /* margin: 20px ; */
             box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
@@ -911,6 +921,10 @@
             width: fit-content;
             height: 20px;
             font-size: 10px;
+        }
+        .video{
+            width: 450px !important;
+            border-radius: 6px;
         }
         
     }
@@ -1095,7 +1109,7 @@
         .map-container{ 
         
             width: 300px;
-            height: 100px;
+            height: 200px;
             /* margin: 20px ; */
             box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
             /* display: flex;
@@ -1168,10 +1182,10 @@
             margin-top: 8px;
             background-color: #af481f;
             color: #fff;
-            font-size: 13px;
-            line-height: 30px;
+            font-size: 11px;
+            line-height: 25px;
             /* width: 100px !important; */
-            border-radius: 40px;
+            border-radius: 30px;
             text-align: center !important;
             box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
         }
@@ -1181,9 +1195,9 @@
             background-color: #FACF37;
             color: #fff;
             font-size: 11px;
-            line-height: 30px;
+            line-height: 25px;
             /* width: 100px !important; */
-            border-radius: 40px;
+            border-radius: 30px;
             text-align: center !important;
             box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
         }
@@ -1198,7 +1212,7 @@
             font-size: 11px;
             line-height: 20px;
             /* width: 100px !important; */
-            border-radius: 20px;
+            border-radius: 10px;
             align-self: flex-start;
             text-align: center !important;
             box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
@@ -1208,6 +1222,10 @@
             color: #313030;
         }
     
+        .video{
+            width: 330px !important;
+            border-radius: 6px;
+        }
         
         
     }
@@ -1226,6 +1244,7 @@
             align-self: flex-start;
             width: 100%;
         }
+        
     
         .progress-cantainer{
             position: relative; 
@@ -1395,7 +1414,7 @@
         .map-container{ 
         
             width: 250px;
-            height: 100px;
+            height: 200px;
             /* margin: 20px ; */
             box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
             /* display: flex;
@@ -1468,10 +1487,10 @@
             margin-top: 8px;
             background-color: #af481f;
             color: #fff;
-            font-size: 13px;
-            line-height: 30px;
+            font-size: 10px;
+            line-height: 25px;
             /* width: 100px !important; */
-            border-radius: 40px;
+            border-radius: 20px;
             text-align: center !important;
             box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
         }
@@ -1480,8 +1499,8 @@
             margin-top: 8px;
             background-color: #FACF37;
             color: #fff;
-            font-size: 11px;
-            line-height: 30px;
+            font-size: 10px;
+            line-height: 25px;
             /* width: 100px !important; */
             border-radius: 40px;
             text-align: center !important;
@@ -1495,8 +1514,8 @@
         .btn-green{
             background-color: #27AE61;
             color: #fff;
-            font-size: 11px;
-            line-height: 20px;
+            font-size: 10px;
+            line-height: 25px;
             /* width: 100px !important; */
             border-radius: 20px;
             align-self: flex-start;
@@ -1524,8 +1543,8 @@
         }
 
         .video{
-            width: 150px !important;
-            border-radius: 10px;
+            width: 250px !important;
+            border-radius: 6px;
         }
         
     }

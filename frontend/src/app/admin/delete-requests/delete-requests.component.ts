@@ -51,7 +51,7 @@ export class DeleteRequestsComponent implements OnInit {
     request.status=status
     this._admin.ValidateDeleteClient(request).subscribe(res => {
       console.log(res)
-      var message = "This PDV has been deleted successfully!"
+      var message = "This PDV has been "+status+" successfully!"
       this.openAlertDialog(message)
     })
   }

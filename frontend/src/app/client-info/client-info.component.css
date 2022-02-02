@@ -785,20 +785,20 @@
         gap: 10%;
     }
     .btn-green{
-        font-size: 13px;
+        font-size: 11px;
         color: #ffff;
         background-color: #27AE61;
         border-radius: 8px;
-        width: 150px;
-        line-height: 35px;
+        /* width: 150px; */
+        line-height: 25px;
     }
     .btn-red{
-        font-size: 13px;
+        font-size: 11px;
         color: #ffff;
         background-color: #AE5827;
         border-radius: 8px;
-        width: 150px;
-        line-height: 35px;
+        /* width: 150px; */
+        line-height: 25px;
     }
     .btn-orange{
         font-size: 13px;
@@ -812,16 +812,16 @@
         font-style: bold; 
         color: green; 
         float: left;
-        font-size: 13px;
+        font-size: 11px;
         margin-right: 6px;
     }
     
     .pdv-info p{
-        font-size: 13px;
+        font-size: 11px;
     }
     
     .pdv-info{
-        width: 150px;
+        width: 140px;
     }
     
     .section{

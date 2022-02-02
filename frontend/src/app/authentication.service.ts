@@ -7,7 +7,7 @@ import Dexie from 'dexie';
   providedIn: 'root'
 })
 export class AuthenticationService {
-  private _UsersUrl = "http://localhost:3000/api1/login"
+  private _UsersUrl = "http://192.168.0.156:3000/api1/login"
 
   constructor(private http: HttpClient,
     private _router: Router,
@@ -28,13 +28,9 @@ export class AuthenticationService {
     //this._index.ClearDataSector()
     //this.ClearData();
     var db = new Dexie("off").open().then((res) => {
-      res.table("pdvs").clear().then((l) => {
-      })
       res.table("sector").clear().then((l) => {
-        this._router.navigate(['login']).then(() => {
-          window.location.reload();
-        })
       })
+      this.ClearData()
     });
     //ClearDataSector()
   }
@@ -49,8 +45,8 @@ export class AuthenticationService {
       this.db = event.target.result;
       console.log("success inside Clear")
       console.log(this.db)
-      var transaction = this.db.transaction(['data'], 'readwrite');
-      var objectStore = transaction.objectStore("data");
+      var transaction = this.db.transaction(['pdvs'], 'readwrite');
+      var objectStore = transaction.objectStore("pdvs");
       var objectStoreRequest = objectStore.clear();
       objectStoreRequest.onsuccess = (event) => {
         console.log("Data Cleared")
