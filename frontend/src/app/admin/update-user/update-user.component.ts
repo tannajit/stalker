@@ -9,6 +9,7 @@ import { UsersComponent } from '../users/users.component';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import Dexie from 'dexie';
+import { IndexdbService } from 'src/app/indexdb.service';
 
 @Component({
   selector: 'app-update-user',
@@ -53,9 +54,12 @@ export class UpdateUserComponent implements OnInit {
     private _client: ClientsService,
     private _router: Router,
     private dialog: MatDialog,
+    private index:IndexdbService,
     private fb: FormBuilder,
 
-  ) { }
+  ) { 
+    this.version=this.index.version
+  }
 
   ngOnInit(): void {
     this.searchUserForm = this.fb.group({

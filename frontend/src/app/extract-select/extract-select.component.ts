@@ -6,6 +6,7 @@ import * as XLSX from 'xlsx';
 import { Router } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import Dexie from 'dexie';
+import { IndexdbService } from '../indexdb.service';
 export const MY_DATE_FORMATS = {
   parse: {
     dateInput: 'DD/MM/YYYY',
@@ -43,14 +44,14 @@ export class ExtractSelectComponent implements OnInit {
   EndDate = (new Date()).toISOString();
   constructor(private _client: ClientsService,
     private _router: Router,
+    private index: IndexdbService,
     public dialogRef: MatDialogRef<MapComponent>,) { }
 
 
   ngOnInit(): void {
     //// get Sectors 
-
-
     console.log("Init")
+   
     // this._client.getAllSecteurs().subscribe(res => {
     //   console.log(res)
     //   res.forEach(element => {

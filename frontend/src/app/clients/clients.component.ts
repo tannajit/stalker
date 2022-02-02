@@ -7,6 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
 import Dexie from 'dexie';
+import { IndexdbService } from '../indexdb.service';
 
 
 @Component({
@@ -55,10 +56,11 @@ export class ClientsComponent implements OnInit {
   ////*********** CONSTRUCTOR ********///////////// 
 
   constructor(private _serviceClient: ClientsService,
+    private index:IndexdbService,
     private dialog: MatDialog
   ) {
     this.loggedUser = JSON.parse(localStorage.getItem("user"))
-
+    this.version=this.index.version
     // Object to create Filter for
     this.filterSelectObj = [
       {
@@ -106,7 +108,7 @@ export class ClientsComponent implements OnInit {
     console.log("############# sectors names########")
     //console.log(this.sectorNames)
     this.getAllClients1()
-    console.log(this.clients.length)
+    console.log(this.clients)
     
   }
 
@@ -117,6 +119,16 @@ export class ClientsComponent implements OnInit {
     console.log(this.dataSource)
     this.dataSource.data = this.clients.reverse();
     this.obs = this.dataSource.connect();
+    // var db = new Dexie("off").open().then((res) => {
+    // var test= res.table("pdvs").count();
+    //  var all;
+    //  console.log("test")
+    //  test.then(r=>{
+    //   all=r
+    //   console.log(r)
+      
+    //  });
+    // });
     this.dataSource.paginator = this.paginator;
     console.log(this.dataSource)
     // this.data = this.clients;
@@ -150,7 +162,7 @@ export class ClientsComponent implements OnInit {
         const all = event.target.result;
         all.forEach(element => {
           // console.log("******************")
-          // const elm = JSON.parse(element.Valeur);
+         // const elm = JSON.parse(element.Valeur);
           var Point = { _id: element._id, geometry: element.geometry };
           if (this.loggedUser.role == 'Admin' || this.loggedUser.role == 'Back Office') {
             // console.log("deleted")
@@ -163,10 +175,9 @@ export class ClientsComponent implements OnInit {
             this.clients.push(Point);
             // console.log(this.loggedUser.role)
             // console.log(Point.geometry.properties.status);
-          }
+          } 
         });
         this.getClients();
-
       };
     };
   }
@@ -190,12 +201,12 @@ export class ClientsComponent implements OnInit {
         else if ((this.loggedUser.role == 'Seller' || this.loggedUser.role == 'Auditor') && element.geometry.properties.status != "deleted") {
           this.clients.push(element);
         }
-        if(i==all){
+       // this.getClients();
+        if(i>Number(all/1000)){
           console.log("nnn")
           this.getClients();
         }
       });
-      
        /// until get all data  TO DO 
     });
     

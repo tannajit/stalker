@@ -12,6 +12,7 @@ import { sector, unitsFactors } from '@turf/turf';
 import { WebElement } from 'protractor';
 import { Console } from 'console';
 import Dexie from 'dexie';
+import { IndexdbService } from 'src/app/indexdb.service';
 @Component({
   selector: 'app-add-user',
   templateUrl: './add-user.component.html',
@@ -24,8 +25,11 @@ export class AddUserComponent implements OnInit {
   constructor(private _setting: AdminService,
     private _client: ClientsService,
     private dialog: MatDialog,
+    private index:IndexdbService,
     private _router: Router,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder) {
+      this.version=this.index.version
+     }
 
   ListOfRoles = [];
   RoleSelected = [];
