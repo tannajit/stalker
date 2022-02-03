@@ -41,6 +41,8 @@ export class LoginComponent implements OnInit {
     this.index.createDatabase()
     this.index.createDatabaseOffline();
     this.getRoles()
+    this.version =this.index.version
+    console.log(this.version)
   }
 
   loginForm: FormGroup = this.fb.group({
@@ -96,6 +98,7 @@ export class LoginComponent implements OnInit {
 
   PutDataClient() {
     var db; var transaction
+    console.log(this.version)
     var request = window.indexedDB.open("off", this.version)
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
       console.log("Why didn't you allow my web app to use IndexedDB?!");

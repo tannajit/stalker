@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { IndexdbService } from './indexdb.service';
-
+import Dexie from 'dexie';
 @Injectable({
   providedIn: 'root'
 })
@@ -11,8 +11,10 @@ export class AuthenticationService {
 
   constructor(private http: HttpClient,
     private _router: Router,
-    private _index: IndexdbService) { }
-  getUserLogin(data,httpOptions) {
+    private _index: IndexdbService) { 
+      this.version=this._index.version
+    }
+  getUserLogin(data, httpOptions) {
     return this.http.post<any>(this._UsersUrl, data)
   }
   getToken() {
@@ -26,11 +28,16 @@ export class AuthenticationService {
     localStorage.removeItem('token')
     //this._index.ClearData()
     //this._index.ClearDataSector()
-    this.ClearData();
+    //this.ClearData();
+    var db = new Dexie("off").open().then((res) => {
+      res.table("sector").clear().then((l) => {
+      })
+      this.ClearData()
+    });
     //ClearDataSector()
   }
   db; ///database
-  version = 6; ///version of the database
+  version; ///version of the database
   ClearData() {
     var request = window.indexedDB.open("off", this.version)
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
@@ -40,8 +47,8 @@ export class AuthenticationService {
       this.db = event.target.result;
       console.log("success inside Clear")
       console.log(this.db)
-      var transaction = this.db.transaction(['data'], 'readwrite');
-      var objectStore = transaction.objectStore("data");
+      var transaction = this.db.transaction(['pdvs'], 'readwrite');
+      var objectStore = transaction.objectStore("pdvs");
       var objectStoreRequest = objectStore.clear();
       objectStoreRequest.onsuccess = (event) => {
         console.log("Data Cleared")
@@ -63,7 +70,7 @@ export class AuthenticationService {
       var objectStoreRequest = objectStore.clear();
       objectStoreRequest.onsuccess = (event) => {
         console.log("Data Sector Cleared")
-        this._router.navigate(['login']).then(()=>{
+        this._router.navigate(['login']).then(() => {
           window.location.reload();
         })
       }

@@ -9,7 +9,7 @@ const MongoClient = require("mongodb").MongoClient;
 var uri = "mongodb://localhost:27017";
 //var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
 //var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
-// uri to your Mongo database
+//uri to your Mongo database
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
@@ -50,6 +50,7 @@ router.get("/files", async function (req, res) {
         await colection1.insertOne(doc.geometry);
     });
     colection2.find({}).forEach(async (doc) => {
+        delete doc._id;
         doc.points = [];
         await colection2.updateOne({ nameSecteur: doc.nameSecteur }, { $set: doc });
     });
@@ -78,6 +79,7 @@ router.get("/files", async function (req, res) {
         console.log("//************start updating Status************//")
         await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.nfc.UUID": { $ne: null } }, { $set: { "geometry.properties.status": "purple" } }).then().catch(error => console.log(error))
         await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.nfc.UUID": { $eq: null } }, { $set: { "geometry.properties.status": "red" } }).then().catch(error => console.log(error))
+        await colection2.updateMany({},{$addToSet:{ typePDV: "Detail" }})
     });
 });
 
@@ -289,8 +291,96 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
         console.log(err)
     );
 
+
 })
 
+router.get('/getClientByUser1/:type', verifyToken,async (req, res) => {
+    var userId = req.userId;
+    var type = [req.params.type]
+    console.log(type)
+    //var test=type[0].replace("_"," ")
+    //console.log(test)
+   // var userId = "61cecdb5c23903ede07d8870"
+    console.log("***** Get PDV Based on User: " + userId + " *******")
+    let collectionSec = await db.collection("secteurs") //collection where ids are stored 
+    var values = await collectionSec.aggregate([
+        {
+            $match: {
+                users: ObjectId(userId)
+            }
+        },
+        {
+            $lookup: {
+                from: "geometries",
+                let: { "point": "$points.point" },
+                as: "info",
+                "pipeline": [
+                    {
+                        $match: {
+                            $expr: {
+                            $and:[
+                                {$in:["$_id", "$$point"]},
+                                { $eq:["$geometry.properties.TypeDPV",String(type)]}
+                                ]
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        { $project: { info: 1, _id:0} },
+        { $unwind : "$info" }
+
+    ]).toArray();
+
+    //res.json(values)
+    
+     ListInfo = []
+    a = []
+    
+    // console.log("reqclientvalues",values)
+    values.forEach(elemm => {
+        // elemm.info.forEach(async (elem) => {
+        //     ListInfo.push(elem)
+        // });
+        ListInfo.push(elemm.info)
+    });
+    All_PDV = ListInfo.map(async (elem) => {
+        // if (elem.geometry.properties.NFC != null && elem.geometry.properties.NFC != undefined) {
+        //     elem.geometry.properties.status = "green"
+        // }
+        if (elem.geometry.properties?.nfc != undefined) {
+            var element = elem.geometry.properties;
+            if (element.nfc.NFCPhoto != null) {
+                try {
+                    
+                    await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
+                        elem.geometry.properties.NFCP = re
+                    }).catch(err => console.log(err))
+                } catch (err) {
+                    // console.log("***************")
+                }
+            } else {
+                elem.geometry.properties.NFCP = null
+            }
+            if (element?.PVPhoto != null) {
+                
+                await test1(db, ObjectId(element.PVPhoto)).then(re => {
+                    elem.geometry.properties.PVP = re
+                }).catch(err => console.log(err))
+            } else {
+                elem.geometry.properties.PVP = null
+            }
+        }
+        a.push(elem)
+    })
+    Promise.all(All_PDV).then(ee => {
+        res.json(a)
+    }).catch(err =>
+        console.log(err)
+    );
+
+})
 /* GET clients Based on User */
 // router.get('/clients', verifyToken, async (req, res) => {
 //     var userId = req.userId;
@@ -647,7 +737,7 @@ async function getUser(user) {
 
     var status = { value: 401, data: null }
 
-    var User = await collection.find({ email: user.email }).toArray()
+    var User = await collection.find({ email: user.email,status:"Active" }).toArray()
     if (User.length > 0) {
         var FindUser;
         User.forEach(async (u) => {
@@ -846,6 +936,7 @@ async function AddUserToSector(id, sec_name) {
 
 // Insert User 
 async function InsertUser(user) {
+
     user.password = await GenerateHashPassword(user.password)
     //console.log(user)
     let collection = db.collection("users") // collection users 
@@ -886,7 +977,6 @@ router.post("/settings", async (req, res) => {
         }, { upsert: true })
 
     res.status(200).json("SMS time set successfully")
-
 });
 
 router.get("/settings", async (req, res) => {
@@ -906,10 +996,12 @@ router.get("/settings", async (req, res) => {
         var values = await collection.find({ "proprety": proprety }).toArray()
         response = values[0]
     }
+
     console.log(values)
     res.json(response)
 
 })
+
 //////////***********************************////////////////////////
 //////////***********************************////////////////////////
 router.get("/GetClient/:id", async (req, res) => {
@@ -1255,7 +1347,7 @@ router.post('/updateRole', async (req, res) => {
     //     }}} )
     var updated = await collection.updateOne(
         { proprety: "role", "details.roles.name": role.role },
-        { $set: { "details.roles.$.permissions": role.permissions } })
+        { $set: { "details.roles.$.permissions": role.permissions,"details.roles.$.sectors": role.sectors} })
     console.log(updated)
     res.status(200).json(updated)
 })
@@ -1268,11 +1360,22 @@ router.post('/addRole', async (req, res) => {
 
     var updated = await collection.updateOne(
         { proprety: "role" },
-        { $addToSet: { "details.roles": { 'name': role.role, 'permissions': role.permissions } } })
+        { $addToSet: { "details.roles": { 'name': role.role, 'permissions': role.permissions, 'sectors': role.sectors } } })
     console.log(updated)
     res.status(200).json(updated)
 })
 
+router.post('/deleteRole', async(req,res)=>{
+    let role = req.body.request
+    console.log(role)
+    let collection = db.collection("settings")
+    var updated = await collection.updateOne(
+        { proprety: "role" },
+        { $pull:{ "details.roles": {name: role.name}}})
+    console.log(updated)
+    res.status(200).json(updated)
+    
+})
 router.get('/UserRoles/:email', async (req, res) => {
     let email = req.params.email
     let listOfRoles = []
@@ -1356,19 +1459,21 @@ router.get("/VideoReadHafsa", async (req, res) => {
 
 router.put("/UpdateUser", async (req, res) => {
     user = req.body
-    console.log(req.body)
+    console.log("UpdateUser",req.body)
+
     users = await db.collection("users")
     secteurs = await db.collection("secteurs")
     if (user.generated) {
         user.password = await GenerateHashPassword(user.password)
     }
-    console.log(req.body)
     await users.updateMany({ _id: ObjectId(user._id) }, { $set: { "UserID": user.UserID, "name": user.name, "phone": user.phone, "CIN": user.CIN, "role": user.role, "email": user.email, "password": user.password } }).then(res => console.log(res))
     user.sectors.forEach(async el => {
-        await secteurs.updateOne({ nameSecteur: Number(el) }, { $addToSet: { users: ObjectId(user._id) } }).then(res => console.log(res))
+
+        await secteurs.updateMany({ nameSecteur: Number(el) }, { $addToSet: { users: ObjectId(user._id) } }).then(res => console.log(`user ${user._id} a été ajouter vers sector ${el}`,res))
+
     })
     user.SectorDeleted.forEach(async el => {
-        await secteurs.updateOne({ nameSecteur: Number(el) }, { $pull: { users: ObjectId(user._id) } }).then(res => console.log(res))
+        await secteurs.updateMany({ nameSecteur: Number(el) }, { $pull: { users:{$in:[ObjectId(user._id)]}  } }).then(res => console.log(`user ${user._id} a été suprimer au sector ${el}`,res))
     })
 
 })
@@ -1388,7 +1493,25 @@ async function getInsertedIds(result) {
 
 async function putEachData(res, collection) {
     if (res.geometry.type == "MultiPolygon") {
-        collection.updateOne({ "geometry.geometry.type": "MultiPolygon", "geometry.properties.idSecteur": res.properties.idSecteur }, { $set: { geometry: res } }, { upsert: true }).then(rr => console.log(rr)).catch(error => console.log(error))
+        var id = await db.collection("users").find({role:"Admin"}).toArray();
+        //console.log(id[0]._id)
+        var user=id[0]._id;
+        await collection.updateOne({ "geometry.geometry.type": "MultiPolygon", "geometry.properties.idSecteur": res.properties.idSecteur }, { $set: { geometry: res } }, { upsert: true }).then(rr => console.log(rr)).catch(error => console.log(error))
+        await db.collection("secteurs").updateOne(
+            { "nameSecteur": res.properties.idSecteur }, {
+            $addToSet: { users:id[0]._id},
+            $setOnInsert: {
+                routes: [],
+                points:[],
+                typePDV: [],
+                machine: null,
+                secteur: null,  
+            }
+        },
+            { upsert: true }
+        ).then(r=>{
+            console.log(r)
+        })
     } else {
         await collection.updateOne({ "geometry.properties.Code_Client": res.properties.Code_Client }, { $set: { geometry: res } }, { upsert: true }).then().catch(error => console.log(error))
         //    console.log("//************start updating nfc object************//")
@@ -1416,24 +1539,29 @@ async function PutDataGeometries(collection, file) {
 
 async function InjectSecteurData(elem) {
     console.log("\n --------------------- Start Injecting Sector Data ------------------------------")
-    var id = db.collection("users").findOne()
+    var id = await db.collection("users").find({role:"Admin"}).toArray();
+    console.log(id[0]._id)
+    var user=id[0]._id;
     var arrNull = []  // put Data that Have Null in idSecteur ( didn't join with any sector)
-    elem.forEach(value => {
+    elem.forEach(async (value) => {
         var val = value.geometry;
         if (val.properties.idSecteur != null) {
-            db.collection("secteurs").updateOne(
+            await db.collection("secteurs").updateOne(
                 { "nameSecteur": val.properties.idSecteur }, {
-                $addToSet: { points: { "point": value._id, "route": null } },
+                $addToSet: { points: { "point": value._id, "route": null },users:id[0]._id},
+                $set:{
+                    machine: val.properties.machine,
+                },
                 $setOnInsert: {
                     routes: [],
                     typePDV: [],
-                    machine: val.properties.machine,
-                    secteur: null,
-                    users: [ObjectId("61e6bcd032dd6008968e5220")]
+                    secteur: null,  
                 }
             },
                 { upsert: true }
             )
+           
+
         } else {
             arrNull.push(val.properties.Identifiant)
         }

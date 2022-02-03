@@ -36,6 +36,8 @@ export class ClientsService {
   private _extarct = this.uri + "/api1/extract";
   private _getClientByID = this.uri + "/api1/GetClient";
   private _allDeleteRequests = this.uri + "/api1/getAllDeleteRequests";
+
+  private _sync = this.uri + "/api1/getClientByUser1";
   ////////////////////remplacer par uri après le port
   //private _getClientByID = "http://localhost:3000/api1/GetClient";
   //private _Delete = "http://localhost:3000/api1/";
@@ -61,6 +63,9 @@ export class ClientsService {
     responseType: 'text',
   };
   
+  Sync(type){
+    return this.http.get<any>(this._sync+"/"+type)
+  }
   ///////////////
   getClientBySeller(id) {
     var url = "http://localhost:3000/api1/getClientBySeller/" + id
@@ -558,6 +563,7 @@ export class ClientsService {
   //     // return this.Distance;
   //     //}
   //   }
+
   ActiveTheButton() {
     if (this.Distance <= this.Raduis) {
       //console.log("The point into the cercle")

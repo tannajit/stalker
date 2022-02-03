@@ -6,7 +6,8 @@ import { Router } from '@angular/router';
 import { ConfirmationDialogComponent } from 'src/app/confirmation-dialog/confirmation-dialog.component';
 import { SettingsService } from 'src/app/settings/settings.service';
 import { ClientsService } from 'src/app/clients.service';
-
+import Dexie from 'dexie';
+import { IndexdbService } from 'src/app/indexdb.service';
 @Component({
   selector: 'app-user-info',
   templateUrl: './user-info.component.html',
@@ -23,13 +24,17 @@ export class UserInfoComponent implements OnInit {
     private adminService: AdminService,
     public dialog: MatDialog,
     private _router: Router,
+    private index:IndexdbService,
     private _setting: SettingsService,    
     private _client: ClientsService
 
-  ) { }
+  ) { 
+    this.version=this.index.version
+  }
   ngOnInit(): void {
     this.getSectorsByUser()
-    this.getSector()
+   //this.getDataSector()
+   this.GetSectors()
     //console.log("this.data._id",this.data.data)
   }
 
@@ -60,34 +65,82 @@ export class UserInfoComponent implements OnInit {
     console.log("active",active);
     return active;
   }
-  getSector() {
-    var sectors=this.data.data.sectors
-    if(!this.RoleActive()) {
-      sectors.forEach(element => {
-        console.log("idssssssss",element.nameSecteur)
 
+    Sectors = []
+    AllSectors = []
+    version = 6;
+
+    /// INDEX DB ////
+    public getDataSector() {
+      var sectors=this.data.data.sectors
+
+      let db; let transaction;
+      const request = window.indexedDB.open('off', this.version);
+      request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+        console.log('Why didn\'t you allow my web app to use IndexedDB?!');
+      };
+
+      if(!this.RoleActive()) {
+
+                
+      request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+        db = event.target.result;
+
+        transaction = db.transaction(['sector'], 'readwrite');
+        const objectStore = transaction.objectStore('sector');
+        const objectStoreRequest = objectStore.getAll();
+        objectStoreRequest.onsuccess = event => {
+          const all = event.target.result;
+          var detail
+          sectors.forEach(el => {
+          all.forEach(elm => {
+            console.log("elm",elm.Valeur)
+           // var element = JSON.parse(elm.Valeur);
+            var element = elm.Valeur
+            if(el.nameSecteur==element.nameSecteur) {
+              console.log("yess")
+              detail= element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
+              this.Sectors.push(detail)
+            }
+
+          });
+        });
+
+
+        };
+      };
+
+  
+      }   
+    }
+
+
+    ///  Dexie 
+    async GetSectors() {
+      var sectors=this.data.data.sectors
+      if(!this.RoleActive()) {
+      var db = new Dexie("off").open().then((res) => {
+        res.table("sector").each(element => {
+          // console.log(element)
+          sectors.forEach(el => {
+          var obj = {
+            id: element.nameSecteur,
+            detail: element.nameSecteur + " - " + element.machine + " - " + element.info.geometry.properties.name
+          }
+          if(el.nameSecteur==element.nameSecteur) {
+            console.log("yess")
+            //var detail= element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
+            this.Sectors.push(obj.detail)
+          }
+          //this.AllSectors.push(obj.id)
+          //this.Sectors.push(obj)
+        })
+      });
       });
     }
-    // this._client.getAllSecteurs().subscribe(res => {
-    //   console.log(res)
-    //   res.forEach(element => {
-        
-    //     var idSector = Number(String(element.geometry.properties.idSecteur).slice(-2, -1))
-    //     console.log(idSector)
-    //     var machine = (idSector == 0) ? "Onion" : "CMG"
-    //     console.log(machine)
-    //     var result = element.geometry.properties.idSecteur + " - " + machine + " - " + element.geometry.properties.name
-    //     console.log(result)
-    //     var obj = {
-    //       id: element.geometry.properties.idSecteur,
-    //       detail: result
-    //     }
-    //     this.AllSectors.push(element.geometry.properties.idSecteur)
-    //     this.Sectors.push(obj)
-    //   });
-    // })
-  }
+    }
 
+    ///
 
   deleteUser(user){
     this.dialogRef = this.dialog.open(ConfirmationDialogComponent, {
@@ -137,12 +190,15 @@ export class UserInfoComponent implements OnInit {
   }
 
   updateUser(user){
+    this.adminService.getUserRoles(user.email).subscribe(rolesSelected=>{
+
       this._setting.getSettings('param=role').subscribe(res => {
         var Roles = res.details.roles
         console.log("Roles",Roles);
-        this._router.navigateByUrl('/updateUser', { state: { dataUser:user,AddRole:false,userid:user.UserID,userrole:user.role,roles:Roles} });
+        this._router.navigateByUrl('/updateUser', { state: { dataUser:user,AddRole:false,rolesSelected:rolesSelected,userid:user.UserID,userrole:user.role,roles:Roles} });
 
       })
+    })
 
 }
   

@@ -24,7 +24,7 @@
                                 <img *ngIf="clientOfSeller?.PVP" src="{{clientOfSeller?.PVP}}" alt=""
                                     (click)="openImage(clientOfSeller?.PVP)">
                                 <img *ngIf="!clientOfSeller?.PVP" src="assets/images/blank.jpg" alt=""
-                                    (click)="openImage(clientOfSeller?.PVP)">
+                                    (click)="openImage('assets/images/blank.jpg')">
                             </div>
                             <div class="pdv-info">
                                 <label>Sector:</label>
@@ -47,7 +47,7 @@
                                 <img *ngIf="clientOfAuditor?.PVP" src="{{clientOfAuditor?.PVP}}" alt=""
                                     (click)="openImage(clientOfAuditor?.PVP)">
                                 <img *ngIf="!clientOfAuditor?.PVP" src="assets/images/blank.jpg" alt=""
-                                    (click)="openImage(clientOfAuditor?.PVP)">
+                                    (click)="openImage('assets/images/blank.jpg')">
                             </div>
                             <div class="pdv-info">
                                 <label>Sector:</label>
@@ -83,7 +83,7 @@
                                 <img *ngIf="data.geometry.properties.PVP" src="{{data.geometry.properties.PVP}}" alt=""
                                     (click)="openImage(data.geometry.properties.PVP)">
                                 <img *ngIf="!data.geometry.properties.PVP" src="assets/images/blank.jpg" alt=""
-                                    (click)="openImage(data.geometry.properties.PVP)">
+                                    (click)="openImage('assets/images/blank.jpg')">
                             </div>
                             <div class="pdv-info">
                                 <label>Sector:</label>
@@ -101,7 +101,7 @@
                                 <img *ngIf="data.geometry.properties.NFCP" src="{{data.geometry.properties.NFCP}}" alt=""
                                     (click)="openImage(data.geometry.properties.NFCP)">
                                 <img *ngIf="!data.geometry.properties.NFCP" src="assets/images/blank.jpg" alt=""
-                                    (click)="openImage(data.geometry.properties.NFCP)">
+                                    (click)="openImage('assets/images/blank.jpg')">
                             </div>
                             <div class="pdv-info">
                                 <label>NFC UUID:</label>
@@ -146,7 +146,7 @@
                     <img *ngIf="data.geometry.properties.PVP" src="{{data.geometry.properties.PVP}}" alt=""
                         (click)="openImage(data.geometry.properties.PVP)">
                     <img *ngIf="!data.geometry.properties.PVP" src="assets/images/blank.jpg" alt=""
-                        (click)="openImage(data.geometry.properties.PVP)">
+                        (click)="openImage('assets/images/blank.jpg')">
                 </div>
                 <div class="pdv-info">
                     <label>Sector:</label>
@@ -175,12 +175,12 @@
                     <img *ngIf="data.geometry.properties.NFCP" src="{{data.geometry.properties.NFCP}}" alt=""
                         (click)="openImage(data.geometry.properties.NFCP)">
                     <img *ngIf="!data.geometry.properties.NFCP" src="assets/images/blank.jpg" alt=""
-                        (click)="openImage(data.geometry.properties.NFCP)">
+                        (click)="openImage('assets/images/blank.jpg')">
                 </div>
                 <div class="pdv-info">
-                    <label>Code NFC:</label>
-                    <p *ngIf="!data.geometry.properties.nfc?.codeNFC; else nfc">null</p>
-                    <ng-template #nfc>{{data.geometry.properties.nfc.codeNFC}}</ng-template>
+                    <label>Code Qr:</label>
+                    <p *ngIf="!data.geometry.properties.codeQR; else nfc">null</p>
+                    <ng-template #nfc><p>{{data.geometry.properties.codeQR}}</p></ng-template>
                     
                     
                     
@@ -246,7 +246,7 @@
 
                 <div class="pdv-img">
                     <img *ngIf="data.Photo!=null" src="{{data.prove}}" alt=""
-                    (click)="openImage(data.PhotoURL)">
+                    (click)="openImage(data.prove)">
                     <video *ngIf="data.Video!=null" src="{{data.prove}}"  controls>
                         
                     </video>

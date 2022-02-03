@@ -59,14 +59,14 @@
 
     <mat-dialog-actions class="action-btns" align="center">
         <div>
-            <button mat-raised-button color="primary" class="btn-green" (click)="Extract()">Extract</button>
-            <button mat-raised-button color="primary" class="btn-red" (click)="Cancel()">Cancel </button>
+            <button mat-raised-button color="primary" class="btn-green" (click)="Extract()" [disabled]="extractAction">Extract</button>
+            <button mat-raised-button color="primary" class="btn-red" (click)="Cancel()" [disabled]="extractAction">Cancel </button>
         </div>
         
     </mat-dialog-actions>
     <div>
         <mat-progress-bar mode="indeterminate" *ngIf="startExtract"></mat-progress-bar>
         <mat-progress-bar mode="determinate" value="{{valueProgress}}" *ngIf="done"></mat-progress-bar>
-        <label  *ngIf="valueProgress!=0">{{valueProgress}}%</label> 
+        <!-- <label  *ngIf="valueProgress!=0">{{valueProgress}}%</label>  -->
     </div>
 </div>

@@ -35,10 +35,9 @@
                   <div class="select-input">
                         <mat-select panelClass="selectPanel" (selectionChange)="onChange3()" [(ngModel)]="option_retail"
                               placeholder="PDV Type">
-                              <mat-option value="All">All</mat-option>
+                              <mat-option value="All" >All Type PDVs</mat-option>
                               <mat-option value="Audit">Gros</mat-option>
-                              <mat-option value="Audit_Retail">Detail</mat-option>
-                              
+                              <mat-option value="Audit_Retail">Detail</mat-option>   
                         </mat-select>
                   </div>
             </div>
@@ -46,7 +45,7 @@
                   <div class="select-input">
                         <mat-select panelClass="selectPanel" (selectionChange)="onChange4()" [(ngModel)]="option_done"
                               placeholder="Validated filter">
-                              <mat-option value="All">All</mat-option>
+                              <mat-option value="All" >All Status</mat-option>
                               <mat-option value="Validated"> Validated</mat-option>
                               <mat-option value="Done">NFC installed</mat-option>
                               <mat-option value="Not_Done">NFC not Installed</mat-option>

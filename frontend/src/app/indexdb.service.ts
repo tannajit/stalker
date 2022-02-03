@@ -11,11 +11,12 @@ import 'leaflet.markercluster';
 export class IndexdbService {
 
   db; transaction;
-  version = 6
+  version = 29
+
 
   /////************* CONSTRUCTOR ***********////////
   constructor(private client: ClientsService) { }
-   //////////********* CREATE INDEXEDDB DATABASES  ********///////////
+  //////////********* CREATE INDEXEDDB DATABASES  ********///////////
   createDatabase() {
     var request = window.indexedDB.open("off", this.version)
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
@@ -24,15 +25,37 @@ export class IndexdbService {
     request.onupgradeneeded = (event) => {
       console.log(event.target)
       this.db = request.result
-      console.log("upgrade")
-      var objectStore = this.db.createObjectStore("data", { keyPath: '_id' });
-      console.log("create Sector ")
-      var objectt = this.db.createObjectStore("sector", { keyPath: '_id' });
-      console.log(objectt)
+      try {
+        var store = request.transaction.objectStore('pdvs');
+      }
+      catch (e) {
+        console.log("didn't find PDVS")
+        var objectto = this.db.createObjectStore("pdvs", { keyPath: '_id' });
+      }
+      try {
+        console.log("didn't find Sector")
+        var storee = request.transaction.objectStore('sector');
+        console.log("----------")
+        console.log(storee)
+        storee.createIndex("nameSecteur", "nameSecteur", { unique: false });
+      }
+      catch (e) {
+        var objectt = this.db.createObjectStore("sector", { keyPath: '_id' });
+          objectt.createIndex("nameSecteur", "nameSecteur", { unique: false });
+      }
+      
+      // var objectto = this.db.createObjectStore("pdvs", { keyPath: '_id' });
+      // console.log("upgrade")
+      // var objectStore = this.db.createObjectStore("data", { keyPath: '_id' });
+      // console.log("create Sector ")
+      // var objectt = this.db.createObjectStore("sector", { keyPath: '_id' });
+      // objectt.createIndex("nameSecteur", "nameSecteur", { unique: false });
     }
     request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
       this.db = event.target.result;
-      console.log(this.db)
+     // console.log(this.db)
+      console.log("success");
+
     }
   }
 

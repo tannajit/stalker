@@ -11,6 +11,8 @@ import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { sector, unitsFactors } from '@turf/turf';
 import { WebElement } from 'protractor';
 import { Console } from 'console';
+import Dexie from 'dexie';
+import { IndexdbService } from 'src/app/indexdb.service';
 @Component({
   selector: 'app-add-user',
   templateUrl: './add-user.component.html',
@@ -23,8 +25,11 @@ export class AddUserComponent implements OnInit {
   constructor(private _setting: AdminService,
     private _client: ClientsService,
     private dialog: MatDialog,
+    private index:IndexdbService,
     private _router: Router,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder) {
+      this.version=this.index.version
+     }
 
   ListOfRoles = [];
   RoleSelected = [];
@@ -52,30 +57,19 @@ export class AddUserComponent implements OnInit {
   RolesSource = this._router.getCurrentNavigation().extras.state.roles;
 
 
-  //dialogRef: MatDialogRef<ClientInfoComponent>;
   ngOnInit(): void {
     this.searchUserForm = this.fb.group({
       userType: new FormControl('')
     });
-    this.getDataSector()
-    /// get All Email from Database to prevenet Email duplication
+    //this.getDataSector()
+    this.GetSectors()
     this.CheckEmail()
     console.log(this.RoleSelected)
-    //// get Sectors 
-    //this.getSectors()
-    
-    /// get Roles available
-    // this._setting.getSettings('param=role').subscribe(res => {
-    //   var RolesSource = res.details.roles
+
       
       this.RolesSource.forEach(element => {
-          
         this.Roles.push(element.name)
-  
-      // })
-      
-      console.log("tttttttttttttttttt")
-      console.log(this.Roles)
+
     })
 
 
@@ -85,9 +79,9 @@ export class AddUserComponent implements OnInit {
   /// get sectors from DATABASE 
   getSectors() {
     this._client.getAllSecteurs().subscribe(res => {
-      console.log(res)
       res.forEach(element => {
-        
+        console.log("elementgetSectors",element)
+
         var idSector = Number(String(element.geometry.properties.idSecteur).slice(-2, -1))
         console.log(idSector)
         var machine = (idSector == 0) ? "Onion" : "CMG"
@@ -112,8 +106,10 @@ export class AddUserComponent implements OnInit {
     };
     request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
       db = event.target.result;
-      console.log('success');
-      console.log(db);
+      console.log("resgetSectors",db)
+
+      // console.log('success');
+      // console.log(db);
       transaction = db.transaction(['sector'], 'readwrite');
       const objectStore = transaction.objectStore('sector');
       const objectStoreRequest = objectStore.getAll();
@@ -121,13 +117,9 @@ export class AddUserComponent implements OnInit {
         const all = event.target.result;
         all.forEach(elm => {
           //console.log(elm)
-          var element = JSON.parse(elm.Valeur);
-          /*var idSector = Number(String(element.properties.idSecteur).slice(-2, -1))
-          console.log(idSector)
-          var machine = (idSector == 0) ? "Onion" : "CMG"
-          console.log(machine)
-          var result = element.properties.idSecteur + " - " + machine + " - " + element.properties.name
-          console.log(result)*/
+          console.log("elmSectors",elm.Valeur)
+
+          var element = elm.Valeur;
           var obj = {
             id: element.nameSecteur,
             detail: element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
@@ -138,14 +130,28 @@ export class AddUserComponent implements OnInit {
       };
     };
   }
+  
+  async GetSectors() {
 
+    var db = new Dexie("off").open().then((res) => {
+      res.table("sector").each(element => {
+        // console.log(element)
+        var obj = {
+          id: element.nameSecteur,
+          detail: element.nameSecteur + " - " + element.machine + " - " + element.info.geometry.properties.name
+        }
+        this.AllSectors.push(obj.id)
+        this.Sectors.push(obj)
+      })
+    });
+  }
 
   //////////
   RoleActive() {
     var active;
     this.RolesSource.forEach(el => {
       
-      console.log("sectors",el)
+      // console.log("sectors",el)
 
       if(el.name==this.role ) {
      
@@ -159,7 +165,7 @@ export class AddUserComponent implements OnInit {
     }
 
     });
-    console.log("active",active);
+    //console.log("active",active);
     return active;
   }
 
@@ -300,12 +306,6 @@ export class AddUserComponent implements OnInit {
   ///
   SendUser() {
 
-    // if (this.role == 'Seller' || this.role == 'Auditor' || this.role == 'Supervisor') {
-    //   this.SectorAffacted = this.SelectedSector
-    // } else {
-    //   this.SectorAffacted = this.AllSectors
-    // }
-    // console.log(this.SectorAffacted)
 
     this.UserInfo = {
       userinfo: {
