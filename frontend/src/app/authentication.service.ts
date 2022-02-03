@@ -7,7 +7,7 @@ import Dexie from 'dexie';
   providedIn: 'root'
 })
 export class AuthenticationService {
-  private _UsersUrl = "https://stalker.noor-sbg.com:60443/api1/login"
+  private _UsersUrl = "http://localhost:3000/api1/login"
 
   constructor(private http: HttpClient,
     private _router: Router,

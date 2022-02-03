@@ -25,7 +25,7 @@ export class ClientsService {
   items
 
   private currentClient;
-  uri = "https://stalker.noor-sbg.com:60443";
+  uri = "http://localhost:3000";
   private _clientUrl = this.uri + "/api1/getClientByUser";
   private _secteurUrl = this.uri + "/api1/getSectorByUser";
   private _addclient = this.uri + "/api1/AddClient";
@@ -68,12 +68,12 @@ export class ClientsService {
   }
   ///////////////
   getClientBySeller(id) {
-    var url = "https://stalker.noor-sbg.com:60443/api1/getClientBySeller/" + id
+    var url = "http://localhost:3000/api1/getClientBySeller/" + id
     console.log(url)
     return this.http.get<any>(url)
   }
   getClientByAuditor(id) {
-    var url = "https://stalker.noor-sbg.com:60443/api1/getClientByAuditor/" + id
+    var url = "http://localhost:3000/api1/getClientByAuditor/" + id
     console.log(url)
     return this.http.get<any>(url)
   }
@@ -111,10 +111,10 @@ export class ClientsService {
   // }
 
   myDelete(info) {
-    return this.http.post<any>("https://stalker.noor-sbg.com:60443/api1/deleteo", info)
+    return this.http.post<any>("http://localhost:3000/api1/deleteo", info)
   }
   myDeleteRead() {
-    return this.http.get<any>("https://stalker.noor-sbg.com:60443/api1/VideoReadHafsa")
+    return this.http.get<any>("http://localhost:3000/api1/VideoReadHafsa")
   }
 
   //////////////////////////////////////////////////////////
@@ -563,6 +563,7 @@ export class ClientsService {
   //     // return this.Distance;
   //     //}
   //   }
+
   ActiveTheButton() {
     if (this.Distance <= this.Raduis) {
       //console.log("The point into the cercle")
@@ -579,7 +580,7 @@ export class ClientsService {
 
   /////////////////////////////////////////////////////////////////
 
-  private baseUrl = 'https://stalker.noor-sbg.com:60443/api1';
+  private baseUrl = 'http://localhost:3000/api1';
 
   upload(file: File): Observable<HttpEvent<any>> {
     const formData: FormData = new FormData();
