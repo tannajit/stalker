@@ -368,7 +368,8 @@ export class MapComponent implements AfterViewInit {
   }
   /////////***** Fill in indexDB with Sector info ******///////
   PutDataSector() {
-    let db; let transaction;
+    let db; 
+    let transaction;
     const request = window.indexedDB.open('off', this.version);
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
       console.log('Why didn\'t you allow my web app to use IndexedDB?!');
@@ -948,22 +949,34 @@ export class MapComponent implements AfterViewInit {
         res.table("pdvs").get({ "_id": IDGeomerty }).then(r => {
           console.log(r)
           if (r != undefined) {
-            if (r.geometry.properties?.status != "deleted") {
+            if(r.geometry.properties?.status!="deleted"){
               this.map.setView(new L.LatLng(r.geometry.geometry.coordinates[1], r.geometry.geometry.coordinates[0]), 30);
-            } else {
-              var mess = "No Such ID : " + IDGeomerty
-              this.openAlertSearch(mess);
-            }
-          } else {
+        }else{
+
+          var mess = "No Such ID : " + IDGeomerty
+
+          this.openAlertSearch(mess);
+
+        }  }else{
+
             var mess = "No Such ID : " + IDGeomerty
+
             this.openAlertSearch(mess);
+
           }
+
         });
+
       });
+
     } else {
+
       var mess = "Please Enter the ID"
+
       this.openAlertSearch(mess)
+
     }
+
   }
   SearchIndexDBA(IDGeomerty) {
     console.log("Update in IndexedDB")

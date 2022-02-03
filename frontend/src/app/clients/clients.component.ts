@@ -114,8 +114,9 @@ export class ClientsComponent implements OnInit {
 
   getClients() {
     // Replace with HTTP call
-    
+    console.log(this.clients.length)
     this.dataSource = new MatTableDataSource<any>(this.clients);
+    console.log(this.dataSource)
     this.dataSource.data = this.clients.reverse();
     this.obs = this.dataSource.connect();
     // var db = new Dexie("off").open().then((res) => {
@@ -138,18 +139,9 @@ export class ClientsComponent implements OnInit {
 
   
 
-  handlePage(event?: PageEvent) {
-    this.currentPage = event.pageIndex;
-    this.pageSize = event.pageSize;
-    this.iterator();
-  }
+  
 
-  private iterator() {
-    const end = (this.currentPage + 1) * this.pageSize;
-    const start = this.currentPage * this.pageSize;
-    const part = this.data.slice(start, end);
-    this.dataSource = part;
-  }
+  
 
 
   ////*********** GET CLIENTS INFOS ***********/////
@@ -176,6 +168,7 @@ export class ClientsComponent implements OnInit {
             // console.log("deleted")
             // console.log(this.loggedUser.role)
             this.clients.push(Point);
+            
             // console.log(Point.geometry.properties.status);
           }
           else if ((this.loggedUser.role == 'Seller' || this.loggedUser.role == 'Auditor') && Point.geometry.properties.status != "deleted") {
@@ -347,7 +340,6 @@ export class ClientsComponent implements OnInit {
   anotherArray = this.sectorNames;
   filterListCareUnit(val) {
     // console.log(val);
-
     this.sectorNames = this.anotherArray.filter((unit) => unit.detail.toLowerCase().indexOf(val) > -1);
   }
 
@@ -552,5 +544,9 @@ export class ClientsComponent implements OnInit {
   clearFilter(){
     this.PDVType = this.IdClient = this.PhoneNumber = this.PDVType = this.nfc = 
     this.sector = this.BackOfficeValid = this.deleteStatus = undefined
+
+    // this.getAllClients()
+    // console.log(this.clients)
+
   }
 }

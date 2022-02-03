@@ -1,6 +1,14 @@
 <div class="content-body">
 
-    <h2>Update Client</h2>
+    <p 
+    style="
+            font-weight: bold;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            color: green;
+            margin-top: 20px;
+            ">
+        Update Client</p>
 
 
     <div>
@@ -34,9 +42,8 @@
                     <div *ngFor="let code of ListCodes" class="qr-container">
                         <span *ngIf="code.nbr == 1">{{ code.value}}</span>
                     </div>
-                    <span *ngIf="clientInfo.geometry.properties?.codeDANON==null, else scanned" style="color: red;">Not
-                        scanned</span>
-                    <ng-template #scanned>{{clientInfo.geometry.properties.codeDANON}}</ng-template>
+                    <span *ngIf="clientInfo.geometry.properties.codeDANON !=null">{{clientInfo.geometry.properties.codeDANON}}</span>
+    
                 </div>
 
             </div>
@@ -48,9 +55,8 @@
                     <div *ngFor="let code of ListCodes" class="qr-container">
                         <span *ngIf="code.nbr == 2">{{ clientInfo.geometry.properties.codeCOLA}}</span>
                     </div>
-                    <span *ngIf="clientInfo.geometry.properties?.codeCOLA==null, else scanned" style="color: red;">Not
-                        scanned</span>
-                    <ng-template #scanned>{{clientInfo.geometry.properties.codeCOLA}}</ng-template>
+                    <span *ngIf="clientInfo.geometry.properties.codeCOLA!=null">{{clientInfo.geometry.properties.codeCOLA}}</span>
+                   
                 </div>
 
             </div>
@@ -62,9 +68,8 @@
                     <div *ngFor="let code of ListCodes" class="qr-container">
                         <span *ngIf="code.nbr == 3">{{ clientInfo.geometry.properties.codeFGD}}</span>
                     </div>
-                    <span *ngIf="clientInfo.geometry.properties?.codeFGD==null, else scanned" style="color: red;">Not
-                        scanned</span>
-                    <ng-template #scanned>{{clientInfo.geometry.properties.codeFGD}}</ng-template>
+                    <span *ngIf="clientInfo.geometry.properties.codeFGD!=null">{{clientInfo.geometry.properties.codeFGD}}</span>
+                    
                 </div>
 
             </div>
@@ -251,6 +256,7 @@
             </div>
         </div>
 
+        
         <button mat-button class="btn-yellow" (click)="Update()">Update</button>
     </div>
     

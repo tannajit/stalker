@@ -562,6 +562,7 @@ export class ClientsService {
   //     // return this.Distance;
   //     //}
   //   }
+
   ActiveTheButton() {
     if (this.Distance <= this.Raduis) {
       //console.log("The point into the cercle")
