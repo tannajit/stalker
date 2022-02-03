@@ -14,7 +14,7 @@ export class AdminService {
   private getSectorsByUserURL = this.uri+"/api1/getSectorsByUser"
   private _user=this.uri+"/api1/register"
   private _user_email=this.uri+"/api1/GeEmail"
-  private _setting =this.uri + "/api1/settings";
+  private _setting =this.uri + "/api1/settings"
   private getRolesURL = this.uri + "/api1/getRoles"
   private _updateRole = this.uri + "/api1/updateRole"
   private _addRole = this.uri + "/api1/addRole"

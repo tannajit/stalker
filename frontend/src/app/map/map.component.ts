@@ -374,7 +374,6 @@ export class MapComponent implements AfterViewInit {
           this.getDataSector();
         }
       });
-
     };
   }
   /////////////////////////////////////////////////////////////////

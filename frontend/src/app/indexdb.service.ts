@@ -48,7 +48,6 @@ export class IndexdbService {
       var objectStore = this.db.createObjectStore("client", { keyPath: 'UUid' });
       console.log("create client ")
       var objectt = this.db.createObjectStore("update", { keyPath: 'UUid' });
-      console.log(objectt)
       console.log("create update ")
       var objectt = this.db.createObjectStore("delete", { keyPath: 'UUid' });
       console.log(objectt)

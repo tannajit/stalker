@@ -13,7 +13,7 @@ var uri = "mongodb://localhost:27017";
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker3"
+var name_database = "stalker1"
 var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
@@ -1357,7 +1357,6 @@ router.get("/VideoReadHafsa", async (req, res) => {
 router.put("/UpdateUser", async (req, res) => {
     user = req.body
     console.log(req.body)
-
     users = await db.collection("users")
     secteurs = await db.collection("secteurs")
     if (user.generated) {
@@ -1366,11 +1365,8 @@ router.put("/UpdateUser", async (req, res) => {
     console.log(req.body)
     await users.updateMany({ _id: ObjectId(user._id) }, { $set: { "UserID": user.UserID, "name": user.name, "phone": user.phone, "CIN": user.CIN, "role": user.role, "email": user.email, "password": user.password } }).then(res => console.log(res))
     user.sectors.forEach(async el => {
-
         await secteurs.updateOne({ nameSecteur: Number(el) }, { $addToSet: { users: ObjectId(user._id) } }).then(res => console.log(res))
-
     })
-
     user.SectorDeleted.forEach(async el => {
         await secteurs.updateOne({ nameSecteur: Number(el) }, { $pull: { users: ObjectId(user._id) } }).then(res => console.log(res))
     })
