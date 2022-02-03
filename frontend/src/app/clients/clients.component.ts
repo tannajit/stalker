@@ -348,7 +348,7 @@ export class ClientsComponent implements OnInit {
   filterListCareUnit(val) {
     // console.log(val);
 
-    this.sectorNames = this.anotherArray.filter((unit) => unit.details.toLowerCase().indexOf(val) > -1);
+    this.sectorNames = this.anotherArray.filter((unit) => unit.detail.toLowerCase().indexOf(val) > -1);
   }
 
 
