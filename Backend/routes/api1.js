@@ -221,12 +221,13 @@ router.get('/getSectorByUser', verifyToken, async (req, res) => {
         },
         { "$unwind": "$info" },
         { "$match": { "info.geometry.geometry.type": "MultiPolygon" } },
-    ]).toArray();
-    ListInfo = []
-    values.forEach(element => {
-        ListInfo.push(element)
-    });
-    res.status(200).json(ListInfo)
+       { $project: { info: 1,nameSecteur:1,machine:1,typePDV:1}}
+    ]).toArray()
+    //console.log(values)
+    // values.forEach(element => {
+    //     ListInfo.push(element)
+    // });
+   res.status(200).json(values)
 })
 
 //*** Get PDV by user (I changed the structure of the Query ) */
@@ -265,7 +266,7 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
             var element = elem.geometry.properties;
             if (element.nfc.NFCPhoto != null) {
                 try {
-                    console.log(element.nfc)
+                   // console.log(element.nfc)
                     await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
                         elem.geometry.properties.NFCP = re
                     }).catch(err => console.log(err))
@@ -276,7 +277,7 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
                 elem.geometry.properties.NFCP = null
             }
             if (element?.PVPhoto != null) {
-                console.log(element?.PVPhoto)
+                //console.log(element?.PVPhoto)
                 await test1(db, ObjectId(element.PVPhoto)).then(re => {
                     elem.geometry.properties.PVP = re
                 }).catch(err => console.log(err))
@@ -1208,9 +1209,9 @@ router.post("/extract", async (req, res) => {
         });
         await IsDeletedBy(ObjectId(element._id), "Auditor").then(ress => {
             console.log("Auditor")
-            Data["Supprime_Audtior"] = String(ress)
+            Data["Supprime_Auditor"] = String(ress)
         }).catch(err => {
-            Data["Supprime_Audtior"] = String(err)
+            Data["Supprime_Auditor"] = String(err)
         });
         element.info.forEach(info => {
             if (info.userRole === "Auditor") {
@@ -1242,7 +1243,6 @@ router.post("/extract", async (req, res) => {
             }
         })
         DataAll.push(Data)
-        //console.log(DataAll.length)
         element = Data;
         return element;
     });

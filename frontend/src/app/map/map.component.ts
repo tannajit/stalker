@@ -36,7 +36,7 @@ export class MapComponent implements AfterViewInit {
     private dialog: MatDialog) {
     //this.index.createDatabase();
     this.user = JSON.parse(localStorage.getItem("user"))
-    this.version=index.version;
+    this.version = index.version;
   }
 
   dialogRef: MatDialogRef<ClientInfoComponent>;
@@ -46,7 +46,8 @@ export class MapComponent implements AfterViewInit {
 
   private map;
   public content = null;
-  ArrayIDS=[]
+  ArrayIDS = []
+  ArrayIdSector = [];
   myCercle;
   mySector = 'hello';
   IDGeomerty;
@@ -97,7 +98,7 @@ export class MapComponent implements AfterViewInit {
   //////////////*** Init map ////////
   ngAfterViewInit(): void {
     this.initMap();
-    
+
     this.aroute.params.subscribe(params => {
       if (params['lat']) {
         console.log("laaaaaaaaaaaaaaaaaaaaaaat: " + params['lat'])
@@ -479,21 +480,14 @@ export class MapComponent implements AfterViewInit {
   }
 
   PutSectorDataInMap() {
+    this.ArrayIdSector = []
     var db = new Dexie("off").open().then((res) => {
       //console.log(res._allTables)
       this.markerClusterSector.clearLayers();
-      //res.table("sector").where("nameSecteur").equalsIgnoreCase(String(906010181)).toArray();
 
-      // res.table("sector").where({"nameSecteur":906010181}).toArray().then(r=>{
-      //   console.log(r)
-      // })
-      res.table("sector").get({ "nameSecteur": 906010181 }).then(r => {
-        console.log(r)
-      })
       res.table("sector").each(element => {
-        // console.log(element)
-
         var Point = { _id: element._id, geometry: element.info.geometry };
+        this.ArrayIdSector.push(element._id)
         var marker = L.geoJSON(Point.geometry, {
           onEachFeature: (feature, layer) => {
             //console.log(element.nameSecteur)
@@ -510,12 +504,7 @@ export class MapComponent implements AfterViewInit {
     var db = new Dexie("off").open().then((res) => {
       //console.log(res._allTables)
       this.markersCluster.clearLayers();
-      if (this.dialogConf) {
-        this.dialogConf.close()
-        this.openAlertDialog("Sync is Done")
-        //console.log(" -------------------------------- ", this.option_retail)  
-      }
-      this.ArrayIDS=[]
+      this.ArrayIDS = []
       res.table("pdvs").each((element) => {
         const Point = { _id: element._id, geometry: element.geometry };
         this.ArrayIDS.push(element._id)
@@ -545,15 +534,9 @@ export class MapComponent implements AfterViewInit {
 
   async StorePdvsIndexDB() {
     this._serviceClient.getAllClient().subscribe(async (ress) => {
-
-      // console.log(res)
       this.markersCluster.clearLayers();
-      //console.log(ress)
-      //this.ArrayIDS=[]
       ress.forEach((element, idx, array) => {
-        //const Point = { _id: element._id, geometry: element.geometry };
         const geojsonPoint: geojson.Point = element.geometry;
-        //this.ArrayIDS.push(element._id)
         var iconClient = L.icon({ iconUrl: 'assets/' + element.geometry.properties?.status + '.png', iconSize: [8, 8] });
         var marker = L.geoJSON(geojsonPoint, {
           pointToLayer: (point, latlon) => {
@@ -573,55 +556,21 @@ export class MapComponent implements AfterViewInit {
           this.markersCluster.addLayer(marker);
         }
       });
+
       var db = new Dexie("off").open().then((res) => {
-        ///
-        console.log(this.ArrayIDS)
         //console
-        res.table("pdvs").bulkDelete(this.ArrayIDS).then((hh)=>{
+        res.table("pdvs").bulkDelete(this.ArrayIDS).then((hh) => {
           console.log("$$$$$$$ DONE Clearing $$$$$$$$")
           res.table("pdvs").bulkPut(ress).then((lastKey) => {
             console.log("Add PDVs")
             if (this.dialogConf) {
               this.dialogConf.close()
               this.openAlertDialog("Sync is Done")
-              //console.log(" -------------------------------- ", this.option_retail)
             }
-  
           });
         })
-        
-        ///
-        // let dbb; let transaction;
-        // var request = window.indexedDB.open("off", this.version)
-        // request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-        //   console.log("Why didn't you allow my web app to use IndexedDB?!");
-        // };
-        // request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-        //   dbb = event.target.result;
-        //   console.log("success inside Clear")
-        //   var transaction = dbb.transaction(['pdvs'], 'readwrite');
-        //   var objectStore = transaction.objectStore("pdvs");
-        //   var objectStoreRequest = objectStore.clear(); /// clear database
-        //   objectStoreRequest.onsuccess = (event) => {
-        //     console.log("Data Cleared form PDVs")
-        //     res.table("pdvs").bulkAdd(ress).then((lastKey) => {
-        //       console.log("Add PDVs")
-        //       if (this.dialogConf) {
-        //         console.log(this.ArrayIDS)
-        //         this.dialogConf.close()
-        //         this.openAlertDialog("Sync is Done")
-        //         //console.log(" -------------------------------- ", this.option_retail)
-        //       }
-
-        //     });
-        //   }
-        // }
-        // res.table("pdvs").clear().then((l) => {
-
-        // })
       });
     });
-
   }
   ClearData() {
     let db; let transaction;
@@ -637,36 +586,54 @@ export class MapComponent implements AfterViewInit {
       var objectStoreRequest = objectStore.clear();
       objectStoreRequest.onsuccess = (event) => {
         console.log("Data Cleared form PDVs")
-
       }
     }
   }
   async StoreSectorIndexeddb() {
     this._serviceClient.getAllSecteurs().subscribe(res1 => {
+      //let result = res1.map(a => a._id);
+      //console.log(result)
+      //let difference = result.filter((x) => !this.ArrayIdSector.includes(x));
+      //console.log(difference)
       var db = new Dexie("off").open().then((res) => {
-        res.table("sector").clear().then((l) => {
+        if (this.user.role != "Admin") {
+          console.log("--- Start Now ")
+          let t1 = performance.now();
+          res.table("sector").bulkDelete(this.ArrayIdSector).then((l) => {
+            res.table("sector").bulkPut(res1).then((lastKey) => {
+              let t2 = performance.now();
+              //let elapsed = 
+              console.log(t2-t1);
+              console.log("--- END Now ")
+              this.PutSectorDataInMap()
+            });
+          })
+        } else {
+          console.log("--- Start Now ")
+          let t1 = performance.now();
           res.table("sector").bulkPut(res1).then((lastKey) => {
-            //console.log(lastKey)
+            let t2 = performance.now();
+            //let elapsed = 
+            console.log(t2-t1);
+            console.log("--- END Now ")
             this.PutSectorDataInMap()
+            if (this.user.role == "Admin") {
+              if (this.dialogConf) {
+                this.dialogConf.close()
+                this.openAlertDialog("Sync is Done")
+              }
+            }
           });
-        })
+        }
       });
     });
 
   }
   async sync() {
-    this.StorePdvsIndexDB()
+    if (this.user.role != "Admin") {
+      this.StorePdvsIndexDB()
+    }
     this.StoreSectorIndexeddb()
-
-    //console.log(db)
-    //this.PutDataSector()
-    // this.PutData();
-    //   this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
-    //    disableClose: false
-    //  });
-    //   this.dialogConf.componentInstance.confirmMessage = "sync"
-    //   console.log('Synchronize (Get data from the Database)');
-    //   
     this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
       disableClose: true
     });
@@ -977,16 +944,13 @@ export class MapComponent implements AfterViewInit {
   ///////************** Search for the client from indexDB ***********////////////
 
   SearchIndexDB(IDGeomerty) {
-    if (IDGeomerty!=undefined) {
+    if (IDGeomerty != undefined) {
       var db = new Dexie("off").open().then((res) => {
         res.table("pdvs").get({ "_id": IDGeomerty }).then(r => {
           console.log(r)
           if (r != undefined) {
             if(r.geometry.properties?.status!="deleted"){
               this.map.setView(new L.LatLng(r.geometry.geometry.coordinates[1], r.geometry.geometry.coordinates[0]), 30);
-
-         
-
         }else{
 
           var mess = "No Such ID : " + IDGeomerty

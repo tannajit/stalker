@@ -31,7 +31,7 @@
     </div>
     
     <!-- <mat-checkbox [(ngModel)]='endIsChecked' (change)='onEndChange($event)'>No dates</mat-checkbox> -->
-    <div>
+    <!-- <div>
         <mat-form-field>
             <mat-select placeholder="All Sectors" multiple panelClass="selectPanel" value="SelectedSector"
                 [(ngModel)]="SelectedSector">
@@ -41,9 +41,21 @@
                 </div>
             </mat-select>
         </mat-form-field>
-    </div>
+    </div> -->
     
-
+    <mat-form-field >
+        <mat-select   panelClass="selectPanel2" placeholder="All Sectors" multiple panelClass="selectPanel" value="SelectedSector"
+        [(ngModel)]="SelectedSector">
+          <mat-option>
+            <ngx-mat-select-search placeholderLabel="Search" (keyup)="filterListCareUnit($event.target.value)" ></ngx-mat-select-search>
+        </mat-option>
+          <mat-option value="all">All</mat-option>
+          <ng-container *ngFor="let sector of Sectors">
+            <mat-option value="{{sector.id}}">{{sector.detail}}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+      
     <div>
         <mat-form-field>
        

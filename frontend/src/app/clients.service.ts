@@ -8,7 +8,7 @@ import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import * as L from 'leaflet';
 import { Observable } from 'rxjs';
-
+import { interval } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +23,6 @@ export class ClientsService {
   Distance;
   private db: any;
   items
-
   private currentClient;
   uri = "http://localhost:3000";
   private _clientUrl = this.uri + "/api1/getClientByUser";
@@ -491,23 +490,23 @@ export class ClientsService {
     }
     if ((Object.keys(position)[0] === "MapUp") && (this.PositionClient != null)) {
 
-      console.log("MyPosition Updated " + new L.LatLng(position.MapUp[0], position.MapUp[1]));
+      //console.log("MyPosition Updated " + new L.LatLng(position.MapUp[0], position.MapUp[1]));
 
       this.MyPosition = new L.LatLng(position.MapUp[0], position.MapUp[1]);
       this.Raduis = position.Raduis;
       this.Distance = this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
-      console.log("Distance Up :" + this.Distance);
-      console.log("Raduis Up :" + this.Raduis);
+      //.log("Distance Up :" + this.Distance);
+      //console.log("Raduis Up :" + this.Raduis);
 
     }
     if (this.PositionClient != null) {
-      console.log("MyPosition " + this.MyPosition);
+     // console.log("MyPosition " + this.MyPosition);
 
-      console.log("Pointposition " + this.PositionClient);
+      //console.log("Pointposition " + this.PositionClient);
 
       this.Distance = this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
-      console.log("Distance :" + this.Distance);
-      console.log("Raduis :" + this.Raduis);
+      //console.log("Distance :" + this.Distance);
+      //console.log("Raduis :" + this.Raduis);
 
     }
   }
@@ -709,6 +708,26 @@ export class ClientsService {
 
   deleteFiles(): Observable<any> {
     return this.http.get(`${this.baseUrl}/deletefile`);
+  }
+
+
+  CalculateBack(){
+    interval(500).subscribe(x => {
+      console.log("am runing")
+    });
+  }
+
+  SaveInIndexDB(ress,ArrayIDS){
+    console.log("Adding PDVs in IndexedDB")
+    var db = new Dexie("off").open().then((res) => {
+      //console
+      res.table("pdvs").bulkDelete(ArrayIDS).then((hh) => {
+        console.log("$$$$$$$ DONE Clearing $$$$$$$$")
+        res.table("pdvs").bulkPut(ress).then((lastKey) => {
+          console.log("Add PDVs");
+        });
+      })
+    });
   }
 
   //****************************** */

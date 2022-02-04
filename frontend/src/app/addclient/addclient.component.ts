@@ -393,7 +393,7 @@ export class AddclientComponent implements AfterViewInit {
         this.verification_code = res.code
       });
   }
-  ;
+  
   Verify(code: string) {
     this.disbale_sms = true;
     //this.clientInfos.PhoneNumber = this.PhoneNumber
