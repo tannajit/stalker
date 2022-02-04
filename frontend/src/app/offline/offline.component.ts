@@ -41,7 +41,7 @@ export class OfflineComponent implements OnInit {
     console.log(this.idsupdates)
   }
   ////////////////////////////////////////////////////
-   ////*********** GetID FOR DELETE CLIENT *********////////
+  ////*********** GetID FOR DELETE CLIENT *********////////
   getidsDel() {
     this.idsdeletes = this.clientService.getIDdelete()
     console.log(this.idsdeletes)
@@ -121,6 +121,54 @@ export class OfflineComponent implements OnInit {
     });
   }
 
+  sendAlladd() {
+    if (this.onlineOfflineService.isOnline) {
+      this.clientService.SendALLAdd();
+      for (var i = this.id.length; i > 0; i--) {
+        this.id.pop();
+      }
+      var message = "data sent successfuly";
+      var btn = "Continue"
+      this.openAlertDialog(message, btn)
+    }else{
+      var message = "You are still offline !";
+      var btn = "Continue"
+      this.openAlertDialog(message, btn)
+    }
+  }
+
+  sendAllupdate() {
+    if (this.onlineOfflineService.isOnline) {
+      this.clientService.SendALLUpdate();
+      for (var i = this.idsupdates.length; i > 0; i--) {
+        this.idsupdates.pop();
+      }
+      var message = "data sent successfuly";
+      var btn = "Continue"
+      this.openAlertDialog(message, btn)
+    }else{
+      var message = "You are still offline !";
+      var btn = "Continue"
+      this.openAlertDialog(message, btn)
+    }
+  }
+  
+  sendAlldelete() {
+    if (this.onlineOfflineService.isOnline) {
+      this.clientService.SendALLDelete();
+      for (var i = this.idsdeletes.length; i > 0; i--) {
+        this.idsdeletes.pop();
+      }
+      var message = "data sent successfuly";
+      var btn = "Continue"
+      this.openAlertDialog(message, btn)
+    }else{
+      var message = "You are still offline !";
+      var btn = "Continue"
+      this.openAlertDialog(message, btn)
+    }
+  }
+
   // private async sendItemsFromIndexedDb() {
   //   console.log("sending items");
   //   // const allItems: any[] = await this.db["client"].toArray();
@@ -147,7 +195,6 @@ export class OfflineComponent implements OnInit {
   //         console.log(element)
   //         this.clientService.SendClient(element).subscribe(res => {
   //           console.log(res);
-
   //         })
   //         console.log("data sent succusfuly")
   //       })

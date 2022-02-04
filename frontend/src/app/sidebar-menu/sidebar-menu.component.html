@@ -57,7 +57,7 @@
                     <mat-icon mat-list-icon>refresh</mat-icon>
                     <div fxFlex="10"></div>
                     <div *ngIf="sidenavWidth> 6" class="sidenav-item">
-                        <span>Synchronisation</span>
+                        <span>Offline Requests</span>
                     </div>
                 </mat-list-item>
     
@@ -110,7 +110,7 @@
             <!-- Drop down menu for logging out -->
             <mat-menu #logout="matMenu" [overlapTrigger]="false">
                 <span (mouseleave)="menuTrigger.closeMenu()"></span>
-                <button mat-menu-item (click)="_authService.logoutUser()">
+                <button mat-menu-item (click)="logoutUser()">
                     <mat-icon>logout</mat-icon>
                     <span>Logout</span>
                 </button>

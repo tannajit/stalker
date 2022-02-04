@@ -58,12 +58,12 @@ export class ClientsService {
     return this.http.get<any>(this._clientUrl)
   }
   ///********* Test  ***********////
-   options = {
+  options = {
     responseType: 'text',
   };
-  
-  Sync(type){
-    return this.http.get<any>(this._sync+"/"+type)
+
+  Sync(type) {
+    return this.http.get<any>(this._sync + "/" + type)
   }
   ///////////////
   getClientBySeller(id) {
@@ -87,7 +87,7 @@ export class ClientsService {
   }
 
   extract(info) {
-    
+
     return this.http.post<any>(this._extarct, info);
   }
 
@@ -389,7 +389,6 @@ export class ClientsService {
           list.push(elm)
           console.log(list)
         });
-
       }
     };
     return list
@@ -511,7 +510,7 @@ export class ClientsService {
 
     }
   }
-  
+
   DeleteRequest(data) {
     console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
     console.log(data)
@@ -575,6 +574,112 @@ export class ClientsService {
     //console.log("Distance2 :"+this.Distance );
     return this.Distance;
 
+  }
+
+
+  async SendALLAdd() {
+    console.log("sending items");
+    // const allItems: any[] = await this.db["client"].toArray();
+    var db; var transaction; var upgradeDb
+    var request = window.indexedDB.open("MyTestDatabase", 10)
+    // upgradeDb.createObjectStore('client');
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+      console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
+      console.log("success")
+      console.log(db)
+      transaction = db.transaction(['client'], 'readwrite');
+      var objectStore = transaction.objectStore("client");
+      var objectStoreRequest = objectStore.getAll();
+      objectStoreRequest.onsuccess = event => {
+        var all = event.target.result
+        console.log(all)
+        all.forEach(element => {
+          console.log(element)
+          this.SendClient(element).subscribe(res => {
+            console.log(res);
+          })
+          console.log("data sent succusfuly")
+        })
+        var objectStoreRequest1 = objectStore.clear();
+        objectStoreRequest1.onsuccess = event => {
+          console.log("item deleted from indexedDb");
+        }
+      }
+      
+    }
+    
+  }
+
+  async SendALLUpdate() {
+    console.log("sending items");
+    // const allItems: any[] = await this.db["client"].toArray();
+    var db; var transaction; var upgradeDb
+    var request = window.indexedDB.open("MyTestDatabase", 10)
+    // upgradeDb.createObjectStore('client');
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+      console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
+      console.log("success")
+      console.log(db)
+      transaction = db.transaction(['update'], 'readwrite');
+      var objectStore = transaction.objectStore("update");
+      var objectStoreRequest = objectStore.getAll();
+      objectStoreRequest.onsuccess = event => {
+        var all = event.target.result
+        console.log(all)
+        all.forEach(element => {
+          console.log(element)
+          this.updateClient(element).subscribe(res => {
+            console.log(res);
+          })
+          console.log("data sent succusfuly")
+        })
+        var objectStoreRequest1 = objectStore.clear();
+        objectStoreRequest1.onsuccess = event => {
+          console.log("item deleted from indexedDb");
+        }
+      }
+
+    }
+  }
+
+  async SendALLDelete() {
+    console.log("sending items");
+    // const allItems: any[] = await this.db["client"].toArray();
+    var db; var transaction; var upgradeDb
+    var request = window.indexedDB.open("MyTestDatabase", 10)
+    // upgradeDb.createObjectStore('client');
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+      console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
+      console.log("success")
+      console.log(db)
+      transaction = db.transaction(['delete'], 'readwrite');
+      var objectStore = transaction.objectStore("delete");
+      var objectStoreRequest = objectStore.getAll();
+      objectStoreRequest.onsuccess = event => {
+        var all = event.target.result
+        console.log(all)
+        all.forEach(element => {
+          console.log(element)
+          this.DeleteRequest(element).subscribe(res => {
+            console.log(res);
+          })
+          console.log("data sent succusfuly")
+        })
+        var objectStoreRequest1 = objectStore.clear();
+        objectStoreRequest1.onsuccess = event => {
+          console.log("item deleted from indexedDb");
+        }
+      }
+    }
   }
 
   /////////////////////////////////////////////////////////////////

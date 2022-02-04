@@ -13,7 +13,7 @@ var uri = "mongodb://localhost:27017";
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker3"
+var name_database = "stalker1"
 var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
@@ -73,12 +73,14 @@ router.get("/files", async function (req, res) {
         });
         var arr = await collection.find({ 'geometry.geometry.type': 'Point' }).toArray()
         InjectSecteurData(arr)
-        await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.NFC": { $exists: true } }, { $set: { "geometry.properties.nfc": { UUID: null, Numero_Serie: null, Technologies: null, Type_card: null, NFCPhoto: null } } }).then().catch(error => console.log(error))
-        await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.NFC": { $exists: true } }, { $rename: { "geometry.properties.NFC": "geometry.properties.nfc.UUID" } }).then().catch(error => console.log(error))
+        console.log("//************start updating nfc object************//")
+        await collection.updateMany({"geometry.geometry.type":"Point", "geometry.properties.NFC": { $exists: true}},{$set: {"geometry.properties.nfc":{UUID:null,Numero_Serie:null,Technologies:null,Type_card:null,NFCPhoto:null}}}).then().catch(error => console.log(error))
+        await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.NFC": { $exists: true}},{ $rename: {"geometry.properties.NFC": "geometry.properties.nfc.UUID"}}).then().catch(error => console.log(error))
         console.log("//************start updating Status************//")
         await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.nfc.UUID": { $ne: null } }, { $set: { "geometry.properties.status": "purple" } }).then().catch(error => console.log(error))
         await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.nfc.UUID": { $eq: null } }, { $set: { "geometry.properties.status": "red" } }).then().catch(error => console.log(error))
-        await colection2.updateMany({},{$addToSet:{ typePDV: "Detail" }})
+        await collection.updateMany({ "geometry.geometry.type": "Point"},{ $set: { "geometry.properties.created_at": new Date() ,"geometry.properties.updated_at": new Date() } }).then().catch(error => console.log(error))
+        await colection2.updateMany({},{$addToSet:{ typePDV: "Detail" }}).then().catch(error => console.log(error))
     });
 });
 
@@ -1471,7 +1473,6 @@ router.put("/UpdateUser", async (req, res) => {
         await secteurs.updateMany({ nameSecteur: Number(el) }, { $addToSet: { users: ObjectId(user._id) } }).then(res => console.log(`user ${user._id} a été ajouter vers sector ${el}`,res))
 
     })
-
     user.SectorDeleted.forEach(async el => {
         await secteurs.updateMany({ nameSecteur: Number(el) }, { $pull: { users:{$in:[ObjectId(user._id)]}  } }).then(res => console.log(`user ${user._id} a été suprimer au sector ${el}`,res))
     })

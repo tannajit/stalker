@@ -621,7 +621,4 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
     };
   }
 
-
-
-
 }
