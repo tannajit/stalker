@@ -79,7 +79,8 @@ router.get("/files", async function (req, res) {
         console.log("//************start updating Status************//")
         await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.nfc.UUID": { $ne: null } }, { $set: { "geometry.properties.status": "purple" } }).then().catch(error => console.log(error))
         await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.nfc.UUID": { $eq: null } }, { $set: { "geometry.properties.status": "red" } }).then().catch(error => console.log(error))
-        await colection2.updateMany({},{$addToSet:{ typePDV: "Detail" }})
+        await collection.updateMany({ "geometry.geometry.type": "Point"},{ $set: { "geometry.properties.created_at": new Date() ,"geometry.properties.updated_at": new Date() } }).then().catch(error => console.log(error))
+        await colection2.updateMany({},{$addToSet:{ typePDV: "Detail" }}).then().catch(error => console.log(error))
     });
 });
 

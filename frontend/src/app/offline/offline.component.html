@@ -1,5 +1,6 @@
 <div class="containe-ids">
     <p>Clients added waiting for sync</p>
+    <button mat-button class="btn-green" (click)="sendAlladd()">Send All</button>
     <div class="sync">
         <div *ngFor="let uuid of id" class="clients-div">
             <label>{{uuid}}</label>
@@ -10,6 +11,7 @@
 </div>
 <div class="containe-ids">
     <p>Clients updated waiting for sync</p>
+    <button mat-button class="btn-green" (click)="sendAllupdate()">Send All</button>
     <div class="sync">
         <div *ngFor="let uuidd of idsupdates" class="clients-div">
             <label>{{uuidd}}</label>
@@ -20,11 +22,11 @@
 </div>
 <div class="containe-ids">
     <p>Clients deleted waiting for sync</p>
+    <button mat-button class="btn-green" (click)="sendAlldelete()">Send All</button>
     <div class="sync">
         <div *ngFor="let uuuidd of idsdeletes" class="clients-div">
             <label>{{uuuidd}}</label>
             <button mat-button class="btn-green" (click)="senddelete(uuuidd)">Send</button>
         </div>
-
     </div>
 </div>
