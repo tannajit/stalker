@@ -52,8 +52,8 @@
                     
                 </div>
             </div>
-            <ng-template [ngIf]="RoleActive()" [ngIfElse]="sectorDisplay">
-            <ng-container >
+            
+            <ng-container *ngIf="RoleActive(); else sectorDisplay">
                 <div class="sectors-container">
                     <div class="field">
                         <label>Sectors</label>
@@ -67,7 +67,7 @@
                     </div>
                 </div>
             </ng-container>
-            </ng-template>
+           
             <ng-template #sectorDisplay>
                 <div class="sectors-container">
                     <div class="field">

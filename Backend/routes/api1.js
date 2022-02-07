@@ -552,6 +552,8 @@ async function InsertClient(client, res) {
             userRole: client.userRole,
             NomPrenom: client.NomPrenom,
             PhoneNumber: client.PhoneNumber,
+            region:client.region,
+            city:client.city,
             PVPhoto: id_pv,
             status: client.Status,
             created_at: temp_datetime_obj,
