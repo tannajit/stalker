@@ -1,3 +1,16 @@
+.btns{ 
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    right: 0;
+    align-self: flex-end;
+}
+.btn-green:disabled{
+    background-color: #C2BEBE;
+    color: #313030;
+}
 @media (min-width: 1200px){
 
 
@@ -260,7 +273,19 @@
         margin: auto;
         font-size: 13px;
         line-height: 30px;
-        width: 130px !important;
+        /* width: 130px !important; */
+        border-radius: 20px;
+        text-align: center !important;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    }
+
+    .btn-red{
+    
+        background-color: #af481f;
+        color: #fff;
+        font-size: 13px;
+        line-height: 30px;
+        /* width: 100px !important; */
         border-radius: 20px;
         text-align: center !important;
         box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
@@ -526,9 +551,7 @@
         text-align: center;
         padding: 5px;
     }
-    
-    
-    
+
     .btn-yellow{
         margin-top: 8px;
         background-color: #FACF37;
@@ -546,7 +569,19 @@
         margin: auto;
         font-size: 13px;
         line-height: 30px;
-        width: 100px !important;
+        /* width: 100px !important; */
+        border-radius: 20px;
+        text-align: center !important;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    }
+
+    .btn-red{
+    
+        background-color: #af481f;
+        color: #fff;
+        font-size: 13px;
+        line-height: 30px;
+        /* width: 100px !important; */
         border-radius: 20px;
         text-align: center !important;
         box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
@@ -747,7 +782,7 @@
     .map-container{ 
     
         width: 500px;
-        height: 200px;
+        height: 300px;
         /* margin: 20px ; */
         box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
         /* display: flex;
@@ -824,7 +859,19 @@
         margin: auto;
         font-size: 13px;
         line-height: 30px;
-        width: 100px !important;
+        /* width: 100px !important; */
+        border-radius: 20px;
+        text-align: center !important;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    }
+
+    .btn-red{
+    
+        background-color: #af481f;
+        color: #fff;
+        font-size: 13px;
+        line-height: 30px;
+        /* width: 100px !important; */
         border-radius: 20px;
         text-align: center !important;
         box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
@@ -1033,7 +1080,7 @@
     .map-container{ 
     
         width: 300px;
-        height: 100px;
+        height: 200px;
         /* margin: 20px ; */
         box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
         /* display: flex;
@@ -1099,9 +1146,9 @@
         background-color: #FACF37;
         color: #fff;
         font-size: 11px;
-        line-height: 20px;
+        line-height: 25px;
         /* width: 100px !important; */
-        border-radius: 40px;
+        border-radius: 20px;
         text-align: center !important;
         box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
     }
@@ -1114,10 +1161,21 @@
         background-color: #27AE61;
         color: #fff;
         font-size: 11px;
-        line-height: 20px;
-        width: 100px !important;
+        line-height: 25px;
+        /* width: 100px !important; */
         border-radius: 20px;
         align-self: flex-start;
+        text-align: center !important;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    }
+    .btn-red{
+    
+        background-color: #af481f;
+        color: #fff;
+        font-size: 11px;
+        line-height: 25px;
+        /* width: 100px !important; */
+        border-radius: 20px;
         text-align: center !important;
         box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
     }
@@ -1306,7 +1364,7 @@
     .map-container{ 
     
         width: 250px;
-        height: 100px;
+        height: 200px;
         /* margin: 20px ; */
         box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
         /* display: flex;
@@ -1391,6 +1449,18 @@
         width: 100px !important;
         border-radius: 20px;
         align-self: flex-start;
+        text-align: center !important;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    }
+
+    .btn-red{
+    
+        background-color: #af481f;
+        color: #fff;
+        font-size: 11px;
+        line-height: 20px;
+        /* width: 100px !important; */
+        border-radius: 20px;
         text-align: center !important;
         box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
     }

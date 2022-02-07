@@ -71,6 +71,11 @@ import { RolesComponent } from './admin/roles/roles.component';
 import { UserRoleComponent } from './admin/user-role/user-role.component';
 import { AddRoleComponent } from './admin/add-role/add-role.component';
 import {NgxPaginationModule} from 'ngx-pagination'; 
+import { NgCircleProgressModule } from 'ng-circle-progress';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { DeleteRoleComponent } from './admin/delete-role/delete-role.component';
+import { ClipboardModule } from 'ngx-clipboard';
+
 
 
 
@@ -105,6 +110,7 @@ import {NgxPaginationModule} from 'ngx-pagination';
     FilterPipe,
         UserRoleComponent,
         AddRoleComponent,
+        DeleteRoleComponent,
     
 
   ],
@@ -112,6 +118,7 @@ import {NgxPaginationModule} from 'ngx-pagination';
     NgxPaginationModule,
     NgxMatSelectSearchModule,
     BrowserModule,
+    ClipboardModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     MatCheckboxModule,
@@ -121,6 +128,7 @@ import {NgxPaginationModule} from 'ngx-pagination';
     HttpClientModule,
     MatListModule,
     MatDividerModule,
+    MatProgressSpinnerModule,
     MatCardModule,
     MatInputModule,
     ReactiveFormsModule,
@@ -155,6 +163,17 @@ import {NgxPaginationModule} from 'ngx-pagination';
       // Register the ServiceWorker as soon as the app is stable
       // or after 30 seconds (whichever comes first).
       // registrationStrategy: 'registerWhenStable:30000'
+    }),
+
+    // Specify ng-circle-progress as an import
+    NgCircleProgressModule.forRoot({
+      // set defaults here
+      radius: 100,
+      outerStrokeWidth: 16,
+      innerStrokeWidth: 8,
+      outerStrokeColor: "#27AE61",
+      innerStrokeColor: "#FACF37",
+      animationDuration: 300,
     })
 
   ],

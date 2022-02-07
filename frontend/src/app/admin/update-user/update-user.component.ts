@@ -67,16 +67,18 @@ export class UpdateUserComponent implements OnInit {
     });
 
     this.RolesSource.forEach(element => {
-
+      console.log(element)
       this.Roles.push(element.name)
 
     });
+    console.log(this.Roles)
 
 
     this.RolesOfUser.forEach(element => {
       console.log("gggggggg", element)
+      console.log(this.Roles)
       this.Roles.splice(this.Roles.indexOf(element), 1)
-
+      console.log(this.Roles)
     });
 
 

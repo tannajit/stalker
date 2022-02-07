@@ -195,8 +195,8 @@
     </mat-dialog-content>
     <mat-dialog-actions class="action-btns" align="center">
         <ng-container *ngFor="let perm of loggedUser.permissions">
-            <button *ngIf="perm == 'Update Client'" mat-raised-button color="primary" [disabled]="ActiveTheButton()" class="btn-green"  (click)="onUpdateClick()">Update Client</button>
-            <button *ngIf="perm == 'Delete Client'" mat-raised-button color="primary"  [disabled]="ActiveTheButton()" class="btn-red" (click)="deleteRequest()">Delete Client</button>
+            <button *ngIf="perm == 'Update Client'" mat-raised-button [disabled]="ActiveTheButton()" class="btn-green"  (click)="onUpdateClick()">Update Client</button>
+            <button *ngIf="perm == 'Delete Client'" mat-raised-button [disabled]="ActiveTheButton()" class="btn-red" (click)="deleteRequest()">Delete Client</button>
         </ng-container>
     </mat-dialog-actions>
     

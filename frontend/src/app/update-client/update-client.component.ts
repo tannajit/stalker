@@ -14,7 +14,10 @@ import { OnlineOfflineServiceService } from '../online-offline-service.service';
 import { AdminService } from '../admin/admin.service';
 import { takeUntil, switchMap } from 'rxjs/operators';
 import { TouchSequence } from 'selenium-webdriver';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import Dexie from 'dexie';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 const incr = 1;
 
 @Component({
@@ -27,6 +30,8 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
         
 
   ////******************** VARIABLE'S DECLARATION ****************/////
+
+  dialogConf: MatDialogRef<ConfirmationDialogComponent>;
   progress = 0;
   selected = null;
   user = JSON.parse(localStorage.getItem("user"));
@@ -107,7 +112,8 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   ////********* CONSTUCTOR **********/////////
   constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,
     private clientService: ClientsService, private adminService: AdminService,
-    private _router: Router) {
+    private _router: Router,
+    private dialog: MatDialog) {
     this.loggedUser = JSON.parse(localStorage.getItem("user"));
     this.clientInfo = clientService.getClientInfo();
     console.log("***** this CLIENT ****")
@@ -450,6 +456,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
     this.clientInfos.PhoneNumber = this.PhoneNumber
     this.SendSMS(this.PhoneNumber);
   }
+
   VerifySMS() {
     if (this.verification_code === this.codeSMS) {
       this.status = "the code is correct"
@@ -462,6 +469,11 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   /////////////////////****** UPDATE CLIENT INFOS *******/////////////////
   async Update() {
     console.log(this.clientInfos)
+
+    this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
+      disableClose: true
+    });
+    this.dialogConf.componentInstance.confirmMessage = "update"
     // ***************** scanned codes ************* //
     if (this.ListCodes.length != 0) {
       this.ListCodes.forEach(element => {
@@ -515,11 +527,33 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
       //this.UpdateIndexDB()
     } else {
       this.clientService.updateClient(this.clientInfo).subscribe(res => {
-        this.UpdateDexie()
-      })
+        console.log(res)
+        if(res.modifiedCount==1){
+          this.dialogConf.close()
+          this.openAlertDialog("The Client is updated!", "Ok")
+          this.UpdateDexie()
+        }
+        
+      },err =>{
+        this.dialogConf.close()
+        this.openAlertDialog("There is an error! Try again","Ok")
+        console.log("errooooooooor")
+        console.log(err)
+      });
      
       //this.UpdateIndexDB()
     }
+  }
+
+  openAlertDialog(msg, btn) {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        message: msg,
+        buttonText: {
+          ok: btn,
+        }
+      }
+    });
   }
 
   //////////************ UPDATE CLIENT IN INDEXEDB ************/////////////

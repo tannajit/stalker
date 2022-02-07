@@ -1,0 +1,64 @@
+.dialog-container{
+    width: 600px;
+    display: flex;
+    flex-flow: column;
+    margin-bottom: 30px;
+    gap: 20px;
+}
+
+.user{
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+    justify-content: start;
+    gap: 10px;
+}
+
+.users-container{
+    padding: 10px;
+    border-radius: 6px;
+    background-color: #e6e2e0;
+    display: flex;
+    flex-flow: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.btn-red{
+    background-color: #963416;
+    color: #fff;
+    margin: 5px;
+    font-size: 13px;
+    line-height: 30px;
+    border-radius: 10px;
+    text-align: center !important;
+  }
+
+  .btn-yellow{
+    background-color: #FACF37;
+    color: #fff;
+    margin: 5px;
+    font-size: 13px;
+    line-height: 30px;
+    border-radius: 10px;
+    text-align: center !important;
+  }
+
+  .warning{
+      background-color: #f3e7bb;
+      border-radius: 10px;
+      border: 1px solid #FACF37;
+      padding: 15px;
+      display: flex;
+      flex-flow: row;
+      gap: 10px;
+      align-items: center;
+      justify-content: flex-start;
+  }
+  .warning mat-icon{
+      color: #d1a814;
+  }
+  .warning span{
+      color: rgb(29, 28, 28);
+  }

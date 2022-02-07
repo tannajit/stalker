@@ -28,6 +28,11 @@
   z-index: 9999;
 }
 
+.btn-primary:disabled{
+  background-color: #C2BEBE;
+  color: #313030;
+}
+
 
 /* Phone Only */
 @media (min-width: 200px) and (max-width: 350px) {

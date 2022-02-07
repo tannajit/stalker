@@ -502,13 +502,13 @@ export class ClientsService {
 
     }
     if (this.PositionClient != null) {
-      console.log("MyPosition " + this.MyPosition);
+      // console.log("MyPosition " + this.MyPosition);
 
-      console.log("Pointposition " + this.PositionClient);
+      // console.log("Pointposition " + this.PositionClient);
 
       this.Distance = this.PositionClient.distanceTo(this.MyPosition).toFixed(2);
-      console.log("Distance :" + this.Distance);
-      console.log("Raduis :" + this.Raduis);
+      // console.log("Distance :" + this.Distance);
+      // console.log("Raduis :" + this.Raduis);
 
     }
   }

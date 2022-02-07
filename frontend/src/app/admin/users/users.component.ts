@@ -22,9 +22,12 @@ import { IndexdbService } from 'src/app/indexdb.service';
 })
 export class UsersComponent implements OnInit {
 
+
+  selectedUser
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   selectedStatus
   selectedRole
+  selectedRoleTable
   selectedSector
   users = [];
   roles = []
@@ -104,13 +107,27 @@ export class UsersComponent implements OnInit {
   getUsers() {
     this.adminService.getAllUsers().subscribe(res => {
       console.log("---")
-      console.log(res)
-      res.forEach(elem => {
-        var user = elem;
-        user.nameU = elem.name;
-        user.name = elem.name.replace("-", " ")
-        this.users.push(user)
+      // console.log(res)
+      var finalUsers=res.map(elem => {
+        // elem.forEach(element => {
+        //   var user = element;
+        //   user.nameU = elem.name;
+        //   user.name = elem.name.replace("-", " ")
+        // });
+        var user 
+        var users=elem.map(elem=>{
+          user= elem;
+          user.nameU = elem.name;
+          user.name = elem.name.replace("-", " ")
+          return user;
+        })
+        // console.log(users)
+        return users;
+      
       });
+      console.log("**********")
+      console.log(finalUsers)
+      this.users= finalUsers
       //this.users = 
       this.dataSource = new MatTableDataSource(this.users);
       this.dataSource.data = this.users.reverse();
@@ -519,6 +536,20 @@ export class UsersComponent implements OnInit {
     this.Sectors = this.anotherArray.filter((unit) => unit.detail.toLowerCase().indexOf(val) > -1);
   }
 
+  onSelectRole(role,users){
+    console.log("selected value", role);
+    console.log("selected element", users);
+    var user = users.forEach(element => {
+      if(element.role == role){
+        this.selectedUser={
+          'role': role,
+          'user': element
+        }
+      }
+    });
+    console.log(this.selectedUser)
+    
+  }
 
 
 }

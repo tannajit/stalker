@@ -7,6 +7,7 @@ import { UserRoleComponent } from '../user-role/user-role.component';
 import { AddRoleComponent } from '../add-role/add-role.component';
 import { ConfirmationDialogComponent } from 'src/app/confirmation-dialog/confirmation-dialog.component';
 import { AlertDialogComponent } from 'src/app/alert-dialog/alert-dialog.component';
+import { DeleteRoleComponent } from '../delete-role/delete-role.component';
 
 
 @Component({
@@ -23,6 +24,7 @@ export class RolesComponent implements OnInit {
   dialogRef: MatDialogRef<UserRoleComponent>;
   dialogRef3: MatDialogRef<ConfirmationDialogComponent>;
   dialogRef2: MatDialogRef<AddRoleComponent>;
+  dialogRef4: MatDialogRef<DeleteRoleComponent>;
 
   constructor(
     private adminService: AdminService,
@@ -67,9 +69,12 @@ export class RolesComponent implements OnInit {
         // console.log("clicked yes")
         this.adminService.deleteRole(role).subscribe(res=>{
           console.log(res)
-          if( res.modifiedCount==1){
+          if(res.length==0){
             var msg = "The role is deleted successfully!"
             this.openAlertDialog(msg)
+          }else if(res.length>0){
+            this.deleteRole({'users': res,'role':role})
+            console.log("kaynin users")
           }else{
             var mesg="The role is not deleted, there is a problem"
             this.openAlertDialog(mesg)
@@ -84,6 +89,10 @@ export class RolesComponent implements OnInit {
       this.dialogRef3 = null;
     });
     
+  }
+
+  deleteRole(data){
+    this.dialogRef4 = this.dialog.open(DeleteRoleComponent, { data: data });
   }
 
   addRole(){

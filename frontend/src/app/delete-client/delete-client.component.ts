@@ -9,6 +9,9 @@ import { ThrowStmt } from '@angular/compiler';
 import { OnlineOfflineServiceService } from '../online-offline-service.service';
 import { takeUntil, switchMap } from 'rxjs/operators';
 import { TouchSequence } from 'selenium-webdriver';
+import { MatDialogRef, MatDialog} from '@angular/material/dialog'
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 
 declare var MediaRecorder: any;
 @Component({
@@ -34,6 +37,7 @@ export class DeleteClientComponent implements AfterViewInit {
 
   
 
+  dialogConf: MatDialogRef<ConfirmationDialogComponent>;
   list = []
   Status;
   hide;
@@ -65,7 +69,8 @@ export class DeleteClientComponent implements AfterViewInit {
   constructor(
     private readonly onlineOfflineService: OnlineOfflineServiceService,
     private router: Router,
-    private clientService: ClientsService
+    private clientService: ClientsService,
+    private dialog: MatDialog
   ) { }
 
   async ngAfterViewInit() {
@@ -166,236 +171,262 @@ export class DeleteClientComponent implements AfterViewInit {
 dataV;
 text;
 
-  onDataAvailableEvent() {
-    try {
-      this.mediaRecorder.ondataavailable = (event: any) => {
-        if (event.data && event.data.size > 0) {
-          this.recordedBlobs.push(event.data);
-      
+onDataAvailableEvent() {
+  try {
+    this.mediaRecorder.ondataavailable = (event: any) => {
+      if (event.data && event.data.size > 0) {
+        this.recordedBlobs.push(event.data);
+    
 
-        }
-      };
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  Video;
-  fd;
-  onStopRecordingEvent() {
-    try {
-       this.mediaRecorder.onstop = async (event: Event) => {
-         const videoBuffer = new Blob(this.recordedBlobs, {
-          type: 'video/webm'
-        });
-        console.log("==========================")
-        console.log(videoBuffer.size)
-        console.log(this.recordedBlobs)
-        console.log("==========================")
-
-        console.log(this.recordedBlobs.length)
-
-        this.Video=await videoBuffer.arrayBuffer();
-        console.log("==========================")
-
-        var reader = new FileReader();
-        reader.readAsDataURL(videoBuffer); 
-        reader.onloadend =async ()=> {
-        var base64data = reader.result;                
-        console.log(base64data); 
-        
-        this.Video=base64data;
       }
-        
-        this.downloadUrl = window.URL.createObjectURL(videoBuffer); 
-
-        console.log("this.downloadUrl ")
-        console.log(this.downloadUrl);
-        this.recordVideoElement.src =this.downloadUrl;
-
-      };
-    } catch (error) {
-      console.log(error);
-    }
+    };
+  } catch (error) {
+    console.log(error);
   }
-
-  displayVideo() {
-    this.showVideo = true
-    navigator.mediaDevices
-      .getUserMedia({
-        video: {
-          width: 360
-        }
-      })
-      .then(stream => {
-        this.videoElement = this.videoElementRef.nativeElement;
-        this.recordVideoElement = this.recordVideoElementRef.nativeElement;
-
-        this.stream = stream;
-        this.videoElement.srcObject = this.stream;
+}
+Video;
+fd;
+onStopRecordingEvent() {
+  try {
+      this.mediaRecorder.onstop = async (event: Event) => {
+        const videoBuffer = new Blob(this.recordedBlobs, {
+        type: 'video/webm'
       });
+      console.log("==========================")
+      console.log(videoBuffer.size)
+      console.log(this.recordedBlobs)
+      console.log("==========================")
 
+      console.log(this.recordedBlobs.length)
+
+      this.Video=await videoBuffer.arrayBuffer();
+      console.log("==========================")
+
+      var reader = new FileReader();
+      reader.readAsDataURL(videoBuffer); 
+      reader.onloadend =async ()=> {
+      var base64data = reader.result;                
+      console.log(base64data); 
+      
+      this.Video=base64data;
+    }
+      
+      this.downloadUrl = window.URL.createObjectURL(videoBuffer); 
+
+      console.log("this.downloadUrl ")
+      console.log(this.downloadUrl);
+      this.recordVideoElement.src =this.downloadUrl;
+
+    };
+  } catch (error) {
+    console.log(error);
   }
+}
+
+displayVideo() {
+  this.showVideo = true
+  navigator.mediaDevices
+    .getUserMedia({
+      video: {
+        width: 360
+      }
+    })
+    .then(stream => {
+      this.videoElement = this.videoElementRef.nativeElement;
+      this.recordVideoElement = this.recordVideoElementRef.nativeElement;
+
+      this.stream = stream;
+      this.videoElement.srcObject = this.stream;
+    });
+
+}
 
   // ngAfterViewInit(): void {
   //   this.initMap();
 
   // }
 
-  showcheck() {
-    this.Status = true
-    this.hide = !this.hide;
-  }
+showcheck() {
+  this.Status = true
+  this.hide = !this.hide;
+}
 
-  private initMap(): void {
+private initMap(): void {
 
-    this.Status = true
-    this.testTimer()
+  this.Status = true
+  this.testTimer()
 
-    this.map = L.map('map2', {
-      center: [this.lat, this.lon],
-      zoom: 14,
-      zoomControl: true
-    });
+  this.map = L.map('map2', {
+    center: [this.lat, this.lon],
+    zoom: 14,
+    zoomControl: true
+  });
 
-    const tiles = L.tileLayer('https://map.novatis.tech/hot/{z}/{x}/{y}.png', {
-      maxZoom: 30,
-      minZoom: 0
-    });
+  const tiles = L.tileLayer('https://map.novatis.tech/hot/{z}/{x}/{y}.png', {
+    maxZoom: 30,
+    minZoom: 0
+  });
 
-    tiles.addTo(this.map);
+  tiles.addTo(this.map);
 
-    var location_icon = L.icon({
-      iconUrl: "assets/location.png",
-      iconSize: [30, 30]
-    });
-    // var marker = L.marker([this.lat, this.lon], { icon: location_icon }).addTo(this.map)
-    // this.inter = interval(1000).subscribe(x => {
+  var location_icon = L.icon({
+    iconUrl: "assets/location.png",
+    iconSize: [30, 30]
+  });
+  // var marker = L.marker([this.lat, this.lon], { icon: location_icon }).addTo(this.map)
+  // this.inter = interval(1000).subscribe(x => {
 
-    //   if (navigator.geolocation) {
-    //     if (this.percentage == 100) {
-    //       this.inter.unsubscribe();
-    //       this.clientInfos.lat = this.latclt
-    //       this.clientInfos.lon = this.lonclt
-    //       //console.log(this.clientInfos)
-    //     }
+  //   if (navigator.geolocation) {
+  //     if (this.percentage == 100) {
+  //       this.inter.unsubscribe();
+  //       this.clientInfos.lat = this.latclt
+  //       this.clientInfos.lon = this.lonclt
+  //       //console.log(this.clientInfos)
+  //     }
 
-    //     var options = {
-    //       enableHighAccuracy: false,
-    //       timeout: 5000,
-    //       maximumAge: 2000
-    //     };
-    //     //console.log(this.percentage)
+  //     var options = {
+  //       enableHighAccuracy: false,
+  //       timeout: 5000,
+  //       maximumAge: 2000
+  //     };
+  //     //console.log(this.percentage)
 
-    //     var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
+  //     var geoId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
 
-    //       if (position) {
+  //       if (position) {
 
-    //         var newlat = position.coords.latitude
-    //         var newLon = position.coords.longitude;
+  //         var newlat = position.coords.latitude
+  //         var newLon = position.coords.longitude;
 
-    //         if (newlat != this.lat || newLon != this.lat) {
+  //         if (newlat != this.lat || newLon != this.lat) {
 
-    //           this.lat = newlat
-    //           this.lon = newLon
-    //           this.list.push(position)
+  //           this.lat = newlat
+  //           this.lon = newLon
+  //           this.list.push(position)
 
-    //           if (position.coords.accuracy < this.acc) {
-    //             this.acc = position.coords.accuracy
-    //             this.lat = position.coords.latitude
-    //             this.lon = position.coords.longitude
-    //             this.latclt = position.coords.latitude
-    //             this.lonclt = position.coords.longitude
-    //             console.log("latclt",this.latclt)
-    //             console.log("lonclt",this.lonclt)
+  //           if (position.coords.accuracy < this.acc) {
+  //             this.acc = position.coords.accuracy
+  //             this.lat = position.coords.latitude
+  //             this.lon = position.coords.longitude
+  //             this.latclt = position.coords.latitude
+  //             this.lonclt = position.coords.longitude
+  //             console.log("latclt",this.latclt)
+  //             console.log("lonclt",this.lonclt)
 
-    //           }
+  //           }
 
-    //           this.map.removeLayer(marker);
-    //           this.show = false
-    //           this.Status = true
-    //           marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
-    //         }
-    //       }
-    //     },
-    //       (error: GeolocationPositionError) => console.log(error), options);
-    //     // console.log('Clear watch called');
-    //     // window.navigator.geolocation.clearWatch(geoId);
-    //   } else {
-    //     alert("Geolocation is not supported by this browser.");
-    //   }
-    // });
-  }
+  //           this.map.removeLayer(marker);
+  //           this.show = false
+  //           this.Status = true
+  //           marker = new (L.marker as any)([this.lat, this.lon], { icon: location_icon }).addTo(this.map);
+  //         }
+  //       }
+  //     },
+  //       (error: GeolocationPositionError) => console.log(error), options);
+  //     // console.log('Clear watch called');
+  //     // window.navigator.geolocation.clearWatch(geoId);
+  //   } else {
+  //     alert("Geolocation is not supported by this browser.");
+  //   }
+  // });
+}
 
-  testTimer() {
-    this.percentage = 0
-    interval(300).subscribe(x => {
-      if (this.percentage < 100) {
-        this.percentage += 10
-      }
-    });
-  }
-
-
+testTimer() {
+  this.percentage = 0
+  interval(300).subscribe(x => {
+    if (this.percentage < 100) {
+      this.percentage += 10
+    }
+  });
+}
 
 
 
-  displayCam() {
-    this.showWebcam = !this.showWebcam;
-  }
 
-  get triggerObservable(): Observable<void> {
-    return this.trigger.asObservable();
-  }
 
-  handleImage(webcamImage): void {
-    console.info('received webcam image', webcamImage);
-    this.webcamImage = webcamImage;
-    this.PDVImage = webcamImage.imageAsDataUrl;
-  }
+displayCam() {
+  this.showWebcam = !this.showWebcam;
+}
 
-  triggerSnapshot(): void {
-    this.trigger.next();
-  }
+get triggerObservable(): Observable<void> {
+  return this.trigger.asObservable();
+}
 
-  toggleWebcam() {
-    this.showWebcam = !this.showWebcam;
-  }
+handleImage(webcamImage): void {
+  console.info('received webcam image', webcamImage);
+  this.webcamImage = webcamImage;
+  this.PDVImage = webcamImage.imageAsDataUrl;
+}
+
+triggerSnapshot(): void {
+  this.trigger.next();
+}
+
+toggleWebcam() {
+  this.showWebcam = !this.showWebcam;
+}
 
   data =this.router.getCurrentNavigation().extras.state.dataClient
   Video1;
 
-  Send(){
+Send(){
 
-    var photo;
-    
-    if(this.webcamImage==null) {photo=""}else{photo=this.webcamImage}
-    this.checkInfos={"data": this.data,"raison":this.raison,status:"Waiting","video":this.Video,"user":this.user._id,"role":this.user.role,"Photo":photo}
+  var photo;
 
-    //var test=new Uint8Array(this.Video1  as ArrayBuffer)
-    if (!this.onlineOfflineService.isOnline) {
-      this.clientService.addTodoDelete(this.checkInfos)
-      this.router.navigate(['/map'])
-    } else {
-      this.clientService.DeleteRequest(this.checkInfos).subscribe(res => { console.log(res)
-      
+  this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
+    disableClose: true
+  });
+  this.dialogConf.componentInstance.confirmMessage = "delete"
+
+  if(this.webcamImage==null) {photo=""}else{photo=this.webcamImage}
+  this.checkInfos={"data": this.data,"raison":this.raison,status:"Waiting","video":this.Video,"user":this.user._id,"role":this.user.role,"Photo":photo}
+
+  //var test=new Uint8Array(this.Video1  as ArrayBuffer)
+  if (!this.onlineOfflineService.isOnline) {
+    this.clientService.addTodoDelete(this.checkInfos)
+    this.router.navigate(['/map'])
+  } else {
+    this.clientService.DeleteRequest(this.checkInfos).subscribe(res => { 
+      console.log(res)
+      if(res){
+        this.dialogConf.close()
+        this.openAlertDialog("Your delete request has been sent.","Ok")
         this.router.navigate(['/map'])
-    })
-    }
-    console.log("uuuuuuuuuuuuuuu")
-    //this.ReadV()
-  }
-
-    b64toBlob(dataURI) {
-      
-      var byteString = atob(dataURI.split(',')[1]);
-      var ab = new ArrayBuffer(byteString.length);
-      var ia = new Uint8Array(ab);
-      
-      for (var i = 0; i < byteString.length; i++) {
-          ia[i] = byteString.charCodeAt(i);
       }
-      return new Blob([ab], { type: 'video/webm' });
+      
+  },err =>{
+      this.dialogConf.close()
+      this.openAlertDialog("There is an error, try again","Ok")
+      console.log(err)
+      // this.router.navigate(['/map'])
+  })
   }
+  console.log("uuuuuuuuuuuuuuu")
+  //this.ReadV()
+}
+
+openAlertDialog(msg, btn) {
+  const dialogRef = this.dialog.open(AlertDialogComponent, {
+    data: {
+      message: msg,
+      buttonText: {
+        ok: btn,
+      }
+    }
+  });
+}
+
+b64toBlob(dataURI) {
+    
+    var byteString = atob(dataURI.split(',')[1]);
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: 'video/webm' });
+}
 
   content;
     ReadVideo(){

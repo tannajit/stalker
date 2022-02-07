@@ -1,0 +1,29 @@
+<mat-dialog-content>
+    <div class="dialog-container">
+        <div class="warning">
+            <mat-icon>warning</mat-icon>  
+            <span><span >Warning: </span>This role is affected to these users.</span>
+        </div>
+        
+        <div class="users-container">
+            <div class="user"  >
+                <ng-container *ngFor="let user of data.users">
+                    <div>{{user.email}}</div>
+                </ng-container>
+            </div>
+            <div>
+                <button mat-icon-button ngxClipboard [cbContent]="contentToCopy" (click)="clickedCopy=true">
+                    <mat-icon style="color: #3a3b3b;" *ngIf="clickedCopy==false">content_copy</mat-icon>
+                    <mat-icon style="color: green;" *ngIf="clickedCopy==true">library_add_check</mat-icon>
+                </button>
+            </div>
+        </div>
+        </div>
+    
+    <!-- <p> {{data.NomPrenom}}</p> -->
+</mat-dialog-content>
+
+<mat-dialog-actions class="action-btns" align="center">
+    <button mat-raised-button class="btn-yellow" mat-dialog-close>Cancel</button>
+    <button mat-raised-button class="btn-red" (click)="deleteRole(data.role)" mat-dialog-close>Delete anyway</button>
+</mat-dialog-actions>

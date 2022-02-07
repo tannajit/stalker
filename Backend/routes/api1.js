@@ -13,7 +13,7 @@ var uri = "mongodb://localhost:27017";
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker3"
+var name_database = "stalker1"
 var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
@@ -144,20 +144,57 @@ router.get('/addedClients', async function (req, res) {
 /* GET . */
 
 router.get('/getAllUsers', async (req, res) => {
+
     list = []
+
     let usersColl = await db.collection("users")
+
+    users=await usersColl.distinct("email")
+
+    console.log("users",users)
+
     var values = await usersColl.aggregate([
+
         {
+
             $lookup: {
+
                 from: "secteurs",
+
                 localField: "_id",
+
                 foreignField: "users",
+
                 as: "sectors"
+
             }
+
         }]).toArray();
+
+        var array=[];
+
+        users.forEach(el=>
+
+            array.push(values.filter(function(value){ return value.email === el }))
+
+        )
+
+       
+
+
+
+        console.log("array",array)
+
     // let userColl = await db.collection("users")
+
+
+
     // var values = await userColl.find({}).toArray()
-    res.json(values)
+
+    res.json(array)
+
+
+
 })
 
 router.get('/clientss', async (req, res) => {
@@ -608,9 +645,15 @@ async function updateClient(client) {
         var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
         var updated = await geometries.updateOne({ _id: ObjectId(client._id) },
             { $set: { "geometry": clientGeo } })
+        result.status(200).json(updated)
         console.log(updated)
         console.log("********** geometrie updated *******")
+        
+        
     })
+    
+    
+    
 }
 
 
@@ -637,8 +680,68 @@ router.post('/AddClient', async (req, res) => {
 router.post('/updateClient', async (req, res) => {
     let client = req.body;
     //console.log(client)
-    await updateClient(client);
-    res.status(200).json("Client Inserted From Ang")
+    // await updateClient(client);
+    // res.status(200).json("updated")
+    let collection = db.collection("clients") // collection clients
+    let geometries = db.collection("geometries") /// geometries Collections
+    let secteurs = db.collection("secteurs")
+    var id_NFC, id_pv;
+    console.log("********************")
+    if (client.geometry.properties.NFCP == null) {
+        console.log(client.geometry.properties.nfc.NFCPhoto)
+        await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
+        console.log("NFC photo id: " + id_NFC)
+    } else {
+        console.log(client.geometry.properties.nfc.NFCPhoto)
+        id_NFC = ObjectId(client.geometry.properties.nfc.NFCPhoto);
+    }
+    if (client.geometry.properties.PVP == null) {
+        console.log(client.geometry.properties.PVPhoto)
+        await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
+        console.log("PV photo id: " + id_pv);
+    } else {
+        console.log(client.geometry.properties.PVPhoto);
+        id_pv = ObjectId(client.geometry.properties.PVPhoto);
+    }
+    console.log(client)
+    client.geometry.properties.nfc.NFCPhoto = id_NFC
+    var temp_datetime_obj = new Date();
+    let clientinfo = {
+        idGeometry: ObjectId(client._id),
+        codeDANON: client.geometry.properties.codeDANON,
+        codeCOLA: client.geometry.properties.codeCOLA,
+        codeFGD: client.geometry.properties.codeFGD,
+        codeQR: client.geometry.properties.codeQR,
+        nfc: client.geometry.properties.nfc,
+        Code_Secteur_OS: (client.geometry.properties.Code_Secteur_OS != null) ? parseInt(client.geometry.properties.Code_Secteur_OS) : 93603636360,
+        machine: "CMG",
+        TypeDPV: client.geometry.properties.TypeDPV,
+        detailType: client.geometry.properties.detailType,
+        userId: client.geometry.properties.updatedBy,
+        userRole: client.geometry.properties.userRole,
+        NomPrenom: client.geometry.properties.NomPrenom,
+        PhoneNumber: client.geometry.properties.PhoneNumber,
+        PVPhoto: id_pv,
+        status: client.geometry.properties.status,
+        created_at: new Date(client.geometry.properties.created_at),
+        updated_at: temp_datetime_obj,
+        lat: client.geometry.geometry.coordinates[1],
+        lon: client.geometry.geometry.coordinates[0]
+    }
+    await collection.insertOne(clientinfo).then(async (result) => {
+        clientinfo.userId = client.geometry.properties.userId
+        clientinfo.updatedBy = client.geometry.properties.updatedBy
+        console.log(clientinfo.userId)
+        console.log(clientinfo.updatedBy)
+        var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
+        var updated = await geometries.updateOne({ _id: ObjectId(client._id) },
+            { $set: { "geometry": clientGeo } })
+        res.status(200).json(updated)
+        console.log(updated)
+        console.log("********** geometrie updated *******")
+        
+        
+    })
 })
 
 /// gridFS script 
@@ -1010,24 +1113,24 @@ router.get("/GetClient/:id", async (req, res) => {
     res.status(200).send(client);
 })
 //////////////////////////////////////////////////////////////
-router.get('/getAllUsers', async (req, res) => {
-    list = []
-    let usersColl = await db.collection("users")
-    var values = await usersColl.aggregate([
-        {
-            $lookup: {
-                from: "secteurs",
-                localField: "_id",
-                foreignField: "users",
-                as: "sectors"
-            }
-        }]).toArray();
-    // let userColl = await db.collection("users")
+// router.get('/getAllUsers', async (req, res) => {
+//     list = []
+//     let usersColl = await db.collection("users")
+//     var values = await usersColl.aggregate([
+//         {
+//             $lookup: {
+//                 from: "secteurs",
+//                 localField: "_id",
+//                 foreignField: "users",
+//                 as: "sectors"
+//             }
+//         }]).toArray();
+//     // let userColl = await db.collection("users")
 
-    // var values = await userColl.find({}).toArray()
-    res.json(values)
+//     // var values = await userColl.find({}).toArray()
+//     res.json(values)
 
-})
+// })
 router.post("/DeleteRequest", async (req, res) => {
 
     console.log("get client : ")
@@ -1062,10 +1165,11 @@ router.post("/DeleteRequest", async (req, res) => {
     client["Photo"] = id_Photo;
     client["created_at"] = new Date();
     client["Coordinates"] = dataclient.geometry.geometry.coordinates;
-    await DeleteRequest.updateOne({ _id: ObjectId(dataclient._id) }, {
+    let deleted = await DeleteRequest.updateOne({ _id: ObjectId(dataclient._id) }, {
         $set: client
     }, { upsert: true });
-    res.status(200).json("Deleted Successfully")
+    console.log(deleted)
+    res.status(200).json(deleted)
 })
 
 router.get("/ReadVideo/:idG", async (req, res) => {
@@ -1367,14 +1471,43 @@ router.post('/addRole', async (req, res) => {
 router.post('/deleteRole', async(req,res)=>{
     let role = req.body.request
     console.log(role)
-    let collection = db.collection("settings")
-    var updated = await collection.updateOne(
+    let settings = db.collection("settings")
+    let users = db.collection("users")
+    usersList = await users.find({'role': role.name}).toArray()
+    console.log(usersList)
+    if(usersList.length==0){
+        var updated = await settings.updateOne(
         { proprety: "role" },
         { $pull:{ "details.roles": {name: role.name}}})
-    console.log(updated)
-    res.status(200).json(updated)
+        console.log(updated)
+    }
+    res.send(usersList).status(200)
+    
+    // res.status(200).json(updated)
     
 })
+
+router.post('/deleteRoleDef', async(req,res)=>{
+    let role = req.body.request
+    console.log(role)
+    let settings = db.collection("settings")
+    let users = db.collection("users")
+
+    var updated = await settings.updateOne(
+    { proprety: "role" },
+    { $pull:{ "details.roles": {name: role.name}}})
+    console.log(updated)
+    var updated1 = await users.update({'role': role.name},
+    {$set: {'status':'out of work'}})
+    console.log(updated1)
+    res.send(updated).status(200)
+
+    
+    // res.status(200).json(updated)
+    
+})
+
+
 router.get('/UserRoles/:email', async (req, res) => {
     let email = req.params.email
     let listOfRoles = []

@@ -488,7 +488,7 @@ export class MapComponent implements AfterViewInit {
       //   console.log(r)
       // })
       res.table("sector").get({ "nameSecteur": 906010181 }).then(r => {
-        console.log(r)
+        // console.log(r)
       })
       res.table("sector").each(element => {
         // console.log(element)
@@ -582,6 +582,8 @@ export class MapComponent implements AfterViewInit {
           res.table("pdvs").bulkPut(ress).then((lastKey) => {
             console.log("Add PDVs")
             if (this.dialogConf) {
+              let t2 = performance.now();
+                  console.log(t2 - this.t1);
               this.dialogConf.close()
               this.openAlertDialog("Sync is Done")
               //console.log(" -------------------------------- ", this.option_retail)
@@ -654,7 +656,14 @@ export class MapComponent implements AfterViewInit {
     });
 
   }
+  
+  t1;
   async sync() {
+
+    console.log("--- Start Now ")
+
+     this.t1 = performance.now();
+
     this.StorePdvsIndexDB()
     this.StoreSectorIndexeddb()
 

@@ -1,0 +1,13 @@
+
+.load{
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.mat-spinner-color::ng-deep circle{
+    stroke: #27AE61 !important;
+}
+    

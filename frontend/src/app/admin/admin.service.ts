@@ -21,7 +21,9 @@ export class AdminService {
   private _getUserRoles = this.uri + "/api1/UserRoles"
   private _deleteClient =this.uri+"/api1/ValidateDeleteClient"
   private _deleteRole = this.uri+"/api1/deleteRole"
+  private _deleteRoleDef = this.uri+"/api1/deleteRoleDef"
 
+  
   currentUser;
 
 
@@ -86,6 +88,11 @@ export class AdminService {
   deleteRole(role){
     console.log(role)
     return this.http.post<any>(this._deleteRole, {request:role});
+  }
+
+  deleteRoleDefinitally(role){
+    console.log(role)
+    return this.http.post<any>(this._deleteRoleDef, {request:role});
   }
 
   addRole(role){

@@ -14,8 +14,9 @@ import { ActivatedRoute } from '@angular/router';
 import { SettingsService } from '../settings/settings.service';
 import { IndexdbService } from '../indexdb.service';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import Dexie from 'dexie';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 const incr = 1;
 
 @Component({
@@ -29,6 +30,8 @@ const incr = 1;
 export class AddclientComponent implements AfterViewInit {
 
   //////////////// VARIABLE'S DECLARATION /////////////////////////
+
+  dialogConf: MatDialogRef<ConfirmationDialogComponent>;
   mySector = "test";
   progress = 0;
   selected = null;
@@ -133,6 +136,14 @@ export class AddclientComponent implements AfterViewInit {
   }
   ////////////////////////////////////////////////////////////////
 
+  ActiveSend(){
+    if(this.webcamPDVImage && 
+      this.NomPrenom && this.detailType && this.TypeDPV ){
+        return false
+      }else{
+        return true
+      }
+  }
   //////////////*************** INTERFACE FUNCTIONS *****************//////////
   showcheck() {
     this.Status = true
@@ -403,10 +414,10 @@ export class AddclientComponent implements AfterViewInit {
 
   VerifySMS() {
     if (this.verification_code === this.codeSMS) {
-      this.status = "the code is correct"
+      this.status = "The code is correct"
       this.clientInfos.PhoneNumber=this.PhoneNumber;
     } else {
-      this.status = "the code is incorrect"
+      this.status = "The code is incorrect"
     }
   }
 
@@ -499,17 +510,35 @@ export class AddclientComponent implements AfterViewInit {
       //   }
       // });
      // this.AddNewClient();
+      this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
+        disableClose: true
+      });
+      this.dialogConf.componentInstance.confirmMessage = "add"
+
       this.clientService.SendClient(this.clientInfos).subscribe((res) => {
-      this.clientService.getAllClient().subscribe(async (res1) => {
-        // console.log(res)
-         var db = new Dexie("off").open().then((res) => {
-           res.table("pdvs").clear().then((l)=>{
-             res.table("pdvs").bulkAdd(res1).then((lastKey)=>{
-                   this._router.navigate(['/map'])
-                });
-           }) 
-         });
-       });
+        //console.log(res)
+        
+        if(res=='Done'){
+          this.dialogConf.close()
+          
+          this.clientService.getAllClient().subscribe(async (res1) => {
+        
+            var db = new Dexie("off").open().then((res) => {
+              res.table("pdvs").clear().then((l)=>{
+                res.table("pdvs").bulkAdd(res1).then((lastKey)=>{
+                  this.openAlertDialog("The Client has been added successfully!","Ok, Cool!")
+                    this._router.navigate(['/map'])
+                   });
+              }) 
+            });
+          });
+        }
+      
+      }, err =>{
+        this.dialogConf.close()
+        this.openAlertDialog("There is an error! Try again","Ok")
+        console.log("errooooooooor")
+        console.log(err)
       });
     }
   }

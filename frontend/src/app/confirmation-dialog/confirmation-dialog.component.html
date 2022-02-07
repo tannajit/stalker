@@ -1,7 +1,7 @@
 
 
 <mat-dialog-content >
-	<div *ngIf="confirmMessage!='sync'" >
+	<div *ngIf="confirmMessage!='sync' && confirmMessage != 'add' && confirmMessage != 'update' && confirmMessage != 'delete'" >
 	<p >
 		{{confirmMessage}}
 	</p>
@@ -9,15 +9,43 @@
 	
 </mat-dialog-content>
 <mat-dialog-actions align="center">
-	<div *ngIf="confirmMessage!='sync'" >
+	<div *ngIf="confirmMessage!='sync' && confirmMessage != 'add' && confirmMessage != 'update' && confirmMessage != 'delete'" >
 	<button mat-raised-button (click)="dialogRef.close(false)">Cancel</button>
 	<button mat-raised-button style="background-color:#27AE61; color: white;" (click)="dialogRef.close(true)"
 		tabindex="1">Confirm</button>
 	</div>
 
 	<div *ngIf="confirmMessage==='sync'" >
-		<label> Sync is processing... </label>
-		<mat-progress-bar mode="indeterminate" ></mat-progress-bar>
+		<div class="load">
+			<label> Sync is processing... </label>
+			<mat-spinner class="mat-spinner-color"></mat-spinner>
+		</div>
+		
 	</div>
+
+	<div *ngIf="confirmMessage =='add'" >
+		<div class="load">
+			<label> Adding ... </label>
+			<mat-spinner class="mat-spinner-color"></mat-spinner>
+		</div>
+		
+	</div>
+
+	<div *ngIf="confirmMessage =='update'" >
+		<div class="load">
+			<label> Updating the client ... </label>
+			<mat-spinner class="mat-spinner-color"></mat-spinner>
+		</div>
+		
+	</div>
+
+	<div *ngIf="confirmMessage =='delete'" >
+		<div class="load">
+			<label> Sending your request ... </label>
+			<mat-spinner class="mat-spinner-color"></mat-spinner>
+		</div>
+		
+	</div>
+
 </mat-dialog-actions>
 
