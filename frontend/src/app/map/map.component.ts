@@ -125,17 +125,16 @@ export class MapComponent implements AfterViewInit {
         if (error) {
           return;
         }
-        console.log("language",result)
         if (this.marker && this.map.hasLayer(this.marker)){
           this.map.removeLayer(this.marker);
           this.map.removeLayer(results1);
 
         }
 
-        this.marker = L.marker(result.latlng,{ icon: location_icon2 })
-          .addTo(this.map)
-          .bindPopup(result.address.Match_addr,{closeButton:true})
-          .openPopup()
+        L.popup()
+        .setLatLng(result.latlng)
+        .setContent(result.address.Match_addr)
+        .openOn(this.map);
       });
     });
   }
