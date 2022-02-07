@@ -18,6 +18,9 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import Dexie from 'dexie';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 const incr = 1;
+import "esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css";
+import "esri-leaflet-geocoder/dist/esri-leaflet-geocoder";
+import * as ELG from "esri-leaflet-geocoder";
 
 @Component({
   selector: 'app-addclient',
@@ -89,6 +92,7 @@ export class AddclientComponent implements AfterViewInit {
   NomPrenom: null;
   PhoneNumber: null;
   scan: boolean = false;
+  Address
   nfcObject = { Numero_Serie: null, Technologies: null, Type_card: null, UUID: null, NFCPhoto: null }
   clientInfos = {
     UUid: null, codes: [], codeNFC: null, NFCPhoto: null, TypeDPV: null, sector: null, nfc: this.nfcObject,
@@ -310,6 +314,20 @@ export class AddclientComponent implements AfterViewInit {
       iconUrl: "assets/location.png",
       iconSize: [30, 30]
     });
+
+    navigator.geolocation.watchPosition((position: GeolocationPosition) => {
+
+      new ELG.ReverseGeocode().latlng(new L.LatLng(position.coords.latitude, position.coords.longitude)).language("fr").run((error, result) => {
+        if (error) {
+          return;
+        }
+        this.Address=result.address
+        
+        console.log("this.Address",this.Address)
+      });
+    })
+
+
     var marker = L.marker([this.lat, this.lon], { icon: location_icon })
     this.inter = interval(1000).subscribe(x => {
 
@@ -461,6 +479,8 @@ export class AddclientComponent implements AfterViewInit {
     this.clientInfos.userRole = this.user.role;
     this.clientInfos.created_at = new Date()
     this.clientInfos.updated_at = new Date()
+    this.clientInfos["city"] =this.Address.Match_addr
+    this.clientInfos["region"] = this.Address.Region
     if(this.user.role=="Seller"){
       this.clientInfos.Status = "white_red"
     }else{

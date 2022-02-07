@@ -23,7 +23,7 @@
     <div class="map-container">
         <div id="map2"></div>
     </div>
-
+   
     <div>
         <button mat-button class="btn-yellow" (click)="showcheck()"
             [disabled]="!Status || hide">Next</button>
@@ -46,6 +46,7 @@
     
                 </div>
 
+                
             </div>
             <div class="scan-field">
                 <label class="input-label">Code Coca Cola : </label>
@@ -200,7 +201,19 @@
                             [(ngModel)]="clientInfo.geometry.properties.NomPrenom" />
                     </mat-form-field>
                 </div>
+                <div class="field">
+                    <mat-form-field>
+                        <mat-label>Address</mat-label>
+                        <input matInput placeholder="City" disabled [(ngModel)]="clientInfo.geometry.properties.city" />
 
+                    </mat-form-field>
+                </div>
+                <div class="field">
+                    <mat-form-field>
+                        <mat-label>Region</mat-label>
+                        <input matInput placeholder="Region" disabled [(ngModel)]="clientInfo.geometry.properties.region"/>
+                    </mat-form-field>
+                </div>
 
                 <div class="field">
                     <mat-form-field>
