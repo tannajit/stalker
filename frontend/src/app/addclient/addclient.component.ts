@@ -43,7 +43,7 @@ export class AddclientComponent implements AfterViewInit {
   nfcShown: boolean = false;
   hide: boolean = false;// hidden by default
   test: boolean = false;
-  TypesPDVs=[]
+  TypesPDVs = []
   map;
   loggedUser;
   lat = 33.2607691
@@ -136,13 +136,13 @@ export class AddclientComponent implements AfterViewInit {
   }
   ////////////////////////////////////////////////////////////////
 
-  ActiveSend(){
-    if(this.webcamPDVImage && 
-      this.NomPrenom && this.detailType && this.TypeDPV ){
-        return false
-      }else{
-        return true
-      }
+  ActiveSend() {
+    if (this.webcamPDVImage &&
+      this.NomPrenom && this.detailType && this.TypeDPV) {
+      return false
+    } else {
+      return true
+    }
   }
   //////////////*************** INTERFACE FUNCTIONS *****************//////////
   showcheck() {
@@ -269,20 +269,22 @@ export class AddclientComponent implements AfterViewInit {
     this.loggedUser = JSON.parse(localStorage.getItem("user"));
     this.initMap();
     //this._setting.getSettings("sms")
-    this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time)
+    this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time,err=>{
+      this.timeLeft=2;
+    })
     this.aroute.paramMap.subscribe(params => {
       this.mySector = params.get('sector')
       console.log("mysector" + this.mySector)
       this.clientInfos.sector = this.mySector
     })
     var db = new Dexie("off").open().then((res) => {
-      res.table("sector").get({"nameSecteur":Number(this.mySector)}).then(r=>{
+      res.table("sector").get({ "nameSecteur": Number(this.mySector) }).then(r => {
         console.log(r)
         r.typePDV.forEach(type => {
           this.TypesPDVs.push(type)
         });
-        this.selected=this.TypesPDVs[0]
-        this.TypeDPV=this.TypesPDVs[0]
+        this.selected = this.TypesPDVs[0]
+        this.TypeDPV = this.TypesPDVs[0]
       })
     });
 
@@ -325,7 +327,7 @@ export class AddclientComponent implements AfterViewInit {
           timeout: 5000,
           maximumAge: 2000
         };
-       
+
         navigator.geolocation.watchPosition((position: GeolocationPosition) => {
 
           if (position) {
@@ -357,7 +359,7 @@ export class AddclientComponent implements AfterViewInit {
           }
         },
           (error: GeolocationPositionError) => {
-            this.percentage=0;
+            this.percentage = 0;
             console.log(error)
           }, options);
       } else {
@@ -404,7 +406,7 @@ export class AddclientComponent implements AfterViewInit {
         this.verification_code = res.code
       });
   }
-  
+
   Verify(code: string) {
     this.disbale_sms = true;
     //this.clientInfos.PhoneNumber = this.PhoneNumber
@@ -415,7 +417,7 @@ export class AddclientComponent implements AfterViewInit {
   VerifySMS() {
     if (this.verification_code === this.codeSMS) {
       this.status = "The code is correct"
-      this.clientInfos.PhoneNumber=this.PhoneNumber;
+      this.clientInfos.PhoneNumber = this.PhoneNumber;
     } else {
       this.status = "The code is incorrect"
     }
@@ -461,16 +463,23 @@ export class AddclientComponent implements AfterViewInit {
     this.clientInfos.userRole = this.user.role;
     this.clientInfos.created_at = new Date()
     this.clientInfos.updated_at = new Date()
-    if(this.user.role=="Seller"){
-      this.clientInfos.Status = "white_red"
+    if (this.loggedUser.permissions.includes("Add NFC")) {
+      if ( this.clientInfos.codeNFC === null) {
+        this.clientInfos["status"] = "pink"
+      }
+      else {
+        this.clientInfos["status"] = "purple"
+      }
     }else{
-      this.clientInfos.Status = "red_white"
+      this.clientInfos["status"] = "red"
     }
     console.log(this.clientInfos)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodo(this.clientInfos);
       //this.AddNewClientIndexDB()
-      this.AddNewClient()
+      var _id = UUID.UUID();
+      this.AddNewClient(_id)
+     // this._router.navigate(['/map'])
     } else {
       // this.clientService.SendClient(this.clientInfos).subscribe((res) => {
       //   console.log("\n **********Response form API************")
@@ -509,7 +518,7 @@ export class AddclientComponent implements AfterViewInit {
       //     });
       //   }
       // });
-     // this.AddNewClient();
+      // this.AddNewClient();
       this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
         disableClose: true
       });
@@ -517,26 +526,28 @@ export class AddclientComponent implements AfterViewInit {
 
       this.clientService.SendClient(this.clientInfos).subscribe((res) => {
         //console.log(res)
-        
-        if(res=='Done'){
+        if (res.message == 'Done') {
+          this.AddNewClient(res.id)
           this.dialogConf.close()
-          
-          this.clientService.getAllClient().subscribe(async (res1) => {
-        
-            var db = new Dexie("off").open().then((res) => {
-              res.table("pdvs").clear().then((l)=>{
-                res.table("pdvs").bulkAdd(res1).then((lastKey)=>{
-                  this.openAlertDialog("The Client has been added successfully!","Ok, Cool!")
-                    this._router.navigate(['/map'])
-                   });
-              }) 
-            });
-          });
+
+          // this.clientService.getAllClient().subscribe(async (res1) => {
+
+          //   var db = new Dexie("off").open().then((res) => {
+          //     res.table("pdvs").clear().then((l)=>{
+          //       res.table("pdvs").bulkAdd(res1).then((lastKey)=>{
+          //         this.openAlertDialog("The Client has been added successfully!","Ok, Cool!")
+          //           this._router.navigate(['/map'])
+          //          });
+          //     }) 
+          //   });
+          // });
+          this.openAlertDialog("The Client has been added successfully!", "Ok, Cool!")
+          //this._router.navigate(['/map'])
         }
-      
-      }, err =>{
+
+      }, err => {
         this.dialogConf.close()
-        this.openAlertDialog("There is an error! Try again","Ok")
+        this.openAlertDialog("There is an error! Try again", "Ok")
         console.log("errooooooooor")
         console.log(err)
       });
@@ -545,10 +556,10 @@ export class AddclientComponent implements AfterViewInit {
   ////////////////////////////////////////////////////////////////
 
   ////////////********** ADD CLIENT IN OFFLINE MODE **************/////////////////
-  AddNewClient(){
+  AddNewClient(id) {
     var db = new Dexie("off").open().then((res) => {
       console.log("***")
-      var _id = UUID.UUID();
+      
       var codeSector = this.mySector.slice(0, 3)
       ///////
       var geom = {
@@ -563,7 +574,7 @@ export class AddclientComponent implements AfterViewInit {
             "codeCOLA": this.clientInfos.codes[1],
             "codeFGD": this.clientInfos.codes[2],
             "codeQR": this.clientInfos.codeNFC,
-            "NFCP":this.clientInfos.NFCPhoto,
+            "NFCP": this.clientInfos.NFCPhoto,
             "nfc": this.nfcObject,
             "Code_Region": parseInt(codeSector),
             "Code_Secteur_OS": parseInt(this.mySector),
@@ -575,13 +586,13 @@ export class AddclientComponent implements AfterViewInit {
             "NomPrenom": this.NomPrenom,
             "PhoneNumber": this.PhoneNumber,
             "PVP": this.clientInfos.PVPhoto,
-            "status": "red"
+            "status": this.clientInfos.Status
           }
         },
-        "_id": _id
+        "_id": id
       }
-      res.table("pdvs").add(geom).then(r=>{
-        this._router.navigate(['/map'])
+      res.table("pdvs").put(geom).then(r => {
+       this._router.navigate(['/map'])
       })
     });
   }
@@ -621,7 +632,7 @@ export class AddclientComponent implements AfterViewInit {
             "NomPrenom": this.NomPrenom,
             "PhoneNumber": this.PhoneNumber,
             "PVP": this.clientInfos.PVPhoto,
-            "status": "red"
+            "status": this.clientInfos.Status
           }
         },
         "_id": _id
@@ -634,8 +645,8 @@ export class AddclientComponent implements AfterViewInit {
       const request = objectStore.add(geo);
       request.onsuccess = (event) => {
         console.log('done Adding');
-        this._router.navigate(['map']).then(()=>{
-          
+        this._router.navigate(['map']).then(() => {
+
         })
       };
     }

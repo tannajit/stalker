@@ -120,7 +120,9 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
       
     this.loggedUser = JSON.parse(localStorage.getItem("user"));
     this.clientInfo = clientService.getClientInfo();
-    this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time)
+    this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time,err=>{
+      this.timeLeft=2;
+    })
     this.PhoneNumber=this.clientInfo.geometry.properties.PhoneNumber;
     console.log("***** this CLIENT ****")
     console.log(this.clientInfo)
@@ -608,7 +610,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
       var client = { _id: this.clientInfo._id, Valeur:this.clientInfo }
       console.log(client)
       res.table("pdvs").update(this.clientInfo._id,this.clientInfo).then(r=>{
-        console.log(r)
+        console.log(r) 
         this._router.navigate(['/map'])
       });
     
