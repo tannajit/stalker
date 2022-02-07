@@ -152,5 +152,11 @@ export class ExtractSelectComponent implements OnInit {
       this.SelectedTypePDV = []
     }
   }
+  
+  anotherArray = this.Sectors;
+  filterListCareUnit(val) {
+    // console.log(val);
+    this.Sectors = this.anotherArray.filter((unit) => unit.detail.toLowerCase().indexOf(val) > -1);
+  }
 
 }

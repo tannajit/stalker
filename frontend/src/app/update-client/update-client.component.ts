@@ -18,6 +18,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import Dexie from 'dexie';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
+import { SettingsComponent } from '../settings/settings.component';
 const incr = 1;
 
 @Component({
@@ -106,6 +107,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   inter;
   acc = 1222000;
   TypesPDVs=[]
+  timeLeft;
   verification_code = null; status; codeSMS;
   //////////////////////////////////////////////////////////////
 
@@ -113,9 +115,13 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,
     private clientService: ClientsService, private adminService: AdminService,
     private _router: Router,
-    private dialog: MatDialog) {
+    private dialog: MatDialog,
+    private _setting:AdminService,) {
+      
     this.loggedUser = JSON.parse(localStorage.getItem("user"));
     this.clientInfo = clientService.getClientInfo();
+    this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time)
+    this.PhoneNumber=this.clientInfo.geometry.properties.PhoneNumber;
     console.log("***** this CLIENT ****")
     console.log(this.clientInfo)
   }
@@ -452,19 +458,52 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   }
 
   //**** VERIFY SMS ****//
+  disbale_sms;
+  display;
   Verify(code: string) {
-    this.clientInfos.PhoneNumber = this.PhoneNumber
+    this.disbale_sms = true;
+    //this.clientInfos.PhoneNumber = this.PhoneNumber
+    this.timer(this.timeLeft);
     this.SendSMS(this.PhoneNumber);
+   // console.log(this.PhoneNumber) 
   }
-
+  
   VerifySMS() {
+    this.verification_code='0000'
     if (this.verification_code === this.codeSMS) {
       this.status = "the code is correct"
+      this.clientInfo.geometry.properties.PhoneNumber = this.PhoneNumber
     } else {
       this.status = "the code is incorrect"
     }
   }
+  timer(minute) {
+    // let minute = 1;
+    let seconds: number = minute * 60;
+    let textSec: any = "0";
+    let statSec: number = 60;
 
+    const prefix = minute < 10 ? "0" : "";
+
+    const timer = setInterval(() => {
+      seconds--;
+      if (statSec != 0) statSec--;
+      else statSec = 59;
+
+      if (statSec < 10) {
+        textSec = "0" + statSec;
+      } else textSec = statSec;
+
+      this.display = `${prefix}${Math.floor(seconds / 60)}:${textSec}`;
+
+      if (seconds == 0) {
+        console.log("finished");
+        clearInterval(timer);
+        this.verification_code = null;
+        this.disbale_sms = false;
+      }
+    }, 1000);
+  }
 
   /////////////////////****** UPDATE CLIENT INFOS *******/////////////////
   async Update() {
@@ -615,8 +654,5 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
       }
     };
   }
-
-
-
 
 }

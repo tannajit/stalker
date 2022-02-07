@@ -73,12 +73,14 @@ router.get("/files", async function (req, res) {
         });
         var arr = await collection.find({ 'geometry.geometry.type': 'Point' }).toArray()
         InjectSecteurData(arr)
-        await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.NFC": { $exists: true } }, { $set: { "geometry.properties.nfc": { UUID: null, Numero_Serie: null, Technologies: null, Type_card: null, NFCPhoto: null } } }).then().catch(error => console.log(error))
-        await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.NFC": { $exists: true } }, { $rename: { "geometry.properties.NFC": "geometry.properties.nfc.UUID" } }).then().catch(error => console.log(error))
+        console.log("//************start updating nfc object************//")
+        await collection.updateMany({"geometry.geometry.type":"Point", "geometry.properties.NFC": { $exists: true}},{$set: {"geometry.properties.nfc":{UUID:null,Numero_Serie:null,Technologies:null,Type_card:null,NFCPhoto:null}}}).then().catch(error => console.log(error))
+        await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.NFC": { $exists: true}},{ $rename: {"geometry.properties.NFC": "geometry.properties.nfc.UUID"}}).then().catch(error => console.log(error))
         console.log("//************start updating Status************//")
         await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.nfc.UUID": { $ne: null } }, { $set: { "geometry.properties.status": "purple" } }).then().catch(error => console.log(error))
         await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.nfc.UUID": { $eq: null } }, { $set: { "geometry.properties.status": "red" } }).then().catch(error => console.log(error))
-        await colection2.updateMany({},{$addToSet:{ typePDV: "Detail" }})
+        await collection.updateMany({ "geometry.geometry.type": "Point"},{ $set: { "geometry.properties.created_at": new Date() ,"geometry.properties.updated_at": new Date() } }).then().catch(error => console.log(error))
+        await colection2.updateMany({},{$addToSet:{ typePDV: "Detail" }}).then().catch(error => console.log(error))
     });
 });
 
@@ -256,12 +258,13 @@ router.get('/getSectorByUser', verifyToken, async (req, res) => {
         },
         { "$unwind": "$info" },
         { "$match": { "info.geometry.geometry.type": "MultiPolygon" } },
-    ]).toArray();
-    ListInfo = []
-    values.forEach(element => {
-        ListInfo.push(element)
-    });
-    res.status(200).json(ListInfo)
+       { $project: { info: 1,nameSecteur:1,machine:1,typePDV:1}}
+    ]).toArray()
+    //console.log(values)
+    // values.forEach(element => {
+    //     ListInfo.push(element)
+    // });
+   res.status(200).json(values)
 })
 
 //*** Get PDV by user (I changed the structure of the Query ) */
@@ -300,7 +303,7 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
             var element = elem.geometry.properties;
             if (element.nfc.NFCPhoto != null) {
                 try {
-                    console.log(element.nfc)
+                   // console.log(element.nfc)
                     await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
                         elem.geometry.properties.NFCP = re
                     }).catch(err => console.log(err))
@@ -311,7 +314,7 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
                 elem.geometry.properties.NFCP = null
             }
             if (element?.PVPhoto != null) {
-                console.log(element?.PVPhoto)
+                //console.log(element?.PVPhoto)
                 await test1(db, ObjectId(element.PVPhoto)).then(re => {
                     elem.geometry.properties.PVP = re
                 }).catch(err => console.log(err))
@@ -1310,9 +1313,9 @@ router.post("/extract", async (req, res) => {
         });
         await IsDeletedBy(ObjectId(element._id), "Auditor").then(ress => {
             console.log("Auditor")
-            Data["Supprime_Audtior"] = String(ress)
+            Data["Supprime_Auditor"] = String(ress)
         }).catch(err => {
-            Data["Supprime_Audtior"] = String(err)
+            Data["Supprime_Auditor"] = String(err)
         });
         element.info.forEach(info => {
             if (info.userRole === "Auditor") {
@@ -1344,7 +1347,6 @@ router.post("/extract", async (req, res) => {
             }
         })
         DataAll.push(Data)
-        //console.log(DataAll.length)
         element = Data;
         return element;
     });
@@ -1604,7 +1606,6 @@ router.put("/UpdateUser", async (req, res) => {
         await secteurs.updateMany({ nameSecteur: Number(el) }, { $addToSet: { users: ObjectId(user._id) } }).then(res => console.log(`user ${user._id} a été ajouter vers sector ${el}`,res))
 
     })
-
     user.SectorDeleted.forEach(async el => {
         await secteurs.updateMany({ nameSecteur: Number(el) }, { $pull: { users:{$in:[ObjectId(user._id)]}  } }).then(res => console.log(`user ${user._id} a été suprimer au sector ${el}`,res))
     })

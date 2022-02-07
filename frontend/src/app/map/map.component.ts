@@ -17,6 +17,7 @@ import { takeUntil, switchMap } from 'rxjs/operators';
 import { interval, Subject } from 'rxjs';
 import { TouchSequence } from 'selenium-webdriver';
 import Dexie from 'dexie';
+import { TransitionCheckState } from '@angular/material/checkbox';
 
 
 @Component({
@@ -36,17 +37,27 @@ export class MapComponent implements AfterViewInit {
     private dialog: MatDialog) {
     //this.index.createDatabase();
     this.user = JSON.parse(localStorage.getItem("user"))
-    this.version=index.version;
+    this.version = index.version;
+    var db = new Dexie("off").open().then((res) => {
+      this.Dexie = res;
+      console.log("open")
+      this.webWorker()
+      this.PutData()
+
+    });
   }
 
   dialogRef: MatDialogRef<ClientInfoComponent>;
   dialogExtract: MatDialogRef<ExtractSelectComponent>;
   dialogConf: MatDialogRef<ConfirmationDialogComponent>;
   private destroyed: Subject<void> = new Subject<void>();
+  //
 
+  //
   private map;
   public content = null;
-  ArrayIDS=[]
+  ArrayIDS = []
+  ArrayIdSector = [];
   myCercle;
   mySector = 'hello';
   IDGeomerty;
@@ -61,8 +72,10 @@ export class MapComponent implements AfterViewInit {
   myMarker;
   statusAddClient = false;
   user;
+  Dexie; // save open database 
   AllSecteurs = [];
   version = 6;
+  worker = new Worker(new URL('./map.worker', import.meta.url));
   ///create map 
   private initMap(): void {
     this.map = L.map('map', {
@@ -77,27 +90,27 @@ export class MapComponent implements AfterViewInit {
     // this._location.ClearWatch();
     tiles.addTo(this.map);
     //this.getDataClient();
-    this.PutPdvMap()
-    //this.getDataSector();
-    this.PutSectorDataInMap()
     this.map.addLayer(this.markerClusterSector)
     this.map.addLayer(this.markersCluster);
     //this.map.addLayer(this.DeletedMarkerCluster);
     // this.getLocation()
     //this.getLocation1()
     this.map.addControl(L.control.zoom({ position: 'bottomleft' }));
-
   }
+
   ngOnInit(): void {
+
+
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
     //Add 'implements OnInit' to the class.
     //this.WatchPosition()
+
   }
 
   //////////////*** Init map ////////
   ngAfterViewInit(): void {
     this.initMap();
-    
+
     this.aroute.params.subscribe(params => {
       if (params['lat']) {
         console.log("laaaaaaaaaaaaaaaaaaaaaaat: " + params['lat'])
@@ -117,7 +130,6 @@ export class MapComponent implements AfterViewInit {
   ngOnDestroy() {
     this.destroyed.next();
     this.destroyed.complete();
-
   }
 
   WatchPosition() {
@@ -201,481 +213,367 @@ export class MapComponent implements AfterViewInit {
     this.dialogRef = this.dialog.open(ClientInfoComponent, { data: content });
     // this.
   }
-  //////////*********** get PDV form IndexDB and put  Client Info from IndexDB *******//////////////
   DeletedMarkerCluster = new L.MarkerClusterGroup();
-  public getDataClient() {
-
-
-    let db; let transaction;
-    const request = window.indexedDB.open('off', this.version);
-    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      console.log('Why didn\'t you allow my web app to use IndexedDB?!');
-    };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      db = event.target.result;
-      console.log('success');
-      console.log(db);
-      transaction = db.transaction(['data'], 'readwrite');
-      const objectStore = transaction.objectStore('data');
-      const objectStoreRequest = objectStore.getAll();
-      objectStoreRequest.onsuccess = event => {
-        const all = event.target.result;
-
-
-        console.log(this.markersCluster.getLayers().length)
-        console.log("\n \n \n  => => => ")
-        all.forEach((element, idx, array) => {
-          if (idx === array.length - 1) {
-            if (this.dialogConf) {
-              this.dialogConf.close()
-              this.openAlertDialog("Sync is Done")
-              //console.log(" -------------------------------- ", this.option_retail)
-
-            }
-          }
-          const elm = JSON.parse(element.Valeur);
-          const Point = { _id: element._id, geometry: elm };
-          const geojsonPoint: geojson.Point = Point.geometry;
-          console.log(Point.geometry.properties?.status)
-          var iconClient = L.icon({ iconUrl: 'assets/' + Point.geometry.properties?.status + '.png', iconSize: [8, 8] });
-          var marker = L.geoJSON(geojsonPoint, {
-            pointToLayer: (point, latlon) => {
-              return L.marker(latlon, { icon: iconClient });
-            }
-          });
-
-          marker.on('click', () => {
-            this.content = Point.geometry;
-            this.zone.run(() => this.openDialog(Point));
-            this._serviceClient.getPosition({ "Client": new L.LatLng(Point.geometry.geometry.coordinates[1], Point.geometry.geometry.coordinates[0]) });
-
-          });
-
-          if (Point.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
-            console.log(this.user.role)
-            this.DeletedMarkerCluster.addLayer(marker)
-          } else if (Point.geometry.properties?.status != 'deleted') {
-            this.markersCluster.addLayer(marker);
-          }
-        });
-
-      };
-    };
-  }
-
-
-  ////////////******* Get Sector from IndexDB Put Sector in Map  *****////////////////////////////////
-  public getDataSector() {
-
-    let db; let transaction;
-    const request = window.indexedDB.open('off', this.version);
-    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      console.log('Why didn\'t you allow my web app to use IndexedDB?!');
-    };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      db = event.target.result;
-      console.log('success');
-      console.log(db);
-      transaction = db.transaction(['sector'], 'readwrite');
-      const objectStore = transaction.objectStore('sector');
-      const objectStoreRequest = objectStore.getAll();
-      objectStoreRequest.onsuccess = event => {
-        const all = event.target.result;
-        this.markerClusterSector.clearLayers();
-        all.forEach(element => {
-          var Point = { _id: element._id, geometry: element.Valeur.info.geometry };
-          var marker = L.geoJSON(Point.geometry, {
-            onEachFeature: (feature, layer) => {
-              layer.bindPopup(String(element._id));
-            }, style: { color: '#CD9575', fillOpacity: 0.1 }
-          });
-          this.markerClusterSector.addLayer(marker);
-          this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
-        });
-      };
-    };
-  }
-
-  //////////////////********** Fill IndexDB after synchronize *******///////////////////////////
-  PutData() {
-    console.log("*************Put data***********")
-    //console.log(this.map._layers)
-    let db; let transaction;
-    const request = window.indexedDB.open('off', this.version);
-    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      console.log('Why didn\'t you allow my web app to use IndexedDB?!');
-    };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      db = event.target.result;
-      console.log('success Sync');
-      const allclient = [];
-      this._serviceClient.getAllClient().subscribe(async (res) => {
-        ////////// Clear all 
-        var request = window.indexedDB.open("off", this.version)
-        request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-          console.log("Why didn't you allow my web app to use IndexedDB?!");
-        };
-        request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-          db = event.target.result;
-          console.log("success inside Clear")
-          var transaction = db.transaction(['data'], 'readwrite');
-          var objectStore = transaction.objectStore("data");
-          var objectStoreRequest = objectStore.clear();
-          objectStoreRequest.onsuccess = (event) => {
-            console.log("Data Cleared")
-            console.log("*** done clearing****")
-            res.forEach(element => {
-              const geo = { _id: element._id, Valeur: JSON.stringify(element.geometry) };
-              allclient.push(geo);
-              transaction = db.transaction(['data'], 'readwrite');
-              const objectStore = transaction.objectStore('data');
-              const request = objectStore.put(geo);
-              const geojsonPoint: geojson.Point = element.geometry;
-              var iconClient = L.icon({ iconUrl: 'assets/' + element.geometry.properties?.status + '.png', iconSize: [8, 8] });
-              var marker = L.geoJSON(geojsonPoint, {
-                pointToLayer: (point, latlon) => {
-                  return L.marker(latlon, { icon: iconClient });
-                }
-              });
-
-              marker.on('click', () => {
-                this.content = element.geometry;
-                this.zone.run(() => this.openDialog(element));
-                this._serviceClient.getPosition({ "Client": new L.LatLng(element.geometry.geometry.coordinates[1], element.geometry.geometry.coordinates[0]) });
-
-              });
-
-              if (element.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
-                console.log(this.user.role)
-                this.DeletedMarkerCluster.addLayer(marker)
-              } else if (element.geometry.properties?.status != 'deleted') {
-                this.markersCluster.addLayer(marker);
-              }
-            });
-            if (this.dialogConf) {
-              this.dialogConf.close()
-              this.openAlertDialog("Sync is Done")
-              //console.log(" -------------------------------- ", this.option_retail)  
-            }
-            // this.getDataClient();
-            // this.openAlertDialog("Synchronozation in process Please wait ")
-          }
-
-        }
-      });
-    };
-  }
-  /////////***** Fill in indexDB with Sector info ******///////
-  PutDataSector() {
-    let db; 
-    let transaction;
-    const request = window.indexedDB.open('off', this.version);
-    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      console.log('Why didn\'t you allow my web app to use IndexedDB?!');
-    };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      db = event.target.result;
-      console.log('success Login');
-      const allclient = [];
-      this._serviceClient.getAllSecteurs().subscribe(res => {
-        var transaction = db.transaction(['sector'], 'readwrite');
-        var objectStore = transaction.objectStore("sector");
-        var objectStoreRequest = objectStore.clear();
-        this.markerClusterSector.clearLayers()
-        objectStoreRequest.onsuccess = (event) => {
-          console.log("Data Cleared")
-          res.forEach(element => {
-            delete element.points
-            delete element.users
-            ///
-            const geo = { _id: element.nameSecteur, Valeur: element };
-            allclient.push(geo);
-            transaction = db.transaction(['sector'], 'readwrite');
-            const objectStore = transaction.objectStore('sector');
-            const request = objectStore.put(geo);
-            request.onsuccess = (event) => {
-              //console.log('done Adding Sector ');
-              var Point = { _id: geo._id, geometry: geo.Valeur.info.geometry };
-              var marker = L.geoJSON(Point.geometry, {
-                onEachFeature: (feature, layer) => {
-                  layer.bindPopup(String(geo._id));
-                }, style: { color: '#CD9575', fillOpacity: 0.1 }
-              });
-              this.markerClusterSector.addLayer(marker);
-              this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
-            };
-          });
-
-          //this.getDataSector();
-        }
-      });
-      /////***** ******/
-      this._serviceClient.getAllClient().subscribe(async (res) => {
-        ////////// Clear all 
-        var request = window.indexedDB.open("off", this.version)
-        request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-          console.log("Why didn't you allow my web app to use IndexedDB?!");
-        };
-        request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-          db = event.target.result;
-          console.log("success inside Clear")
-          var transaction = db.transaction(['data'], 'readwrite');
-          var objectStore = transaction.objectStore("data");
-          var objectStoreRequest = objectStore.clear();
-          objectStoreRequest.onsuccess = (event) => {
-            console.log("Data Cleared")
-            console.log("*** done clearing****")
-            res.forEach(element => {
-              const geo = { _id: element._id, Valeur: JSON.stringify(element.geometry) };
-              allclient.push(geo);
-              transaction = db.transaction(['data'], 'readwrite');
-              const objectStore = transaction.objectStore('data');
-              const request = objectStore.put(geo);
-              const geojsonPoint: geojson.Point = element.geometry;
-              var iconClient = L.icon({ iconUrl: 'assets/' + element.geometry.properties?.status + '.png', iconSize: [8, 8] });
-              var marker = L.geoJSON(geojsonPoint, {
-                pointToLayer: (point, latlon) => {
-                  return L.marker(latlon, { icon: iconClient });
-                }
-              });
-
-              marker.on('click', () => {
-                this.content = element.geometry;
-                this.zone.run(() => this.openDialog(element));
-                this._serviceClient.getPosition({ "Client": new L.LatLng(element.geometry.geometry.coordinates[1], element.geometry.geometry.coordinates[0]) });
-
-              });
-
-              if (element.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
-                console.log(this.user.role)
-                this.DeletedMarkerCluster.addLayer(marker)
-              } else if (element.geometry.properties?.status != 'deleted') {
-                this.markersCluster.addLayer(marker);
-              }
-            });
-            if (this.dialogConf) {
-              this.dialogConf.close()
-              this.openAlertDialog("Sync is Done")
-              //console.log(" -------------------------------- ", this.option_retail)  
-            }
-            // this.getDataClient();
-            // this.openAlertDialog("Synchronozation in process Please wait ")
-          }
-
-        }
-      });
-
-
-    };
-  }
-  /////////////////////////////////////////////////////////////////
 
   /////////////// ********* Synchronize Action **********/////////////////////////
-  // disbalel=true;
-  async Sooo() {
-    this._serviceClient.Sync("Gros").subscribe(res => {
-      console.log(res)
-    })
-  }
+  PutData() {
 
-  PutSectorDataInMap() {
-    var db = new Dexie("off").open().then((res) => {
+    this.markersCluster.clearLayers();
+    this.ArrayIDS = []
+    this.worker.postMessage("data");
+    //this.worker.postMessage("pdv");
+    if (typeof Worker !== 'undefined') {
+      this.worker.onmessage = (e) => {
+        var response = e.data.split("worker response to ")[1]
+        if (response == "data") {
+          console.log(" nmi sector ")
+          this.ArrayIdSector = []
+          //console.log(res._allTables)
+          this.markerClusterSector.clearLayers();
+          this.Dexie.table("sector").each(element => {
+            var Point = { _id: element._id, geometry: element.info.geometry };
+            this.ArrayIdSector.push(element._id)
+            var marker = L.geoJSON(Point.geometry, {
+              onEachFeature: (feature, layer) => {
+                layer.bindPopup(String(element.nameSecteur));
+              }, style: { color: '#CD9575', fillOpacity: 0.1 }
+            });
+            this.markerClusterSector.addLayer(marker);
+            this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
+          })
+
+          console.log("nmi PDV")
+          //var functionName = e.data.split("worker response to")[1];
+          this.Dexie.table("pdvs").each((element) => {
+            const Point = { _id: element._id, geometry: element.geometry };
+            this.ArrayIDS.push(element._id)
+            const geojsonPoint: geojson.Point = Point.geometry;
+            var iconClient = L.icon({ iconUrl: 'assets/' + Point.geometry.properties?.status + '.png', iconSize: [8, 8] });
+            var marker = L.geoJSON(geojsonPoint, {
+              pointToLayer: (point, latlon) => {
+                return L.marker(latlon, { icon: iconClient });
+              }
+            });
+            marker.on('click', () => {
+              this.content = Point.geometry;
+              this.zone.run(() => this.openDialog(Point));
+              this._serviceClient.getPosition({ "Client": new L.LatLng(Point.geometry.geometry.coordinates[1], Point.geometry.geometry.coordinates[0]) });
+            });
+
+            if (Point.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
+              console.log(this.user.role)
+              this.DeletedMarkerCluster.addLayer(marker)
+            } else if (Point.geometry.properties?.status != 'deleted') {
+              this.markersCluster.addLayer(marker);
+            }
+          });
+        }
+      }
+    } else {
+      this.ArrayIdSector = []
       //console.log(res._allTables)
       this.markerClusterSector.clearLayers();
-      //res.table("sector").where("nameSecteur").equalsIgnoreCase(String(906010181)).toArray();
-
-      // res.table("sector").where({"nameSecteur":906010181}).toArray().then(r=>{
-      //   console.log(r)
-      // })
-      res.table("sector").get({ "nameSecteur": 906010181 }).then(r => {
-        // console.log(r)
-      })
-      res.table("sector").each(element => {
-        // console.log(element)
-
+      this.Dexie.table("sector").each(element => {
         var Point = { _id: element._id, geometry: element.info.geometry };
+        this.ArrayIdSector.push(element._id)
         var marker = L.geoJSON(Point.geometry, {
           onEachFeature: (feature, layer) => {
-            //console.log(element.nameSecteur)
             layer.bindPopup(String(element.nameSecteur));
           }, style: { color: '#CD9575', fillOpacity: 0.1 }
         });
         this.markerClusterSector.addLayer(marker);
         this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
+      });
+    }
+  }
 
-      })
-    });
+  PutSectorDataInMap() {
+    console.log(" SECTORS SECTORS ")
+    this.worker.postMessage("sector");
+    if (typeof Worker !== 'undefined') {
+      this.worker.onmessage = (e) => {
+        var response = e.data.split("worker response to ")[1]
+        if (response == "sector") {
+          console.log(" nmi 2 ")
+          this.ArrayIdSector = []
+          //console.log(res._allTables)
+          this.markerClusterSector.clearLayers();
+          this.Dexie.table("sector").each(element => {
+            var Point = { _id: element._id, geometry: element.info.geometry };
+            this.ArrayIdSector.push(element._id)
+            var marker = L.geoJSON(Point.geometry, {
+              onEachFeature: (feature, layer) => {
+                layer.bindPopup(String(element.nameSecteur));
+              }, style: { color: '#CD9575', fillOpacity: 0.1 }
+            });
+            this.markerClusterSector.addLayer(marker);
+            this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
+          })
+        }
+      }
+    } else {
+      this.ArrayIdSector = []
+      //console.log(res._allTables)
+      this.markerClusterSector.clearLayers();
+      this.Dexie.table("sector").each(element => {
+        var Point = { _id: element._id, geometry: element.info.geometry };
+        this.ArrayIdSector.push(element._id)
+        var marker = L.geoJSON(Point.geometry, {
+          onEachFeature: (feature, layer) => {
+            layer.bindPopup(String(element.nameSecteur));
+          }, style: { color: '#CD9575', fillOpacity: 0.1 }
+        });
+        this.markerClusterSector.addLayer(marker);
+        this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
+      });
+    }
   }
   PutPdvMap() {
-    var db = new Dexie("off").open().then((res) => {
-      //console.log(res._allTables)
-      this.markersCluster.clearLayers();
-      if (this.dialogConf) {
-        this.dialogConf.close()
-        this.openAlertDialog("Sync is Done")
-        //console.log(" -------------------------------- ", this.option_retail)  
-      }
-      this.ArrayIDS=[]
-      res.table("pdvs").each((element) => {
-        const Point = { _id: element._id, geometry: element.geometry };
-        this.ArrayIDS.push(element._id)
-        const geojsonPoint: geojson.Point = Point.geometry;
-        var iconClient = L.icon({ iconUrl: 'assets/' + Point.geometry.properties?.status + '.png', iconSize: [8, 8] });
-        var marker = L.geoJSON(geojsonPoint, {
-          pointToLayer: (point, latlon) => {
-            return L.marker(latlon, { icon: iconClient });
-          }
-        });
-        marker.on('click', () => {
-          this.content = Point.geometry;
-          this.zone.run(() => this.openDialog(Point));
-          this._serviceClient.getPosition({ "Client": new L.LatLng(Point.geometry.geometry.coordinates[1], Point.geometry.geometry.coordinates[0]) });
-        });
-
-        if (Point.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
-          console.log(this.user.role)
-          this.DeletedMarkerCluster.addLayer(marker)
-        } else if (Point.geometry.properties?.status != 'deleted') {
-          this.markersCluster.addLayer(marker);
-        }
-      });
-    });
-
+    console.log("put pdvs")
+    this.markersCluster.clearLayers();
+    this.ArrayIDS = []
+    this.worker.postMessage("pdv");
   }
 
   async StorePdvsIndexDB() {
     this._serviceClient.getAllClient().subscribe(async (ress) => {
-
-      // console.log(res)
+      this.worker.postMessage("pdvindex")
+      //this.worker.postMessage("Map")
       this.markersCluster.clearLayers();
-      //console.log(ress)
-      //this.ArrayIDS=[]
-      ress.forEach((element, idx, array) => {
-        //const Point = { _id: element._id, geometry: element.geometry };
-        const geojsonPoint: geojson.Point = element.geometry;
-        //this.ArrayIDS.push(element._id)
-        var iconClient = L.icon({ iconUrl: 'assets/' + element.geometry.properties?.status + '.png', iconSize: [8, 8] });
-        var marker = L.geoJSON(geojsonPoint, {
-          pointToLayer: (point, latlon) => {
-            return L.marker(latlon, { icon: iconClient });
+      if (typeof Worker !== 'undefined') {
+        this.worker.onmessage = (e) => {
+          var response = e.data.split("worker response to ")[1]
+          console.log(response)
+          if (response == "Map") {
+            ress.forEach((element) => {
+              const geojsonPoint: geojson.Point = element.geometry;
+              var iconClient = L.icon({ iconUrl: 'assets/' + element.geometry.properties?.status + '.png', iconSize: [8, 8] });
+              var marker = L.geoJSON(geojsonPoint, {
+                pointToLayer: (point, latlon) => {
+                  return L.marker(latlon, { icon: iconClient });
+                }
+              });
+              marker.on('click', () => {
+                this.content = element.geometry;
+                this.zone.run(() => this.openDialog(element));
+                this._serviceClient.getPosition({ "Client": new L.LatLng(element.geometry.geometry.coordinates[1], element.geometry.geometry.coordinates[0]) });
+              });
+              if (element.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
+                console.log(this.user.role)
+                this.DeletedMarkerCluster.addLayer(marker)
+              } else if (element.geometry.properties?.status != 'deleted') {
+                this.markersCluster.addLayer(marker);
+              }
+            });
           }
-        });
-        marker.on('click', () => {
-          this.content = element.geometry;
-          this.zone.run(() => this.openDialog(element));
-          this._serviceClient.getPosition({ "Client": new L.LatLng(element.geometry.geometry.coordinates[1], element.geometry.geometry.coordinates[0]) });
-        });
-
-        if (element.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
-          console.log(this.user.role)
-          this.DeletedMarkerCluster.addLayer(marker)
-        } else if (element.geometry.properties?.status != 'deleted') {
-          this.markersCluster.addLayer(marker);
+          if (response == "pdvindex") {
+            console.log('**** PVD index ****')
+            this.Dexie.table("pdvs").bulkDelete(this.ArrayIDS).then((hh) => {
+              console.log("$$$$$$$ DONE Clearing $$$$$$$$")
+              this.Dexie.table("pdvs").bulkPut(ress).then((lastKey) => {
+                console.log("Add PDVs")
+                if (this.dialogConf) {
+                  this.dialogConf.close()
+                  this.openAlertDialog("Sync is Done")
+                  this.endTieme = performance.now()
+                  console.log("********** END process **********")
+                  console.log(this.endTieme - this.startTime)
+                }
+              });
+            })
+          }
         }
-      });
-      var db = new Dexie("off").open().then((res) => {
-        ///
-        console.log(this.ArrayIDS)
-        //console
-        res.table("pdvs").bulkDelete(this.ArrayIDS).then((hh)=>{
+      } else {
+        this.Dexie.table("pdvs").bulkDelete(this.ArrayIDS).then((hh) => {
           console.log("$$$$$$$ DONE Clearing $$$$$$$$")
-          res.table("pdvs").bulkPut(ress).then((lastKey) => {
+          this.Dexie.table("pdvs").bulkPut(ress).then((lastKey) => {
             console.log("Add PDVs")
             if (this.dialogConf) {
-              let t2 = performance.now();
-                  console.log(t2 - this.t1);
               this.dialogConf.close()
               this.openAlertDialog("Sync is Done")
-              //console.log(" -------------------------------- ", this.option_retail)
             }
-  
           });
         })
-        
-        ///
-        // let dbb; let transaction;
-        // var request = window.indexedDB.open("off", this.version)
-        // request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-        //   console.log("Why didn't you allow my web app to use IndexedDB?!");
-        // };
-        // request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-        //   dbb = event.target.result;
-        //   console.log("success inside Clear")
-        //   var transaction = dbb.transaction(['pdvs'], 'readwrite');
-        //   var objectStore = transaction.objectStore("pdvs");
-        //   var objectStoreRequest = objectStore.clear(); /// clear database
-        //   objectStoreRequest.onsuccess = (event) => {
-        //     console.log("Data Cleared form PDVs")
-        //     res.table("pdvs").bulkAdd(ress).then((lastKey) => {
-        //       console.log("Add PDVs")
-        //       if (this.dialogConf) {
-        //         console.log(this.ArrayIDS)
-        //         this.dialogConf.close()
-        //         this.openAlertDialog("Sync is Done")
-        //         //console.log(" -------------------------------- ", this.option_retail)
-        //       }
-
-        //     });
-        //   }
-        // }
-        // res.table("pdvs").clear().then((l) => {
-
-        // })
-      });
+      }
     });
+  }
+
+  ///// web worker
+  webWorker() {
 
   }
-  ClearData() {
-    let db; let transaction;
-    var request = window.indexedDB.open("off", this.version)
-    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      console.log("Why didn't you allow my web app to use IndexedDB?!");
-    };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      db = event.target.result;
-      console.log("success inside Clear")
-      var transaction = db.transaction(['pdvs'], 'readwrite');
-      var objectStore = transaction.objectStore("pdvs");
-      var objectStoreRequest = objectStore.clear();
-      objectStoreRequest.onsuccess = (event) => {
-        console.log("Data Cleared form PDVs")
+  /////// 
+  async StoreSectorIndexeddb() {
+    this.worker.postMessage("sectorindex")
+    if (typeof Worker !== 'undefined') {
+      this.worker.onmessage = (e) => {
+        var response = e.data.split("worker response to ")[1]
+        if (response == "sectorindex") {
+          this._serviceClient.getAllSecteurs().subscribe(res1 => {
+            if (this.user.role != "Admin") {
+              console.log("--- Start Now ")
+              let t1 = performance.now();
+              this.Dexie.table("sector").bulkDelete(this.ArrayIdSector).then((l) => {
+                this.Dexie.table("sector").bulkPut(res1).then((lastKey) => {
+                  let t2 = performance.now();
+                  console.log(t2 - t1);
+                  console.log("--- END Now ")
+                  console.log(" Call Sector ")
+                  //this.worker.postMessage("data");
+                  this.PutData()
+                });
+              })
+            } else {
+              console.log("--- Start Now ")
+              let t1 = performance.now();
+              this.Dexie.table("sector").bulkPut(res1).then((lastKey) => {
+                let t2 = performance.now();
+                //let elapsed = 
+                console.log(t2 - t1);
+                console.log("--- END Now ")
+                // this.PutSectorDataInMap()
+                //  this.worker.postMessage("sector");
+                this.PutData()
+                if (this.user.role == "Admin") {
+                  if (this.dialogConf) {
+                    this.dialogConf.close()
+                    this.openAlertDialog("Sync is Done")
+                  }
+                }
+              });
+            }
+          });
+        }
+      };
+    } else {
+      console.log("else")
+    }
 
+
+  }
+  RessPDV;
+
+  StoreDataIndex() {
+    console.log("--- Start Now ")
+    let t1 = performance.now();
+    if (this.user.role != "Admin") {
+      this.worker.postMessage("api_pdv")
+    }
+    this.worker.postMessage("sector_api")
+    //this.worker.postMessage("Map")
+
+    if (typeof Worker !== 'undefined') {
+      this.worker.onmessage = (e) => {
+        var response = e.data.split("worker response to ")[1]
+        if (response == "api_pdv") {
+          this._serviceClient.getAllClient().subscribe(async (ress) => {
+            console.log(" Called API from Worker ")
+            this.worker.postMessage("pdvindex")
+            this.markersCluster.clearLayers();
+            this.RessPDV = ress;
+            ress.forEach((element) => {
+              const geojsonPoint: geojson.Point = element.geometry;
+              var iconClient = L.icon({ iconUrl: 'assets/' + element.geometry.properties?.status + '.png', iconSize: [8, 8] });
+              var marker = L.geoJSON(geojsonPoint, {
+                pointToLayer: (point, latlon) => {
+                  return L.marker(latlon, { icon: iconClient });
+                }
+              });
+              marker.on('click', () => {
+                this.content = element.geometry;
+                this.zone.run(() => this.openDialog(element));
+                this._serviceClient.getPosition({ "Client": new L.LatLng(element.geometry.geometry.coordinates[1], element.geometry.geometry.coordinates[0]) });
+              });
+              if (element.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
+                console.log(this.user.role)
+                this.DeletedMarkerCluster.addLayer(marker)
+              } else if (element.geometry.properties?.status != 'deleted') {
+                this.markersCluster.addLayer(marker);
+              }
+            });
+          });
+        }
+        if (response == "pdvindex") {
+          console.log('**** PVD index ****')
+          this.Dexie.table("pdvs").bulkDelete(this.ArrayIDS).then((hh) => {
+            console.log("$$$$$$$ DONE Clearing $$$$$$$$")
+            this.Dexie.table("pdvs").bulkPut(this.RessPDV).then((lastKey) => {
+              console.log("Add PDVs")
+              if (this.dialogConf) {
+                this.dialogConf.close()
+                this.openAlertDialog("Sync is Done")
+                this.endTieme = performance.now()
+                console.log("********** END process **********")
+                console.log(this.endTieme - this.startTime)
+              }
+            });
+          })
+        }
+        if (response == "sector_api") {
+          this._serviceClient.getAllSecteurs().subscribe(res1 => {
+            if (this.user.role != "Admin") {
+              this.Dexie.table("sector").bulkDelete(this.ArrayIdSector).then((l) => {
+                this.Dexie.table("sector").bulkPut(res1).then((lastKey) => {
+                  let t2 = performance.now();
+                  console.log(t2 - t1);
+                  console.log("--- END Now ")
+                  console.log(" Call Sector Not Admin ")
+                  this.worker.postMessage("sector")
+
+                });
+              })
+            } else {
+              console.log("--- Start Now ")
+              let t1 = performance.now();
+              this.Dexie.table("sector").bulkPut(res1).then((lastKey) => {
+                let t2 = performance.now();
+                console.log(t2 - t1);
+                console.log("--- END Now ")
+                console.log(" Call Sector Not Admin ")
+                this.worker.postMessage("sector")
+                if (this.user.role == "Admin") {
+                  if (this.dialogConf) {
+                    this.dialogConf.close()
+                    this.openAlertDialog("Sync is Done")
+                  }
+                }
+              });
+            }
+          });
+        }
+        if (response == "sector") {
+          console.log(" nmi 2 ")
+          this.ArrayIdSector = []
+          //console.log(res._allTables)
+          this.markerClusterSector.clearLayers();
+          this.Dexie.table("sector").each(element => {
+            var Point = { _id: element._id, geometry: element.info.geometry };
+            this.ArrayIdSector.push(element._id)
+            var marker = L.geoJSON(Point.geometry, {
+              onEachFeature: (feature, layer) => {
+                layer.bindPopup(String(element.nameSecteur));
+              }, style: { color: '#CD9575', fillOpacity: 0.1 }
+            });
+            this.markerClusterSector.addLayer(marker);
+            this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
+          })
+
+        }
       }
     }
   }
-  async StoreSectorIndexeddb() {
-    this._serviceClient.getAllSecteurs().subscribe(res1 => {
-      var db = new Dexie("off").open().then((res) => {
-        res.table("sector").clear().then((l) => {
-          res.table("sector").bulkPut(res1).then((lastKey) => {
-            //console.log(lastKey)
-            this.PutSectorDataInMap()
-          });
-        })
-      });
-    });
 
-  }
-  
-  t1;
+
+
+  startTime;
+  endTieme;
   async sync() {
-
-    console.log("--- Start Now ")
-
-     this.t1 = performance.now();
-
-    this.StorePdvsIndexDB()
-    this.StoreSectorIndexeddb()
-
-    //console.log(db)
-    //this.PutDataSector()
-    // this.PutData();
-    //   this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
-    //    disableClose: false
-    //  });
-    //   this.dialogConf.componentInstance.confirmMessage = "sync"
-    //   console.log('Synchronize (Get data from the Database)');
-    //   
+    this.startTime = performance.now();
+    // if (this.user.role != "Admin") {
+    //   this.StorePdvsIndexDB()
+    // }
+    // this.StoreSectorIndexeddb()
+    this.StoreDataIndex()
     this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
       disableClose: true
     });
@@ -714,6 +612,8 @@ export class MapComponent implements AfterViewInit {
         // console.log("In sector ")
       }
     });
+    this.worker.postMessage({ "start": "nmi" });
+
   }
 
   addPDV() {
@@ -736,7 +636,6 @@ export class MapComponent implements AfterViewInit {
     });
   }
   ////////////////////////////////////////////////////////////////////
-
 
   ///////***** Filter Done/Not Done PDV **********///////////////////
   option_done = "All"
@@ -986,23 +885,21 @@ export class MapComponent implements AfterViewInit {
   ///////************** Search for the client from indexDB ***********////////////
 
   SearchIndexDB(IDGeomerty) {
-    if (IDGeomerty!=undefined) {
+    if (IDGeomerty != undefined) {
       var db = new Dexie("off").open().then((res) => {
         res.table("pdvs").get({ "_id": IDGeomerty }).then(r => {
           console.log(r)
           if (r != undefined) {
-            if(r.geometry.properties?.status!="deleted"){
+            if (r.geometry.properties?.status != "deleted") {
               this.map.setView(new L.LatLng(r.geometry.geometry.coordinates[1], r.geometry.geometry.coordinates[0]), 30);
+            } else {
 
-         
+              var mess = "No Such ID : " + IDGeomerty
 
-        }else{
+              this.openAlertSearch(mess);
 
-          var mess = "No Such ID : " + IDGeomerty
-
-          this.openAlertSearch(mess);
-
-        }  }else{
+            }
+          } else {
 
             var mess = "No Such ID : " + IDGeomerty
 
@@ -1072,6 +969,7 @@ export class MapComponent implements AfterViewInit {
   ////////////////////////////////////////////////////////////
 
 }
+
 
 
 

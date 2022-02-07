@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { IndexdbService } from './indexdb.service';
+import { ClientsService } from './clients.service';
 import Dexie from 'dexie';
 @Injectable({
   providedIn: 'root'
@@ -9,11 +10,16 @@ import Dexie from 'dexie';
 export class AuthenticationService {
   private _UsersUrl = "http://localhost:3000/api1/login"
 
-  constructor(private http: HttpClient,
+  // idadd = []
+  // idupdate = []
+  // iddelete = []
+
+  constructor(private clientService: ClientsService,
+    private http: HttpClient,
     private _router: Router,
-    private _index: IndexdbService) { 
-      this.version=this._index.version
-    }
+    private _index: IndexdbService) {
+    this.version = this._index.version
+  }
   getUserLogin(data, httpOptions) {
     return this.http.post<any>(this._UsersUrl, data)
   }
@@ -25,17 +31,29 @@ export class AuthenticationService {
   }
   //////////************** Logout **************/////////////////
   logoutUser() {
-    localStorage.removeItem('token')
-    //this._index.ClearData()
-    //this._index.ClearDataSector()
-    //this.ClearData();
-    var db = new Dexie("off").open().then((res) => {
-      res.table("sector").clear().then((l) => {
-      })
-      this.ClearData()
-    });
+    var idadd = this.clientService.getShow()
+    console.log(idadd)
+    var idupdate = this.clientService.getID()
+    console.log(idupdate)
+    var iddelete = this.clientService.getIDdelete()
+    console.log(iddelete)
+    if (idupdate.length>0 || idadd.length>0 || iddelete.length>0) {
+      console.log("ba9i lcache kayn")
+    }else{ 
+      console.log("makinch lcache")
+      localStorage.removeItem('token')
+      //this._index.ClearData()
+      //this._index.ClearDataSector()
+      //this.ClearData();
+      var db = new Dexie("off").open().then((res) => {
+        res.table("sector").clear().then((l) => {
+        })
+        this.ClearData()
+      });
+    }
     //ClearDataSector()
   }
+
   db; ///database
   version; ///version of the database
   ClearData() {
