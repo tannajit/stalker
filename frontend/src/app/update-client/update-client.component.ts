@@ -28,7 +28,7 @@ const incr = 1;
 })
 export class UpdateClientComponent implements AfterViewInit, OnInit {
 
-        
+            
 
   ////******************** VARIABLE'S DECLARATION ****************/////
 
@@ -110,7 +110,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   timeLeft;
   verification_code = null; status; codeSMS;
   //////////////////////////////////////////////////////////////
-
+   
   ////********* CONSTUCTOR **********/////////
   constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,
     private clientService: ClientsService, private adminService: AdminService,
@@ -302,7 +302,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   get triggerObservable(): Observable<void> {
     return this.trigger.asObservable();
   }
-
+  
   handleNFCImage(webcamNFCImage): void {
     console.info('received webcam image', webcamNFCImage);
     this.webcamNFCImage = webcamNFCImage;
