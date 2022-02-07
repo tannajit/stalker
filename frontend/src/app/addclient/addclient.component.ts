@@ -138,7 +138,7 @@ export class AddclientComponent implements AfterViewInit {
 
   ActiveSend(){
     if(this.webcamPDVImage && 
-      this.NomPrenom && this.detailType && this.TypeDPV ){
+      this.NomPrenom && this.detailType && this.TypeDPV && this.PhoneNumber ){
         return false
       }else{
         return true
