@@ -112,10 +112,18 @@
             <td mat-cell *matCellDef="let request">
               <!-- {{request.role}} -->
               <mat-form-field >
-                <mat-select panelClass="selectPanel2" placeholder="See the roles" (selectionChange)="onSelectRole($event.value,request)">
-                    
-                  <mat-option *ngFor="let user of request" [value]="user.role">{{user.role}}</mat-option>
-                 
+                <mat-select #matRef panelClass="selectPanel2" placeholder="See the roles" (selectionChange)="onSelectRole($event.value,request,$event)">
+                    <!-- <ng-template [ngIf]="select" [ngIfElse]="showBlock" > -->
+                      <!-- <script type="text/javascript">
+                        var select =document.getElementById("user.email");
+                        console.log("ddd",select)
+                    </script>-->
+                      <!-- <md-option (click)="form.controls.formal.reset()"></md-option> -->
+                      <mat-option #opt  *ngFor="let user of request" id="{{user.email}}" [value]="user.role">{{user.role}}</mat-option>
+                    <!-- </ng-template > -->
+                    <!-- <ng-template   #showBlock>
+                      <mat-option >{{user2}}</mat-option>
+                    </ng-template> -->
                 </mat-select>
               </mat-form-field>
               

@@ -17,18 +17,7 @@ import { takeUntil, switchMap } from 'rxjs/operators';
 import { interval, Subject } from 'rxjs';
 import { TouchSequence } from 'selenium-webdriver';
 import Dexie from 'dexie';
-import "esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css";
-import "esri-leaflet-geocoder/dist/esri-leaflet-geocoder";
-import * as ELG from "esri-leaflet-geocoder";
 
-
-
-// L.Icon.Default.mergeOptions({
-//   iconRetinaUrl:
-//     "https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon-2x.png",
-//   iconUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-icon.png",
-//   shadowUrl: "https://unpkg.com/leaflet@1.4.0/dist/images/marker-shadow.png"
-// });
 
 @Component({
   selector: 'app-map',
@@ -82,7 +71,8 @@ export class MapComponent implements AfterViewInit {
     this.map = L.map('map', {
       center: [this.lat, this.lon],
       zoom: 10,
-      zoomControl: false
+      zoomControl: false,
+      
     });
     
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -106,37 +96,7 @@ export class MapComponent implements AfterViewInit {
       iconUrl: "assets/location.png",
       iconSize: [30, 30]
     });
-    const searchControl = new ELG.Geosearch({position:'topright'});
-
-    const results1 = new L.LayerGroup().addTo(this.map);
-
-    searchControl.on("results", function (data) {
-      results1.clearLayers();
-      for (let i = data.results.length - 1; i >= 0; i--) {
-        results1.addLayer(L.marker(data.results[i].latlng,{ icon: location_icon2 }));
-      }
-    })
-    .addTo(this.map);
-
-    
-    // new ELG.ReverseGeocode()
-    this.map.on("click", (e) => {
-      new ELG.ReverseGeocode().latlng(e.latlng).language("fr").run((error, result) => {
-        if (error) {
-          return;
-        }
-        if (this.marker && this.map.hasLayer(this.marker)){
-          this.map.removeLayer(this.marker);
-          this.map.removeLayer(results1);
-
-        }
-
-        L.popup()
-        .setLatLng(result.latlng)
-        .setContent(result.address.Match_addr)
-        .openOn(this.map);
-      });
-    });
+   
   }
   ngOnInit(): void {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
@@ -157,19 +117,7 @@ export class MapComponent implements AfterViewInit {
           iconUrl: "assets/location.png",
           iconSize: [30, 30]
         });
-        new ELG.ReverseGeocode().latlng(new L.LatLng(params['lat'], params['long'])).language("fr").run((error, result) => {
-          if (error) {
-            return;
-          }
-          console.log("language",result)
-          if (this.marker && this.map.hasLayer(this.marker))
-            this.map.removeLayer(this.marker);
-    
-          this.marker = L.marker(result.latlng,{ icon: location_icon })
-            .addTo(this.map)
-            .bindPopup(result.address.Match_addr)
-            .openPopup();
-        });
+
 
         this.map.flyTo(new L.LatLng(params['lat'], params['long']), 18);
       } else {

@@ -18,9 +18,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import Dexie from 'dexie';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 const incr = 1;
-import "esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css";
-import "esri-leaflet-geocoder/dist/esri-leaflet-geocoder";
-import * as ELG from "esri-leaflet-geocoder";
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-addclient',
@@ -135,7 +133,8 @@ export class AddclientComponent implements AfterViewInit {
     private aroute: ActivatedRoute,
     private index: IndexdbService,
     private dialog: MatDialog,
-    private _setting: SettingsService) {
+    private _setting: SettingsService,
+    private http: HttpClient) {
 
   }
   ////////////////////////////////////////////////////////////////
@@ -290,6 +289,15 @@ export class AddclientComponent implements AfterViewInit {
       })
     });
 
+  }  
+  city=null
+  region=null
+  GetNamePlace(lat,lon){
+
+     this.clientService.GetNamePlace(lat,lon).subscribe(res=>{
+      console.log(res)
+    })
+
   }
 
   ///////////////////////////// MAP FUNCTION /////////////////////////////
@@ -315,17 +323,17 @@ export class AddclientComponent implements AfterViewInit {
       iconSize: [30, 30]
     });
 
-    navigator.geolocation.watchPosition((position: GeolocationPosition) => {
+    // navigator.geolocation.watchPosition((position: GeolocationPosition) => {
+    //     this.clientService.GetNamePlace(position.coords.latitude,position.coords.longitude).subscribe(res=>{
+    //       console.log("res",res.results[0].locations[0])
+    //       this.city=res.results[0].locations[0].adminArea5
+    //       this.region=res.results[0].locations[0].adminArea3
+    //       console.log("city",this.city)
+    //       console.log("region",this.region)
 
-      new ELG.ReverseGeocode().latlng(new L.LatLng(position.coords.latitude, position.coords.longitude)).language("fr").run((error, result) => {
-        if (error) {
-          return;
-        }
-        this.Address=result.address
-        
-        console.log("this.Address",this.Address)
-      });
-    })
+    //     })
+    
+    // })
 
 
     var marker = L.marker([this.lat, this.lon], { icon: location_icon })
@@ -479,8 +487,8 @@ export class AddclientComponent implements AfterViewInit {
     this.clientInfos.userRole = this.user.role;
     this.clientInfos.created_at = new Date()
     this.clientInfos.updated_at = new Date()
-    this.clientInfos["city"] =this.Address.Match_addr
-    this.clientInfos["region"] = this.Address.Region
+    this.clientInfos["city"] =this.city
+    this.clientInfos["region"] = this.region
     if(this.user.role=="Seller"){
       this.clientInfos.Status = "white_red"
     }else{

@@ -729,7 +729,11 @@ export class ClientsService {
       })
     });
   }
+  GetNamePlace(lat,lon){
 
+    return this.http.get<any>("https://www.mapquestapi.com/geocoding/v1/reverse?key=JlNC9Ur4Y3uBUEqGkqdDvvOGCcFOuWwA&location="+lat+"%2C"+lon+"&outFormat=json&thumbMaps=false")
+
+  }
   //****************************** */
 
 

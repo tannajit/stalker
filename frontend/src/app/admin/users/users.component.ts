@@ -13,6 +13,9 @@ import { ClientsService } from 'src/app/clients.service';
 import { AlertDialogComponent } from 'src/app/alert-dialog/alert-dialog.component';
 import Dexie from 'dexie';
 import { IndexdbService } from 'src/app/indexdb.service';
+import { FormControl } from '@angular/forms';
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/core';
 
 
 @Component({
@@ -39,7 +42,6 @@ export class UsersComponent implements OnInit {
   dataSubject = new BehaviorSubject<Element[]>([]);
   dialogRef: MatDialogRef<ConfirmationDialogComponent>;
   dialogRef2: MatDialogRef<UserInfoComponent>;
-
   constructor(
     private adminService: AdminService,
     public dialog: MatDialog,
@@ -538,11 +540,48 @@ export class UsersComponent implements OnInit {
 
     this.Sectors = this.anotherArray.filter((unit) => unit.detail.toLowerCase().indexOf(val) > -1);
   }
+  userselected=[]
+  // select=true
+  user2
 
-  onSelectRole(role,users){
-    console.log("selected value", role);
-    console.log("selected element", users);
+  ngAfterViewInit() {
+    // Set null value to value property for clear the selected item
+      // document.getElementById('btn').onclick = () => {
+      //   this.dropDownListObject.value = null;
+      // }
+  }
+  @ViewChild('matRef') matRef: MatSelect;
+  @ViewChild('opt') opt: MatOption;
+
+  onSelectRole(role,users,event){
+    console.log(this.matRef.options)
+    // this.matRef.options.forEach((data: MatOption) =>{
+    //   console.log("data",data.id)
+    //   //  if(this.userselected[0]!=data.id)
+    //   //  {
+    //   //     this.userselected=[]
+    //   //     this.user2=""
+    //   // }
+    //  data.deselect()
+    // } 
+    // );
+    // const matSelect: MatSelect = event.source;
+    // matSelect.writeValue(null);
+    let userSelected =users[0].email  
+    this.userselected.push(users[0].email)
+    console.log("selected value",event);
+    console.log("selected element", users[0].email);
+    console.log("finall element", this.userselected[0]);
+
+    // if(this.userselected[0]!=users[0].email){
+    //   this.userselected=[]
+    //   this.user2=""
+    //   this.select=false
+    // }
+    //console.log("users",this.userselected)
+
     var user = users.forEach(element => {
+
       if(element.role == role){
         this.selectedUser={
           'role': role,
@@ -550,8 +589,9 @@ export class UsersComponent implements OnInit {
         }
       }
     });
-    console.log(this.selectedUser)
-    
+    //console.log(this.selectedUser)
+    //console.log("user selected",userSelected)
+
   }
 
 
