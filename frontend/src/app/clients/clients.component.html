@@ -121,7 +121,7 @@
                     <p><span>PDV type:</span> {{client.geometry.properties.TypeDPV}}</p>
                     <p><span>Sector:</span> {{client.geometry.properties.Code_Secteur_OS}}</p>
                     <div class="nfc">
-                        NFC
+                        <p>NFC</p>
                         <mat-icon *ngIf="client.geometry.properties.nfc.UUID==null" [ngStyle]="{'color':'#FACF37'}">
                             indeterminate_check_box
                         </mat-icon>
@@ -135,7 +135,5 @@
         
 
     </div>
-    <mat-paginator [pageSizeOptions]="[30, 50, 200, 300]" [showFirstLastButtons]="true" 
-    >
-    </mat-paginator>
+    <mat-paginator class="pagination" [pageSizeOptions]="[30, 50, 200, 300]" [showFirstLastButtons]="true"></mat-paginator>
 </div>

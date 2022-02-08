@@ -323,7 +323,6 @@ export class ClientsComponent implements OnInit {
 
     }if($event.value == 'all'){
 
-      
       this.dataSource.data = this.clients.reverse();
       this.obs = this.dataSource.connect();
       this.dataSource.paginator = this.paginator;
@@ -544,9 +543,8 @@ export class ClientsComponent implements OnInit {
   clearFilter(){
     this.PDVType = this.IdClient = this.PhoneNumber = this.PDVType = this.nfc = 
     this.sector = this.BackOfficeValid = this.deleteStatus = undefined
-
-    // this.getAllClients()
-    // console.log(this.clients)
-
+    this.clients=[]
+    this.getAllClients1()
+    console.log(this.clients)
   }
 }

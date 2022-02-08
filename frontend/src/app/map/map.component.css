@@ -27,7 +27,6 @@
   bottom: 20px;
   z-index: 9999;
 }
-
 .btn-primary:disabled{
   background-color: #C2BEBE;
   color: #313030;

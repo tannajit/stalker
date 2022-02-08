@@ -15,6 +15,9 @@ import { IndexdbService } from 'src/app/indexdb.service';
 })
 export class UserInfoComponent implements OnInit {
 
+  Sectors = []
+  AllSectors = []
+  version = 6;
   sectors
   dialogRef: MatDialogRef<ConfirmationDialogComponent>;
   dialogRef1: MatDialogRef<UserInfoComponent>
@@ -33,8 +36,11 @@ export class UserInfoComponent implements OnInit {
   }
   ngOnInit(): void {
     this.getSectorsByUser()
+    console.log(this.RolesSource)
+    console.log(this.data)
    //this.getDataSector()
    this.GetSectors()
+   console.log(this.Sectors)
     //console.log("this.data._id",this.data.data)
   }
 
@@ -47,98 +53,98 @@ export class UserInfoComponent implements OnInit {
   }
 
   RoleActive() {
-    var active;
+    var active: boolean;
     this.RolesSource.forEach(el => {
-      
+      //console.log(el)
       if(el.name==this.data.data.role) {
-     
-      switch(el.sectors){
-
-        case 'limited':active= false;
-        break;
-        case 'all':active = true;
-        break;
-      } 
+    //  console.log("dkhlt")
+      if(el.sectors=='limited'){
+        active= false
+      }else if(el.sectors=='all'){
+        active = true
+      }
     }
 
     });
-    console.log("active",active);
+    //console.log("active",active);
     return active;
   }
 
-    Sectors = []
-    AllSectors = []
-    version = 6;
+   
 
-    /// INDEX DB ////
-    public getDataSector() {
-      var sectors=this.data.data.sectors
+  /// INDEX DB ////
+  public getDataSector() {
+    var sectors=this.data.data.sectors
 
-      let db; let transaction;
-      const request = window.indexedDB.open('off', this.version);
-      request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-        console.log('Why didn\'t you allow my web app to use IndexedDB?!');
-      };
+    let db; let transaction;
+    const request = window.indexedDB.open('off', this.version);
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+      console.log('Why didn\'t you allow my web app to use IndexedDB?!');
+    };
 
-      if(!this.RoleActive()) {
+    if(!this.RoleActive()) {
 
-                
-      request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-        db = event.target.result;
+              
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
 
-        transaction = db.transaction(['sector'], 'readwrite');
-        const objectStore = transaction.objectStore('sector');
-        const objectStoreRequest = objectStore.getAll();
-        objectStoreRequest.onsuccess = event => {
-          const all = event.target.result;
-          var detail
-          sectors.forEach(el => {
-          all.forEach(elm => {
-            console.log("elm",elm.Valeur)
-           // var element = JSON.parse(elm.Valeur);
-            var element = elm.Valeur
-            if(el.nameSecteur==element.nameSecteur) {
-              console.log("yess")
-              detail= element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
-              this.Sectors.push(detail)
-            }
-
-          });
-        });
-
-
-        };
-      };
-
-  
-      }   
-    }
-
-
-    ///  Dexie 
-    async GetSectors() {
-      var sectors=this.data.data.sectors
-      if(!this.RoleActive()) {
-      var db = new Dexie("off").open().then((res) => {
-        res.table("sector").each(element => {
-          // console.log(element)
-          sectors.forEach(el => {
-          var obj = {
-            id: element.nameSecteur,
-            detail: element.nameSecteur + " - " + element.machine + " - " + element.info.geometry.properties.name
-          }
+      transaction = db.transaction(['sector'], 'readwrite');
+      const objectStore = transaction.objectStore('sector');
+      const objectStoreRequest = objectStore.getAll();
+      objectStoreRequest.onsuccess = event => {
+        const all = event.target.result;
+        var detail
+        sectors.forEach(el => {
+        all.forEach(elm => {
+          console.log("elm",elm.Valeur)
+          // var element = JSON.parse(elm.Valeur);
+          var element = elm.Valeur
           if(el.nameSecteur==element.nameSecteur) {
             console.log("yess")
-            //var detail= element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
-            this.Sectors.push(obj.detail)
+            detail= element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
+            this.Sectors.push(detail)
           }
-          //this.AllSectors.push(obj.id)
-          //this.Sectors.push(obj)
-        })
+
+        });
       });
-      });
-    }
-    }
+
+
+      };
+    };
+
+
+    }   
+  }
+
+
+  ///  Dexie 
+  async GetSectors() {
+    var sectors=this.data.data.sectors
+    console.log(this.data.data.sectors)
+    if(!this.RoleActive()) {
+      
+    var db = new Dexie("off").open().then((res) => {
+      res.table("sector").each(element => {
+        console.log("****************////////////////////////// ********")
+        this.data.data.sectors.forEach(el => {
+          console.log(el)
+        var obj = {
+          id: element.nameSecteur,
+          detail: element.nameSecteur + " - " + element.machine + " - " + element.info.geometry.properties.name
+        }
+        if(el.nameSecteur==element.nameSecteur) {
+          console.log("yess")
+          //var detail= element.nameSecteur+" - "+element.machine+" - "+element.info.geometry.properties.name
+          this.Sectors.push(obj.detail)
+        }
+        
+        //this.AllSectors.push(obj.id)
+        //this.Sectors.push(obj)
+      })
+    });
+    });
+  }
+  }
 
     ///
 
