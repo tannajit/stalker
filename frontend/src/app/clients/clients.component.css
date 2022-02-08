@@ -1,125 +1,666 @@
-.clients_container{
-    margin: auto;
-    display: flex;
-    flex-flow: column wrap;
-    align-items: center;
-    padding: 20px;
-    background-color: #F6F6F6;
-}
-.clients_container button{
-    margin: 8px;
-    border-radius: 10px;
-    color: #646161;
-    border: 1px solid #959191;
-    width: 140px;
-}
-.clients_container button mat-icon{
-    color: #27AE61;
-}
 
-.clients-list{
-    display: flex;
-    flex-flow: column wrap;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    flex-flow: row wrap;
-    gap: 1%;
-    row-gap: 1%;
-    column-gap: 1%;
+@media (min-width: 1200px){
+
+    .clients_container{
+        margin: auto;
+        display: flex;
+        flex-flow: column wrap;
+        align-items: center;
+        padding: 20px;
+        background-color: #F6F6F6;
+    }
+    .clients_container button{
+        margin: 8px;
+        border-radius: 10px;
+        color: #646161;
+        border: 1px solid #959191;
+        width: 140px;
+    }
+    .clients_container button mat-icon{
+        color: #27AE61;
+    }
+    
+    .clients-list{
+        display: flex;
+        flex-flow: column wrap;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        flex-flow: row wrap;
+        gap: 1%;
+        row-gap: 1%;
+        column-gap: 1%;
+        
+    }
+    .clients-list mat-card{
+        cursor: pointer;
+        width: 220px;
+        height: auto;  
+        box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+    }
+    .clients-list mat-card img{
+        padding: 8px;
+        height: 220px;
+        box-sizing: border-box;
+        margin-bottom: 0;
+        border-radius: 10px !important;
+    }
+    
+    .card-content{
+        text-align: start;
+        width: 100%;
+    
+    }
+    
+    .card-content p span{
+        font-weight: bold;
+        color: #27AE61;
+    }
+    
+    
+    
+    .nfc{
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #27AE61;
+        border-radius: 10px;
+        gap: 1%;
+    }
+    p{
+        margin-bottom: 0;
+    }
+    .card-container{
+        margin: 8px;
+    }
+    
+    .filtrage-container{
+       
+        
+        margin: 20px;
+        width: 100%;
+        display: flex;
+        flex-flow: row wrap;
+        gap: 4%;
+        align-items: center;
+        justify-content: flex-start;
+        
+    }
+    
+    .field mat-label{
+        color: #646262;
+    }
+    
+    .field .mat-form-field input{
+        font-size: 12px;
+        color: #313030;
+        width: 200px;
+    }
+    .field .mat-form-field .mat-select{
+        font-size: 12px;
+        color: #313030;
+    }
+    
+    mat-form-field.mat-focused span.mat-form-field-label-wrapper label {
+    color:#27AE61 !important;
+    }
+    
+    .mat-select:focus:not(.mat-select-disabled).mat-primary .mat-select-arrow {
+        color: #63961C;
+    }
+    
+    :host ::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
+        background-color: #27AE61 ;
+    }
+    
+    :host ::ng-deep  .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
+        background-color: #27AE61 ;
+    }
+    
+    .filter-actions{
+        margin-top: 0;
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
     
 }
-.clients-list mat-card{
-    cursor: pointer;
-    width: 250px;
-    height: auto;  
-    box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
-}
-.clients-list mat-card img{
-    padding: 8px;
-    height: 250px;
-    box-sizing: border-box;
-    margin-bottom: 0;
-    border-radius: 10px !important;
-}
 
-.card-content{
-    text-align: start;
-    width: 100%;
-
-}
-
-.card-content p span{
-    font-weight: bold;
-    color: #27AE61;
-}
-
-
-
-.nfc{
-    display: flex;
-    flex-flow: row;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #27AE61;
-    border-radius: 10px;
-    gap: 1%;
-}
-p{
-    margin-bottom: 0;
-}
-.card-container{
-    margin: 8px;
-}
-
-.filtrage-container{
-   
+@media (min-width: 900px) and (max-width: 1200px){
+    .clients_container{
+        margin: auto;
+        display: flex;
+        flex-flow: column wrap;
+        align-items: center;
+        padding: 20px;
+        background-color: #F6F6F6;
+    }
+    .clients_container button{
+        margin: 8px;
+        border-radius: 10px;
+        color: #646161;
+        border: 1px solid #959191;
+        width: 120px;
+    }
+    .clients_container button mat-icon{
+        color: #27AE61;
+    }
     
-    margin: 20px;
-    width: 100%;
-    display: flex;
-    flex-flow: row wrap;
-    gap: 4%;
-    align-items: center;
-    justify-content: flex-start;
+    .clients-list{
+        display: flex;
+        flex-flow: column wrap;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        flex-flow: row wrap;
+        gap: 1%;
+        row-gap: 1%;
+        column-gap: 1%;
+        
+    }
+    .clients-list mat-card{
+        cursor: pointer;
+        width: 210px;
+        height: auto;  
+        box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+    }
+    .clients-list mat-card img{
+        padding: 8px;
+        height: 200px;
+        box-sizing: border-box;
+        margin-bottom: 0;
+        border-radius: 10px !important;
+    }
+    
+    .card-content{
+        text-align: start;
+        width: 100%;
+    
+    }
+    
+    .card-content p span{
+        font-size: 13px;
+        font-weight: bold;
+        color: #27AE61;
+    }
+    
+    
+    
+    .nfc{
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #27AE61;
+        border-radius: 10px;
+        gap: 1%;
+    }
+    p{
+        font-size: 13px;
+        margin-bottom: 0;
+    }
+    .card-container{
+        margin: 8px;
+    }
+    
+    .filtrage-container{
+       
+        
+        margin: 20px;
+        width: 100%;
+        display: flex;
+        flex-flow: row wrap;
+        gap: 4%;
+        align-items: center;
+        justify-content: flex-start;
+        
+    }
+    
+    .field mat-label{
+        font-size: 13px;
+        color: #646262;
+    }
+    
+    .field .mat-form-field input{
+        font-size: 12px;
+        color: #313030;
+        width: 200px;
+    }
+    .field .mat-form-field .mat-select{
+        font-size: 12px;
+        color: #313030;
+    }
+    
+    mat-form-field.mat-focused span.mat-form-field-label-wrapper label {
+    color:#27AE61 !important;
+
+    }
+    
+    .mat-select:focus:not(.mat-select-disabled).mat-primary .mat-select-arrow {
+        color: #63961C;
+    }
+    
+    :host ::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
+        background-color: #27AE61 ;
+    }
+    
+    :host ::ng-deep  .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
+        background-color: #27AE61 ;
+    }
+    
+    .filter-actions{
+        margin-top: 0;
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
     
 }
 
-.field mat-label{
-    color: #646262;
+@media (min-width: 600px) and (max-width: 900px){
+    .clients_container{
+        margin: auto;
+        display: flex;
+        flex-flow: column wrap;
+        align-items: center;
+        padding: 20px;
+        background-color: #F6F6F6;
+    }
+    .clients_container button{
+        /* margin: 8px; */
+        border-radius: 10px;
+        color: #646161;
+        border: 1px solid #959191;
+        width: 140px;
+    }
+    .clients_container button mat-icon{
+        color: #27AE61;
+    }
+    
+    .clients-list{
+        display: flex;
+        flex-flow: column wrap;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        flex-flow: row wrap;
+        gap: 1%;
+        row-gap: 1%;
+        column-gap: 1%;
+        
+    }
+    .clients-list mat-card{
+        cursor: pointer;
+        width: 180px;
+        height: auto;  
+        box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+    }
+    .clients-list mat-card img{
+        padding: 8px;
+        height: 180px;
+        box-sizing: border-box;
+        margin-bottom: 0;
+        border-radius: 10px !important;
+    }
+    
+    .card-content.mat-card-content{
+        text-align: start;
+        width: 100%;
+        
+    }
+    
+    .card-content p span{
+        font-size: 10px;
+        font-weight: bold;
+        color: #27AE61;
+    }
+    
+    
+    
+    .nfc{
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #27AE61;
+        border-radius: 10px;
+        gap: 1%;
+    }
+    
+    p{
+        font-size: 10px;
+        margin-bottom: 0;
+    }
+    .card-container{
+        margin: 8px;
+    }
+    
+    .filtrage-container{
+       
+        
+        /* margin: 20px; */
+        width: 100%;
+        display: flex;
+        flex-flow: row wrap;
+        gap: 4%;
+        align-items: center;
+        justify-content: flex-start;
+        
+    }
+    
+    .field mat-label{
+        font-size: 10px;
+        color: #646262;
+    }
+    
+    .field .mat-form-field input{
+        font-size: 10px;
+        color: #313030;
+        width: 200px;
+    }
+    .field .mat-form-field .mat-select{
+        font-size: 10px;
+        color: #313030;
+    }
+    
+    mat-form-field.mat-focused span.mat-form-field-label-wrapper label {
+    color:#27AE61 !important;
+    }
+    
+    .mat-select:focus:not(.mat-select-disabled).mat-primary .mat-select-arrow {
+        color: #63961C;
+    }
+    
+    :host ::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
+        background-color: #27AE61 ;
+    }
+    
+    :host ::ng-deep  .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
+        background-color: #27AE61 ;
+    }
+    
+    .filter-actions{
+        margin-top: 0;
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
 }
 
-.field .mat-form-field input{
-    font-size: 12px;
-    color: #313030;
-    width: 200px;
-}
-.field .mat-form-field .mat-select{
-    font-size: 12px;
-    color: #313030;
+@media (min-width: 350px) and (max-width: 599px){
+    
+    .clients_container{
+        margin: auto;
+        display: flex;
+        flex-flow: column wrap;
+        align-items: center;
+        padding: 6px;
+        background-color: #F6F6F6;
+    }
+    .clients_container button{
+        font-size: 10px;
+        margin: 8px;
+        border-radius: 10px;
+        color: #646161;
+        border: 1px solid #959191;
+        width: 100px;
+    }
+    .clients_container button mat-icon{
+        color: #27AE61;
+    }
+    
+    .clients-list{
+        display: flex;
+        flex-flow: column wrap;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        flex-flow: row wrap;
+        gap: 1%;
+        row-gap: 1%;
+        column-gap: 1%;
+        
+    }
+    .clients-list mat-card{
+        cursor: pointer;
+        width: 120px;
+        height: auto;  
+        box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+    }
+    .clients-list mat-card img{
+        padding: 4px;
+        /* height: 120px; */
+        box-sizing: border-box;
+        margin-bottom: 0;
+        border-radius: 10px !important;
+    }
+    
+    .card-content.mat-card-content{
+        padding: 0 !important;
+        margin: 0 !important;
+        text-align: start;
+        width: 100%;
+    }
+    
+    .card-content p span{
+        font-size: 9px;
+        font-weight: bold;
+        color: #27AE61;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+     
+    .nfc{
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #27AE61;
+        border-radius: 10px;
+        gap: 1%;
+    }
+
+    p{
+        font-size: 9px;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .card-container{
+        margin: 3px;
+    }
+    
+    .filtrage-container{
+       
+        width: 100%;
+        display: flex;
+        flex-flow: row wrap;
+        gap: 2%;
+        align-items: center;
+        justify-content: flex-start;
+        
+    }
+    
+    .field mat-label{
+        color: #646262;
+    }
+    
+    .field .mat-form-field input{
+        font-size: 12px;
+        color: #313030;
+        width: 200px;
+    }
+
+    .field .mat-form-field .mat-select{
+        font-size: 12px;
+        color: #313030;
+    }
+    
+    mat-form-field.mat-focused span.mat-form-field-label-wrapper label {
+    color:#27AE61 !important;
+    }
+    
+    .mat-select:focus:not(.mat-select-disabled).mat-primary .mat-select-arrow {
+        color: #63961C;
+    }
+    
+    :host ::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
+        background-color: #27AE61 ;
+    }
+    
+    :host ::ng-deep  .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
+        background-color: #27AE61 ;
+    }
+    
+    .filter-actions{
+        margin-top: 0;
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
 }
 
-mat-form-field.mat-focused span.mat-form-field-label-wrapper label {
-color:#27AE61 !important;
-}
+@media (min-width: 200px) and (max-width: 350px){
+    .clients_container{
+        margin: auto;
+        display: flex;
+        flex-flow: column wrap;
+        align-items: center;
+        padding: 2px;
+        background-color: #F6F6F6;
+    }
+    .clients_container button{
+        font-size: 10px;
+        margin: 3px;
+        border-radius: 10px;
+        color: #646161;
+        border: 1px solid #959191;
+        width: 100px;
+    }
+    .clients_container button mat-icon{
+        color: #27AE61;
+    }
+    
+    .clients-list{
+        display: flex;
+        flex-flow: column wrap;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        flex-flow: row wrap;
+        gap: 0.5%;
+        row-gap: 0.5%;
+        column-gap: 0.5%;
+        
+    }
+    .clients-list mat-card{
+        cursor: pointer;
+        width: 100px;
+        height: auto;  
+        box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+    }
+    .clients-list mat-card img{
+        padding: 3px;
+        height: 100px;
+        box-sizing: border-box;
+        margin-bottom: 0;
+        border-radius: 10px !important;
+    }
+    
+    .card-content{
+        text-align: start;
+        width: 100%;
+    
+    }
+    
+    .card-content p span{
+        font-size: 8px;
+        font-weight: bold;
+        color: #27AE61;
+    }
+    
+    
+    
+    .nfc{
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #27AE61;
+        border-radius: 10px;
+        gap: 1%;
+    }
+    p{
+        font-size: 8px;
+        margin-bottom: 0;
+    }
+    .card-container{
+        margin: 2px;
+    }
+    
+    .filtrage-container{
+       
+        
+        margin: 4px;
+        width: 100%;
+        display: flex;
+        flex-flow: row wrap;
+        gap: 2%;
+        align-items: center;
+        justify-content: flex-start;
+        
+    }
+    
+    .field mat-label{
+        color: #646262;
+    }
+    
+    .field .mat-form-field input{
+        font-size: 12px;
+        color: #313030;
+        width: 200px;
+    }
+    .field .mat-form-field .mat-select{
+        font-size: 12px;
+        color: #313030;
+    }
+    
+    mat-form-field.mat-focused span.mat-form-field-label-wrapper label {
+    color:#27AE61 !important;
+    }
+    
+    .mat-select:focus:not(.mat-select-disabled).mat-primary .mat-select-arrow {
+        color: #63961C;
+    }
+    
+    :host ::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
+        background-color: #27AE61 ;
+    }
+    
+    :host ::ng-deep  .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
+        background-color: #27AE61 ;
+    }
+    
+    .filter-actions{
+        margin-top: 0;
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
 
-.mat-select:focus:not(.mat-select-disabled).mat-primary .mat-select-arrow {
-    color: #63961C;
-}
-
-:host ::ng-deep .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-bar {
-    background-color: #27AE61 ;
-}
-
-:host ::ng-deep  .mat-slide-toggle.mat-checked:not(.mat-disabled) .mat-slide-toggle-thumb {
-    background-color: #27AE61 ;
-}
-
-.filter-actions{
-    margin-top: 0;
-    display: flex;
-    flex-flow: row;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+    
+    
 }

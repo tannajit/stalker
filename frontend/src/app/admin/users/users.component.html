@@ -13,7 +13,8 @@
          
             <mat-form-field>
               <!-- <mat-label>Id User</mat-label> -->
-              <input placeholder="Search..." matInput (keyup)="applyFilter($event.target.value)"/>
+              <input placeholder="Search..." matInput (keyup)="applyFilter($event.target.value)" [(ngModel)]="searchValue"/>
+              
           </mat-form-field>
 
             <mat-form-field>
@@ -67,7 +68,15 @@
               </button> -->
             </th>
 
-            <td mat-cell *matCellDef="let request">{{request[0].name}}</td>
+            
+            <td mat-cell *matCellDef="let request">
+              <ng-container *ngIf="request.constructor.name == 'Array'">
+                {{request[0].name}}
+              </ng-container>
+              <ng-container *ngIf="request.constructor.name == 'Object'">
+                {{request.name}}
+              </ng-container> 
+            </td>
           </ng-container>
       
           <ng-container matColumnDef="CIN">
@@ -78,8 +87,14 @@
                 <mat-icon class="sort-icon" ></mat-icon>
               </button> -->
             </th>
-
-            <td mat-cell *matCellDef="let request">{{request[0].CIN}}</td>
+            <td mat-cell *matCellDef="let request">
+              <ng-container *ngIf="request.constructor.name == 'Array'">
+                {{request[0].CIN}}
+              </ng-container>
+              <ng-container *ngIf="request.constructor.name == 'Object'">
+                {{request.CIN}}
+              </ng-container> 
+            </td>
           </ng-container>
           
           <ng-container matColumnDef="Phone Number">
@@ -89,7 +104,14 @@
                 <mat-icon class="sort-icon" ></mat-icon>
               </button> -->
             </th>
-            <td mat-cell *matCellDef="let request">{{request[0].phone}}</td>
+            <td mat-cell *matCellDef="let request">
+              <ng-container *ngIf="request.constructor.name == 'Array'">
+                {{request[0].phone}}
+              </ng-container>
+              <ng-container *ngIf="request.constructor.name == 'Object'">
+                {{request.phone}}
+              </ng-container> 
+            </td>
           </ng-container>
             
           <ng-container matColumnDef="Email">
@@ -99,7 +121,14 @@
                 <mat-icon class="sort-icon"></mat-icon>
               </button> -->
             </th>
-            <td mat-cell *matCellDef="let request">{{request[0].email}}</td>
+            <td mat-cell *matCellDef="let request">
+              <ng-container *ngIf="request.constructor.name == 'Array'">
+                {{request[0].email}}
+              </ng-container>
+              <ng-container *ngIf="request.constructor.name == 'Object'">
+                {{request.email}}
+              </ng-container> 
+            </td>
           </ng-container>
 
           <ng-container matColumnDef="Role">
@@ -111,13 +140,19 @@
             </th>
             <td mat-cell *matCellDef="let request">
               <!-- {{request.role}} -->
-              <mat-form-field >
-                <mat-select panelClass="selectPanel2" placeholder="See the roles" (selectionChange)="onSelectRole($event.value,request)">
-                    
-                  <mat-option *ngFor="let user of request" [value]="user.role">{{user.role}}</mat-option>
-                 
-                </mat-select>
-              </mat-form-field>
+              <ng-container *ngIf="request.constructor.name == 'Array'">
+                <mat-form-field >
+                  <mat-select panelClass="selectPanel2" placeholder="See the roles" (selectionChange)="onSelectRole($event.value,request)">
+                      
+                    <mat-option *ngFor="let user of request" [value]="user.role">{{user.role}}</mat-option>
+                   
+                  </mat-select>
+                </mat-form-field>
+              </ng-container>
+              <ng-container *ngIf="request.constructor.name == 'Object'">
+                {{request.role}}
+              </ng-container> 
+              
               
             </td>
           </ng-container>
@@ -132,15 +167,22 @@
             </th>
             <ng-container *matCellDef="let request" >
 
-              <ng-container *ngIf="selectedUser && request.includes(selectedUser.user)">
-                <td mat-cell *ngIf="selectedUser.user.status=='out of work'"><span style="background-color: #AE5827; padding: 3px; color: #fff; border-radius: 3px;">{{selectedUser.user.status}}</span></td>
-                <td mat-cell *ngIf="selectedUser.user.status=='Active'"><span style="background-color: #27AE61; padding: 3px; color: #fff; border-radius: 3px;">{{selectedUser.user.status}}</span></td>
+              <ng-container *ngIf="request.constructor.name == 'Array'">
+                <ng-container *ngIf="selectedUser && request.includes(selectedUser.user)">
+                  <td mat-cell *ngIf="selectedUser.user.status=='out of work'"><span style="background-color: #AE5827; padding: 3px; color: #fff; border-radius: 3px;">{{selectedUser.user.status}}</span></td>
+                  <td mat-cell *ngIf="selectedUser.user.status=='Active'"><span style="background-color: #27AE61; padding: 3px; color: #fff; border-radius: 3px;">{{selectedUser.user.status}}</span></td>
+                </ng-container>
+  
+                <ng-container *ngIf="!selectedUser || !request.includes(selectedUser.user)">
+                  <td mat-cell><span style="background-color: #b3932b; padding: 3px; color: #fff; border-radius: 3px;">NaN</span></td>
+                </ng-container>  
               </ng-container>
-
-              <ng-container *ngIf="!selectedUser || !request.includes(selectedUser.user)">
-                <td mat-cell><span style="background-color: #b3932b; padding: 3px; color: #fff; border-radius: 3px;">NaN</span></td>
-              </ng-container>
-             
+              <ng-container *ngIf="request.constructor.name == 'Object'">
+                  <td mat-cell *ngIf="request.status=='out of work'"><span style="background-color: #AE5827; padding: 3px; color: #fff; border-radius: 3px;">{{request.status}}</span></td>
+                  <td mat-cell *ngIf="request.status=='Active'"><span style="background-color: #27AE61; padding: 3px; color: #fff; border-radius: 3px;">{{request.status}}</span></td>
+              </ng-container> 
+              
+              
             </ng-container>
           
           </ng-container>
@@ -152,17 +194,31 @@
                 <mat-icon class="sort-icon" ></mat-icon>
               </button> -->
             </th>
+            
             <td mat-cell *matCellDef="let request">
-              <ng-container *ngIf="selectedUser && request.includes(selectedUser.user)">
-                <button mat-icon-button (click)="updateUser(selectedUser.user)" title="Update user"><mat-icon class="valid-icon">edit</mat-icon></button>
-                <button mat-icon-button (click)="deleteUser(selectedUser.user)" title="Delete user" *ngIf="selectedUser.user.status=='Active'">
-                  <mat-icon class="refus-icon" >delete</mat-icon>
-                </button>
-                <button mat-icon-button (click)="restoreUser(selectedUser.user)" title="Bring back this user" *ngIf="selectedUser.user.status=='out of work'">
-                  <mat-icon class="restore-icon" >restore_from_trash</mat-icon>
-                </button>
-                <button mat-icon-button (click)="viewUserDetails(selectedUser.user)" ><mat-icon class="detail-icon" title="Click to view user details.">remove_red_eye</mat-icon></button>
+              <ng-container *ngIf="request.constructor.name == 'Array'">
+                <ng-container *ngIf="selectedUser && request.includes(selectedUser.user)">
+                  <button mat-icon-button (click)="updateUser(selectedUser.user)" title="Update user"><mat-icon class="valid-icon">edit</mat-icon></button>
+                  <button mat-icon-button (click)="deleteUser(selectedUser.user)" title="Delete user" *ngIf="selectedUser.user.status=='Active'">
+                    <mat-icon class="refus-icon" >delete</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="restoreUser(selectedUser.user)" title="Bring back this user" *ngIf="selectedUser.user.status=='out of work'">
+                    <mat-icon class="restore-icon" >restore_from_trash</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="viewUserDetails(selectedUser.user)" ><mat-icon class="detail-icon" title="Click to view user details.">remove_red_eye</mat-icon></button>
+                </ng-container>
               </ng-container>
+              <ng-container *ngIf="request.constructor.name == 'Object'">
+                <button mat-icon-button (click)="updateUser(request)" title="Update user"><mat-icon class="valid-icon">edit</mat-icon></button>
+                  <button mat-icon-button (click)="deleteUser(request)" title="Delete user" *ngIf="request.status=='Active'">
+                    <mat-icon class="refus-icon" >delete</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="restoreUser(request)" title="Bring back this user" *ngIf="request.status=='out of work'">
+                    <mat-icon class="restore-icon" >restore_from_trash</mat-icon>
+                  </button>
+                  <button mat-icon-button (click)="viewUserDetails(request)" ><mat-icon class="detail-icon" title="Click to view user details.">remove_red_eye</mat-icon></button>
+              </ng-container>
+              
           
             </td>
           </ng-container>

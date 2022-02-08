@@ -20,7 +20,7 @@
                     </div>
                 </mat-list-item>
     
-                <mat-list-item routerLink="clients" routerLinkActive="active">
+                <mat-list-item routerLink="clients" routerLinkActive="active" *ngIf="user.role != 'Admin'">
                     <mat-icon mat-list-icon>store</mat-icon>
                     <div fxFlex="10"></div>
                     <div *ngIf="sidenavWidth > 6" class="sidenav-item">

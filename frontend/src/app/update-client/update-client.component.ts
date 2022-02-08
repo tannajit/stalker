@@ -509,10 +509,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   async Update() {
     console.log(this.clientInfos)
 
-    this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
-      disableClose: true
-    });
-    this.dialogConf.componentInstance.confirmMessage = "update"
+    
     // ***************** scanned codes ************* //
     if (this.ListCodes.length != 0) {
       this.ListCodes.forEach(element => {
@@ -565,6 +562,10 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
       this.UpdateDexie()
       //this.UpdateIndexDB()
     } else {
+      this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
+        disableClose: true
+      });
+      this.dialogConf.componentInstance.confirmMessage = "update"
       this.clientService.updateClient(this.clientInfo).subscribe(res => {
         console.log(res)
         if(res.modifiedCount==1){

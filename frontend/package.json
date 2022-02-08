@@ -32,7 +32,7 @@
     "angularx-qrcode": "^11.0.0",
     "dexie": "^3.2.0",
     "esri-leaflet": "^3.0.4",
-    "esri-leaflet-geocoder": "^2.3.3",
+    "esri-leaflet-geocoder": "^2.3.4",
     "file-saver": "^2.0.5",
     "geojson": "^0.5.0",
     "leaflet": "^1.7.1",

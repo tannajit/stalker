@@ -13,6 +13,9 @@ import { ClientsService } from 'src/app/clients.service';
 import { AlertDialogComponent } from 'src/app/alert-dialog/alert-dialog.component';
 import Dexie from 'dexie';
 import { IndexdbService } from 'src/app/indexdb.service';
+import { isArray } from 'util';
+import { ThrowStmt } from '@angular/compiler';
+import { element } from 'protractor';
 
 
 @Component({
@@ -23,6 +26,7 @@ import { IndexdbService } from 'src/app/indexdb.service';
 export class UsersComponent implements OnInit {
 
 
+  searchValue 
   selectedUser
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   selectedStatus
@@ -39,7 +43,7 @@ export class UsersComponent implements OnInit {
   dataSubject = new BehaviorSubject<Element[]>([]);
   dialogRef: MatDialogRef<ConfirmationDialogComponent>;
   dialogRef2: MatDialogRef<UserInfoComponent>;
-
+  
   constructor(
     private adminService: AdminService,
     public dialog: MatDialog,
@@ -132,6 +136,7 @@ export class UsersComponent implements OnInit {
       this.dataSource = new MatTableDataSource(this.users);
       this.dataSource.data = this.users.reverse();
       this.dataSource.paginator = this.paginator;
+      //console.log(this.dataSource)
     })
   }
 
@@ -244,13 +249,27 @@ export class UsersComponent implements OnInit {
     })
   }
 
+  
   // search input
+  
   applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    console.log(this.dataSource.filter);
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+    var usersCopy= []
+    if(filterValue != ' '){
+      this.users.forEach(element => {
+        usersCopy.push(element[0])
+      });
+      console.log(usersCopy)
+      this.dataSource = new MatTableDataSource(usersCopy)
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+      console.log(this.dataSource.filter);
+      if (this.dataSource.paginator) {
+        this.dataSource.paginator.firstPage();
+      }
     }
+    
+    
+    
   }
 
   // filterage based on status select
@@ -261,55 +280,60 @@ export class UsersComponent implements OnInit {
     if ($event.value == 'all') {
       console.log("status = all")
       // when we select all for status 
+      
       let filtered = []
-      _.filter(this.users, (item) => {
+      this.users.forEach(element => {
+        _.filter(element, (item) => {
 
 
-        if (this.selectedRole == 'all' && !this.selectedSector) {
-          filtered = this.users
-        } if (this.selectedSector == 'all' && !this.selectedRole) {
-          filtered = this.users
-        } if (this.selectedRole == 'all' && this.selectedSector == 'all') {
-          filtered = this.users
-        } if (!this.selectedRole && !this.selectedSector) {
-          filtered = this.users
-        } if (this.selectedRole && (!this.selectedSector || this.selectedSector == 'all') && this.selectedRole != 'all') {
-          // when we select all for status and only the role is selected already
-          if (item.role == this.selectedRole) {
-            filtered.push(item)
+          if (this.selectedRole == 'all' && !this.selectedSector) {
+            filtered = this.users
+          } if (this.selectedSector == 'all' && !this.selectedRole) {
+            filtered = this.users
+          } if (this.selectedRole == 'all' && this.selectedSector == 'all') {
+            filtered = this.users
+          } if (!this.selectedRole && !this.selectedSector) {
+            filtered = this.users
+          } if (this.selectedRole && (!this.selectedSector || this.selectedSector == 'all') && this.selectedRole != 'all') {
+            // when we select all for status and only the role is selected already
+            if (item.role == this.selectedRole) {
+              filtered.push(item)
+            }
+          } if (this.selectedSector && (!this.selectedRole || this.selectedRole == 'all') && this.selectedSector != 'all') {
+            // when we select all for status and only the role is selected already
+            item.sectors.forEach(element => {
+              if (element.nameSecteur == String(this.selectedSector)) {
+                filtered.push(item)
+                console.log("#####")
+              }
+            })
+          } if (this.selectedRole && this.selectedSector && (this.selectedRole != 'all' && this.selectedSector != 'all')) {
+            // if we select all for status and the role and the sector ar both selected
+            item.sectors.forEach(element => {
+              if (item.role == this.selectedRole && element.nameSecteur == String(this.selectedSector)) {
+                filtered.push(item)
+                console.log("#####")
+              }
+            })
+  
+          } if (this.selectedSector && (!this.selectedRole) && this.selectedSector != 'all') {
+            // if we select all for status knowing that only the sector is selected already
+            item.sectors.forEach(element => {
+              if (element.nameSecteur == String(this.selectedSector)) {
+                filtered.push(item)
+                console.log("#####")
+              }
+            })
+  
           }
-        } if (this.selectedSector && (!this.selectedRole || this.selectedRole == 'all') && this.selectedSector != 'all') {
-          // when we select all for status and only the role is selected already
-          item.sectors.forEach(element => {
-            if (element.nameSecteur == String(this.selectedSector)) {
-              filtered.push(item)
-              console.log("#####")
-            }
-          })
-        } if (this.selectedRole && this.selectedSector && (this.selectedRole != 'all' && this.selectedSector != 'all')) {
-          // if we select all for status and the role and the sector ar both selected
-          item.sectors.forEach(element => {
-            if (item.role == this.selectedRole && element.nameSecteur == String(this.selectedSector)) {
-              filtered.push(item)
-              console.log("#####")
-            }
-          })
-
-        } if (this.selectedSector && (!this.selectedRole) && this.selectedSector != 'all') {
-          // if we select all for status knowing that only the sector is selected already
-          item.sectors.forEach(element => {
-            if (element.nameSecteur == String(this.selectedSector)) {
-              filtered.push(item)
-              console.log("#####")
-            }
-          })
-
-        }
-
-
+  
+  
+        })
       })
-      this.dataSource = new MatTableDataSource(filtered)
 
+      console.log(filtered)
+      this.dataSource = new MatTableDataSource(filtered)
+      this.dataSource.paginator = this.paginator;
 
 
     } else {
@@ -318,40 +342,43 @@ export class UsersComponent implements OnInit {
       // })
       // this.dataSource = new MatTableDataSource(filteredData);
       let filtered = []
-      _.filter(this.users, (item) => {
+      this.users.forEach(element => {
+        _.filter(element, (item) => {
 
-        if ((!this.selectedRole || this.selectedRole == 'all') && (!this.selectedSector || this.selectedSector == 'all')) {
-          // when we select a status and others are not selected  
-          if (item.status.toLowerCase() == $event.value.toLowerCase()) {
-            filtered.push(item)
-          }
-        } if (this.selectedRole && (!this.selectedSector || this.selectedSector == 'all')) {
-          // when we select a status knowing that only the role is selected already
-          if ((item.status.toLowerCase() == $event.value.toLowerCase()) && item.role == this.selectedRole) {
-            filtered.push(item)
-          }
-        } if (this.selectedSector && (!this.selectedRole || this.selectedRole == 'all')) {
-          // if we select the status knowing that only the sector is selected already
-          item.sectors.forEach(element => {
-            if (item.status.toLowerCase() == $event.value.toLowerCase() && element.nameSecteur == String(this.selectedSector)) {
+          if ((!this.selectedRole || this.selectedRole == 'all') && (!this.selectedSector || this.selectedSector == 'all')) {
+            // when we select a status and others are not selected  
+            if (item.status.toLowerCase() == $event.value.toLowerCase()) {
               filtered.push(item)
-              console.log("#####")
             }
-          })
-
-        } if (this.selectedRole && this.selectedSector) {
-          // if we select a status and the role and the sector ar both selected
-          item.sectors.forEach(element => {
-            if (item.status.toLowerCase() == $event.value.toLowerCase() && item.role == this.selectedRole && element.nameSecteur == String(this.selectedSector)) {
+          } if (this.selectedRole && (!this.selectedSector || this.selectedSector == 'all')) {
+            // when we select a status knowing that only the role is selected already
+            if ((item.status.toLowerCase() == $event.value.toLowerCase()) && item.role == this.selectedRole) {
               filtered.push(item)
-              console.log("#####")
             }
-          })
-
-        }
+          } if (this.selectedSector && (!this.selectedRole || this.selectedRole == 'all')) {
+            // if we select the status knowing that only the sector is selected already
+            item.sectors.forEach(element => {
+              if (item.status.toLowerCase() == $event.value.toLowerCase() && element.nameSecteur == String(this.selectedSector)) {
+                filtered.push(item)
+                console.log("#####")
+              }
+            })
+  
+          } if (this.selectedRole && this.selectedSector) {
+            // if we select a status and the role and the sector ar both selected
+            item.sectors.forEach(element => {
+              if (item.status.toLowerCase() == $event.value.toLowerCase() && item.role == this.selectedRole && element.nameSecteur == String(this.selectedSector)) {
+                filtered.push(item)
+                console.log("#####")
+              }
+            })
+  
+          }
+        })
       })
+      console.log(filtered)
       this.dataSource = new MatTableDataSource(filtered)
-
+      this.dataSource.paginator = this.paginator;
     }
   }
 
@@ -363,83 +390,91 @@ export class UsersComponent implements OnInit {
       // when we select all for role and the others are not selected
 
       let filtered = []
-      _.filter(this.users, (item) => {
+      this.users.forEach(element => {
+        _.filter(element, (item) => {
 
-        if (this.selectedStatus == 'all' && !this.selectedSector) {
-          filtered = this.users
-        } if (this.selectedSector == 'all' && !this.selectedStatus) {
-          filtered = this.users;
-        } if (this.selectedSector == 'all' && this.selectedStatus == 'all') {
-          filtered = this.users
-        } if (!this.selectedStatus && !this.selectedSector) {
-          filtered = this.users
-        } if (this.selectedStatus && (!this.selectedSector || this.selectedSector == 'all')) {
-          // when we sellect all for role and the status is selected
-          console.log("pyaa bani")
-          if (item.status == this.selectedStatus) {
-            filtered.push(item)
+          if (this.selectedStatus == 'all' && !this.selectedSector) {
+            filtered = this.users
+          } if (this.selectedSector == 'all' && !this.selectedStatus) {
+            filtered = this.users;
+          } if (this.selectedSector == 'all' && this.selectedStatus == 'all') {
+            filtered = this.users
+          } if (!this.selectedStatus && !this.selectedSector) {
+            filtered = this.users
+          } if (this.selectedStatus && (!this.selectedSector || this.selectedSector == 'all')) {
+            // when we sellect all for role and the status is selected
+            console.log("pyaa bani")
+            if (item.status == this.selectedStatus) {
+              filtered.push(item)
+            }
+  
+          } if (this.selectedStatus && this.selectedSector) {
+            // when we sellect all for role and the status and the sector ar both selected
+            item.sectors.forEach(element => {
+              if (item.status == this.selectedStatus && element.nameSecteur == String(this.selectedSector)) {
+                filtered.push(item)
+                console.log("#####")
+              }
+            })
+  
+          } if (this.selectedSector && (!this.selectedStatus || this.selectedStatus == 'all')) {
+            // if we select all for role knowing that only the sector is selected already
+            item.sectors.forEach(element => {
+              if (element.nameSecteur == String(this.selectedSector)) {
+                filtered.push(item)
+                console.log("#####")
+              }
+            })
+  
           }
-
-        } if (this.selectedStatus && this.selectedSector) {
-          // when we sellect all for role and the status and the sector ar both selected
-          item.sectors.forEach(element => {
-            if (item.status == this.selectedStatus && element.nameSecteur == String(this.selectedSector)) {
-              filtered.push(item)
-              console.log("#####")
-            }
-          })
-
-        } if (this.selectedSector && (!this.selectedStatus || this.selectedStatus == 'all')) {
-          // if we select all for role knowing that only the sector is selected already
-          item.sectors.forEach(element => {
-            if (element.nameSecteur == String(this.selectedSector)) {
-              filtered.push(item)
-              console.log("#####")
-            }
-          })
-
-        }
+        })
       })
+     
+      console.log(filtered)
       this.dataSource = new MatTableDataSource(filtered)
-
+      this.dataSource.paginator = this.paginator;
 
 
 
     } else {
       let filtered = []
-      _.filter(this.users, (item) => {
+      this.users.forEach(element => {
+        _.filter(element, (item) => {
 
-        if ((!this.selectedSector || this.selectedSector == 'all') && (!this.selectedStatus || this.selectedStatus == 'all')) {
-          // when we select a role and others are not selected
-          if (item.role.toLowerCase() == $event.value.toLowerCase()) {
-            filtered.push(item)
-          }
-        } if (this.selectedStatus && (!this.selectedSector || this.selectedSector == 'all') && this.selectedStatus != 'all') {
-          // when we select a role knowing that only the status is selected already
-          if ((item.role.toLowerCase() == $event.value.toLowerCase()) && item.status == this.selectedStatus) {
-            filtered.push(item)
-          }
-        } if (this.selectedSector && (!this.selectedStatus || this.selectedStatus == 'all') && this.selectedSector != 'all') {
-          // if we select a role knowing that only the sector is selected already
-          item.sectors.forEach(element => {
-            if (item.role.toLowerCase() == $event.value.toLowerCase() && element.nameSecteur == String(this.selectedSector)) {
+          if ((!this.selectedSector || this.selectedSector == 'all') && (!this.selectedStatus || this.selectedStatus == 'all')) {
+            // when we select a role and others are not selected
+            if (item.role.toLowerCase() == $event.value.toLowerCase()) {
               filtered.push(item)
-              console.log("#####")
             }
-          })
-
-        } if (this.selectedStatus && this.selectedSector && this.selectedStatus != 'all' && this.selectedSector != 'all') {
-          // if we select a role and the status and the sector ar both selected
-          item.sectors.forEach(element => {
-            if (item.role.toLowerCase() == $event.value.toLowerCase() && item.status == this.selectedStatus && element.nameSecteur == String(this.selectedSector)) {
+          } if (this.selectedStatus && (!this.selectedSector || this.selectedSector == 'all') && this.selectedStatus != 'all') {
+            // when we select a role knowing that only the status is selected already
+            if ((item.role.toLowerCase() == $event.value.toLowerCase()) && item.status == this.selectedStatus) {
               filtered.push(item)
-              console.log("#####")
             }
-          })
-
-        }
+          } if (this.selectedSector && (!this.selectedStatus || this.selectedStatus == 'all') && this.selectedSector != 'all') {
+            // if we select a role knowing that only the sector is selected already
+            item.sectors.forEach(element => {
+              if (item.role.toLowerCase() == $event.value.toLowerCase() && element.nameSecteur == String(this.selectedSector)) {
+                filtered.push(item)
+                console.log("#####")
+              }
+            })
+  
+          } if (this.selectedStatus && this.selectedSector && this.selectedStatus != 'all' && this.selectedSector != 'all') {
+            // if we select a role and the status and the sector ar both selected
+            item.sectors.forEach(element => {
+              if (item.role.toLowerCase() == $event.value.toLowerCase() && item.status == this.selectedStatus && element.nameSecteur == String(this.selectedSector)) {
+                filtered.push(item)
+                console.log("#####")
+              }
+            })
+  
+          }
+        })
       })
+      console.log(filtered)
       this.dataSource = new MatTableDataSource(filtered)
+      this.dataSource.paginator = this.paginator;
     }
 
 
@@ -451,37 +486,41 @@ export class UsersComponent implements OnInit {
     if ($event.value == 'all') {
 
       let filtered = []
-      _.filter(this.users, (item) => {
+      this.users.forEach(element => {
+        _.filter(element, (item) => {
 
-        if (this.selectedStatus == 'all' && !this.selectedRole) {
-          filtered = this.users
-        } if (this.selectedRole == 'all' && !this.selectedStatus) {
-          filtered = this.users
-        } if (this.selectedRole == 'all' && this.selectedStatus == 'all') {
-          filtered = this.users
-        } if (!this.selectedStatus && !this.selectedRole) {
-          filtered = this.users
-        } if (this.selectedStatus && (!this.selectedRole || this.selectedRole == 'all') && this.selectedStatus != 'all') {
-          // when we sellect all for sector and the status is selected
-          console.log("pyaa bani")
-          if (item.status == this.selectedStatus) {
-            filtered.push(item)
+          if (this.selectedStatus == 'all' && !this.selectedRole) {
+            filtered = this.users
+          } if (this.selectedRole == 'all' && !this.selectedStatus) {
+            filtered = this.users
+          } if (this.selectedRole == 'all' && this.selectedStatus == 'all') {
+            filtered = this.users
+          } if (!this.selectedStatus && !this.selectedRole) {
+            filtered = this.users
+          } if (this.selectedStatus && (!this.selectedRole || this.selectedRole == 'all') && this.selectedStatus != 'all') {
+            // when we sellect all for sector and the status is selected
+            console.log("pyaa bani")
+            if (item.status == this.selectedStatus) {
+              filtered.push(item)
+            }
+          } if (this.selectedStatus && this.selectedRole) {
+            // when we sellect all for sector and the status and the role are both selected
+            if (item.status == this.selectedStatus && item.role == this.selectedRole) {
+              filtered.push(item)
+            }
+  
+          } if (this.selectedRole && (!this.selectedStatus || this.selectedStatus == 'all') && this.selectedRole != 'all') {
+            // if we select all for sector knowing that only the status is selected already
+            if (item.role == this.selectedRole) {
+              filtered.push(item)
+            }
+  
           }
-        } if (this.selectedStatus && this.selectedRole) {
-          // when we sellect all for sector and the status and the role are both selected
-          if (item.status == this.selectedStatus && item.role == this.selectedRole) {
-            filtered.push(item)
-          }
-
-        } if (this.selectedRole && (!this.selectedStatus || this.selectedStatus == 'all') && this.selectedRole != 'all') {
-          // if we select all for sector knowing that only the status is selected already
-          if (item.role == this.selectedRole) {
-            filtered.push(item)
-          }
-
-        }
+        })
       })
+      console.log(filtered)
       this.dataSource = new MatTableDataSource(filtered)
+      this.dataSource.paginator = this.paginator;
 
 
     } else {
@@ -527,11 +566,13 @@ export class UsersComponent implements OnInit {
           }
         })
       });
-      
+      console.log(filtered)
       this.dataSource = new MatTableDataSource(filtered)
+      this.dataSource.paginator = this.paginator;
     }
 
   }
+
   anotherArray = this.Sectors;
   filterListCareUnit(val) {
     // console.log(val);
@@ -554,5 +595,16 @@ export class UsersComponent implements OnInit {
     
   }
 
+  isObject(val){
+    console.log(val.constructor.name == "Array");
+    console.log(val.constructor.name == "Object");
+    if(Array.isArray(val)){
+      console.log(val,"Oui")
+      return 'oui'
+    }else if(Array.isArray(val)){
+      console.log(val,"Noo")
+      return 'no'
+    }
+  }
 
 }

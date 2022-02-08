@@ -373,10 +373,7 @@ Send(){
 
   var photo;
 
-  this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
-    disableClose: true
-  });
-  this.dialogConf.componentInstance.confirmMessage = "delete"
+  
 
   if(this.webcamImage==null) {photo=""}else{photo=this.webcamImage}
   this.checkInfos={"data": this.data,"raison":this.raison,status:"Waiting","video":this.Video,"user":this.user._id,"role":this.user.role,"Photo":photo}
@@ -386,6 +383,10 @@ Send(){
     this.clientService.addTodoDelete(this.checkInfos)
     this.router.navigate(['/map'])
   } else {
+    this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
+      disableClose: true
+    });
+    this.dialogConf.componentInstance.confirmMessage = "delete"
     this.clientService.DeleteRequest(this.checkInfos).subscribe(res => { 
       console.log(res)
       if(res){
