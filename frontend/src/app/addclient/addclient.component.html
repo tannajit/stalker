@@ -185,7 +185,7 @@
                     </mat-form-field>
                 </div>
 
-                <div class="field">
+                <!-- <div class="field">
                     <mat-form-field>
                         <mat-label>Address</mat-label>
                         <input matInput placeholder="City"  [(ngModel)]="Address.Match_addr" />
@@ -197,17 +197,17 @@
                         <mat-label>Region</mat-label>
                         <input matInput placeholder="Region"  [(ngModel)]="Address.Region"/>
                     </mat-form-field>
-                </div>
+                </div> -->
                 
                 <div class="field">
                     <div class="verify-phone">
                         <div>
                             <!-- To Do  -->
-                            <input matInput value="+212"  [disabled]="true"  /> 
+                            <button mat-button [disabled]="true">+212</button> 
                             <!-- To Do  -->
                             <mat-form-field>
                                 <mat-label>Phone number*</mat-label>
-                                <input matInput [(ngModel)]="PhoneNumber" pattern="[6-7]{1}[0-9]{8}" />
+                                <input matInput [(ngModel)]="PhoneNumber" placeholder="add Phone number....." pattern="[6-7]{1}[0-9]{8}" />
                             </mat-form-field>
         
                             <button mat-button class="btn-green" [disabled]="disbale_sms"

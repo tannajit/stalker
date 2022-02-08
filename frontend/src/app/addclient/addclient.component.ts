@@ -18,9 +18,9 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import Dexie from 'dexie';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 const incr = 1;
-import "esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css";
-import "esri-leaflet-geocoder/dist/esri-leaflet-geocoder";
-import * as ELG from "esri-leaflet-geocoder";
+// import "esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css";
+// import "esri-leaflet-geocoder/dist/esri-leaflet-geocoder";
+// import * as ELG from "esri-leaflet-geocoder";
 
 @Component({
   selector: 'app-addclient',
@@ -319,14 +319,14 @@ export class AddclientComponent implements AfterViewInit {
 
     navigator.geolocation.watchPosition((position: GeolocationPosition) => {
 
-      new ELG.ReverseGeocode().latlng(new L.LatLng(position.coords.latitude, position.coords.longitude)).language("fr").run((error, result) => {
-        if (error) {
-          return;
-        }
-        this.Address=result.address
+      // new ELG.ReverseGeocode().latlng(new L.LatLng(position.coords.latitude, position.coords.longitude)).language("fr").run((error, result) => {
+      //   if (error) {
+      //     return;
+      //   }
+      //   this.Address=result.address
         
-        console.log("this.Address",this.Address)
-      });
+      //   console.log("this.Address",this.Address)
+      // });
     })
 
 
