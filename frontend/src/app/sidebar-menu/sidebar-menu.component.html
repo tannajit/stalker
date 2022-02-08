@@ -3,7 +3,6 @@
     <mat-sidenav #sidenav mode="side" class="example-sidenav" (click)="sidenav.toggle()" opened="false">
         
             <mat-nav-list>
-            
                 <mat-list-item routerLink="map">
                     <mat-icon mat-list-icon>home</mat-icon>
                     <div fxFlex="10"></div>
@@ -20,7 +19,7 @@
                     </div>
                 </mat-list-item>
     
-                <mat-list-item routerLink="clients" routerLinkActive="active">
+                <mat-list-item routerLink="clients" routerLinkActive="active" *ngIf="user.role != 'Admin'">
                     <mat-icon mat-list-icon>store</mat-icon>
                     <div fxFlex="10"></div>
                     <div *ngIf="sidenavWidth > 6" class="sidenav-item">
@@ -52,7 +51,6 @@
                     </div>
                 </mat-list-item> -->
     
-    
                 <mat-list-item routerLink="offline" routerLinkActive="active"  *ngIf="user.role == 'Seller' || user.role == 'Auditor'">
                     <mat-icon mat-list-icon>refresh</mat-icon>
                     <div fxFlex="10"></div>
@@ -61,7 +59,6 @@
                     </div>
                 </mat-list-item>
     
-                
                 <ng-container *ngFor="let permi of user.permissions">
                 <mat-list-item routerLink="deleteRequests" routerLinkActive="active" *ngIf="permi == 'Validate Delete Requests'">
                     <mat-icon mat-list-icon>auto_delete</mat-icon>
@@ -87,10 +84,7 @@
                         <span>Injection</span>
                     </div>
                 </mat-list-item>
-            
-            </mat-nav-list>
-        
-        
+            </mat-nav-list> 
     </mat-sidenav>
 
     <div class="example-sidenav-content">
@@ -103,9 +97,7 @@
             <span style="font-size: 12px; color: #444242;">{{myname.replace('-',' ')}}</span>
             <button mat-icon-button [matMenuTriggerFor]="logout" #menuTrigger="matMenuTrigger"
                 (click)="menuTrigger.openMenu()">
-
                 <mat-icon style="color: #323030;">keyboard_arrow_down</mat-icon>
-
             </button>
             <!-- Drop down menu for logging out -->
             <mat-menu #logout="matMenu" [overlapTrigger]="false">
@@ -115,7 +107,6 @@
                     <span>Logout</span>
                 </button>
             </mat-menu>
-
         </mat-toolbar>
 
         <div class="body">

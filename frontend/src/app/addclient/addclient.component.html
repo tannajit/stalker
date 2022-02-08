@@ -134,10 +134,8 @@
                         </div>
                         <webcam [height]="200" [width]="500" [trigger]="triggerObservable"
                             (imageCapture)="handleNFCImage($event)">
-                        </webcam>
-                        
+                        </webcam> 
                     </div>
-    
                     <div *ngIf="webcamNFCImage" class="Scan-container">
                         <div class="snapshot">
                             <img [height]="200" [width]="200" [src]="webcamNFCImage.imageAsDataUrl"
@@ -204,9 +202,12 @@
                 <div class="field">
                     <div class="verify-phone">
                         <div>
+                            <!-- To Do  -->
+                            <button mat-button [disabled]="true">+212</button> 
+                            <!-- To Do  -->
                             <mat-form-field>
                                 <mat-label>Phone number*</mat-label>
-                                <input matInput placeholder="+212" [(ngModel)]="PhoneNumber" />
+                                <input matInput [(ngModel)]="PhoneNumber" placeholder="add Phone number....." pattern="[6-7]{1}[0-9]{8}" />
                             </mat-form-field>
         
                             <button mat-button class="btn-green" [disabled]="disbale_sms"

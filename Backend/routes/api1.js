@@ -569,7 +569,7 @@ async function InsertClient(client, res) {
             var id = result.insertedId
             var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
                 { $addToSet: { points: { "point": id, "route": null } } }).then(ss => {
-                    res.status(200).json("Done")
+                    res.status(200).json({message:"Done",id:id})
                 })
             //console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
             //console.log(up)

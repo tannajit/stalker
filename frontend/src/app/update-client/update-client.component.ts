@@ -120,7 +120,9 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
       
     this.loggedUser = JSON.parse(localStorage.getItem("user"));
     this.clientInfo = clientService.getClientInfo();
-    this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time)
+    this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time,err=>{
+      this.timeLeft=2;
+    })
     this.PhoneNumber=this.clientInfo.geometry.properties.PhoneNumber;
     console.log("***** this CLIENT ****")
     console.log(this.clientInfo)
@@ -509,10 +511,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   async Update() {
     console.log(this.clientInfos)
 
-    this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
-      disableClose: true
-    });
-    this.dialogConf.componentInstance.confirmMessage = "update"
+    
     // ***************** scanned codes ************* //
     if (this.ListCodes.length != 0) {
       this.ListCodes.forEach(element => {
@@ -565,6 +564,10 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
       this.UpdateDexie()
       //this.UpdateIndexDB()
     } else {
+      this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
+        disableClose: true
+      });
+      this.dialogConf.componentInstance.confirmMessage = "update"
       this.clientService.updateClient(this.clientInfo).subscribe(res => {
         console.log(res)
         if(res.modifiedCount==1){
@@ -608,7 +611,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
       var client = { _id: this.clientInfo._id, Valeur:this.clientInfo }
       console.log(client)
       res.table("pdvs").update(this.clientInfo._id,this.clientInfo).then(r=>{
-        console.log(r)
+        console.log(r) 
         this._router.navigate(['/map'])
       });
     

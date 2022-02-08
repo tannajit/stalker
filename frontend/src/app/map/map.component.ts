@@ -37,6 +37,12 @@ export class MapComponent implements AfterViewInit {
     //this.index.createDatabase();
     this.user = JSON.parse(localStorage.getItem("user"))
     this.version = index.version;
+    var db = new Dexie("off").open().then((res) => {
+      this.Dexie = res;
+      console.log("open")
+    });
+
+
   }
 
   dialogRef: MatDialogRef<ClientInfoComponent>;
@@ -49,23 +55,24 @@ export class MapComponent implements AfterViewInit {
   ArrayIDS = []
   ArrayIdSector = [];
   myCercle;
+  Dexie;
   mySector = 'hello';
   IDGeomerty;
   icon = L.icon({
     iconUrl: 'assets/green.png',
     iconSize: [12, 12],
   });
-  markersCluster = new L.MarkerClusterGroup();
-  markerClusterSector = new L.MarkerClusterGroup();
+  markersCluster
+  markerClusterSector
   lat = 33.61041004;
   lon = -7.527008504;
   myMarker;
   statusAddClient = false;
   user;
   AllSecteurs = [];
-  version = 6;
+  version = 29;
   marker;
-
+  worker = new Worker(new URL('./map.worker', import.meta.url));
   ///create map 
   private initMap(): void {
     this.map = L.map('map', {
@@ -74,7 +81,7 @@ export class MapComponent implements AfterViewInit {
       zoomControl: false,
       
     });
-    
+
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 30,
       minZoom: 0
@@ -82,9 +89,13 @@ export class MapComponent implements AfterViewInit {
     // this._location.ClearWatch();
     tiles.addTo(this.map);
     //this.getDataClient();
-    this.PutPdvMap()
-    //this.getDataSector();
-    this.PutSectorDataInMap()
+    this.markersCluster = this._serviceClient.markersCluster;
+    this.markerClusterSector = this._serviceClient.markerClusterSector
+    if (this.markerClusterSector.getLayers() == 0) {
+      console.log("^put")
+      this.putzmr()
+    }
+    console.log(this.markersCluster)
     this.map.addLayer(this.markerClusterSector)
     this.map.addLayer(this.markersCluster);
     //this.map.addLayer(this.DeletedMarkerCluster);
@@ -107,7 +118,6 @@ export class MapComponent implements AfterViewInit {
   //////////////*** Init map ////////
   ngAfterViewInit(): void {
     this.initMap();
-
     this.aroute.params.subscribe(params => {
       if (params['lat']) {
         console.log("laaaaaaaaaaaaaaaaaaaaaaat: " + params['lat'])
@@ -118,16 +128,12 @@ export class MapComponent implements AfterViewInit {
           iconSize: [30, 30]
         });
 
-
         this.map.flyTo(new L.LatLng(params['lat'], params['long']), 18);
       } else {
-
         this.getLocation()
         interval(1000).pipe(takeUntil(this.destroyed)).subscribe(x => {
           this.WatchPosition()
-          // 
         })
-
       }
     });
   }
@@ -179,7 +185,6 @@ export class MapComponent implements AfterViewInit {
       timeout: 1000,
       maximumAge: 2000
     };
-
     // interval(1000).subscribe(x => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
@@ -190,7 +195,7 @@ export class MapComponent implements AfterViewInit {
           this.lon = position.coords.longitude;
           console.log(this.lat);
           console.log(this.lon);
-          this.map.setView(new L.LatLng(this.lat, this.lon), 17, { animation: true });
+          this.map.setView(new L.LatLng(this.lat, this.lon), 1, { animation: true });
           if (this.myMarker != undefined) {
             this.map.removeLayer(this.myMarker)
           }
@@ -220,834 +225,621 @@ export class MapComponent implements AfterViewInit {
   }
   //////////*********** get PDV form IndexDB and put  Client Info from IndexDB *******//////////////
   DeletedMarkerCluster = new L.MarkerClusterGroup();
-  public getDataClient() {
+ 
 
-
-    let db; let transaction;
-    const request = window.indexedDB.open('off', this.version);
-    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      console.log('Why didn\'t you allow my web app to use IndexedDB?!');
-    };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      db = event.target.result;
-      console.log('success');
-      console.log(db);
-      transaction = db.transaction(['data'], 'readwrite');
-      const objectStore = transaction.objectStore('data');
-      const objectStoreRequest = objectStore.getAll();
-      objectStoreRequest.onsuccess = event => {
-        const all = event.target.result;
-
-
-        console.log(this.markersCluster.getLayers().length)
-        console.log("\n \n \n  => => => ")
-        all.forEach((element, idx, array) => {
-          if (idx === array.length - 1) {
-            if (this.dialogConf) {
-              this.dialogConf.close()
-              this.openAlertDialog("Sync is Done")
-              //console.log(" -------------------------------- ", this.option_retail)
-
-            }
+    /////////////// ********* Synchronize Action **********/////////////////////////
+    PutData() {
+      this.markersCluster.clearLayers();
+      this.ArrayIDS = []
+      this.worker.postMessage("data");
+      //this.worker.postMessage("pdv");
+      if (typeof Worker !== 'undefined') {
+        this.worker.onmessage = (e) => {
+          var response = e.data.split("worker response to ")[1]
+          if (response == "data") {
+            console.log(" nmi sector ")
+            this.ArrayIdSector = []
+            //console.log(res._allTables)
+            this.markerClusterSector.clearLayers();
+            this.Dexie.table("sector").each(element => {
+              var Point = { _id: element._id, geometry: element.info.geometry };
+              this.ArrayIdSector.push(element._id)
+              var marker = L.geoJSON(Point.geometry, {
+                onEachFeature: (feature, layer) => {
+                  layer.bindPopup(String(element.nameSecteur));
+                }, style: { color: '#CD9575', fillOpacity: 0.1 }
+              });
+              this.markerClusterSector.addLayer(marker);
+              this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
+            })
+  
+            console.log("nmi PDV")
+            //var functionName = e.data.split("worker response to")[1];
+            this.Dexie.table("pdvs").each((element) => {
+              const Point = { _id: element._id, geometry: element.geometry };
+              this.ArrayIDS.push(element._id)
+              const geojsonPoint: geojson.Point = Point.geometry;
+              var iconClient = L.icon({ iconUrl: 'assets/' + Point.geometry.properties?.status + '.png', iconSize: [8, 8] });
+              var marker = L.geoJSON(geojsonPoint, {
+                pointToLayer: (point, latlon) => {
+                  return L.marker(latlon, { icon: iconClient });
+                }
+              });
+              marker.on('click', () => {
+                this.content = Point.geometry;
+                this.zone.run(() => this.openDialog(Point));
+                this._serviceClient.getPosition({ "Client": new L.LatLng(Point.geometry.geometry.coordinates[1], Point.geometry.geometry.coordinates[0]) });
+              });
+  
+              if (Point.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
+                console.log(this.user.role)
+                this.DeletedMarkerCluster.addLayer(marker)
+              } else if (Point.geometry.properties?.status != 'deleted') {
+                this.markersCluster.addLayer(marker);
+              }
+            });
           }
-          const elm = JSON.parse(element.Valeur);
-          const Point = { _id: element._id, geometry: elm };
-          const geojsonPoint: geojson.Point = Point.geometry;
-          console.log(Point.geometry.properties?.status)
-          var iconClient = L.icon({ iconUrl: 'assets/' + Point.geometry.properties?.status + '.png', iconSize: [8, 8] });
-          var marker = L.geoJSON(geojsonPoint, {
-            pointToLayer: (point, latlon) => {
-              return L.marker(latlon, { icon: iconClient });
-            }
-          });
-
-          marker.on('click', () => {
-            this.content = Point.geometry;
-            this.zone.run(() => this.openDialog(Point));
-            this._serviceClient.getPosition({ "Client": new L.LatLng(Point.geometry.geometry.coordinates[1], Point.geometry.geometry.coordinates[0]) });
-
-          });
-
-          if (Point.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
-            console.log(this.user.role)
-            this.DeletedMarkerCluster.addLayer(marker)
-          } else if (Point.geometry.properties?.status != 'deleted') {
-            this.markersCluster.addLayer(marker);
-          }
-        });
-
-      };
-    };
-  }
-
-
-  ////////////******* Get Sector from IndexDB Put Sector in Map  *****////////////////////////////////
-  public getDataSector() {
-
-    let db; let transaction;
-    const request = window.indexedDB.open('off', this.version);
-    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      console.log('Why didn\'t you allow my web app to use IndexedDB?!');
-    };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      db = event.target.result;
-      console.log('success');
-      console.log(db);
-      transaction = db.transaction(['sector'], 'readwrite');
-      const objectStore = transaction.objectStore('sector');
-      const objectStoreRequest = objectStore.getAll();
-      objectStoreRequest.onsuccess = event => {
-        const all = event.target.result;
+        }
+      } else {
+        this.ArrayIdSector = []
+        //console.log(res._allTables)
         this.markerClusterSector.clearLayers();
-        all.forEach(element => {
-          var Point = { _id: element._id, geometry: element.Valeur.info.geometry };
+        this.Dexie.table("sector").each(element => {
+          var Point = { _id: element._id, geometry: element.info.geometry };
+          this.ArrayIdSector.push(element._id)
           var marker = L.geoJSON(Point.geometry, {
             onEachFeature: (feature, layer) => {
-              layer.bindPopup(String(element._id));
+              layer.bindPopup(String(element.nameSecteur));
             }, style: { color: '#CD9575', fillOpacity: 0.1 }
           });
           this.markerClusterSector.addLayer(marker);
           this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
         });
+      }
+    }
+    putzmr() {
+      var marks = []
+      let db; let transaction;
+      const request = window.indexedDB.open('off', this.version);
+      request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+        console.log('Why didn\'t you allow my web app to use IndexedDB?!');
       };
-    };
-  }
+      request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+        db = event.target.result;
+        console.log("resgetSectors", db)
+        transaction = db.transaction(['pdvs'], 'readwrite');
+        const objectStore = transaction.objectStore('pdvs');
+        const objectStoreRequest = objectStore.getAll();
+        //sector
+        var transactions = db.transaction(['sector'], 'readwrite');
+        const objectStores = transactions.objectStore('sector');
+        const objectStoreRequests = objectStores.getAll();
+        objectStoreRequests.onsuccess = event => {
+          var all = event.target.result;
+          var all = event.target.result;
+          //console.log(all)
+          this.markersCluster.clearLayers();
+          var length = all.length;
+          var j = 0;
+          while (j < length) {
+            var element = all[j]
+            var Point = { _id: element._id, geometry: element.info.geometry };
+            this.ArrayIdSector.push(element._id)
+            var marker = L.geoJSON(Point.geometry, {
+              onEachFeature: (feature, layer) => {
+                layer.bindPopup(String(element.nameSecteur));
+              }, style: { color: '#CD9575', fillOpacity: 0.1 }
+            });
+            this.markerClusterSector.addLayer(marker);
+            this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
+            j++;
+          }
+        }
 
-  //////////////////********** Fill IndexDB after synchronize *******///////////////////////////
-  PutData() {
-    console.log("*************Put data***********")
-    //console.log(this.map._layers)
-    let db; let transaction;
-    const request = window.indexedDB.open('off', this.version);
-    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      console.log('Why didn\'t you allow my web app to use IndexedDB?!');
-    };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      db = event.target.result;
-      console.log('success Sync');
-      const allclient = [];
-      this._serviceClient.getAllClient().subscribe(async (res) => {
-        ////////// Clear all 
-        var request = window.indexedDB.open("off", this.version)
-        request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-          console.log("Why didn't you allow my web app to use IndexedDB?!");
-        };
-        request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-          db = event.target.result;
-          console.log("success inside Clear")
-          var transaction = db.transaction(['data'], 'readwrite');
-          var objectStore = transaction.objectStore("data");
-          var objectStoreRequest = objectStore.clear();
-          objectStoreRequest.onsuccess = (event) => {
-            console.log("Data Cleared")
-            console.log("*** done clearing****")
-            res.forEach(element => {
-              const geo = { _id: element._id, Valeur: JSON.stringify(element.geometry) };
-              allclient.push(geo);
-              transaction = db.transaction(['data'], 'readwrite');
-              const objectStore = transaction.objectStore('data');
-              const request = objectStore.put(geo);
-              const geojsonPoint: geojson.Point = element.geometry;
-              var iconClient = L.icon({ iconUrl: 'assets/' + element.geometry.properties?.status + '.png', iconSize: [8, 8] });
-              var marker = L.geoJSON(geojsonPoint, {
-                pointToLayer: (point, latlon) => {
-                  return L.marker(latlon, { icon: iconClient });
-                }
-              });
-
-              marker.on('click', () => {
-                this.content = element.geometry;
-                this.zone.run(() => this.openDialog(element));
-                this._serviceClient.getPosition({ "Client": new L.LatLng(element.geometry.geometry.coordinates[1], element.geometry.geometry.coordinates[0]) });
-
-              });
-
-              if (element.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
-                console.log(this.user.role)
-                this.DeletedMarkerCluster.addLayer(marker)
-              } else if (element.geometry.properties?.status != 'deleted') {
-                this.markersCluster.addLayer(marker);
+        objectStoreRequest.onsuccess = event => {
+          var all = event.target.result;
+          //console.log(all)
+          this.markersCluster.clearLayers();
+          var length = all.length;
+          var i = 0;
+          while (i < length) {
+            var element = all[i]
+            const Point = { _id: element._id, geometry: element.geometry };
+            const geojsonPoint: geojson.Point = element.geometry;
+            var iconClient = L.icon({ iconUrl: 'assets/' + element.geometry.properties?.status + '.png', iconSize: [8, 8] });
+            var marker = L.geoJSON(geojsonPoint, {
+              pointToLayer: (point, latlon) => {
+                return L.marker(latlon, { icon: iconClient });
               }
             });
-            if (this.dialogConf) {
-              this.dialogConf.close()
-              this.openAlertDialog("Sync is Done")
-              //console.log(" -------------------------------- ", this.option_retail)  
-            }
-            // this.getDataClient();
-            // this.openAlertDialog("Synchronozation in process Please wait ")
-          }
-
-        }
-      });
-    };
-  }
-  /////////***** Fill in indexDB with Sector info ******///////
-  PutDataSector() {
-    let db; 
-    let transaction;
-    const request = window.indexedDB.open('off', this.version);
-    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      console.log('Why didn\'t you allow my web app to use IndexedDB?!');
-    };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      db = event.target.result;
-      console.log('success Login');
-      const allclient = [];
-      this._serviceClient.getAllSecteurs().subscribe(res => {
-        var transaction = db.transaction(['sector'], 'readwrite');
-        var objectStore = transaction.objectStore("sector");
-        var objectStoreRequest = objectStore.clear();
-        this.markerClusterSector.clearLayers()
-        objectStoreRequest.onsuccess = (event) => {
-          console.log("Data Cleared")
-          res.forEach(element => {
-            delete element.points
-            delete element.users
-            ///
-            const geo = { _id: element.nameSecteur, Valeur: element };
-            allclient.push(geo);
-            transaction = db.transaction(['sector'], 'readwrite');
-            const objectStore = transaction.objectStore('sector');
-            const request = objectStore.put(geo);
-            request.onsuccess = (event) => {
-              //console.log('done Adding Sector ');
-              var Point = { _id: geo._id, geometry: geo.Valeur.info.geometry };
-              var marker = L.geoJSON(Point.geometry, {
-                onEachFeature: (feature, layer) => {
-                  layer.bindPopup(String(geo._id));
-                }, style: { color: '#CD9575', fillOpacity: 0.1 }
-              });
-              this.markerClusterSector.addLayer(marker);
-              this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
-            };
-          });
-
-          //this.getDataSector();
-        }
-      });
-      /////***** ******/
-      this._serviceClient.getAllClient().subscribe(async (res) => {
-        ////////// Clear all 
-        var request = window.indexedDB.open("off", this.version)
-        request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-          console.log("Why didn't you allow my web app to use IndexedDB?!");
-        };
-        request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-          db = event.target.result;
-          console.log("success inside Clear")
-          var transaction = db.transaction(['data'], 'readwrite');
-          var objectStore = transaction.objectStore("data");
-          var objectStoreRequest = objectStore.clear();
-          objectStoreRequest.onsuccess = (event) => {
-            console.log("Data Cleared")
-            console.log("*** done clearing****")
-            res.forEach(element => {
-              const geo = { _id: element._id, Valeur: JSON.stringify(element.geometry) };
-              allclient.push(geo);
-              transaction = db.transaction(['data'], 'readwrite');
-              const objectStore = transaction.objectStore('data');
-              const request = objectStore.put(geo);
-              const geojsonPoint: geojson.Point = element.geometry;
-              var iconClient = L.icon({ iconUrl: 'assets/' + element.geometry.properties?.status + '.png', iconSize: [8, 8] });
-              var marker = L.geoJSON(geojsonPoint, {
-                pointToLayer: (point, latlon) => {
-                  return L.marker(latlon, { icon: iconClient });
-                }
-              });
-
-              marker.on('click', () => {
-                this.content = element.geometry;
-                this.zone.run(() => this.openDialog(element));
-                this._serviceClient.getPosition({ "Client": new L.LatLng(element.geometry.geometry.coordinates[1], element.geometry.geometry.coordinates[0]) });
-
-              });
-
-              if (element.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
-                console.log(this.user.role)
-                this.DeletedMarkerCluster.addLayer(marker)
-              } else if (element.geometry.properties?.status != 'deleted') {
-                this.markersCluster.addLayer(marker);
-              }
+            marker.on('click', () => {
+              this.content = Point.geometry;
+              this.zone.run(() => this.openDialog(Point));
+              this._serviceClient.getPosition({ "Client": new L.LatLng(element.geometry.geometry.coordinates[1], element.geometry.geometry.coordinates[0]) });
             });
-            if (this.dialogConf) {
-              this.dialogConf.close()
-              this.openAlertDialog("Sync is Done")
-              //console.log(" -------------------------------- ", this.option_retail)  
+            if (element.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
+              console.log(this.user.role)
+              this.DeletedMarkerCluster.addLayer(marker)
+            } else if (element.geometry.properties?.status != 'deleted') {
+              marks.push(marker)
             }
-            // this.getDataClient();
-            // this.openAlertDialog("Synchronozation in process Please wait ")
-          }
-
-        }
-      });
-
-
-    };
-  }
-  /////////////////////////////////////////////////////////////////
-
-  /////////////// ********* Synchronize Action **********/////////////////////////
-  // disbalel=true;
-  async Sooo() {
-    this._serviceClient.Sync("Gros").subscribe(res => {
-      console.log(res)
-    })
-  }
-
-  PutSectorDataInMap() {
-    this.ArrayIdSector = []
-    var db = new Dexie("off").open().then((res) => {
-      //console.log(res._allTables)
-      this.markerClusterSector.clearLayers();
-
-      res.table("sector").each(element => {
-        var Point = { _id: element._id, geometry: element.info.geometry };
-        this.ArrayIdSector.push(element._id)
-        var marker = L.geoJSON(Point.geometry, {
-          onEachFeature: (feature, layer) => {
-            //console.log(element.nameSecteur)
-            layer.bindPopup(String(element.nameSecteur));
-          }, style: { color: '#CD9575', fillOpacity: 0.1 }
-        });
-        this.markerClusterSector.addLayer(marker);
-        this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
-
-      })
-    });
-  }
-  PutPdvMap() {
-    var db = new Dexie("off").open().then((res) => {
-      //console.log(res._allTables)
-      this.markersCluster.clearLayers();
-      this.ArrayIDS = []
-      res.table("pdvs").each((element) => {
-        const Point = { _id: element._id, geometry: element.geometry };
-        this.ArrayIDS.push(element._id)
-        const geojsonPoint: geojson.Point = Point.geometry;
-        var iconClient = L.icon({ iconUrl: 'assets/' + Point.geometry.properties?.status + '.png', iconSize: [8, 8] });
-        var marker = L.geoJSON(geojsonPoint, {
-          pointToLayer: (point, latlon) => {
-            return L.marker(latlon, { icon: iconClient });
-          }
-        });
-        marker.on('click', () => {
-          this.content = Point.geometry;
-          this.zone.run(() => this.openDialog(Point));
-          this._serviceClient.getPosition({ "Client": new L.LatLng(Point.geometry.geometry.coordinates[1], Point.geometry.geometry.coordinates[0]) });
-        });
-
-        if (Point.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
-          console.log(this.user.role)
-          this.DeletedMarkerCluster.addLayer(marker)
-        } else if (Point.geometry.properties?.status != 'deleted') {
-          this.markersCluster.addLayer(marker);
-        }
-      });
-    });
-
-  }
-
-  async StorePdvsIndexDB() {
-    this._serviceClient.getAllClient().subscribe(async (ress) => {
-      this.markersCluster.clearLayers();
-      ress.forEach((element, idx, array) => {
-        const geojsonPoint: geojson.Point = element.geometry;
-        var iconClient = L.icon({ iconUrl: 'assets/' + element.geometry.properties?.status + '.png', iconSize: [8, 8] });
-        var marker = L.geoJSON(geojsonPoint, {
-          pointToLayer: (point, latlon) => {
-            return L.marker(latlon, { icon: iconClient });
-          }
-        });
-        marker.on('click', () => {
-          this.content = element.geometry;
-          this.zone.run(() => this.openDialog(element));
-          this._serviceClient.getPosition({ "Client": new L.LatLng(element.geometry.geometry.coordinates[1], element.geometry.geometry.coordinates[0]) });
-        });
-
-        if (element.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
-          console.log(this.user.role)
-          this.DeletedMarkerCluster.addLayer(marker)
-        } else if (element.geometry.properties?.status != 'deleted') {
-          this.markersCluster.addLayer(marker);
-        }
-      });
-
-      var db = new Dexie("off").open().then((res) => {
-        //console
-        res.table("pdvs").bulkDelete(this.ArrayIDS).then((hh) => {
-          console.log("$$$$$$$ DONE Clearing $$$$$$$$")
-          res.table("pdvs").bulkPut(ress).then((lastKey) => {
-            console.log("Add PDVs")
-            if (this.dialogConf) {
-              this.dialogConf.close()
-              this.openAlertDialog("Sync is Done")
+            i++;
+            if (i == length) {
+              this.markersCluster.addLayers(marks)
             }
-          });
-        })
-      });
-    });
-  }
-  ClearData() {
-    let db; let transaction;
-    var request = window.indexedDB.open("off", this.version)
-    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      console.log("Why didn't you allow my web app to use IndexedDB?!");
-    };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      db = event.target.result;
-      console.log("success inside Clear")
-      var transaction = db.transaction(['pdvs'], 'readwrite');
-      var objectStore = transaction.objectStore("pdvs");
-      var objectStoreRequest = objectStore.clear();
-      objectStoreRequest.onsuccess = (event) => {
-        console.log("Data Cleared form PDVs")
+
+          }
+        }
       }
+
+
     }
-  }
-  async StoreSectorIndexeddb() {
-    this._serviceClient.getAllSecteurs().subscribe(res1 => {
-      //let result = res1.map(a => a._id);
-      //console.log(result)
-      //let difference = result.filter((x) => !this.ArrayIdSector.includes(x));
-      //console.log(difference)
-      var db = new Dexie("off").open().then((res) => {
-        if (this.user.role != "Admin") {
-          console.log("--- Start Now ")
-          let t1 = performance.now();
-          res.table("sector").bulkDelete(this.ArrayIdSector).then((l) => {
-            res.table("sector").bulkPut(res1).then((lastKey) => {
-              let t2 = performance.now();
-              //let elapsed = 
-              console.log(t2-t1);
-              console.log("--- END Now ")
-              this.PutSectorDataInMap()
-            });
-          })
-        } else {
-          console.log("--- Start Now ")
-          let t1 = performance.now();
-          res.table("sector").bulkPut(res1).then((lastKey) => {
-            let t2 = performance.now();
-            //let elapsed = 
-            console.log(t2-t1);
-            console.log("--- END Now ")
-            this.PutSectorDataInMap()
-            if (this.user.role == "Admin") {
-              if (this.dialogConf) {
-                this.dialogConf.close()
-                this.openAlertDialog("Sync is Done")
-              }
+
+    getPDV() {
+      this._serviceClient.getAllClient().subscribe(async (ress) => {
+        this.worker.postMessage({ type: "pdv", res: ress, ArrayIDS: this.ArrayIDS })
+        var length = ress.length;
+        var i = 0;
+        this.markersCluster.clearLayers();
+        while (i < length) {
+          var element = ress[i]
+          const Point = { _id: element._id, geometry: element.geometry };
+          const geojsonPoint: geojson.Point = element.geometry;
+          var iconClient = L.icon({ iconUrl: 'assets/' + element.geometry.properties?.status + '.png', iconSize: [8, 8] });
+          var marker = L.geoJSON(geojsonPoint, {
+            pointToLayer: (point, latlon) => {
+              return L.marker(latlon, { icon: iconClient });
             }
           });
+          marker.on('click', () => {
+            this.content = Point.geometry;
+            this.zone.run(() => this.openDialog(Point));
+            this._serviceClient.getPosition({ "Client": new L.LatLng(element.geometry.geometry.coordinates[1], element.geometry.geometry.coordinates[0]) });
+          });
+          if (element.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
+            console.log(this.user.role)
+            this.DeletedMarkerCluster.addLayer(marker)
+          } else if (element.geometry.properties?.status != 'deleted') {
+            this.markersCluster.addLayer(marker);
+          }
+          i++;
         }
-      });
-    });
 
-  }
+      });
+    }
+    getSector() {
+      this._serviceClient.getAllSecteurs().subscribe(res1 => {
+        this.worker.postMessage({ type: "sector", res: res1, ArrayIdSector: this.ArrayIdSector, role: this.user.role })
+        //console.log(res._allTables)
+        this.markerClusterSector.clearLayers();
+        res1.forEach(element => {
+          var Point = { _id: element._id, geometry: element.info.geometry };
+          this.ArrayIdSector.push(element._id)
+          var marker = L.geoJSON(Point.geometry, {
+            onEachFeature: (feature, layer) => {
+              layer.bindPopup(String(element.nameSecteur));
+            }, style: { color: '#CD9575', fillOpacity: 0.1 }
+          });
+          this.markerClusterSector.addLayer(marker);
+          this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
+        });
+      });
+    }
+    startTime;
+    endTieme;
   async sync() {
-    if (this.user.role != "Admin") {
-      this.StorePdvsIndexDB()
-    }
-    this.StoreSectorIndexeddb()
-    this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
-      disableClose: true
-    });
-    this.dialogConf.componentInstance.confirmMessage = "sync"
-  }
-  /////////////////////////////////////////////////////////////////
-
-  //////////********  Check if location inside Sector ***********//////////
-  isMarkerInsidePolygon(marker, poly) {
-    const polyPoints = poly.getLatLngs();
-    const x = marker.getLatLng().lat, y = marker.getLatLng().lng;
-    let inside = false;
-    for (let i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
-      const xi = polyPoints[i].lat, yi = polyPoints[i].lng;
-      const xj = polyPoints[j].lat, yj = polyPoints[j].lng;
-
-      const intersect = ((yi > y) != (yj > y))
-        && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-      if (intersect) { inside = !inside; }
-    }
-    return inside;
-  }
-
-  Insid() {
-    this.statusAddClient = false;
-    this.AllSecteurs.forEach(elem => {
-      // console.log(elem)
-      const lat = this.myMarker._latlng.lat;
-      const lon = this.myMarker._latlng.lng;
-      const test = turf.point([lon, lat]);
-      const poly = turf.polygon(elem.coor[0]);
-      if (turf.booleanPointInPolygon(test, poly)) {
-        this.statusAddClient = true;
-        this.mySector = elem.sector;
-        // console.log(this.mySector);
-        // console.log("In sector ")
+      this.startTime = performance.now();
+      this.getSector();
+      if (this.user.role != "Admin") {
+        this.getPDV();
       }
-    });
-  }
-
-  addPDV() {
-    this._router.navigate(['/addclient', this.mySector])
-
-    // this._router.navigateByUrl('/addclient',{ state:  }).then(() => {
-    //   window.location.reload();
-    // });
-
-    // this._router.navigate(['/addclient', this.mySector]).then(() => {
-    //   window.location.reload();
-    // });
-  }
-  //////////////////////////////////////////////////////////////////
-  ///////********************* Open Dialog *********************////////
-
-  openAlertDialog(Message) {
-    const dialogRef = this.dialog.open(AlertDialogComponent, {
-      data: {
-        message: Message,
-        buttonText: {
-          ok: 'Ok',
+      this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
+        disableClose: true
+      });
+      this.dialogConf.componentInstance.confirmMessage = "sync"
+      if (typeof Worker !== 'undefined') {
+        this.worker.onmessage = (e) => {
+          console.log(e.data)
+          let t2 = performance.now();
+          if (this.dialogConf) {
+            console.log(t2 - this.startTime);
+            console.log("--- END Now ")
+            this.dialogConf.close()
+            this.openAlertDialog("Sync is Done")
+          }
         }
       }
-    });
-  }
-  ////////////////////////////////////////////////////////////////////
+    }
+    /////////////////////////////////////////////////////////////////
+
+    //////////********  Check if location inside Sector ***********//////////
+    isMarkerInsidePolygon(marker, poly) {
+      const polyPoints = poly.getLatLngs();
+      const x = marker.getLatLng().lat, y = marker.getLatLng().lng;
+      let inside = false;
+      for (let i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
+        const xi = polyPoints[i].lat, yi = polyPoints[i].lng;
+        const xj = polyPoints[j].lat, yj = polyPoints[j].lng;
+
+        const intersect = ((yi > y) != (yj > y))
+          && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) { inside = !inside; }
+      }
+      return inside;
+    }
+
+    Insid() {
+      this.statusAddClient = false;
+      this.AllSecteurs.forEach(elem => {
+        // console.log(elem)
+        const lat = this.myMarker._latlng.lat;
+        const lon = this.myMarker._latlng.lng;
+        const test = turf.point([lon, lat]);
+        const poly = turf.polygon(elem.coor[0]);
+        if (turf.booleanPointInPolygon(test, poly)) {
+          this.statusAddClient = true;
+          this.mySector = elem.sector;
+          // console.log(this.mySector);
+          // console.log("In sector ")
+        }
+      });
+      // this.worker.postMessage({ "start": "nmi" });
+    }
+
+    addPDV() {
+      this._router.navigate(['/addclient', this.mySector])
+
+      // this._router.navigateByUrl('/addclient',{ state:  }).then(() => {
+      //   window.location.reload();
+      // });
+
+      // this._router.navigate(['/addclient', this.mySector]).then(() => {
+      //   window.location.reload();
+      // });
+    }
+    //////////////////////////////////////////////////////////////////
+    ///////********************* Open Dialog *********************////////
+
+    openAlertDialog(Message) {
+      const dialogRef = this.dialog.open(AlertDialogComponent, {
+        data: {
+          message: Message,
+          buttonText: {
+            ok: 'Ok',
+          }
+        }
+      });
+    }
+    ////////////////////////////////////////////////////////////////////
 
 
-  ///////***** Filter Done/Not Done PDV **********///////////////////
-  option_done = "All"
+    ///////***** Filter Done/Not Done PDV **********///////////////////
+    option_done = "All"
 
-  cluster1 = new L.MarkerClusterGroup();
-  onChange4() {
-    this.map.removeLayer(this.markersCluster)
-    this.map.removeLayer(this.DeletedMarkerCluster);
-    if (this.cluster1.getLayers().length > 0) {
-      this.cluster1.clearLayers();
-      this.map.removeLayer(this.cluster1)
-    }
-    if (this.cluster.getLayers().length > 0) {
-      this.cluster.clearLayers();
-      this.map.removeLayer(this.cluster1)
-    }
-    if (this.option_done == "Deleted") {
-      this.map.addLayer(this.DeletedMarkerCluster)
-    }
-    if (this.option_done == "Not_Done") {
-      this.markersCluster.eachLayer((layer: any) => {
-        if (layer.feature.properties.status != "green" && layer.feature.properties.status != "purple") {
+    cluster1 = new L.MarkerClusterGroup();
+    onChange4() {
+      this.map.removeLayer(this.markersCluster)
+      this.map.removeLayer(this.DeletedMarkerCluster);
+      if (this.cluster1.getLayers().length > 0) {
+        this.cluster1.clearLayers();
+        this.map.removeLayer(this.cluster1)
+      }
+      if (this.cluster.getLayers().length > 0) {
+        this.cluster.clearLayers();
+        this.map.removeLayer(this.cluster1)
+      }
+      if (this.option_done == "Deleted") {
+        this.map.addLayer(this.DeletedMarkerCluster)
+      }
+      if (this.option_done == "Not_Done") {
+        this.markersCluster.eachLayer((layer: any) => {
+          if (layer.feature.properties.status != "green" && layer.feature.properties.status != "purple") {
+            if (this.option_retail == "Audit") {
+              if (layer.feature.properties?.TypeDPV == "Gros") {
+                console.log("-------- Not Done Gros -----------")
+                console.log(layer.feature.properties)
+                this.cluster1.addLayer(layer)
+              }
+            } else if (this.option_retail == "Audit_Retail") {
+              if (layer.feature.properties?.TypeDPV == "Detail" || layer.feature.properties?.TypeDPV == "Demi Gros") {
+                console.log("-------- Not Done Detail -----------")
+                this.cluster1.addLayer(layer);
+              }
+            } else if (this.option_retail == "All" || this.option_retail == "") {
+              console.log("-------- Not Done ALL  TYpe -----------")
+              this.cluster1.addLayer(layer);
+            }
+          }
+        });
+        //console.log("*********** Add Cluster Not Done to the map ***********")
+        this.map.addLayer(this.cluster1)
+      } else if (this.option_done == "Done") {
+        this.markersCluster.eachLayer((layer: any) => {
+          if (layer.feature.properties.status == "purple" || layer.feature.properties.status == "green") {
+            if (this.option_retail == "Audit") {
+              if (layer.feature.properties?.TypeDPV == "Gros") {
+                console.log(" !!!!!!!!! Done Gros !!!!!!!!!!!!")
+                console.log(layer.feature.properties)
+                this.cluster1.addLayer(layer)
+              }
+            } else if (this.option_retail == "Audit_Retail") {
+              if (layer.feature.properties?.TypeDPV == "Detail" || layer.feature.properties?.TypeDPV == "Demi Gros") {
+                console.log(" !!!!!!!!! Done Detail !!!!!!!!!!!!")
+                this.cluster1.addLayer(layer);
+              }
+            } else if (this.option_retail == "All" || this.option_retail == "") {
+              console.log(" !!!!!!!!! Done All TYpe !!!!!!!!!!!!")
+              this.cluster1.addLayer(layer);
+            }
+          }
+        });
+        ////
+        console.log("&&&&&&&&&&&&&&&&&& ")
+        console.log(this.cluster1.getLayers().length)
+        this.map.addLayer(this.cluster1)
+        ///
+      } else if (this.option_done == "Validated") {
+        this.markersCluster.eachLayer((layer: any) => {
+          if (layer.feature.properties.status == "green") {
+            if (this.option_retail == "Audit") {
+              if (layer.feature.properties?.TypeDPV == "Gros") {
+                console.log(" !!!!!!!!! Done Gros !!!!!!!!!!!!")
+                console.log(layer.feature.properties)
+                this.cluster1.addLayer(layer)
+              }
+            } else if (this.option_retail == "Audit_Retail") {
+              if (layer.feature.properties?.TypeDPV == "Detail" || layer.feature.properties?.TypeDPV == "Demi Gros") {
+                console.log(" !!!!!!!!! Done Detail !!!!!!!!!!!!")
+                this.cluster1.addLayer(layer);
+              }
+            } else if (this.option_retail == "All" || this.option_retail == "") {
+              console.log(" !!!!!!!!! Done All TYpe !!!!!!!!!!!!")
+              this.cluster1.addLayer(layer);
+            }
+          }
+        });
+        ////
+        console.log("&&&&&&&&&&&&&&&&&& ")
+        console.log(this.cluster1.getLayers().length)
+        this.map.addLayer(this.cluster1)
+        ///
+      }
+      else if (this.option_done == "All") {
+        // console.log("All Data will be showed")
+        //console.log(this.detailCluster.getLayers().length)
+        this.markersCluster.eachLayer((layer: any) => {
           if (this.option_retail == "Audit") {
             if (layer.feature.properties?.TypeDPV == "Gros") {
-              console.log("-------- Not Done Gros -----------")
+              console.log("--------- All  Gros  ----------")
               console.log(layer.feature.properties)
               this.cluster1.addLayer(layer)
             }
           } else if (this.option_retail == "Audit_Retail") {
             if (layer.feature.properties?.TypeDPV == "Detail" || layer.feature.properties?.TypeDPV == "Demi Gros") {
-              console.log("-------- Not Done Detail -----------")
+              console.log("--------- All  Detail  ----------")
               this.cluster1.addLayer(layer);
             }
           } else if (this.option_retail == "All" || this.option_retail == "") {
-            console.log("-------- Not Done ALL  TYpe -----------")
+            console.log("--------- All  All type  ----------")
+            //this.doneCluster = this.markersCluster
+            //this.ma
             this.cluster1.addLayer(layer);
-          }
-        }
-      });
-      //console.log("*********** Add Cluster Not Done to the map ***********")
-      this.map.addLayer(this.cluster1)
-    } else if (this.option_done == "Done") {
-      this.markersCluster.eachLayer((layer: any) => {
-        if (layer.feature.properties.status == "purple" || layer.feature.properties.status == "green") {
-          if (this.option_retail == "Audit") {
-            if (layer.feature.properties?.TypeDPV == "Gros") {
-              console.log(" !!!!!!!!! Done Gros !!!!!!!!!!!!")
-              console.log(layer.feature.properties)
-              this.cluster1.addLayer(layer)
-            }
-          } else if (this.option_retail == "Audit_Retail") {
-            if (layer.feature.properties?.TypeDPV == "Detail" || layer.feature.properties?.TypeDPV == "Demi Gros") {
-              console.log(" !!!!!!!!! Done Detail !!!!!!!!!!!!")
-              this.cluster1.addLayer(layer);
-            }
-          } else if (this.option_retail == "All" || this.option_retail == "") {
-            console.log(" !!!!!!!!! Done All TYpe !!!!!!!!!!!!")
-            this.cluster1.addLayer(layer);
-          }
-        }
-      });
-      ////
-      console.log("&&&&&&&&&&&&&&&&&& ")
-      console.log(this.cluster1.getLayers().length)
-      this.map.addLayer(this.cluster1)
-      ///
-    } else if (this.option_done == "Validated") {
-      this.markersCluster.eachLayer((layer: any) => {
-        if (layer.feature.properties.status == "green") {
-          if (this.option_retail == "Audit") {
-            if (layer.feature.properties?.TypeDPV == "Gros") {
-              console.log(" !!!!!!!!! Done Gros !!!!!!!!!!!!")
-              console.log(layer.feature.properties)
-              this.cluster1.addLayer(layer)
-            }
-          } else if (this.option_retail == "Audit_Retail") {
-            if (layer.feature.properties?.TypeDPV == "Detail" || layer.feature.properties?.TypeDPV == "Demi Gros") {
-              console.log(" !!!!!!!!! Done Detail !!!!!!!!!!!!")
-              this.cluster1.addLayer(layer);
-            }
-          } else if (this.option_retail == "All" || this.option_retail == "") {
-            console.log(" !!!!!!!!! Done All TYpe !!!!!!!!!!!!")
-            this.cluster1.addLayer(layer);
-          }
-        }
-      });
-      ////
-      console.log("&&&&&&&&&&&&&&&&&& ")
-      console.log(this.cluster1.getLayers().length)
-      this.map.addLayer(this.cluster1)
-      ///
-    }
-    else if (this.option_done == "All") {
-      // console.log("All Data will be showed")
-      //console.log(this.detailCluster.getLayers().length)
-      this.markersCluster.eachLayer((layer: any) => {
-        if (this.option_retail == "Audit") {
-          if (layer.feature.properties?.TypeDPV == "Gros") {
-            console.log("--------- All  Gros  ----------")
-            console.log(layer.feature.properties)
-            this.cluster1.addLayer(layer)
-          }
-        } else if (this.option_retail == "Audit_Retail") {
-          if (layer.feature.properties?.TypeDPV == "Detail" || layer.feature.properties?.TypeDPV == "Demi Gros") {
-            console.log("--------- All  Detail  ----------")
-            this.cluster1.addLayer(layer);
-          }
-        } else if (this.option_retail == "All" || this.option_retail == "") {
-          console.log("--------- All  All type  ----------")
-          //this.doneCluster = this.markersCluster
-          //this.ma
-          this.cluster1.addLayer(layer);
-        }
-
-      });
-      //console.log(this.doneCluster.getLayers().length)
-      this.map.addLayer(this.cluster1)
-    }
-
-  }
-  ////////////////////////////////////////////////////////////////////////
-
-  //////////////****************Filtrage Retail/AuditRetail ***********/////////////////
-  option_retail = "All"
-  cluster = new L.MarkerClusterGroup();
-  onChange3() {
-    this.map.removeLayer(this.markersCluster)
-    if (this.cluster1.getLayers().length > 0) {
-      this.cluster1.clearLayers();
-      console.log("remove Cluster 1")
-      this.map.removeLayer(this.cluster1)
-    }
-    if (this.cluster.getLayers().length > 0) {
-      this.cluster.clearLayers();
-      console.log("remove Cluster ")
-      this.map.removeLayer(this.cluster)
-      console.log(this.cluster.getLayers().length)
-    }
-    if (this.option_retail == "Audit") {
-      console.log("\n \n ******************** ")
-      console.log(this.markersCluster.getLayers().length)
-      console.log("\n \n ************************")
-      this.markersCluster.eachLayer((layer: any) => {
-        if (layer.feature.properties?.TypeDPV == "Gros") {
-          console.log("*** sb7an lah *** ")
-          if (this.option_done == "Validated" && layer.feature.properties.status == "green") {
-            console.log("**************** Gros Done ***************")
-            this.cluster.addLayer(layer)
-          } else if (this.option_done == "Done" && (layer.feature.properties.status == "purple" || layer.feature.properties.status == "green")) {
-            this.cluster.addLayer(layer)
-          }
-          else if (this.option_done == "Not_Done" && (layer.feature.properties.status != "green" && layer.feature.properties.status != "purple")) {
-            console.log("******************* Gros Not Done *********************")
-            this.cluster.addLayer(layer)
-          } else if (this.option_done == "All" || this.option_done == "") {
-            console.log("************************ Gros ALL ***********************")
-            this.cluster.addLayer(layer)
-            //console.log(layer)
-            console.log("nmi")
-            console.log(this.cluster.getLayers().length)
-          }
-          //this.cluster.addLayer(layer)
-        }
-      });
-    }
-    else if (this.option_retail == "Audit_Retail") {
-      this.markersCluster.eachLayer((layer: any) => {
-        if (layer.feature.properties?.TypeDPV == "Detail"
-          || layer.feature.properties?.TypeDPV == "Demi Gros") {
-
-          /*if (this.option_done == "Done" && layer.feature.properties.status == "green") {
-            console.log("**************** Gros Done ***************")
-            this.cluster.addLayer(layer)
-          } else if (this.option_done == "Not_Done" && layer.feature.properties.status != "green") {
-            console.log("******************* Gros Not Done *********************")
-            this.cluster.addLayer(layer)
-          } else if (this.option_done == "All" || this.option_done == "") {
-            console.log("************************ Gros ALL ***********************")
-            this.cluster.addLayer(layer)
-          }*/
-
-          if (this.option_done == "Validated" && layer.feature.properties.status == "green") {
-            console.log("**************** Gros Done ***************")
-            this.cluster.addLayer(layer)
-          } else if (this.option_done == "Done" && (layer.feature.properties.status == "purple" || layer.feature.properties.status == "green")) {
-            this.cluster.addLayer(layer)
-          }
-          else if (this.option_done == "Not_Done" && (layer.feature.properties.status != "green" && layer.feature.properties.status != "purple")) {
-            console.log("******************* Gros Not Done *********************")
-            this.cluster.addLayer(layer)
-          } else if (this.option_done == "All" || this.option_done == "") {
-            console.log("************************ Gros ALL ***********************")
-            this.cluster.addLayer(layer)
-          }
-        }
-      });
-
-    } else {
-      this.markersCluster.eachLayer((layer: any) => {
-        if (this.option_done == "Validated" && layer.feature.properties.status == "green") {
-          this.cluster.addLayer(layer)
-        } else if (this.option_done == "Done" && (layer.feature.properties.status == "purple" || layer.feature.properties.status == "green")) {
-          this.cluster.addLayer(layer)
-        }
-        else if (this.option_done == "Not_Done" && (layer.feature.properties.status != "green" && layer.feature.properties.status != "purple")) {
-          this.cluster.addLayer(layer)
-        } else if (this.option_done == "All" || this.option_done == "") {
-          //this.cluster = this.markersCluster
-          this.cluster.addLayer(layer)
-        }
-      });
-    }
-    console.log(this.cluster.getLayers().length)
-    this.map.addLayer(this.cluster)
-  }
-
-  /////////////////////////////////////////////////////////////
-
-
-
-  ///////******** Search for the client By id ***********///////////
-  Search(IDGeomerty) {
-    console.log(IDGeomerty);
-    //tslint:disable-next-line:no-shadowed-variable
-    this._serviceClient.getClientByID(IDGeomerty).subscribe(res => {
-      console.log("res ", res)
-      if (IDGeomerty != null) {
-        this.map.setView(new L.LatLng(res["geometry"].geometry.coordinates[1], res["geometry"].geometry.coordinates[0]), 30, { animation: true }).addTo(this.map);
-      }
-    })
-  }
-  horsCx = false
-  openAlertSearch(mess) {
-    const dialogRef = this.dialog.open(AlertDialogComponent, {
-      data: {
-        message: mess,
-        buttonText: {
-          ok: 'Ok',
-        }
-      }
-
-    }).afterClosed()
-  }
-
-  /////////////////////////////////////////////////////////
-
-  ///////************** Search for the client from indexDB ***********////////////
-
-  SearchIndexDB(IDGeomerty) {
-    if (IDGeomerty != undefined) {
-      var db = new Dexie("off").open().then((res) => {
-        res.table("pdvs").get({ "_id": IDGeomerty }).then(r => {
-          console.log(r)
-          if (r != undefined) {
-            if(r.geometry.properties?.status!="deleted"){
-              this.map.setView(new L.LatLng(r.geometry.geometry.coordinates[1], r.geometry.geometry.coordinates[0]), 30);
-        }else{
-
-          var mess = "No Such ID : " + IDGeomerty
-
-          this.openAlertSearch(mess);
-
-        }  }else{
-
-            var mess = "No Such ID : " + IDGeomerty
-
-            this.openAlertSearch(mess);
-
           }
 
         });
-
-      });
-
-    } else {
-
-      var mess = "Please Enter the ID"
-
-      this.openAlertSearch(mess)
+        //console.log(this.doneCluster.getLayers().length)
+        this.map.addLayer(this.cluster1)
+      }
 
     }
+    ////////////////////////////////////////////////////////////////////////
 
-  }
-  SearchIndexDBA(IDGeomerty) {
-    console.log("Update in IndexedDB")
-    var db, transaction;
-    var request = window.indexedDB.open("off", this.version)
-    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      console.log("Why didn't you allow my web app to use IndexedDB?!");
-    };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      db = event.target.result;
-      transaction = db.transaction(['data'], 'readwrite');
-      var objectStore = transaction.objectStore("data");
-      if (IDGeomerty != null) {
-        var objectStoreRequest = objectStore.get(IDGeomerty);
-
-        objectStoreRequest.onsuccess = (event) => {
-
-          if (objectStoreRequest.result != undefined) {
-            var elm = JSON.parse(objectStoreRequest.result.Valeur);
-            // console.log(elm.geometry.coordinates)
-            this.map.setView(new L.LatLng(elm.geometry.coordinates[1], elm.geometry.coordinates[0]), 30);
+    //////////////****************Filtrage Retail/AuditRetail ***********/////////////////
+    option_retail = "All"
+    cluster = new L.MarkerClusterGroup();
+    onChange3() {
+      this.map.removeLayer(this.markersCluster)
+      if (this.cluster1.getLayers().length > 0) {
+        this.cluster1.clearLayers();
+        console.log("remove Cluster 1")
+        this.map.removeLayer(this.cluster1)
+      }
+      if (this.cluster.getLayers().length > 0) {
+        this.cluster.clearLayers();
+        console.log("remove Cluster ")
+        this.map.removeLayer(this.cluster)
+        console.log(this.cluster.getLayers().length)
+      }
+      if (this.option_retail == "Audit") {
+        console.log("\n \n ******************** ")
+        console.log(this.markersCluster.getLayers().length)
+        console.log("\n \n ************************")
+        this.markersCluster.eachLayer((layer: any) => {
+          if (layer.feature.properties?.TypeDPV == "Gros") {
+            console.log("*** sb7an lah *** ")
+            if (this.option_done == "Validated" && layer.feature.properties.status == "green") {
+              console.log("**************** Gros Done ***************")
+              this.cluster.addLayer(layer)
+            } else if (this.option_done == "Done" && (layer.feature.properties.status == "purple" || layer.feature.properties.status == "green")) {
+              this.cluster.addLayer(layer)
+            }
+            else if (this.option_done == "Not_Done" && (layer.feature.properties.status != "green" && layer.feature.properties.status != "purple")) {
+              console.log("******************* Gros Not Done *********************")
+              this.cluster.addLayer(layer)
+            } else if (this.option_done == "All" || this.option_done == "") {
+              console.log("************************ Gros ALL ***********************")
+              this.cluster.addLayer(layer)
+              //console.log(layer)
+              console.log("nmi")
+              console.log(this.cluster.getLayers().length)
+            }
+            //this.cluster.addLayer(layer)
           }
-          else {
-            var mess = "Be sure of the id :" + IDGeomerty
-            this.openAlertSearch(mess);
+        });
+      }
+      else if (this.option_retail == "Audit_Retail") {
+        this.markersCluster.eachLayer((layer: any) => {
+          if (layer.feature.properties?.TypeDPV == "Detail"
+            || layer.feature.properties?.TypeDPV == "Demi Gros") {
+
+            /*if (this.option_done == "Done" && layer.feature.properties.status == "green") {
+              console.log("**************** Gros Done ***************")
+              this.cluster.addLayer(layer)
+            } else if (this.option_done == "Not_Done" && layer.feature.properties.status != "green") {
+              console.log("******************* Gros Not Done *********************")
+              this.cluster.addLayer(layer)
+            } else if (this.option_done == "All" || this.option_done == "") {
+              console.log("************************ Gros ALL ***********************")
+              this.cluster.addLayer(layer)
+            }*/
+
+            if (this.option_done == "Validated" && layer.feature.properties.status == "green") {
+              console.log("**************** Gros Done ***************")
+              this.cluster.addLayer(layer)
+            } else if (this.option_done == "Done" && (layer.feature.properties.status == "purple" || layer.feature.properties.status == "green")) {
+              this.cluster.addLayer(layer)
+            }
+            else if (this.option_done == "Not_Done" && (layer.feature.properties.status != "green" && layer.feature.properties.status != "purple")) {
+              console.log("******************* Gros Not Done *********************")
+              this.cluster.addLayer(layer)
+            } else if (this.option_done == "All" || this.option_done == "") {
+              console.log("************************ Gros ALL ***********************")
+              this.cluster.addLayer(layer)
+            }
+          }
+        });
+
+      } else {
+        this.markersCluster.eachLayer((layer: any) => {
+          if (this.option_done == "Validated" && layer.feature.properties.status == "green") {
+            this.cluster.addLayer(layer)
+          } else if (this.option_done == "Done" && (layer.feature.properties.status == "purple" || layer.feature.properties.status == "green")) {
+            this.cluster.addLayer(layer)
+          }
+          else if (this.option_done == "Not_Done" && (layer.feature.properties.status != "green" && layer.feature.properties.status != "purple")) {
+            this.cluster.addLayer(layer)
+          } else if (this.option_done == "All" || this.option_done == "") {
+            //this.cluster = this.markersCluster
+            this.cluster.addLayer(layer)
+          }
+        });
+      }
+      console.log(this.cluster.getLayers().length)
+      this.map.addLayer(this.cluster)
+    }
+
+    /////////////////////////////////////////////////////////////
+
+
+
+    ///////******** Search for the client By id ***********///////////
+    Search(IDGeomerty) {
+      console.log(IDGeomerty);
+      //tslint:disable-next-line:no-shadowed-variable
+      this._serviceClient.getClientByID(IDGeomerty).subscribe(res => {
+        console.log("res ", res)
+        if (IDGeomerty != null) {
+          this.map.setView(new L.LatLng(res["geometry"].geometry.coordinates[1], res["geometry"].geometry.coordinates[0]), 30, { animation: true }).addTo(this.map);
+        }
+      })
+    }
+    horsCx = false
+    openAlertSearch(mess) {
+      const dialogRef = this.dialog.open(AlertDialogComponent, {
+        data: {
+          message: mess,
+          buttonText: {
+            ok: 'Ok',
           }
         }
-      } else {
-        var mess = "Please Enter the ID"
-        this.openAlertSearch(mess)
-      }
-      console.log("objectStoreRequest", objectStoreRequest)
 
+      }).afterClosed()
     }
+
+    /////////////////////////////////////////////////////////
+
+    ///////************** Search for the client from indexDB ***********////////////
+
+    SearchIndexDB(IDGeomerty) {
+      if (IDGeomerty != undefined) {
+        var db = new Dexie("off").open().then((res) => {
+          res.table("pdvs").get({ "_id": IDGeomerty }).then(r => {
+            console.log(r)
+            if (r != undefined) {
+              if (r.geometry.properties?.status != "deleted") {
+                this.map.setView(new L.LatLng(r.geometry.geometry.coordinates[1], r.geometry.geometry.coordinates[0]), 30);
+              } else {
+
+                var mess = "No Such ID : " + IDGeomerty
+
+                this.openAlertSearch(mess);
+              }
+            } else {
+              var mess = "No Such ID : " + IDGeomerty
+              this.openAlertSearch(mess);
+            }
+
+          });
+
+        });
+
+      } else {
+
+        var mess = "Please Enter the ID"
+
+        this.openAlertSearch(mess)
+
+      }
+    }
+    SearchIndexDBA(IDGeomerty) {
+      console.log("Update in IndexedDB")
+      var db, transaction;
+      var request = window.indexedDB.open("off", this.version)
+      request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+        console.log("Why didn't you allow my web app to use IndexedDB?!");
+      };
+      request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+        db = event.target.result;
+        transaction = db.transaction(['data'], 'readwrite');
+        var objectStore = transaction.objectStore("data");
+        if (IDGeomerty != null) {
+          var objectStoreRequest = objectStore.get(IDGeomerty);
+
+          objectStoreRequest.onsuccess = (event) => {
+
+            if (objectStoreRequest.result != undefined) {
+              var elm = JSON.parse(objectStoreRequest.result.Valeur);
+              // console.log(elm.geometry.coordinates)
+              this.map.setView(new L.LatLng(elm.geometry.coordinates[1], elm.geometry.coordinates[0]), 30);
+            }
+            else {
+              var mess = "Be sure of the id :" + IDGeomerty
+              this.openAlertSearch(mess);
+            }
+          }
+        } else {
+          var mess = "Please Enter the ID"
+          this.openAlertSearch(mess)
+        }
+        console.log("objectStoreRequest", objectStoreRequest)
+
+      }
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+    /////////////*********** EXTRACT DATA ******/////////////////
+    extract() {
+      this.dialogExtract = this.dialog.open(ExtractSelectComponent, {
+        disableClose: true
+      });
+    }
+
+
+
+    ////////////////////////////////////////////////////////////
+
   }
-
-  //////////////////////////////////////////////////////////////////////////////////
-
-  /////////////*********** EXTRACT DATA ******/////////////////
-  extract() {
-    this.dialogExtract = this.dialog.open(ExtractSelectComponent, {
-      disableClose: true
-    });
-  }
-
-
-
-  ////////////////////////////////////////////////////////////
-
-}
 
 
 
