@@ -17,6 +17,8 @@ import { interval } from 'rxjs';
 export class ClientsService {
 
   /////********* VARIABLE'S DECLARATION ******//////////
+  markersCluster = new L.MarkerClusterGroup();
+  markerClusterSector = new L.MarkerClusterGroup();
   MyPosition;
   Raduis;
   PositionClient;
