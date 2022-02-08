@@ -87,7 +87,6 @@ export class ClientsService {
   }
 
   extract(info) {
-
     return this.http.post<any>(this._extarct, info);
   }
 
@@ -145,19 +144,29 @@ export class ClientsService {
       });
     }
   }
+
   addToIndexedDb(clientt: any) {
-    this.db.client
-      .add(clientt)
-      .then(async () => {
-        const allItems: any = await this.db["client"].toArray();
-        console.log('saved in DB, DB is now', allItems);
+    var db; var transaction; var upgradeDb
+    var request = window.indexedDB.open("MyTestDatabase", 10)
+    // upgradeDb.createObjectStore('client');
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+      console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
+      console.log("success")
+      console.log(db)
+      transaction = db.transaction(['client'], 'readwrite');
+      var objectStore = transaction.objectStore("client");
+      //var objectStoreRequest = objectStore.get(id);
+      const request = objectStore.add(clientt);
+      request.onsuccess = (event) => {
+        console.log('saved in DB, DB is now');
         var message = "Data saved successfuly";
         var btn = "Continue"
         this.openAlertDialog(message, btn)
-      })
-      .catch(e => {
-        alert('Error: ' + (e.stack || e));
-      });
+      };
+    }
   }
   ////////////////////////////////////////////////////////////////////
 
@@ -258,7 +267,6 @@ export class ClientsService {
       transaction = db.transaction(['client'], 'readwrite');
       var objectStore = transaction.objectStore("client");
       var objectStoreRequest = objectStore.get(id);
-
       console.log("@@@@@@@@@@" + objectStoreRequest)
       objectStoreRequest.onsuccess = event => {
         var element = event.target.result
@@ -373,15 +381,15 @@ export class ClientsService {
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
       console.log("Why didn't you allow my web app to use IndexedDB?!");
     };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+    request.onsuccess = async (event: Event & { target: { result: IDBDatabase } }) => {
       this.db = event.target.result;
       console.log("success")
       console.log(this.db)
       transaction = this.db.transaction(['client'], 'readwrite');
       var objectStore = transaction.objectStore("client");
-      var objectStoreRequest = objectStore.getAll();
-      objectStoreRequest.onsuccess = function (event) {
-        var all = event.target.result
+      var objectStoreRequest = await objectStore.getAll();
+      objectStoreRequest.onsuccess = async  (event) =>{
+        var all = await event.target.result
         all.forEach(element => {
           console.log("---")
           var elm = element.UUid
@@ -389,7 +397,7 @@ export class ClientsService {
           list.push(elm)
           console.log(list)
         });
-      }
+      };
     };
     return list
   }
@@ -402,16 +410,16 @@ export class ClientsService {
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
       console.log("Why didn't you allow my web app to use IndexedDB?!");
     };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+    request.onsuccess = async (event: Event & { target: { result: IDBDatabase } }) => {
       this.db = event.target.result;
       console.log("success")
       console.log(this.db)
       transaction = this.db.transaction(['update'], 'readwrite');
       var objectStore = transaction.objectStore("update");
-      var objectStoreRequest = objectStore.getAll();
+      var objectStoreRequest = await objectStore.getAll();
 
-      objectStoreRequest.onsuccess = function (event) {
-        var all = event.target.result
+      objectStoreRequest.onsuccess = async  (event)=> {
+        var all = await event.target.result
         all.forEach(element => {
           console.log("---")
           var elm = element.UUid
@@ -432,15 +440,15 @@ export class ClientsService {
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
       console.log("Why didn't you allow my web app to use IndexedDB?!");
     };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+    request.onsuccess = async (event: Event & { target: { result: IDBDatabase } }) => {
       this.db = event.target.result;
       console.log("success")
       console.log(this.db)
       transaction = this.db.transaction(['delete'], 'readwrite');
       var objectStore = transaction.objectStore("delete");
-      var objectStoreRequest = objectStore.getAll();
-      objectStoreRequest.onsuccess = function (event) {
-        var all = event.target.result
+      var objectStoreRequest = await objectStore.getAll();
+      objectStoreRequest.onsuccess = async (event)  => {
+        var all = await event.target.result
         all.forEach(element => {
           console.log("---")
           var elm = element.UUid

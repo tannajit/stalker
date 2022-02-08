@@ -514,15 +514,11 @@ export class AddclientComponent implements AfterViewInit {
         disableClose: true
       });
       this.dialogConf.componentInstance.confirmMessage = "add"
-
       this.clientService.SendClient(this.clientInfos).subscribe((res) => {
         //console.log(res)
-        
         if(res=='Done'){
           this.dialogConf.close()
-          
           this.clientService.getAllClient().subscribe(async (res1) => {
-        
             var db = new Dexie("off").open().then((res) => {
               res.table("pdvs").clear().then((l)=>{
                 res.table("pdvs").bulkAdd(res1).then((lastKey)=>{
@@ -533,7 +529,6 @@ export class AddclientComponent implements AfterViewInit {
             });
           });
         }
-      
       }, err =>{
         this.dialogConf.close()
         this.openAlertDialog("There is an error! Try again","Ok")

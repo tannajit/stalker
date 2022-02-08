@@ -110,20 +110,16 @@ export class MapComponent implements AfterViewInit {
   //////////////*** Init map ////////
   ngAfterViewInit(): void {
     this.initMap();
-
     this.aroute.params.subscribe(params => {
       if (params['lat']) {
         console.log("laaaaaaaaaaaaaaaaaaaaaaat: " + params['lat'])
         console.log("loooooooooooooooong: " + params['long'])
         this.map.flyTo(new L.LatLng(params['lat'], params['long']), 18);
       } else {
-
         this.getLocation()
         interval(1000).pipe(takeUntil(this.destroyed)).subscribe(x => {
           this.WatchPosition()
-          // 
         })
-
       }
     });
   }
@@ -893,32 +889,19 @@ export class MapComponent implements AfterViewInit {
             if (r.geometry.properties?.status != "deleted") {
               this.map.setView(new L.LatLng(r.geometry.geometry.coordinates[1], r.geometry.geometry.coordinates[0]), 30);
             } else {
-
               var mess = "No Such ID : " + IDGeomerty
-
               this.openAlertSearch(mess);
-
             }
           } else {
-
             var mess = "No Such ID : " + IDGeomerty
-
             this.openAlertSearch(mess);
-
           }
-
         });
-
       });
-
     } else {
-
       var mess = "Please Enter the ID"
-
       this.openAlertSearch(mess)
-
     }
-
   }
   SearchIndexDBA(IDGeomerty) {
     console.log("Update in IndexedDB")
@@ -933,9 +916,7 @@ export class MapComponent implements AfterViewInit {
       var objectStore = transaction.objectStore("data");
       if (IDGeomerty != null) {
         var objectStoreRequest = objectStore.get(IDGeomerty);
-
         objectStoreRequest.onsuccess = (event) => {
-
           if (objectStoreRequest.result != undefined) {
             var elm = JSON.parse(objectStoreRequest.result.Valeur);
             // console.log(elm.geometry.coordinates)
@@ -951,7 +932,6 @@ export class MapComponent implements AfterViewInit {
         this.openAlertSearch(mess)
       }
       console.log("objectStoreRequest", objectStoreRequest)
-
     }
   }
 
