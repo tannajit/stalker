@@ -77,14 +77,14 @@ export class ClientInfoComponent implements OnInit {
   ActiveTheButton() {
     //console.log("fjdkfh"+ this.clientService.ActiveTheButton())
     if (this.Offline == true) {
-      console.log("nmiiiiii offline ")
+      //console.log("nmiiiiii offline ")
       return true;
     }
 
     else
     //console.log("sb7an lah ")
     {
-      console.log("nmi nta mriid rah machi offline ")
+      //console.log("nmi nta mriid rah machi offline ")
       return this.clientService.ActiveTheButton();
     }
 
