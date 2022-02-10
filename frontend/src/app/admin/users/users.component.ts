@@ -591,35 +591,11 @@ export class UsersComponent implements OnInit {
       //   this.dropDownListObject.value = null;
       // }
   }
-  @ViewChild('matRef') matRef: MatSelect;
-  @ViewChild('opt') opt: MatOption;
+  // @ViewChild('matRef') matRef: MatSelect;
+  // @ViewChild('opt') opt: MatOption;
 
   onSelectRole(role,users){
-    console.log(this.matRef.options)
-    // this.matRef.options.forEach((data: MatOption) =>{
-    //   console.log("data",data.id)
-    //   //  if(this.userselected[0]!=data.id)
-    //   //  {
-    //   //     this.userselected=[]
-    //   //     this.user2=""
-    //   // }
-    //  data.deselect()
-    // } 
-    // );
-    // const matSelect: MatSelect = event.source;
-    // matSelect.writeValue(null);
-    let userSelected =users[0].email  
-    this.userselected.push(users[0].email)
-    console.log("selected value",event);
-    console.log("selected element", users[0].email);
-    console.log("finall element", this.userselected[0]);
 
-    // if(this.userselected[0]!=users[0].email){
-    //   this.userselected=[]
-    //   this.user2=""
-    //   this.select=false
-    // }
-    //console.log("users",this.userselected)
 
     var user = users.forEach(element => {
 
@@ -630,8 +606,7 @@ export class UsersComponent implements OnInit {
         }
       }
     });
-    //console.log(this.selectedUser)
-    //console.log("user selected",userSelected)
+
 
   }
 
