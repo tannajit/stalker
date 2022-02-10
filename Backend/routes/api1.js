@@ -13,7 +13,7 @@ var uri = "mongodb://localhost:27017";
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker1"
+var name_database = "stalker3"
 var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
@@ -546,7 +546,7 @@ async function InsertClient(client, res) {
             lon: client.lon,
             nfc: client.nfc,
             Code_Secteur_OS: (client.sector != null) ? parseInt(client.sector) : 901011082,
-            machine: "CMG",
+            machine: client.machine,
             TypeDPV: client.TypeDPV,
             detailType: client.detailType,
             userId: client.userId,
@@ -566,11 +566,15 @@ async function InsertClient(client, res) {
         let getInsertedId; //// put Id inserted
         delete clientinfo.idGeometry;
         var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
+        //var clientG={ _id: id, geometry: clientGeo }
         geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
-            var id = result.insertedId
+            //var id = result.insertedId
+            // clientGeo["_id"]=id
+            // clientGeo["geometry"]=clientGeo
+
             var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
                 { $addToSet: { points: { "point": id, "route": null } } }).then(ss => {
-                    res.status(200).json({message:"Done",id:id})
+                    res.status(200).json({message:"Done",clientGeometry:{ _id: id, geometry: clientGeo }})
                 })
             //console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
             //console.log(up)
@@ -1145,7 +1149,8 @@ router.post("/DeleteRequest", async (req, res) => {
 
     console.log("get client : ")
     dataclient = req.body.data
-    console.log(req.body)
+    //
+    //console.log(req.body)
     // NomClient=dataclient.geometry.geometry.properties.NomPrenom
     // console.log(NomClient)
 

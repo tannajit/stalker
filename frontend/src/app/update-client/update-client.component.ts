@@ -505,7 +505,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   }
   
   VerifySMS() {
-    this.verification_code='0000'
+    //this.verification_code='0000'
     if (this.verification_code === this.codeSMS) {
       this.status = "the code is correct"
       this.clientInfo.geometry.properties.PhoneNumber = this.PhoneNumber
@@ -589,7 +589,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
     this.clientInfo.geometry.properties.updated_at = new Date();
     this.clientInfo.geometry.properties.created_at = this.clientInfo.geometry.properties.created_at;
     console.log("city3",this.city)
-      console.log("region3",this.region)
+    console.log("region3",this.region)
     this.clientInfo.geometry.properties["city"] =this.city
     this.clientInfo.geometry.properties["region"]= this.region
     console.log("corfd",this.clientInfo.geometry.geometry.coordinates)

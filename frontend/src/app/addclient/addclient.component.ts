@@ -139,13 +139,13 @@ export class AddclientComponent implements AfterViewInit {
   }
   ////////////////////////////////////////////////////////////////
 
-  ActiveSend(){
-    if(this.webcamPDVImage && 
-      this.NomPrenom && this.detailType && this.TypeDPV && this.PhoneNumber ){
-        return false
-      }else{
-        return true
-      }
+  ActiveSend() {
+    if (this.webcamPDVImage &&
+      this.NomPrenom && this.detailType && this.TypeDPV && this.PhoneNumber) {
+      return false
+    } else {
+      return true
+    }
   }
   //////////////*************** INTERFACE FUNCTIONS *****************//////////
   showcheck() {
@@ -272,8 +272,8 @@ export class AddclientComponent implements AfterViewInit {
     this.loggedUser = JSON.parse(localStorage.getItem("user"));
     this.initMap();
     //this._setting.getSettings("sms")
-    this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time,err=>{
-      this.timeLeft=2;
+    this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time, err => {
+      this.timeLeft = 2;
     })
     this.aroute.paramMap.subscribe(params => {
       this.mySector = params.get('sector')
@@ -282,6 +282,7 @@ export class AddclientComponent implements AfterViewInit {
     })
     var db = new Dexie("off").open().then((res) => {
       res.table("sector").get({ "nameSecteur": Number(this.mySector) }).then(r => {
+        this.clientInfos["machine"] = r.machine
         console.log(r)
         r.typePDV.forEach(type => {
           this.TypesPDVs.push(type)
@@ -291,12 +292,12 @@ export class AddclientComponent implements AfterViewInit {
       })
     });
 
-  }  
-  city=null
-  region=null
-  GetNamePlace(lat,lon){
+  }
+  city = null
+  region = null
+  GetNamePlace(lat, lon) {
 
-     this.clientService.GetNamePlace(lat,lon).subscribe(res=>{
+    this.clientService.GetNamePlace(lat, lon).subscribe(res => {
       console.log(res)
     })
 
@@ -334,29 +335,29 @@ export class AddclientComponent implements AfterViewInit {
     //       console.log("region",this.region)
 
     //     })
-    
+
     // })
 
-    var get1=0
+    var get1 = 0
     var marker = L.marker([this.lat, this.lon], { icon: location_icon })
     this.inter = interval(1000).subscribe(x => {
 
       if (navigator.geolocation) {
-        if (this.percentage == 100 && get1!=1 ) {
+        if (this.percentage == 100 && get1 != 1) {
           this.inter.unsubscribe();
-          get1=1
+          get1 = 1
           console.log("**********************")
-          console.log( this.clientInfos["lat"])
+          console.log(this.clientInfos["lat"])
           this.clientInfos["lat"] = this.latclt
           this.clientInfos["lon"] = this.lonclt
 
-          this.clientService.GetNamePlace(this.latclt,this.lonclt).subscribe(res=>{
-            console.log("res",res.results[0].locations[0])
-            this.city=res.results[0].locations[0].adminArea5
-            this.region=res.results[0].locations[0].adminArea3
-            console.log("city",this.city)
-            console.log("region",this.region)
-  
+          this.clientService.GetNamePlace(this.latclt, this.lonclt).subscribe(res => {
+            console.log("res", res.results[0].locations[0])
+            this.city = res.results[0].locations[0].adminArea5
+            this.region = res.results[0].locations[0].adminArea3
+            console.log("city", this.city)
+            console.log("region", this.region)
+
           })
         }
 
@@ -502,31 +503,61 @@ export class AddclientComponent implements AfterViewInit {
     this.clientInfos.created_at = new Date()
     this.clientInfos.updated_at = new Date()
 
-    if(this.user.role=="Seller"){
-      this.clientInfos.Status = "white_red"
-    }else{
-      this.clientInfos.Status = "red_white"
-    }
+    // if(this.user.role=="Seller"){
+    //   this.clientInfos.Status = "white_red"
+    // }else{
+    //   this.clientInfos.Status = "red_white"
+    // }
     if (this.loggedUser.permissions.includes("Add NFC")) {
-      if ( this.clientInfos.codeNFC === null) {
+      if (this.clientInfos.codeNFC === null) {
         this.clientInfos["status"] = "pink"
       }
       else {
         this.clientInfos["status"] = "purple"
       }
-    }else{
+    } else {
       this.clientInfos["status"] = "red"
     }
-    this.clientInfos["city"] =this.city
+    this.clientInfos["city"] = this.city
     this.clientInfos["region"] = this.region
-   
+
     console.log(this.clientInfos)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodo(this.clientInfos);
       //this.AddNewClientIndexDB()
       var _id = UUID.UUID();
-      this.AddNewClient(_id)
-     // this._router.navigate(['/map'])
+      var client = {
+        "geometry": {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [this.clientInfos["lon"], this.clientInfos["lat"]]
+          },
+          "properties": {
+            "codeDANON": this.clientInfos.codes[0],
+            "codeCOLA": this.clientInfos.codes[1],
+            "codeFGD": this.clientInfos.codes[2],
+            "codeQR": this.clientInfos.codeNFC,
+            "NFCP": this.clientInfos.NFCPhoto,
+            "nfc": this.nfcObject,
+            "Code_Secteur_OS": parseInt(this.mySector),
+            "machine": this.clientInfos["machine"],
+            "city":this.clientInfos["city"],
+            "region":this.clientInfos["region"],
+            "TypeDPV": this.TypeDPV,
+            "detailType": this.detailType,
+            "userId": this.loggedUser._id,
+            "userRole": this.loggedUser.role,
+            "NomPrenom": this.NomPrenom,
+            "PhoneNumber": this.PhoneNumber,
+            "PVP": this.clientInfos.PVPhoto,
+            "status": this.clientInfos.Status
+          }
+        },
+        "_id": _id
+      }
+      this.AddNewClient(client)
+      // this._router.navigate(['/map'])
     } else {
       // this.clientService.SendClient(this.clientInfos).subscribe((res) => {
       //   console.log("\n **********Response form API************")
@@ -573,7 +604,14 @@ export class AddclientComponent implements AfterViewInit {
       this.clientService.SendClient(this.clientInfos).subscribe((res) => {
         //console.log(res)
         if (res.message == 'Done') {
-          this.AddNewClient(res.id)
+          //this.AddNewClient(res.id)
+          console.log(res)
+          var client = res.clientGeometry
+          client.geometry.properties["NFCP"] = this.clientInfos.NFCPhoto
+          client.geometry.properties["PVP"] = this.clientInfos.PVPhoto
+          //client["_id"]=res.id
+          console.log(client)
+          this.AddNewClient(client)
           this.dialogConf.close()
 
           // this.clientService.getAllClient().subscribe(async (res1) => {
@@ -587,13 +625,13 @@ export class AddclientComponent implements AfterViewInit {
           //     }) 
           //   });
           // });
-          this.openAlertDialog("The Client has been added successfully!", "Ok, Cool!")
+          this.openAlertDialog("The Client has been added successfully!", "Ok")
           //this._router.navigate(['/map'])
         }
 
       }, err => {
         this.dialogConf.close()
-        this.openAlertDialog("There is an error! Try again", "Ok")
+        this.openAlertDialog("An error has occurred! Please Try again", "Ok")
         console.log("errooooooooor")
         console.log(err)
       });
@@ -602,43 +640,19 @@ export class AddclientComponent implements AfterViewInit {
   ////////////////////////////////////////////////////////////////
 
   ////////////********** ADD CLIENT IN OFFLINE MODE **************/////////////////
-  AddNewClient(id) {
+  AddNewClient(client) {
     var db = new Dexie("off").open().then((res) => {
       console.log("***")
-      
+
       var codeSector = this.mySector.slice(0, 3)
       ///////
-      var geom = {
-        "geometry": {
-          "type": "Feature",
-          "geometry": {
-            "type": "Point",
-            "coordinates": [this.clientInfos["lon"], this.clientInfos["lat"]]
-          },
-          "properties": {
-            "codeDANON": this.clientInfos.codes[0],
-            "codeCOLA": this.clientInfos.codes[1],
-            "codeFGD": this.clientInfos.codes[2],
-            "codeQR": this.clientInfos.codeNFC,
-            "NFCP": this.clientInfos.NFCPhoto,
-            "nfc": this.nfcObject,
-            "Code_Region": parseInt(codeSector),
-            "Code_Secteur_OS": parseInt(this.mySector),
-            "machine": "CMG",
-            "TypeDPV": this.TypeDPV,
-            "detailType": this.detailType,
-            "userId": this.loggedUser._id,
-            "userRole": this.loggedUser.role,
-            "NomPrenom": this.NomPrenom,
-            "PhoneNumber": this.PhoneNumber,
-            "PVP": this.clientInfos.PVPhoto,
-            "status": this.clientInfos.Status
-          }
-        },
-        "_id": id
-      }
-      res.table("pdvs").put(geom).then(r => {
-       this._router.navigate(['/map'])
+      // var geom = {
+      //   "geometry": {
+      //   client,
+      //   "_id": client.id
+      // }
+      res.table("pdvs").put(client).then(r => {
+        this._router.navigate(['/map'])
       })
     });
   }

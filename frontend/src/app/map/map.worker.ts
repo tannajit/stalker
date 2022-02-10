@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 import Dexie from 'dexie';
 
-function clearSector(data,role){
+function clearSector(data, role) {
   var request = indexedDB.open("off", 29)
   request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
     console.log("Why didn't you allow my web app to use IndexedDB?!");
@@ -17,13 +17,13 @@ function clearSector(data,role){
       console.log("Data Cleared")
       console.log("$$$$$$$ DONE Clearing Secctor $$$$$$$$")
       var db = new Dexie("off").open().then((res) => {
-          res.table("sector").bulkPut(data).then((lastKey) => {
-            //console.log(" Call Sector Not Admin ")
-            //this.worker.postMessage("sector")
-            if (role == "Admin") {
-              postMessage("done");
-            }
-          });
+        res.table("sector").bulkPut(data).then((lastKey) => {
+          //console.log(" Call Sector Not Admin ")
+          //this.worker.postMessage("sector")
+          if (role == "Admin") {
+            postMessage("done");
+          }
+        });
       });
     }
   }
@@ -48,20 +48,41 @@ function ClearData(RessPDV) {
         res.table("pdvs").bulkAdd(RessPDV).then((lastKey) => {
           console.log("Add PDVs")
           postMessage("done");
-      
+
         });
 
       });
-     
+
     }
   }
 }
+
+function Clustering(markersCluster, condition) {
+  var cluster = []
+  var t = markersCluster.getLayers()
+  var i = 0;
+  while (i < t.length) {
+    //ar.push(t[i])
+    var layer = t[i]
+    if (layer.feature.properties.status != "green" && layer.feature.properties.status != "purple") {
+      if (condition == "Audit") {
+        cluster.push(layer)
+      }
+    }
+    i++;
+  }
+  postMessage({cluster:cluster});
+}
+
 addEventListener('message', ({ data }) => {
   if (data.type == "sector") {
     clearSector(data.res, data.role)
   }
   else if (data.type == "pdv") {
     ClearData(data.res)
+  } else if (data.type == "cluser") {
+    console.log(data)
+   // Clustering(data.markers, data.condition)
   }
 
 });

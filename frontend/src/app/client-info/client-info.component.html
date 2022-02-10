@@ -126,7 +126,9 @@
                 </button>
                 <button *ngIf="perm == 'Delete Client'" mat-raised-button color="primary" class="btn-red" [disabled]="data.geometry.properties.status=='deleted'">Delete Client</button>
             </ng-container>
-            
+
+           
+           
             <button mat-raised-button color="primary" class="btn-orange"
                 (click)="navigateToMap(data.geometry.geometry.coordinates[1],data.geometry.geometry.coordinates[0])" [disabled]="data.geometry.properties.status=='deleted'">Navigate
                 to the client</button>
@@ -199,6 +201,10 @@
             <button *ngIf="perm == 'Delete Client'" mat-raised-button [disabled]="ActiveTheButton()" class="btn-red" (click)="deleteRequest()">Delete Client</button>
         </ng-container>
     </mat-dialog-actions>
+    <div class="warning" *ngIf="Offline">
+        <mat-icon>warning</mat-icon>  
+        <span><span >Warning: </span> You can't Update or Delete clients before Synchronization</span>
+    </div>
     
 </div>
 
