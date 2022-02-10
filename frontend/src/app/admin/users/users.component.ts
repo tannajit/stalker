@@ -13,6 +13,9 @@ import { ClientsService } from 'src/app/clients.service';
 import { AlertDialogComponent } from 'src/app/alert-dialog/alert-dialog.component';
 import Dexie from 'dexie';
 import { IndexdbService } from 'src/app/indexdb.service';
+import { FormControl } from '@angular/forms';
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/core';
 import { isArray } from 'util';
 import { ThrowStmt } from '@angular/compiler';
 import { element } from 'protractor';
@@ -43,7 +46,6 @@ export class UsersComponent implements OnInit {
   dataSubject = new BehaviorSubject<Element[]>([]);
   dialogRef: MatDialogRef<ConfirmationDialogComponent>;
   dialogRef2: MatDialogRef<UserInfoComponent>;
-  
   constructor(
     private adminService: AdminService,
     public dialog: MatDialog,
@@ -576,11 +578,24 @@ export class UsersComponent implements OnInit {
 
     this.Sectors = this.anotherArray.filter((unit) => unit.detail.toLowerCase().indexOf(val) > -1);
   }
+  userselected=[]
+  // select=true
+  user2
+
+  ngAfterViewInit() {
+    // Set null value to value property for clear the selected item
+      // document.getElementById('btn').onclick = () => {
+      //   this.dropDownListObject.value = null;
+      // }
+  }
+  // @ViewChild('matRef') matRef: MatSelect;
+  // @ViewChild('opt') opt: MatOption;
 
   onSelectRole(role,users){
-    console.log("selected value", role);
-    console.log("selected element", users);
+
+
     var user = users.forEach(element => {
+
       if(element.role == role){
         this.selectedUser={
           'role': role,
@@ -588,8 +603,8 @@ export class UsersComponent implements OnInit {
         }
       }
     });
-    console.log(this.selectedUser)
-    
+
+
   }
 
   isObject(val){

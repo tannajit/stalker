@@ -13,7 +13,7 @@ var uri = "mongodb://localhost:27017";
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
-var name_database = "stalker1"
+var name_database = "stalker3"
 var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
@@ -503,7 +503,8 @@ router.post('/restoreUser', async (req, res) => {
 })
 
 async function InsertClient(client, res) {
-    //console.log("/n /n ************************** /n /n")
+    console.log("/n /n *************************** /n /n")
+    console.log(client)
     try {
         let collection = db.collection("clients") // collection clients
         let geometries = db.collection("geometries") /// geometries Collections
@@ -545,7 +546,7 @@ async function InsertClient(client, res) {
             lon: client.lon,
             nfc: client.nfc,
             Code_Secteur_OS: (client.sector != null) ? parseInt(client.sector) : 901011082,
-            machine: "CMG",
+            machine: client.machine,
             TypeDPV: client.TypeDPV,
             detailType: client.detailType,
             userId: client.userId,
@@ -565,11 +566,15 @@ async function InsertClient(client, res) {
         let getInsertedId; //// put Id inserted
         delete clientinfo.idGeometry;
         var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
+        //var clientG={ _id: id, geometry: clientGeo }
         geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
-            var id = result.insertedId
+            //var id = result.insertedId
+            // clientGeo["_id"]=id
+            // clientGeo["geometry"]=clientGeo
+
             var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
                 { $addToSet: { points: { "point": id, "route": null } } }).then(ss => {
-                    res.status(200).json({message:"Done",id:id})
+                    res.status(200).json({message:"Done",clientGeometry:{ _id: id, geometry: clientGeo }})
                 })
             //console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
             //console.log(up)
@@ -635,6 +640,8 @@ async function updateClient(client) {
         userRole: client.geometry.properties.userRole,
         NomPrenom: client.geometry.properties.NomPrenom,
         PhoneNumber: client.geometry.properties.PhoneNumber,
+        region:client.geometry.properties.region,
+        city:client.geometry.properties.city,
         PVPhoto: id_pv,
         status: client.geometry.properties.status,
         created_at: new Date(client.geometry.properties.created_at),
@@ -726,6 +733,8 @@ router.post('/updateClient', async (req, res) => {
         userRole: client.geometry.properties.userRole,
         NomPrenom: client.geometry.properties.NomPrenom,
         PhoneNumber: client.geometry.properties.PhoneNumber,
+        region:client.geometry.properties.region,
+        city:client.geometry.properties.city,
         PVPhoto: id_pv,
         status: client.geometry.properties.status,
         created_at: new Date(client.geometry.properties.created_at),
@@ -1140,7 +1149,8 @@ router.post("/DeleteRequest", async (req, res) => {
 
     console.log("get client : ")
     dataclient = req.body.data
-    console.log(req.body)
+    //
+    //console.log(req.body)
     // NomClient=dataclient.geometry.geometry.properties.NomPrenom
     // console.log(NomClient)
 

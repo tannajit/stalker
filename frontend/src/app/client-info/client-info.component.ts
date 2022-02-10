@@ -22,6 +22,7 @@ export class ClientInfoComponent implements OnInit {
   clientOfAuditor;
   safeURL;
   videoURL: "https://www.youtube.com/watch?v=iloN8k4zdgE&ab_channel=MRUTaste"
+  Offline = false;
   //////////////////////////////////////////////
 
   ////********* CONSTRUCTOR ******///////////////
@@ -34,8 +35,8 @@ export class ClientInfoComponent implements OnInit {
     public _router: Router,
     public _admin: AdminService,
     private _sanitizer: DomSanitizer) {
-      this.safeURL = this._sanitizer.bypassSecurityTrustResourceUrl(this.videoURL);
-     }
+    this.safeURL = this._sanitizer.bypassSecurityTrustResourceUrl(this.videoURL);
+  }
 
   ///////////////////////////////////////////////
 
@@ -44,6 +45,9 @@ export class ClientInfoComponent implements OnInit {
   ngOnInit(): void {
     console.log("############################ Wa client")
     console.log(this.data)
+    if (this.data._id.includes("-")) {
+      this.Offline = true;
+    }
     this.loggedUser = JSON.parse(localStorage.getItem("user"))
     if (this.loggedUser.role == 'Admin' || this.loggedUser.role == 'Back Office') {
       this.clientService.getClientBySeller(this.data._id).subscribe(res => {
@@ -69,18 +73,29 @@ export class ClientInfoComponent implements OnInit {
     this.dialogRef.close();
     this._router.navigate(['/updateclient'])
   }
-  
-  ActiveTheButton(){
+
+  ActiveTheButton() {
     //console.log("fjdkfh"+ this.clientService.ActiveTheButton())
-    return this.clientService.ActiveTheButton();
-  }
-  
-  deleteRequest(){
-    this.dialogRef.close();
-    this._router.navigateByUrl('/deleteClient', { state: { dataClient:this.data } });
+    if (this.Offline == true) {
+      console.log("nmiiiiii offline ")
+      return true;
+    }
+
+    else
+    //console.log("sb7an lah ")
+    {
+      console.log("nmi nta mriid rah machi offline ")
+      return this.clientService.ActiveTheButton();
+    }
+
   }
 
- ////**********VALIDATE FUNCTION ***********////
+  deleteRequest() {
+    this.dialogRef.close();
+    this._router.navigateByUrl('/deleteClient', { state: { dataClient: this.data } });
+  }
+
+  ////**********VALIDATE FUNCTION ***********////
   validate(id, status) {
     console.log("######## id:" + id)
     this.clientService.validateAuditorInfo({ 'id': id, 'status': status }).subscribe(res => console.log(res))
@@ -115,25 +130,25 @@ export class ClientInfoComponent implements OnInit {
       }
     });
   }
-  
+
   navigateToMap(lat, long) {
     this._router.navigate(['/map/' + lat + "/" + long])
     this.dialogRef.close();
   }
 
   /// enbale Button
-/// status1: for DeletedRequests Collection status2: status
-  EnableButton(status1,status2){
-    
+  /// status1: for DeletedRequests Collection status2: status
+  EnableButton(status1, status2) {
+
     console.log(status1)
     console.log(status2)
   }
 
-  validateDelete(request,status) {
+  validateDelete(request, status) {
     console.log(request)
     // Write the code to change status
-    
-    request.status=status
+
+    request.status = status
     this._admin.ValidateDeleteClient(request).subscribe(res => {
       console.log(res)
       var message = "This PDV has been deleted successfully!"
@@ -144,5 +159,5 @@ export class ClientInfoComponent implements OnInit {
 
 
 
-  
+
 }

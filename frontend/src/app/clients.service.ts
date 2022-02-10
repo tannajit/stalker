@@ -89,7 +89,6 @@ export class ClientsService {
   }
 
   extract(info) {
-
     return this.http.post<any>(this._extarct, info);
   }
 
@@ -147,19 +146,29 @@ export class ClientsService {
       });
     }
   }
+
   addToIndexedDb(clientt: any) {
-    this.db.client
-      .add(clientt)
-      .then(async () => {
-        const allItems: any = await this.db["client"].toArray();
-        console.log('saved in DB, DB is now', allItems);
+    var db; var transaction; var upgradeDb
+    var request = window.indexedDB.open("MyTestDatabase", 10)
+    // upgradeDb.createObjectStore('client');
+    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
+      console.log("Why didn't you allow my web app to use IndexedDB?!");
+    };
+    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+      db = event.target.result;
+      console.log("success")
+      console.log(db)
+      transaction = db.transaction(['client'], 'readwrite');
+      var objectStore = transaction.objectStore("client");
+      //var objectStoreRequest = objectStore.get(id);
+      const request = objectStore.add(clientt);
+      request.onsuccess = (event) => {
+        console.log('saved in DB, DB is now');
         var message = "Data saved successfuly";
         var btn = "Continue"
         this.openAlertDialog(message, btn)
-      })
-      .catch(e => {
-        alert('Error: ' + (e.stack || e));
-      });
+      };
+    }
   }
   ////////////////////////////////////////////////////////////////////
 
@@ -260,15 +269,24 @@ export class ClientsService {
       transaction = db.transaction(['client'], 'readwrite');
       var objectStore = transaction.objectStore("client");
       var objectStoreRequest = objectStore.get(id);
-
       console.log("@@@@@@@@@@" + objectStoreRequest)
       objectStoreRequest.onsuccess = event => {
         var element = event.target.result
-        console.log(element)
-        this.SendClient(element).subscribe(res => {
-          console.log(res);
-          console.log("data sent succusfuly")
+
+        this.GetNamePlace(element["lat"],element["lon"]).subscribe(res=>{
+          console.log("reselem",res)
+          var city = res.results[0].locations[0].adminArea5
+          var region = res.results[0].locations[0].adminArea3
+          element["city"] = city
+          element["region"] = region
+          this.SendClient(element).subscribe(res => {
+            console.log(res);
+            console.log("data sent succusfuly")
+          })
         })
+        console.log(element)
+
+        
         var objectStoreRequest1 = objectStore.delete(id);
         objectStoreRequest1.onsuccess = event => {
           console.log("item deleted from indexedDb");
@@ -296,10 +314,21 @@ export class ClientsService {
       objectStoreRequest.onsuccess = event => {
         var element = event.target.result
         console.log(element)
-        this.updateClient(element).subscribe(res => {
-          console.log(res);
-          console.log("data sent succusfuly")
+        
+        this.GetNamePlace(element.geometry.geometry.coordinates[1],element.geometry.geometry.coordinates[0]).subscribe(res=>{
+          console.log("reselem",res)
+          var city = res.results[0].locations[0].adminArea5
+          var region = res.results[0].locations[0].adminArea3
+          element.geometry.properties["city"]=city
+          element.geometry.properties["region"]=region
+          this.updateClient(element).subscribe(res => {
+            console.log(res);
+            console.log("data sent succusfuly")
+          })
+          
         })
+        
+        
         var objectStoreRequest1 = objectStore.delete(id);
         objectStoreRequest1.onsuccess = event => {
           console.log("item deleted from indexedDb");
@@ -375,15 +404,15 @@ export class ClientsService {
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
       console.log("Why didn't you allow my web app to use IndexedDB?!");
     };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+    request.onsuccess = async (event: Event & { target: { result: IDBDatabase } }) => {
       this.db = event.target.result;
       console.log("success")
       console.log(this.db)
       transaction = this.db.transaction(['client'], 'readwrite');
       var objectStore = transaction.objectStore("client");
-      var objectStoreRequest = objectStore.getAll();
-      objectStoreRequest.onsuccess = function (event) {
-        var all = event.target.result
+      var objectStoreRequest = await objectStore.getAll();
+      objectStoreRequest.onsuccess = async  (event) =>{
+        var all = await event.target.result
         all.forEach(element => {
           console.log("---")
           var elm = element.UUid
@@ -391,7 +420,7 @@ export class ClientsService {
           list.push(elm)
           console.log(list)
         });
-      }
+      };
     };
     return list
   }
@@ -404,16 +433,16 @@ export class ClientsService {
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
       console.log("Why didn't you allow my web app to use IndexedDB?!");
     };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+    request.onsuccess = async (event: Event & { target: { result: IDBDatabase } }) => {
       this.db = event.target.result;
       console.log("success")
       console.log(this.db)
       transaction = this.db.transaction(['update'], 'readwrite');
       var objectStore = transaction.objectStore("update");
-      var objectStoreRequest = objectStore.getAll();
+      var objectStoreRequest = await objectStore.getAll();
 
-      objectStoreRequest.onsuccess = function (event) {
-        var all = event.target.result
+      objectStoreRequest.onsuccess = async  (event)=> {
+        var all = await event.target.result
         all.forEach(element => {
           console.log("---")
           var elm = element.UUid
@@ -434,15 +463,15 @@ export class ClientsService {
     request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
       console.log("Why didn't you allow my web app to use IndexedDB?!");
     };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
+    request.onsuccess = async (event: Event & { target: { result: IDBDatabase } }) => {
       this.db = event.target.result;
       console.log("success")
       console.log(this.db)
       transaction = this.db.transaction(['delete'], 'readwrite');
       var objectStore = transaction.objectStore("delete");
-      var objectStoreRequest = objectStore.getAll();
-      objectStoreRequest.onsuccess = function (event) {
-        var all = event.target.result
+      var objectStoreRequest = await objectStore.getAll();
+      objectStoreRequest.onsuccess = async (event)  => {
+        var all = await event.target.result
         all.forEach(element => {
           console.log("---")
           var elm = element.UUid
@@ -599,10 +628,19 @@ export class ClientsService {
         var all = event.target.result
         console.log(all)
         all.forEach(element => {
-          console.log(element)
-          this.SendClient(element).subscribe(res => {
-            console.log(res);
+          console.log("element",element)
+          this.GetNamePlace(element["lat"],element["lon"]).subscribe(res=>{
+            console.log("reselem",res)
+            var city = res.results[0].locations[0].adminArea5
+            var region = res.results[0].locations[0].adminArea3
+            element["city"]=city
+            element["region"]=region
+            this.SendClient(element).subscribe(res => {
+              console.log(res);
+            })
           })
+          
+          
           console.log("data sent succusfuly")
         })
         var objectStoreRequest1 = objectStore.clear();
@@ -633,12 +671,21 @@ export class ClientsService {
       var objectStoreRequest = objectStore.getAll();
       objectStoreRequest.onsuccess = event => {
         var all = event.target.result
-        console.log(all)
+        console.log("all",all)
         all.forEach(element => {
-          console.log(element)
-          this.updateClient(element).subscribe(res => {
-            console.log(res);
+          console.log("element Geometry",element.geometry.geometry)
+          this.GetNamePlace(element.geometry.geometry.coordinates[1],element.geometry.geometry.coordinates[0]).subscribe(res=>{
+            console.log("reselem",res)
+            var city = res.results[0].locations[0].adminArea5
+            var region = res.results[0].locations[0].adminArea3
+            element.geometry.properties["city"]=city
+            element.geometry.properties["region"]=region
+            this.updateClient(element).subscribe(res => {
+              console.log(res);
+            })
           })
+          
+          
           console.log("data sent succusfuly")
         })
         var objectStoreRequest1 = objectStore.clear();
@@ -731,7 +778,11 @@ export class ClientsService {
       })
     });
   }
+  GetNamePlace(lat,lon){
+    
+    return this.http.get<any>("https://www.mapquestapi.com/geocoding/v1/reverse?key=JlNC9Ur4Y3uBUEqGkqdDvvOGCcFOuWwA&location="+lat+"%2C"+lon+"&outFormat=json&thumbMaps=false")
 
+  }
   //****************************** */
 
 

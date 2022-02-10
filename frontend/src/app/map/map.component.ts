@@ -84,17 +84,18 @@ export class MapComponent implements AfterViewInit {
   version = 29;
   marker;
   worker = new Worker(new URL('./map.worker', import.meta.url));
+  ShowFilter=false;
   ///create map 
   private initMap(): void {
     this.map = L.map('map', {
       center: [this.lat, this.lon],
-      zoom: 10,
+      zoom: 8,
       zoomControl: false
     });
 
     const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 30,
-      minZoom: 0
+      maxZoom: 20,
+      minZoom: 2
     });
     // this._location.ClearWatch();
     tiles.addTo(this.map);
@@ -102,6 +103,7 @@ export class MapComponent implements AfterViewInit {
     this.markersCluster = this._serviceClient.markersCluster;
     this.markerClusterSector = this._serviceClient.markerClusterSector
     if (this.markerClusterSector.getLayers() == 0) {
+      this.markersCluster.clearLayers();
       console.log("^put")
       this.putzmr()
     }
@@ -119,7 +121,7 @@ export class MapComponent implements AfterViewInit {
     });
     // const searchControl = new ELG.Geosearch({ position: 'topright' });
 
-    const results1 = new L.LayerGroup().addTo(this.map);
+   // const results1 = new L.LayerGroup().addTo(this.map);
 
     // searchControl.on("results", function (data) {
     //   results1.clearLayers();
@@ -158,7 +160,6 @@ export class MapComponent implements AfterViewInit {
   //////////////*** Init map ////////
   ngAfterViewInit(): void {
     this.initMap();
-
     this.aroute.params.subscribe(params => {
       if (params['lat']) {
         console.log("laaaaaaaaaaaaaaaaaaaaaaat: " + params['lat'])
@@ -184,13 +185,10 @@ export class MapComponent implements AfterViewInit {
 
         this.map.flyTo(new L.LatLng(params['lat'], params['long']), 18);
       } else {
-
         this.getLocation()
         interval(1000).pipe(takeUntil(this.destroyed)).subscribe(x => {
           this.WatchPosition()
-          // 
         })
-
       }
     });
   }
@@ -217,12 +215,12 @@ export class MapComponent implements AfterViewInit {
       }
 
       if (this.myMarker == undefined) {
-        this.map.setView(new L.LatLng(this.lat, this.lon), 17, { animation: true });
+        this.map.setView(new L.LatLng(this.lat, this.lon), 15, { animation: true });
       }
       this.myMarker = L.circleMarker([this.lat, this.lon], {
         color: "#163AE3 ",
         fillOpacity: 1,
-        radius: 8.0
+        radius: 3.0
       }).addTo(this.map);
 
     }, (err) => {
@@ -252,14 +250,14 @@ export class MapComponent implements AfterViewInit {
           this.lon = position.coords.longitude;
           console.log(this.lat);
           console.log(this.lon);
-          this.map.setView(new L.LatLng(this.lat, this.lon), 1, { animation: true });
+          this.map.setView(new L.LatLng(this.lat, this.lon),15, { animation: true });
           if (this.myMarker != undefined) {
             this.map.removeLayer(this.myMarker)
           }
           this.myMarker = L.circleMarker([this.lat, this.lon], {
-            color: "#163AE3 ",
+            color: "#163AE3",
             fillOpacity: 1,
-            radius: 8.0
+            radius: 3
           }).addTo(this.map);
         }
       },
@@ -271,7 +269,8 @@ export class MapComponent implements AfterViewInit {
   ////***  Fly to location **/////
   locate() {
     this.getLocation()
-    this.map.flyTo(new L.LatLng(this.lat, this.lon), 18);
+    this.map.setView(new L.LatLng(this.lat, this.lon),15, { animation: true });
+    //this.map.flyTo(new L.LatLng(this.lat, this.lon), 18);
     this.Insid();
   }
 
@@ -544,7 +543,10 @@ export class MapComponent implements AfterViewInit {
     }
 
     addPDV() {
-      this._router.navigate(['/addclient', this.mySector])
+      this._router.navigate(['/addclient', this.mySector]).then(() => {
+          window.location.reload();
+         });
+  
 
       // this._router.navigateByUrl('/addclient',{ state:  }).then(() => {
       //   window.location.reload();
@@ -680,7 +682,7 @@ export class MapComponent implements AfterViewInit {
             console.log("--------- All  All type  ----------")
             //this.doneCluster = this.markersCluster
             //this.ma
-            this.cluster1.addLayer(layer);
+           // this.cluster1.addLayer(layer);
           }
 
         });
@@ -832,10 +834,8 @@ export class MapComponent implements AfterViewInit {
                 this.openAlertSearch(mess);
               }
             } else {
-
               var mess = "No Such ID : " + IDGeomerty
               this.openAlertSearch(mess);
-
             }
 
           });
@@ -849,7 +849,6 @@ export class MapComponent implements AfterViewInit {
         this.openAlertSearch(mess)
 
       }
-
     }
     SearchIndexDBA(IDGeomerty) {
       console.log("Update in IndexedDB")

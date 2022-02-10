@@ -139,6 +139,7 @@ export class OfflineComponent implements OnInit {
 
   sendAllupdate() {
     if (this.onlineOfflineService.isOnline) {
+      console.log("send",)
       this.clientService.SendALLUpdate();
       for (var i = this.idsupdates.length; i > 0; i--) {
         this.idsupdates.pop();

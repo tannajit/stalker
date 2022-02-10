@@ -1042,5 +1042,21 @@
         flex-flow: row wrap;
     }
 }
-
+.warning{
+    background-color: #f3e7bb;
+    border-radius: 10px;
+    border: 1px solid #FACF37;
+    padding: 15px;
+    display: flex;
+    flex-flow: row;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-start;
+}
+.warning mat-icon{
+    color: #d1a814;
+}
+.warning span{
+    color: rgb(29, 28, 28);
+}
 
