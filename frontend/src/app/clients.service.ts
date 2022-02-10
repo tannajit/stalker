@@ -272,11 +272,21 @@ export class ClientsService {
       console.log("@@@@@@@@@@" + objectStoreRequest)
       objectStoreRequest.onsuccess = event => {
         var element = event.target.result
-        console.log(element)
-        this.SendClient(element).subscribe(res => {
-          console.log(res);
-          console.log("data sent succusfuly")
+
+        this.GetNamePlace(element["lat"],element["lon"]).subscribe(res=>{
+          console.log("reselem",res)
+          var city = res.results[0].locations[0].adminArea5
+          var region = res.results[0].locations[0].adminArea3
+          element["city"] = city
+          element["region"] = region
+          this.SendClient(element).subscribe(res => {
+            console.log(res);
+            console.log("data sent succusfuly")
+          })
         })
+        console.log(element)
+
+        
         var objectStoreRequest1 = objectStore.delete(id);
         objectStoreRequest1.onsuccess = event => {
           console.log("item deleted from indexedDb");
@@ -304,10 +314,21 @@ export class ClientsService {
       objectStoreRequest.onsuccess = event => {
         var element = event.target.result
         console.log(element)
-        this.updateClient(element).subscribe(res => {
-          console.log(res);
-          console.log("data sent succusfuly")
+        
+        this.GetNamePlace(element.geometry.geometry.coordinates[1],element.geometry.geometry.coordinates[0]).subscribe(res=>{
+          console.log("reselem",res)
+          var city = res.results[0].locations[0].adminArea5
+          var region = res.results[0].locations[0].adminArea3
+          element.geometry.properties["city"]=city
+          element.geometry.properties["region"]=region
+          this.updateClient(element).subscribe(res => {
+            console.log(res);
+            console.log("data sent succusfuly")
+          })
+          
         })
+        
+        
         var objectStoreRequest1 = objectStore.delete(id);
         objectStoreRequest1.onsuccess = event => {
           console.log("item deleted from indexedDb");
@@ -607,10 +628,19 @@ export class ClientsService {
         var all = event.target.result
         console.log(all)
         all.forEach(element => {
-          console.log(element)
-          this.SendClient(element).subscribe(res => {
-            console.log(res);
+          console.log("element",element)
+          this.GetNamePlace(element["lat"],element["lon"]).subscribe(res=>{
+            console.log("reselem",res)
+            var city = res.results[0].locations[0].adminArea5
+            var region = res.results[0].locations[0].adminArea3
+            element["city"]=city
+            element["region"]=region
+            this.SendClient(element).subscribe(res => {
+              console.log(res);
+            })
           })
+          
+          
           console.log("data sent succusfuly")
         })
         var objectStoreRequest1 = objectStore.clear();
@@ -641,12 +671,21 @@ export class ClientsService {
       var objectStoreRequest = objectStore.getAll();
       objectStoreRequest.onsuccess = event => {
         var all = event.target.result
-        console.log(all)
+        console.log("all",all)
         all.forEach(element => {
-          console.log(element)
-          this.updateClient(element).subscribe(res => {
-            console.log(res);
+          console.log("element Geometry",element.geometry.geometry)
+          this.GetNamePlace(element.geometry.geometry.coordinates[1],element.geometry.geometry.coordinates[0]).subscribe(res=>{
+            console.log("reselem",res)
+            var city = res.results[0].locations[0].adminArea5
+            var region = res.results[0].locations[0].adminArea3
+            element.geometry.properties["city"]=city
+            element.geometry.properties["region"]=region
+            this.updateClient(element).subscribe(res => {
+              console.log(res);
+            })
           })
+          
+          
           console.log("data sent succusfuly")
         })
         var objectStoreRequest1 = objectStore.clear();
@@ -740,7 +779,7 @@ export class ClientsService {
     });
   }
   GetNamePlace(lat,lon){
-
+    
     return this.http.get<any>("https://www.mapquestapi.com/geocoding/v1/reverse?key=JlNC9Ur4Y3uBUEqGkqdDvvOGCcFOuWwA&location="+lat+"%2C"+lon+"&outFormat=json&thumbMaps=false")
 
   }

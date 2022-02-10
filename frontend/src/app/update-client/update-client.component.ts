@@ -116,7 +116,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
     private clientService: ClientsService, private adminService: AdminService,
     private _router: Router,
     private dialog: MatDialog,
-    private _setting:AdminService,) {
+    private _setting:AdminService) {
       
     this.loggedUser = JSON.parse(localStorage.getItem("user"));
     this.clientInfo = clientService.getClientInfo();
@@ -196,7 +196,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
     navigator.geolocation.watchPosition((pos) => {
       //console.log(`latitude of watch :${pos.coords.latitude},longitude of watch:${pos.coords.longitude}`)
 
-      let raduis = 5000;
+      let raduis = 6000;
       if (this.myCercle !== undefined) {
         this.map.removeLayer(this.myCercle)
       }
@@ -328,7 +328,15 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   }
   ///////////////////////////////////////////////////////////
 
+  city=null
+  region=null
+  GetNamePlace(lat,lon){
 
+     this.clientService.GetNamePlace(lat,lon).subscribe(res=>{
+      console.log(res)
+    })
+
+  }
 
   ///////////*********** MAP FUNCTION **************///////
   private initMap(): void {
@@ -350,6 +358,32 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
       iconUrl: "assets/location.png",
       iconSize: [30, 30]
     });
+
+    // navigator.geolocation.watchPosition((position: GeolocationPosition) => {
+    //   this.clientService.GetNamePlace(position.coords.latitude,position.coords.longitude).subscribe(res=>{
+    //     console.log("res",res.results[0].locations[0])
+    //     this.city=res.results[0].locations[0].adminArea5
+    //     this.region=res.results[0].locations[0].adminArea3
+    //     console.log("city",this.city)
+    //     console.log("region",this.region)
+
+    //   })
+    // })
+    //if(this.clientInfo.geometry.properties?.city||this.clientInfo.geometry.properties?.region){
+
+    this.clientService.GetNamePlace(this.clientInfo.geometry.geometry.coordinates[1],this.clientInfo.geometry.geometry.coordinates[0]).subscribe(res=>{
+      console.log("res",res.results[0].locations[0])
+      this.city=res.results[0].locations[0].adminArea5
+      this.region=res.results[0].locations[0].adminArea3
+      console.log("city",this.city)
+      console.log("region",this.region)
+      // this.clientInfo.geometry.properties.city =this.city
+      // this.clientInfo.geometry.properties.region = this.region
+ 
+    })
+    //}
+    
+
     var marker = L.marker([this.lat, this.lon], { icon: location_icon })
     this.inter = interval(1000).subscribe(x => {
       if (navigator.geolocation) {
@@ -405,7 +439,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
     // interval(1000).subscribe(x => {
     //console.log("yesssss")
     if (navigator.geolocation) {
-      let raduis = 300;
+      let raduis = 50000;
       this.map.setView(new L.LatLng(this.latclt, this.lonclt), 11, { animation: true });
       //L.circle([this.latclt, this.lonclt], {color:"blue",fillColor:"#cce6ff",radius:raduis}).addTo(this.map);
 
@@ -509,6 +543,12 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
 
   /////////////////////****** UPDATE CLIENT INFOS *******/////////////////
   async Update() {
+    // if(this.clientInfo.geometry.properties?.city||this.clientInfo.geometry.properties?.region){
+      console.log("city2",this.city)
+      console.log("region2",this.region)
+
+  
+    //  }
     console.log(this.clientInfos)
 
     
@@ -548,6 +588,12 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
     this.clientInfo.geometry.properties.userRole = this.user.role;
     this.clientInfo.geometry.properties.updated_at = new Date();
     this.clientInfo.geometry.properties.created_at = this.clientInfo.geometry.properties.created_at;
+    console.log("city3",this.city)
+      console.log("region3",this.region)
+    this.clientInfo.geometry.properties["city"] =this.city
+    this.clientInfo.geometry.properties["region"]= this.region
+    console.log("corfd",this.clientInfo.geometry.geometry.coordinates)
+    
     console.log('########## Updated Client ##########')
     console.log(this.clientInfo)
 

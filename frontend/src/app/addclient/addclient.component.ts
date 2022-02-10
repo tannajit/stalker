@@ -18,13 +18,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import Dexie from 'dexie';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 const incr = 1;
-<<<<<<< HEAD
 import { HttpClient } from '@angular/common/http';
-=======
-// import "esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css";
-// import "esri-leaflet-geocoder/dist/esri-leaflet-geocoder";
-// import * as ELG from "esri-leaflet-geocoder";
->>>>>>> 0e67722f09bcf01ec66f84c54080067261b00da9
 
 @Component({
   selector: 'app-addclient',
@@ -343,15 +337,27 @@ export class AddclientComponent implements AfterViewInit {
     
     // })
 
-
+    var get1=0
     var marker = L.marker([this.lat, this.lon], { icon: location_icon })
     this.inter = interval(1000).subscribe(x => {
 
       if (navigator.geolocation) {
-        if (this.percentage == 100) {
+        if (this.percentage == 100 && get1!=1 ) {
           this.inter.unsubscribe();
+          get1=1
+          console.log("**********************")
+          console.log( this.clientInfos["lat"])
           this.clientInfos["lat"] = this.latclt
           this.clientInfos["lon"] = this.lonclt
+
+          this.clientService.GetNamePlace(this.latclt,this.lonclt).subscribe(res=>{
+            console.log("res",res.results[0].locations[0])
+            this.city=res.results[0].locations[0].adminArea5
+            this.region=res.results[0].locations[0].adminArea3
+            console.log("city",this.city)
+            console.log("region",this.region)
+  
+          })
         }
 
         var options = {
@@ -495,15 +501,12 @@ export class AddclientComponent implements AfterViewInit {
     this.clientInfos.userRole = this.user.role;
     this.clientInfos.created_at = new Date()
     this.clientInfos.updated_at = new Date()
-<<<<<<< HEAD
-    this.clientInfos["city"] =this.city
-    this.clientInfos["region"] = this.region
+
     if(this.user.role=="Seller"){
       this.clientInfos.Status = "white_red"
     }else{
       this.clientInfos.Status = "red_white"
     }
-=======
     if (this.loggedUser.permissions.includes("Add NFC")) {
       if ( this.clientInfos.codeNFC === null) {
         this.clientInfos["status"] = "pink"
@@ -514,10 +517,9 @@ export class AddclientComponent implements AfterViewInit {
     }else{
       this.clientInfos["status"] = "red"
     }
-    this.clientInfos["city"] =this.Address.Match_addr
-    this.clientInfos["region"] = this.Address.Region
+    this.clientInfos["city"] =this.city
+    this.clientInfos["region"] = this.region
    
->>>>>>> 0e67722f09bcf01ec66f84c54080067261b00da9
     console.log(this.clientInfos)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodo(this.clientInfos);

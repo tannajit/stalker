@@ -503,7 +503,8 @@ router.post('/restoreUser', async (req, res) => {
 })
 
 async function InsertClient(client, res) {
-    //console.log("/n /n ************************** /n /n")
+    console.log("/n /n *************************** /n /n")
+    console.log(client)
     try {
         let collection = db.collection("clients") // collection clients
         let geometries = db.collection("geometries") /// geometries Collections
@@ -635,6 +636,8 @@ async function updateClient(client) {
         userRole: client.geometry.properties.userRole,
         NomPrenom: client.geometry.properties.NomPrenom,
         PhoneNumber: client.geometry.properties.PhoneNumber,
+        region:client.geometry.properties.region,
+        city:client.geometry.properties.city,
         PVPhoto: id_pv,
         status: client.geometry.properties.status,
         created_at: new Date(client.geometry.properties.created_at),
@@ -726,6 +729,8 @@ router.post('/updateClient', async (req, res) => {
         userRole: client.geometry.properties.userRole,
         NomPrenom: client.geometry.properties.NomPrenom,
         PhoneNumber: client.geometry.properties.PhoneNumber,
+        region:client.geometry.properties.region,
+        city:client.geometry.properties.city,
         PVPhoto: id_pv,
         status: client.geometry.properties.status,
         created_at: new Date(client.geometry.properties.created_at),

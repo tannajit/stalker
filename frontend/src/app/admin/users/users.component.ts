@@ -594,7 +594,7 @@ export class UsersComponent implements OnInit {
   @ViewChild('matRef') matRef: MatSelect;
   @ViewChild('opt') opt: MatOption;
 
-  onSelectRole(role,users,event){
+  onSelectRole(role,users){
     console.log(this.matRef.options)
     // this.matRef.options.forEach((data: MatOption) =>{
     //   console.log("data",data.id)
