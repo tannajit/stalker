@@ -14,8 +14,7 @@
             <mat-form-field>
               <!-- <mat-label>Id User</mat-label> -->
               <input placeholder="Search..." matInput (keyup)="applyFilter($event.target.value)" [(ngModel)]="searchValue"/>
-              
-          </mat-form-field>
+            </mat-form-field>
 
             <mat-form-field>
               <mat-select placeholder="Status" panelClass="selectPanel2" (selectionChange)="onChangeStatus($event)" [(ngModel)]="selectedStatus">

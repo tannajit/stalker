@@ -97,6 +97,10 @@ export class DeleteRequestsComponent implements OnInit {
     this._router.navigate(['/map/' + lat + "/" + long])
     this.dialogRef.close();
   }
+
+  refresh(){
+    this.ngOnInit()
+  }
  
 
 }

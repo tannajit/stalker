@@ -3,6 +3,7 @@
     <ng-container *ngIf="percentage == 100; else elseTemplate">
         <p>Position Fixed</p>
     </ng-container>
+    
     <ng-template #elseTemplate>
         <p>Fixing Position...</p>
     </ng-template>
@@ -34,11 +35,11 @@
                     <button mat-button class="btn-green" [disabled]="test"
                         (click)="toggleShow(1,qrResultString);"
                         style="align-self: flex-start;">Scan</button>
+
                     <div *ngFor="let code of ListCodes" class="qr-container">
                         <span *ngIf="code.nbr == 1">{{ code.value}}</span>
                     </div>
                 </div>
-
             </div>
             <div class="scan-field">
                 <label class="input-label">Code Coca Cola : </label>
@@ -61,7 +62,6 @@
                         <span *ngIf="code.nbr == 3">{{ code.value}}</span>
                     </div>
                 </div>
-
             </div>
         </div>
         <div id="divshow" *ngIf="isShown && !scan" class="Scan-container">
@@ -76,12 +76,9 @@
             </section>
         </div>
         <button mat-button class="btn-yellow" [disabled]="test" (click)="CheckCodes()">Check codes</button>
-
-
     </div>
 
     <div class="container" id="nfc" *ngIf="nfcShown">
-
         <div class="inputs-container">
             <ng-container *ngFor="let perm of loggedUser.permissions">
                 <div class="nfc" *ngIf="perm == 'Add NFC'">
@@ -112,7 +109,6 @@
                     </div>
                     <div *ngIf="isShown && scan " class="Scan-container">
                         <zxing-scanner Class="small-video" (scanSuccess)="onCodeResult($event)"></zxing-scanner>
-    
                         <section class="results" *ngIf="qrResultString">
                             <div>
                                 <small>Result: </small>
@@ -140,27 +136,24 @@
                         <div class="snapshot">
                             <img [height]="200" [width]="200" [src]="webcamNFCImage.imageAsDataUrl"
                                 style="border-radius: 8px;" />
-    
                         </div>
                     </div>
                 </div>
             </ng-container>
             
-            
-
             <div class="pdv">
                 <div class="field">
                     <mat-form-field    >
                         <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="TypeDPV"
                             [(value)]="selected">
-
                             <div *ngFor="let type of TypesPDVs" >
-                        
                                 <mat-option  value="{{type}}">{{type}}</mat-option>
                             </div>
-                            <!-- <mat-option value="Detail">Detail</mat-option>
+                            <!-- 
+                            <mat-option value="Detail">Detail</mat-option>
                             <mat-option value="Gros">Gros</mat-option>
-                            <mat-option value="Demi Gros">Demi Gros</mat-option> -->
+                            <mat-option value="Demi Gros">Demi Gros</mat-option> 
+                         -->
                         </mat-select>
                     </mat-form-field>
                 </div>
@@ -185,11 +178,11 @@
                     </mat-form-field>
                 </div>
 
-                <!-- <div class="field">
+                <!--
+                     <div class="field">
                     <mat-form-field>
                         <mat-label>Address</mat-label>
                         <input matInput placeholder="City"  [(ngModel)]="Address.Match_addr" />
-
                     </mat-form-field>
                 </div>
                 <div class="field">
@@ -197,17 +190,18 @@
                         <mat-label>Region</mat-label>
                         <input matInput placeholder="Region"  [(ngModel)]="Address.Region"/>
                     </mat-form-field>
-                </div> -->
+                </div>
+             -->
                 
                 <div class="field">
                     <div class="verify-phone">
-                        <div>
+                        <div class="phone">
                             <!-- To Do  -->
-                            <button mat-button [disabled]="true">+212</button> 
+                            <span class="phone-code">+212</span> 
                             <!-- To Do  -->
                             <mat-form-field>
-                                <mat-label>Phone number*</mat-label>
-                                <input matInput [(ngModel)]="PhoneNumber" placeholder="add Phone number....." pattern="[6-7]{1}[0-9]{8}" />
+                                <mat-label>Phone number</mat-label>
+                                <input matInput [(ngModel)]="PhoneNumber" placeholder="add Phone number....." pattern="[6-7]{1}[0-9]{8}" required />
                             </mat-form-field>
         
                             <button mat-button class="btn-green" [disabled]="disbale_sms"
@@ -215,10 +209,8 @@
                         </div>
                         
                         <p style="font-weight: bold; color: rgb(87, 22, 22);">{{display}}</p>
-                    </div>
-                    
+                    </div>  
                 </div>
-
                 <div class="field" *ngIf="showVerifCodeInput">
                     <div class="verify-phone">
                         <div>
@@ -233,12 +225,9 @@
                             </p>
                             <ng-template #error>
                                 <p style="color: red;">{{status}}</p>
-                            </ng-template>
-                            
-                        </div>
-                        
-                    </div>
-                    
+                            </ng-template>                         
+                        </div>                 
+                    </div>   
                 </div>
                 <div class="field">
                     <mat-label class="input-label">PV photo : </mat-label>
@@ -246,7 +235,6 @@
                         <mat-icon>camera_alt</mat-icon>
                     </button>
                 </div>
-
                 <div *ngIf="showPDVWebcam" class="Scan-container">
                     <webcam [height]="200" [width]="500" [trigger]="triggerObservable"
                         (imageCapture)="handlePDVImage($event)">
@@ -259,18 +247,17 @@
                 <!--          <button class="actionBtn" (click)="triggerSnapshot();">-->
                 <!--            Click Here and take the Shot</button>-->
                 <div *ngIf="webcamPDVImage" class="Scan-container">
-
                     <div class="snapshot">
                         <img class="img-pdv" [src]="webcamPDVImage.imageAsDataUrl" />
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="btns">
             <button mat-button class="btn-red" routerLink="/map">Cancel</button>
             <button mat-button class="btn-yellow" (click)="Send()" [disabled]="ActiveSend()">Send</button>    
         </div>
         
     </div>
+
 </div>

@@ -266,10 +266,7 @@ export class UsersComponent implements OnInit {
       if (this.dataSource.paginator) {
         this.dataSource.paginator.firstPage();
       }
-    }
-    
-    
-    
+    }   
   }
 
   // filterage based on status select
