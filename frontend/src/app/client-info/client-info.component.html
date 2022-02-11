@@ -142,8 +142,13 @@
 <div *ngIf="loggedUser.role == 'Seller' || loggedUser.role == 'Auditor'">
     <mat-dialog-content class="dialog-content">
         <h2>Client Information</h2>
+        <div class="warning" *ngIf="Offline">
+            <mat-icon>warning</mat-icon>  
+            <span><span >Warning: </span> You can't Update or Delete clients before Synchronization</span>
+        </div>
         <section fxLayout="column" fxLayoutAlign="center">
             <div class="pdv-info-container">
+                
                 <div class="pdv-img">
                     <img *ngIf="data.geometry.properties.PVP" src="{{data.geometry.properties.PVP}}" alt=""
                         (click)="openImage(data.geometry.properties.PVP)">
@@ -201,10 +206,7 @@
             <button *ngIf="perm == 'Delete Client'" mat-raised-button [disabled]="ActiveTheButton()" class="btn-red" (click)="deleteRequest()">Delete Client</button>
         </ng-container>
     </mat-dialog-actions>
-    <div class="warning" *ngIf="Offline">
-        <mat-icon>warning</mat-icon>  
-        <span><span >Warning: </span> You can't Update or Delete clients before Synchronization</span>
-    </div>
+    
     
 </div>
 

@@ -110,4 +110,12 @@ export class RolesComponent implements OnInit {
     });
   }
 
+  disable(role){
+    if(role.name=="Admin" || role.name=="Seller" || role.name=="Auditor"){
+      return true
+    }else{
+      return false
+    }
+  }
+
 }
