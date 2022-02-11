@@ -8,18 +8,12 @@ function clearSector(data, role) {
   };
   request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
     var db = event.target.result;
-    console.log("success inside Clear")
-    //console.log(this.db)
     var transaction = db.transaction(['sector'], 'readwrite');
     var objectStore = transaction.objectStore("sector");
     var objectStoreRequest = objectStore.clear();
     objectStoreRequest.onsuccess = function (event) {
-      console.log("Data Cleared")
-      console.log("$$$$$$$ DONE Clearing Secctor $$$$$$$$")
       var db = new Dexie("off").open().then((res) => {
         res.table("sector").bulkPut(data).then((lastKey) => {
-          //console.log(" Call Sector Not Admin ")
-          //this.worker.postMessage("sector")
           if (role == "Admin") {
             postMessage("done");
           }
@@ -35,18 +29,13 @@ function ClearData(RessPDV) {
   };
   request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
     var db = event.target.result;
-    console.log("success inside Clear")
-    //console.log(this.db)
     var transaction = db.transaction(['pdvs'], 'readwrite');
     var objectStore = transaction.objectStore("pdvs");
     var objectStoreRequest = objectStore.clear();
     objectStoreRequest.onsuccess = function (event) {
-      console.log("Data Cleared")
-      console.log("$$$$$$$ DONE Clearing $$$$$$$$")
       //StorePDVIndexdb()
       var db = new Dexie("off").open().then((res) => {
         res.table("pdvs").bulkAdd(RessPDV).then((lastKey) => {
-          console.log("Add PDVs")
           postMessage("done");
 
         });
@@ -81,7 +70,7 @@ addEventListener('message', ({ data }) => {
   else if (data.type == "pdv") {
     ClearData(data.res)
   } else if (data.type == "cluser") {
-    console.log(data)
+    //console.log(data)
    // Clustering(data.markers, data.condition)
   }
 

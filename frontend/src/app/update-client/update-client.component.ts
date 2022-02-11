@@ -1,24 +1,18 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { ViewEncapsulation } from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import { ClientsService } from '../clients.service';
 import { Observable, Subject } from "rxjs";
 import { interval } from 'rxjs';
-import * as geojson from 'geojson';
 import { Router } from '@angular/router';
 import { GeoJsonTypes } from 'geojson';
-import { ThrowStmt } from '@angular/compiler';
-import { IndexdbService } from '../indexdb.service';
 import { OnlineOfflineServiceService } from '../online-offline-service.service';
 import { AdminService } from '../admin/admin.service';
-import { takeUntil, switchMap } from 'rxjs/operators';
-import { TouchSequence } from 'selenium-webdriver';
+import { takeUntil } from 'rxjs/operators';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import Dexie from 'dexie';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
-import { SettingsComponent } from '../settings/settings.component';
 const incr = 1;
 
 @Component({
@@ -28,7 +22,7 @@ const incr = 1;
 })
 export class UpdateClientComponent implements AfterViewInit, OnInit {
 
-            
+
 
   ////******************** VARIABLE'S DECLARATION ****************/////
 
@@ -106,67 +100,41 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   markersCluster = new L.MarkerClusterGroup();
   inter;
   acc = 1222000;
-  TypesPDVs=[]
+  TypesPDVs = []
   timeLeft;
+  status_pdv;
   verification_code = null; status; codeSMS;
   //////////////////////////////////////////////////////////////
-   
+
   ////********* CONSTUCTOR **********/////////
   constructor(private readonly onlineOfflineService: OnlineOfflineServiceService,
     private clientService: ClientsService, private adminService: AdminService,
     private _router: Router,
     private dialog: MatDialog,
-    private _setting:AdminService) {
-      
+    private _setting: AdminService) {
+
     this.loggedUser = JSON.parse(localStorage.getItem("user"));
     this.clientInfo = clientService.getClientInfo();
-    this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time,err=>{
-      this.timeLeft=2;
+    this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time, err => {
+      this.timeLeft = 2;
     })
-    this.PhoneNumber=this.clientInfo.geometry.properties.PhoneNumber;
+    this.PhoneNumber = this.clientInfo.geometry.properties.PhoneNumber;
     console.log("***** this CLIENT ****")
     console.log(this.clientInfo)
   }
   //////////////////////////////////////////////////
   private destroyed: Subject<void> = new Subject<void>();
   ngOnInit(): void {
-   ///// Sector change
-  //  var db, transaction;
-  //  var request = window.indexedDB.open("off", this.version)
-  //  request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-  //    console.log("Why didn't you allow my web app to use IndexedDB?!");
-  //  };
-  //  request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-  //   //  db = event.target.result;
-    //  transaction = db.transaction(['sector'], 'readwrite');
-    //  var objectStore = transaction.objectStore("sector");
-    //    var objectStoreRequest = objectStore.get(Number(this.clientInfo.geometry.properties.Code_Secteur_OS));
-    //    objectStoreRequest.onsuccess = (event) => {
-    //      //console.log(objectStoreRequest.result)
-    //      var element=JSON.parse(objectStoreRequest.result.Valeur)
-    //      console.log(element)
-    //      this.clientInfos.TypeDPV=element.typePDV[0]
-    //     //this.selected=this.clientInfos.TypeDPV
-    //      element.typePDV.forEach(type => {
-    //        this.TypesPDVs.push(type)
-    //      });
-    //      this.selected=this.TypesPDVs[0]
-    //      this.TypeDPV=this.TypesPDVs[0]
-    //    }
     var db = new Dexie("off").open().then((res) => {
-      res.table("sector").get({"nameSecteur":Number(this.clientInfo.geometry.properties.Code_Secteur_OS)}).then(r=>{
+      res.table("sector").get({ "nameSecteur": Number(this.clientInfo.geometry.properties.Code_Secteur_OS) }).then(r => {
         console.log(r)
         r.typePDV.forEach(type => {
           this.TypesPDVs.push(type)
         });
-        this.selected=this.TypesPDVs[0]
-        this.TypeDPV=this.TypesPDVs[0]
+        this.selected = this.TypesPDVs[0]
+        this.TypeDPV = this.TypesPDVs[0]
       })
     });
-    ////
-    // interval(1000).pipe( takeUntil(this.destroyed)).subscribe(x => {
-    //this.getLocation()
-    // })
     if (!navigator.geolocation) console.log("Location is not supported")
 
     else {
@@ -304,7 +272,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   get triggerObservable(): Observable<void> {
     return this.trigger.asObservable();
   }
-  
+
   handleNFCImage(webcamNFCImage): void {
     console.info('received webcam image', webcamNFCImage);
     this.webcamNFCImage = webcamNFCImage;
@@ -328,11 +296,11 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   }
   ///////////////////////////////////////////////////////////
 
-  city=null
-  region=null
-  GetNamePlace(lat,lon){
+  city = null
+  region = null
+  GetNamePlace(lat, lon) {
 
-     this.clientService.GetNamePlace(lat,lon).subscribe(res=>{
+    this.clientService.GetNamePlace(lat, lon).subscribe(res => {
       console.log(res)
     })
 
@@ -371,18 +339,18 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
     // })
     //if(this.clientInfo.geometry.properties?.city||this.clientInfo.geometry.properties?.region){
 
-    this.clientService.GetNamePlace(this.clientInfo.geometry.geometry.coordinates[1],this.clientInfo.geometry.geometry.coordinates[0]).subscribe(res=>{
-      console.log("res",res.results[0].locations[0])
-      this.city=res.results[0].locations[0].adminArea5
-      this.region=res.results[0].locations[0].adminArea3
-      console.log("city",this.city)
-      console.log("region",this.region)
+    this.clientService.GetNamePlace(this.clientInfo.geometry.geometry.coordinates[1], this.clientInfo.geometry.geometry.coordinates[0]).subscribe(res => {
+      console.log("res", res.results[0].locations[0])
+      this.city = res.results[0].locations[0].adminArea5
+      this.region = res.results[0].locations[0].adminArea3
+      console.log("city", this.city)
+      console.log("region", this.region)
       // this.clientInfo.geometry.properties.city =this.city
       // this.clientInfo.geometry.properties.region = this.region
- 
+
     })
     //}
-    
+
 
     var marker = L.marker([this.lat, this.lon], { icon: location_icon })
     this.inter = interval(1000).subscribe(x => {
@@ -498,14 +466,11 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   display;
   Verify(code: string) {
     this.disbale_sms = true;
-    //this.clientInfos.PhoneNumber = this.PhoneNumber
     this.timer(this.timeLeft);
     this.SendSMS(this.PhoneNumber);
-   // console.log(this.PhoneNumber) 
   }
-  
+
   VerifySMS() {
-    //this.verification_code='0000'
     if (this.verification_code === this.codeSMS) {
       this.status = "the code is correct"
       this.clientInfo.geometry.properties.PhoneNumber = this.PhoneNumber
@@ -543,15 +508,9 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
 
   /////////////////////****** UPDATE CLIENT INFOS *******/////////////////
   async Update() {
-    // if(this.clientInfo.geometry.properties?.city||this.clientInfo.geometry.properties?.region){
-      console.log("city2",this.city)
-      console.log("region2",this.region)
-
-  
-    //  }
-    console.log(this.clientInfos)
-
-    
+    // console.log("city2", this.city)
+    // console.log("region2", this.region)
+    // console.log(this.clientInfos)
     // ***************** scanned codes ************* //
     if (this.ListCodes.length != 0) {
       this.ListCodes.forEach(element => {
@@ -567,8 +526,8 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
       });
     }
 
-    if(this.clientInfo.geometry.properties.TypeDPV!="Detail"){
-      this.clientInfo.geometry.properties.detailType=null
+    if (this.clientInfo.geometry.properties.TypeDPV != "Detail") {
+      this.clientInfo.geometry.properties.detailType = null
     }
     if (this.clientInfos.NFCPhoto != null) {
       console.log("BDL NFC Photo")
@@ -588,26 +547,38 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
     this.clientInfo.geometry.properties.userRole = this.user.role;
     this.clientInfo.geometry.properties.updated_at = new Date();
     this.clientInfo.geometry.properties.created_at = this.clientInfo.geometry.properties.created_at;
-    console.log("city3",this.city)
-    console.log("region3",this.region)
-    this.clientInfo.geometry.properties["city"] =this.city
-    this.clientInfo.geometry.properties["region"]= this.region
-    console.log("corfd",this.clientInfo.geometry.geometry.coordinates)
-    
+    console.log("city3", this.city)
+    console.log("region3", this.region)
+    this.clientInfo.geometry.properties["city"] = this.city
+    this.clientInfo.geometry.properties["region"] = this.region
+    console.log("corfd", this.clientInfo.geometry.geometry.coordinates)
+
     console.log('########## Updated Client ##########')
     console.log(this.clientInfo)
 
-    if (this.loggedUser.permissions.includes("Add NFC")) {
+    if (this.loggedUser.permissions.includes("Add NFC-Update")) {
       if (this.clientInfo.geometry.properties.codeQR === null) {
         this.clientInfo.geometry.properties.status = "pink"
       }
       else {
         this.clientInfo.geometry.properties.status = "purple"
       }
+    } else {
+      if (this.loggedUser.role == "Seller") {
+      if (this.clientInfo.geometry.properties.status != "purple" || this.clientInfo.geometry.properties.status != "pink" || this.clientInfo.geometry.properties.status!="green" ) {
+       // if(this.clientInfo.geometry.properties.status.includes("_")){
+        var stat = this.clientInfo.geometry.properties.status.split("_")
+          this.status_pdv = "white_" + stat[1]
+          console.log(this.status_pdv)
+          this.clientInfo.geometry.properties.status = this.status_pdv;
+        }
+      }
+
     }
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodoUpdate(this.clientInfo)
       this.UpdateDexie()
+      console.log("wtf")
       //this.UpdateIndexDB()
     } else {
       this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
@@ -616,19 +587,18 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
       this.dialogConf.componentInstance.confirmMessage = "update"
       this.clientService.updateClient(this.clientInfo).subscribe(res => {
         console.log(res)
-        if(res.modifiedCount==1){
-          this.dialogConf.close()
+        if (res.modifiedCount == 1) {
           this.openAlertDialog("The Client is updated!", "Ok")
           this.UpdateDexie()
+          this.dialogConf.close()
         }
-        
-      },err =>{
+      }, err => {
         this.dialogConf.close()
-        this.openAlertDialog("There is an error! Try again","Ok")
+        this.openAlertDialog("There is an error! Try again", "Ok")
         console.log("errooooooooor")
         console.log(err)
       });
-     
+
       //this.UpdateIndexDB()
     }
   }
@@ -646,7 +616,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
 
   //////////************ UPDATE CLIENT IN INDEXEDB ************/////////////
   version = 6;
-  UpdateDexie(){
+  UpdateDexie() {
     var db = new Dexie("off").open().then((res) => {
       if (this.clientInfo.geometry.properties.PVP == null) {
         this.clientInfo.geometry.properties.PVP = this.clientInfo.geometry.properties.PVPhoto
@@ -654,54 +624,16 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
       if (this.clientInfo.geometry.properties.NFCP == null) {
         this.clientInfo.geometry.properties.NFCP = this.clientInfo.geometry.properties.nfc.NFCPhoto
       }
-      var client = { _id: this.clientInfo._id, Valeur:this.clientInfo }
+      var client = { _id: this.clientInfo._id, Valeur: this.clientInfo }
       console.log(client)
-      res.table("pdvs").update(this.clientInfo._id,this.clientInfo).then(r=>{
-        console.log(r) 
-        this._router.navigate(['/map'])
+      res.table("pdvs").update(this.clientInfo._id, this.clientInfo).then(r => {
+        console.log(r)
+        this._router.navigate(['/map']).then(() => {
+          window.location.reload();
+        })
       });
-    
+
     });
-  }
-  UpdateIndexDB() {
-    // this.index.ClearData();
-    console.log("Update in IndexedDB")
-    var db, transaction;
-    var request = window.indexedDB.open("off", this.version)
-    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      console.log("Why didn't you allow my web app to use IndexedDB?!");
-    };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      db = event.target.result;
-      transaction = db.transaction(['data'], 'readwrite');
-      var objectStore = transaction.objectStore("data");
-      var objectStoreRequest = objectStore.get(this.clientInfo._id);
-      // console.log(this.clientInfo)
-      objectStoreRequest.onsuccess = (event) => {
-        if (this.clientInfo.geometry.properties.PVP == null) {
-          this.clientInfo.geometry.properties.PVP = this.clientInfo.geometry.properties.PVPhoto
-        }
-        if (this.clientInfo.geometry.properties.NFCP == null) {
-
-          this.clientInfo.geometry.properties.NFCP = this.clientInfo.geometry.properties.nfc.NFCPhoto
-
-        }
-        console.log(this.clientInfo.geometry)
-
-        var elm = JSON.parse(objectStoreRequest.result.Valeur);
-        console.log("********************element*****************")
-        console.log(objectStoreRequest.result._id)
-        var client = { _id: String(objectStoreRequest.result._id), Valeur: JSON.stringify(this.clientInfo.geometry) }
-        console.log(client)
-        var objectStoreRequest1 = objectStore.put(client);
-        objectStoreRequest1.onsuccess = (event) => {
-          console.log('Done Update');
-          this._router.navigate(['/map']).then(() => {
-            window.location.reload();
-          })
-        };
-      }
-    };
   }
 
 }

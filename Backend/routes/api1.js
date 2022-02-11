@@ -6,15 +6,12 @@ var multer = require('multer');
 var path = require('path');
 var ObjectId = require('mongodb').ObjectId;
 const MongoClient = require("mongodb").MongoClient;
+// uri to YourDatabase
 var uri = "mongodb://localhost:27017";
-//var uri = "mongodb+srv://fgd:fgd123@stalkert.fzlt6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
-//var uri = "mongodb+srv://m001-student:m001-mongodb-basics@cluster0.tzaxq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"; // uri to your Mongo database
-//uri to your Mongo database
 var client = new MongoClient(uri);
 var GeoJSON = require('geojson');
 var db; // database 
 var name_database = "stalker3"
-var arraValues = []
 var stream = require('stream');
 const bcrypt = require('bcrypt')
 const jwt = require("jsonwebtoken")
@@ -22,9 +19,6 @@ const { param } = require("express/lib/router");
 const controller = require("./controller");
 const fs = require("fs");
 const baseUrl = "uploads/";
-//// fetch 
-const fetch = require("node-fetch")
-
 var salt = 5 //any random value,  the salt value specifies how much time it’s gonna take to hash the password. higher the salt value, more secure the password is and more time it will take for calculation.
 // MongoDataBase
 async function run() {
@@ -74,13 +68,13 @@ router.get("/files", async function (req, res) {
         var arr = await collection.find({ 'geometry.geometry.type': 'Point' }).toArray()
         InjectSecteurData(arr)
         console.log("//************start updating nfc object************//")
-        await collection.updateMany({"geometry.geometry.type":"Point", "geometry.properties.NFC": { $exists: true}},{$set: {"geometry.properties.nfc":{UUID:null,Numero_Serie:null,Technologies:null,Type_card:null,NFCPhoto:null}}}).then().catch(error => console.log(error))
-        await collection.updateMany({"geometry.geometry.type":"Point","geometry.properties.NFC": { $exists: true}},{ $rename: {"geometry.properties.NFC": "geometry.properties.nfc.UUID"}}).then().catch(error => console.log(error))
+        await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.NFC": { $exists: true } }, { $set: { "geometry.properties.nfc": { UUID: null, Numero_Serie: null, Technologies: null, Type_card: null, NFCPhoto: null } } }).then().catch(error => console.log(error))
+        await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.NFC": { $exists: true } }, { $rename: { "geometry.properties.NFC": "geometry.properties.nfc.UUID" } }).then().catch(error => console.log(error))
         console.log("//************start updating Status************//")
         await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.nfc.UUID": { $ne: null } }, { $set: { "geometry.properties.status": "purple" } }).then().catch(error => console.log(error))
-        await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.nfc.UUID": { $eq: null } }, { $set: { "geometry.properties.status": "red" } }).then().catch(error => console.log(error))
-        await collection.updateMany({ "geometry.geometry.type": "Point"},{ $set: { "geometry.properties.created_at": new Date() ,"geometry.properties.updated_at": new Date() } }).then().catch(error => console.log(error))
-        await colection2.updateMany({},{$addToSet:{ typePDV: "Detail" }}).then().catch(error => console.log(error))
+        await collection.updateMany({ "geometry.geometry.type": "Point", "geometry.properties.nfc.UUID": { $eq: null } }, { $set: { "geometry.properties.status": "red_red" } }).then().catch(error => console.log(error))
+        await collection.updateMany({ "geometry.geometry.type": "Point" }, { $set: { "geometry.properties.created_at": new Date(), "geometry.properties.updated_at": new Date() } }).then().catch(error => console.log(error))
+        await colection2.updateMany({}, { $addToSet: { typePDV: "Detail" } }).then().catch(error => console.log(error))
     });
 });
 
@@ -117,7 +111,7 @@ function verifyToken(req, res, next) {
 }
 
 // get new added clients
-router.get('/addedClients', async function (req, res) {
+router.get('/addedClients', verifyToken, async function (req, res) {
     cursor = await db.collection("clients").find({}).toArray();
     if ((db.collection("clients").find({}).count()) === 0) {
     } else {
@@ -125,12 +119,12 @@ router.get('/addedClients', async function (req, res) {
         curs = cursor.map(async (elem) => {
             var values;
             if (elem.nfc.NFCPhoto != null) {
-                await test1(db, ObjectId(elem.nfc.NFCPhoto)).then(re => {
+                await getImageGridFS(db, ObjectId(elem.nfc.NFCPhoto)).then(re => {
                     elem.NFCP = re
                 }).catch(err => console.log(err))
             }
             if (elem.PVPhoto != null) {
-                await test1(db, ObjectId(elem.PVPhoto)).then(re => {
+                await getImageGridFS(db, ObjectId(elem.PVPhoto)).then(re => {
                     elem.PVP = re
                 }).catch(err => console.log(err))
             }
@@ -145,80 +139,43 @@ router.get('/addedClients', async function (req, res) {
 
 /* GET . */
 
-router.get('/getAllUsers', async (req, res) => {
-
+router.get('/getAllUsers', verifyToken, async (req, res) => {
     list = []
-
     let usersColl = await db.collection("users")
-
-    users=await usersColl.distinct("email")
-
-    console.log("users",users)
-
+    users = await usersColl.distinct("email")
+    console.log("users", users)
     var values = await usersColl.aggregate([
-
         {
-
             $lookup: {
-
                 from: "secteurs",
-
                 localField: "_id",
-
                 foreignField: "users",
-
                 as: "sectors"
-
             }
-
         }]).toArray();
-
-        var array=[];
-
-        users.forEach(el=>
-
-            array.push(values.filter(function(value){ return value.email === el }))
-
-        )
-
-       
-
-
-
-        console.log("array",array)
-
-    // let userColl = await db.collection("users")
-
-
-
-    // var values = await userColl.find({}).toArray()
-
+    var array = [];
+    users.forEach(el =>
+        array.push(values.filter(function (value) { return value.email === el }))
+    )
+    console.log("array", array)
     res.json(array)
-
-
-
 })
 
-router.get('/clientss', async (req, res) => {
-
+router.get('/clientss', verifyToken, async (req, res) => {
     let collection = await db.collection("geometries") // collection 
     var values = await collection.find({ 'geometry.geometry.type': 'Point' }).toArray()
     res.json(values)
 });
 
-router.get('/getRoles', async (req, res) => {
-
+router.get('/getRoles', verifyToken, async (req, res) => {
     let collection = await db.collection("settings") // collection 
     var values = await collection.findOne({ 'proprety': 'role' })
-    //console.log("---------  send data -----------")
     res.json(values)
 })
 
-router.get('/secteurss', async (req, res) => {
-
+router.get('/secteurss', verifyToken, async (req, res) => {
     let collection = await db.collection("geometries") // collection 
     var values = await collection.find({ 'geometry.geometry.type': 'MultiPolygon' }).toArray()
-    //console.log("---------  send data -----------")
     res.json(values)
 });
 
@@ -258,13 +215,9 @@ router.get('/getSectorByUser', verifyToken, async (req, res) => {
         },
         { "$unwind": "$info" },
         { "$match": { "info.geometry.geometry.type": "MultiPolygon" } },
-       { $project: { info: 1,nameSecteur:1,machine:1,typePDV:1}}
+        { $project: { info: 1, nameSecteur: 1, machine: 1, typePDV: 1 } }
     ]).toArray()
-    //console.log(values)
-    // values.forEach(element => {
-    //     ListInfo.push(element)
-    // });
-   res.status(200).json(values)
+    res.status(200).json(values)
 })
 
 //*** Get PDV by user (I changed the structure of the Query ) */
@@ -289,33 +242,28 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
     ]).toArray();
     ListInfo = []
     a = []
-    // console.log("reqclientvalues",values)
     values.forEach(elemm => {
         elemm.info.forEach(async (elem) => {
             ListInfo.push(elem)
         });
     });
     All_PDV = ListInfo.map(async (elem) => {
-        // if (elem.geometry.properties.NFC != null && elem.geometry.properties.NFC != undefined) {
-        //     elem.geometry.properties.status = "green"
-        // }
+
         if (elem.geometry.properties?.nfc != undefined) {
             var element = elem.geometry.properties;
             if (element.nfc.NFCPhoto != null) {
                 try {
-                   // console.log(element.nfc)
-                    await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
+                    await getImageGridFS(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
                         elem.geometry.properties.NFCP = re
                     }).catch(err => console.log(err))
                 } catch (err) {
-                    // console.log("***************")
                 }
             } else {
                 elem.geometry.properties.NFCP = null
             }
             if (element?.PVPhoto != null) {
                 //console.log(element?.PVPhoto)
-                await test1(db, ObjectId(element.PVPhoto)).then(re => {
+                await getImageGridFS(db, ObjectId(element.PVPhoto)).then(re => {
                     elem.geometry.properties.PVP = re
                 }).catch(err => console.log(err))
             } else {
@@ -332,150 +280,27 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
 
 
 })
-
-router.get('/getClientByUser1/:type', verifyToken,async (req, res) => {
-    var userId = req.userId;
-    var type = [req.params.type]
-    console.log(type)
-    //var test=type[0].replace("_"," ")
-    //console.log(test)
-   // var userId = "61cecdb5c23903ede07d8870"
-    console.log("***** Get PDV Based on User: " + userId + " *******")
-    let collectionSec = await db.collection("secteurs") //collection where ids are stored 
-    var values = await collectionSec.aggregate([
-        {
-            $match: {
-                users: ObjectId(userId)
-            }
-        },
-        {
-            $lookup: {
-                from: "geometries",
-                let: { "point": "$points.point" },
-                as: "info",
-                "pipeline": [
-                    {
-                        $match: {
-                            $expr: {
-                            $and:[
-                                {$in:["$_id", "$$point"]},
-                                { $eq:["$geometry.properties.TypeDPV",String(type)]}
-                                ]
-                            }
-                        }
-                    }
-                ]
-            }
-        },
-        { $project: { info: 1, _id:0} },
-        { $unwind : "$info" }
-
-    ]).toArray();
-
-    //res.json(values)
-    
-     ListInfo = []
-    a = []
-    
-    // console.log("reqclientvalues",values)
-    values.forEach(elemm => {
-        // elemm.info.forEach(async (elem) => {
-        //     ListInfo.push(elem)
-        // });
-        ListInfo.push(elemm.info)
-    });
-    All_PDV = ListInfo.map(async (elem) => {
-        // if (elem.geometry.properties.NFC != null && elem.geometry.properties.NFC != undefined) {
-        //     elem.geometry.properties.status = "green"
-        // }
-        if (elem.geometry.properties?.nfc != undefined) {
-            var element = elem.geometry.properties;
-            if (element.nfc.NFCPhoto != null) {
-                try {
-                    
-                    await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
-                        elem.geometry.properties.NFCP = re
-                    }).catch(err => console.log(err))
-                } catch (err) {
-                    // console.log("***************")
-                }
-            } else {
-                elem.geometry.properties.NFCP = null
-            }
-            if (element?.PVPhoto != null) {
-                
-                await test1(db, ObjectId(element.PVPhoto)).then(re => {
-                    elem.geometry.properties.PVP = re
-                }).catch(err => console.log(err))
-            } else {
-                elem.geometry.properties.PVP = null
-            }
-        }
-        a.push(elem)
-    })
-    Promise.all(All_PDV).then(ee => {
-        res.json(a)
-    }).catch(err =>
-        console.log(err)
-    );
-
-})
-/* GET clients Based on User */
-// router.get('/clients', verifyToken, async (req, res) => {
-//     var userId = req.userId;
-//     let collectionSec = await db.collection("secteurs") //collection where ids are stored 
-//     let collectiongeom = await db.collection("geometries")
-//     var values = await collectionSec.aggregate([
-//         { $match: { users: ObjectId(userId) } },
-//         { $project: { points: 1, _id: 0 } }
-//     ]).toArray();
-//     var arrv = [];
-//     a = []
-//     values.forEach(elm => {
-//         elm.points.forEach(e => arrv.push(ObjectId(e.point)), err => console.log(err))
-//     }, err => console.log(err))
-//     var sec = await collectiongeom.find({ 'geometry.geometry.type': 'Point', '_id': { $in: arrv } }).toArray()
-//     curs = sec.map(async (elem) => {
-//         if (elem.geometry.properties.NFC) {
-//             ///data injected by script 
-//             elem.geometry.properties.status = "green"
-//         }
-//         if (elem.geometry.properties?.nfc != undefined) {
-//             var element = elem.geometry.properties;
-//             await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
-//                 elem.geometry.properties.NFCP = re
-//             }).catch(err => console.log(err))
-//             await test1(db, ObjectId(element.PVPhoto)).then(re => {
-//                 elem.geometry.properties.PVP = re
-//             }).catch(err => console.log(err))
-//         }
-//         a.push(elem)
-//     })
-//     Promise.all(curs).then(ee => {
-//         res.json(a)
-//     }).catch(err => console.log(err));
-// })
 
 // get client by seller   (Fadma's code)
-router.get('/getClientBySeller/:id', async (req, res) => {
+router.get('/getClientBySeller/:id', verifyToken, async (req, res) => {
     var status = await getClientBySeller(req.params.id)
     res.json(status)
 })
 
 /////////// get client by auditor  (Fadma's code)
-router.get('/getClientByAuditor/:id', async (req, res) => {
+router.get('/getClientByAuditor/:id', verifyToken, async (req, res) => {
     var status = await getClientByAuditor(req.params.id)
     res.json(status)
 })
 /////////////////////////////
-router.post('/validate', async (req, res) => {
+router.post('/validate', verifyToken, async (req, res) => {
     let id = req.body.id;
     let status = req.body.status
     await validateData(id, status);
     res.status(200).json("client insterted from ANg")
 })
 
-router.post('/deleteUser', async (req, res) => {
+router.post('/deleteUser', verifyToken, async (req, res) => {
     let user = req.body;
     let userColl = db.collection("users")
     var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
@@ -483,7 +308,7 @@ router.post('/deleteUser', async (req, res) => {
     console.log(updated)
 })
 
-router.get('/getSectorsByUser', async (req, res) => {
+router.get('/getSectorsByUser', verifyToken, async (req, res) => {
     let userId = req.query.userId
     console.log(userId)
     let sectColl = db.collection("secteurs")
@@ -494,7 +319,7 @@ router.get('/getSectorsByUser', async (req, res) => {
     res.json(values)
 })
 
-router.post('/restoreUser', async (req, res) => {
+router.post('/restoreUser', verifyToken, async (req, res) => {
     let user = req.body;
     let userColl = db.collection("users")
     var updated = await userColl.updateOne({ _id: ObjectId(user._id) },
@@ -519,21 +344,13 @@ async function InsertClient(client, res) {
         var id_pv = null, id_NFC = null;
         //console.log("PhotoofClient"+client.PVPhoto)
         if (client.PVPhoto != null) {
-            await test(db, client.NomPrenom, client.PVPhoto).then(s => id_pv = s._id).catch(err => console.log(err))
+            await StoreImageGridFS(db, client.NomPrenom, client.PVPhoto).then(s => id_pv = s._id).catch(err => console.log(err))
         }
         if (client.nfc.NFCPhoto != null) {
-            await test(db, client.NomPrenom, client.nfc.NFCPhoto).then(s => id_NFC = s._id).catch(err => console.log(err)) //PV photo
+            await StoreImageGridFS(db, client.NomPrenom, client.nfc.NFCPhoto).then(s => id_NFC = s._id).catch(err => console.log(err)) //PV photo
         }
         client.nfc.NFCPhoto = id_NFC
-        //console.log(id_NFC)
-        //console.log(id_pv);
-        //console.log("-------------- " + client.lat)
-        //console.log(client)
-        //var id = new ObjectId();
-        //console.log("=========== id" + id)
-
         var id = new ObjectId();
-        //console.log("=========== id" + id)
         var temp_datetime_obj = new Date();
         let clientinfo = {
             idGeometry: id,
@@ -553,73 +370,49 @@ async function InsertClient(client, res) {
             userRole: client.userRole,
             NomPrenom: client.NomPrenom,
             PhoneNumber: client.PhoneNumber,
-            region:client.region,
-            city:client.city,
+            region: client.region,
+            city: client.city,
             PVPhoto: id_pv,
-            status: client.Status,
+            status: client.status,
             created_at: temp_datetime_obj,
             updated_at: temp_datetime_obj
         }
 
         await collection.insertOne(clientinfo)
         ////********* Add in geometries *****************/
-        let getInsertedId; //// put Id inserted
         delete clientinfo.idGeometry;
         var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
-        //var clientG={ _id: id, geometry: clientGeo }
         geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
-            //var id = result.insertedId
-            // clientGeo["_id"]=id
-            // clientGeo["geometry"]=clientGeo
-
             var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
                 { $addToSet: { points: { "point": id, "route": null } } }).then(ss => {
-                    res.status(200).json({message:"Done",clientGeometry:{ _id: id, geometry: clientGeo }})
+                    res.status(200).json({ message: "Done", clientGeometry: { _id: id, geometry: clientGeo } })
                 })
-            //console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
-            //console.log(up)
         }).catch(error => console.log(error))
     }
     catch (error) {
         console.log(error)
     }
-    // await collection.insertOne(clientinfo)
-    // ////********* Add in geometries *****************/
-    // let getInsertedId; //// put Id inserted
-    // delete clientinfo.idGeometry;
-    // var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
-    // geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
-    //     var id = result.insertedId
-    //     var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
-    //         { $addToSet: { points: { "point": id, "route": null } } }).then(ss => {
-    //             res.status(200).json("Done")
-    //         })
-    //     //console.log("$$$$$$$$$$$$$$$$$  created $$$$$$$$$$$$$$$$$$$$$$$$")
-    //     //console.log(up)
-    // }).catch(error => console.log(error))
+
 }
 
 async function updateClient(client) {
 
     let collection = db.collection("clients") // collection clients
     let geometries = db.collection("geometries") /// geometries Collections
-    let secteurs = db.collection("secteurs")
     var id_NFC, id_pv;
-    console.log("********************")
     if (client.geometry.properties.NFCP == null) {
-        console.log(client.geometry.properties.nfc.NFCPhoto)
-        await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
+        await StoreImageGridFS(db, client.geometry.properties.NomPrenom, client.geometry.properties.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
         console.log("NFC photo id: " + id_NFC)
     } else {
         console.log(client.geometry.properties.nfc.NFCPhoto)
         id_NFC = ObjectId(client.geometry.properties.nfc.NFCPhoto);
     }
     if (client.geometry.properties.PVP == null) {
-        console.log(client.geometry.properties.PVPhoto)
-        await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
+        //console.log(client.geometry.properties.PVPhoto)
+        await StoreImageGridFS(db, client.geometry.properties.NomPrenom, client.geometry.properties.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
         console.log("PV photo id: " + id_pv);
     } else {
-        console.log(client.geometry.properties.PVPhoto);
+        //console.log(client.geometry.properties.PVPhoto);
         id_pv = ObjectId(client.geometry.properties.PVPhoto);
     }
     console.log(client)
@@ -633,15 +426,15 @@ async function updateClient(client) {
         codeQR: client.geometry.properties.codeQR,
         nfc: client.geometry.properties.nfc,
         Code_Secteur_OS: (client.geometry.properties.Code_Secteur_OS != null) ? parseInt(client.geometry.properties.Code_Secteur_OS) : 93603636360,
-        machine: "CMG",
+        machine:client.geometry.properties?.machine,
         TypeDPV: client.geometry.properties.TypeDPV,
         detailType: client.geometry.properties.detailType,
         userId: client.geometry.properties.updatedBy,
         userRole: client.geometry.properties.userRole,
         NomPrenom: client.geometry.properties.NomPrenom,
         PhoneNumber: client.geometry.properties.PhoneNumber,
-        region:client.geometry.properties.region,
-        city:client.geometry.properties.city,
+        region: client.geometry.properties.region,
+        city: client.geometry.properties.city,
         PVPhoto: id_pv,
         status: client.geometry.properties.status,
         created_at: new Date(client.geometry.properties.created_at),
@@ -660,12 +453,9 @@ async function updateClient(client) {
         result.status(200).json(updated)
         console.log(updated)
         console.log("********** geometrie updated *******")
-        
-        
+
     })
-    
-    
-    
+
 }
 
 
@@ -681,38 +471,31 @@ async function validateData(id, status) {
         })
 }
 
-router.post('/AddClient', async (req, res) => {
+router.post('/AddClient', verifyToken, async (req, res) => {
     let client = req.body;
-    //console.log(client)
     await InsertClient(client, res);
-
-
 })
 
-router.post('/updateClient', async (req, res) => {
+router.post('/updateClient', verifyToken, async (req, res) => {
     let client = req.body;
-    //console.log(client)
-    // await updateClient(client);
-    // res.status(200).json("updated")
     let collection = db.collection("clients") // collection clients
     let geometries = db.collection("geometries") /// geometries Collections
-    let secteurs = db.collection("secteurs")
     var id_NFC, id_pv;
     console.log("********************")
     if (client.geometry.properties.NFCP == null) {
-        console.log(client.geometry.properties.nfc.NFCPhoto)
-        await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
+        //console.log(client.geometry.properties.nfc.NFCPhoto)
+        await StoreImageGridFS(db, client.geometry.properties.NomPrenom, client.geometry.properties.nfc.NFCPhoto).then(s => id_NFC = s._id, err => console.log(err)) //PV photo
         console.log("NFC photo id: " + id_NFC)
     } else {
-        console.log(client.geometry.properties.nfc.NFCPhoto)
+        //console.log(client.geometry.properties.nfc.NFCPhoto)
         id_NFC = ObjectId(client.geometry.properties.nfc.NFCPhoto);
     }
     if (client.geometry.properties.PVP == null) {
-        console.log(client.geometry.properties.PVPhoto)
-        await test(db, client.geometry.properties.NomPrenom, client.geometry.properties.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
+       // console.log(client.geometry.properties.PVPhoto)
+        await StoreImageGridFS(db, client.geometry.properties.NomPrenom, client.geometry.properties.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
         console.log("PV photo id: " + id_pv);
     } else {
-        console.log(client.geometry.properties.PVPhoto);
+       // console.log(client.geometry.properties.PVPhoto);
         id_pv = ObjectId(client.geometry.properties.PVPhoto);
     }
     console.log(client)
@@ -726,15 +509,15 @@ router.post('/updateClient', async (req, res) => {
         codeQR: client.geometry.properties.codeQR,
         nfc: client.geometry.properties.nfc,
         Code_Secteur_OS: (client.geometry.properties.Code_Secteur_OS != null) ? parseInt(client.geometry.properties.Code_Secteur_OS) : 93603636360,
-        machine: "CMG",
+        machine: client.geometry.properties?.machine,
         TypeDPV: client.geometry.properties.TypeDPV,
         detailType: client.geometry.properties.detailType,
         userId: client.geometry.properties.updatedBy,
         userRole: client.geometry.properties.userRole,
         NomPrenom: client.geometry.properties.NomPrenom,
         PhoneNumber: client.geometry.properties.PhoneNumber,
-        region:client.geometry.properties.region,
-        city:client.geometry.properties.city,
+        region: client.geometry.properties.region,
+        city: client.geometry.properties.city,
         PVPhoto: id_pv,
         status: client.geometry.properties.status,
         created_at: new Date(client.geometry.properties.created_at),
@@ -753,8 +536,6 @@ router.post('/updateClient', async (req, res) => {
         res.status(200).json(updated)
         console.log(updated)
         console.log("********** geometrie updated *******")
-        
-        
     })
 })
 
@@ -805,13 +586,13 @@ function putFileSystemItem(dbo, filename, data) {
 }
 
 ///** Store  Image in Gridfs *****/
-async function test(db, filename, data) {
+async function StoreImageGridFS(db, filename, data) {
 
     return putFileSystemItem(db, filename, data)
 }
 
 ////** Get Image from Gridfs *****/
-async function test1(db, id) {
+async function getImageGridFS(db, id) {
 
     return await getFileSystemItem(db, id);
 }
@@ -847,13 +628,9 @@ async function GenerateHashPassword(password) {
 async function getUser(user) {
     console.log("find user")
     console.log(user)
-
-
     let collection = db.collection("users")
-
     var status = { value: 401, data: null }
-
-    var User = await collection.find({ email: user.email,status:"Active" }).toArray()
+    var User = await collection.find({ email: user.email, status: "Active" }).toArray()
     if (User.length > 0) {
         var FindUser;
         User.forEach(async (u) => {
@@ -911,7 +688,7 @@ router.post('/login', async (req, res) => {
     res.status(status.value).send({ 'Data': status.data })
 })
 
-router.get('/GeEmail', async (req, res) => {
+router.get('/GeEmail', verifyToken, async (req, res) => {
     console.log("****** get All Email *****")
     let collection = db.collection("users")
     var FindUser = await collection.find({}).project({ _id: 0, email: 1 }).toArray()
@@ -937,13 +714,13 @@ async function getClientBySeller(id) {
         cli.NFCP = null;
         status.data = { 'client': client }
         if (cli.PVPhoto != null) {
-            await test1(db, ObjectId(cli.PVPhoto)).then(re => {
+            await getImageGridFS(db, ObjectId(cli.PVPhoto)).then(re => {
                 cli.PVP = re
             })
         }
 
         if (cli.nfc.NFCPhoto != null) {
-            await test1(db, ObjectId(cli.nfc.NFCPhoto)).then(re => {
+            await getImageGridFS(db, ObjectId(cli.nfc.NFCPhoto)).then(re => {
                 cli.NFCP = re
             })
         }
@@ -971,13 +748,13 @@ async function getClientByAuditor(id) {
         cli["NFCP"] = null;
         status.data = { 'client': client }
         if (cli.PVPhoto != null) {
-            await test1(db, ObjectId(cli.PVPhoto)).then(re => {
+            await getImageGridFS(db, ObjectId(cli.PVPhoto)).then(re => {
                 cli.PVP = re
             })
         }
 
         if (cli.nfc.NFCPhoto != null) {
-            await test1(db, ObjectId(cli.nfc.NFCPhoto)).then(re => {
+            await getImageGridFS(db, ObjectId(cli.nfc.NFCPhoto)).then(re => {
                 cli.NFCP = re
             })
         }
@@ -996,10 +773,9 @@ router.post('/login', async (req, res) => {
     res.status(status.value).send({ 'Data': status.data })
 })
 
-router.post('/register', async (req, res) => {
+router.post('/register', verifyToken, async (req, res) => {
     let user = req.body;
     await AddNewUser(user).then(ress => {
-
         res.status(200).json("User inserted/Updated")
     }).catch(err => {
         console.log(err);
@@ -1069,10 +845,6 @@ async function InsertUser(user) {
 }
 /////////////////
 
-router.get('/client', async (req, res) => {
-
-})
-
 async function ValidPassword(passwordG, passwordD) {
     var result = await bcrypt.compare(passwordG, passwordD)
     return (result);
@@ -1120,54 +892,29 @@ router.get("/settings", async (req, res) => {
 
 //////////***********************************////////////////////////
 //////////***********************************////////////////////////
-router.get("/GetClient/:id", async (req, res) => {
+router.get("/GetClient/:id", verifyToken, async (req, res) => {
     console.log("get client")
     let geometries = await db.collection("geometries")
     const client = await geometries.findOne({ _id: new ObjectId(req.params.id) });
     res.status(200).send(client);
 })
-//////////////////////////////////////////////////////////////
-// router.get('/getAllUsers', async (req, res) => {
-//     list = []
-//     let usersColl = await db.collection("users")
-//     var values = await usersColl.aggregate([
-//         {
-//             $lookup: {
-//                 from: "secteurs",
-//                 localField: "_id",
-//                 foreignField: "users",
-//                 as: "sectors"
-//             }
-//         }]).toArray();
-//     // let userColl = await db.collection("users")
 
-//     // var values = await userColl.find({}).toArray()
-//     res.json(values)
-
-// })
-router.post("/DeleteRequest", async (req, res) => {
+router.post("/DeleteRequest", verifyToken, async (req, res) => {
 
     console.log("get client : ")
     dataclient = req.body.data
-    //
-    //console.log(req.body)
-    // NomClient=dataclient.geometry.geometry.properties.NomPrenom
-    // console.log(NomClient)
-
     client = {}
     var id_Photo;
     var id_Video;
 
     DeleteRequest = await db.collection("DeleteRequest")
-
-
     if (req.body.Photo._imageAsDataUrl != null) {
         var photo = req.body.Photo._imageAsDataUrl
-        await test(db, ObjectId(dataclient._id), photo).then(res => id_Photo = res._id, err => console.log(err))
+        await StoreImageGridFS(db, ObjectId(dataclient._id), photo).then(res => id_Photo = res._id, err => console.log(err))
     }
 
     if (req.body.video != null) {
-        await test(db, ObjectId(dataclient._id), req.body.video).then(res => { id_Video = res._id; console.log(res) }, err => console.log(err))
+        await StoreImageGridFS(db, ObjectId(dataclient._id), req.body.video).then(res => { id_Video = res._id; console.log(res) }, err => console.log(err))
     }
     //client["_id"] = ObjectId(dataclient._id);
     client["NomPrenom"] = dataclient.geometry.properties.NomPrenom;
@@ -1187,21 +934,10 @@ router.post("/DeleteRequest", async (req, res) => {
     res.status(200).json(deleted)
 })
 
-router.get("/ReadVideo/:idG", async (req, res) => {
-    DeleteRequest = await db.collection("DeleteRequest")
-    console.log("wiliwlwi ");
-    client = await DeleteRequest.findOne({ _id: ObjectId(req.params.idG) });
-    console.log(client)
-    console.log(req.params.idG);
-    let video = await test1(db, client.Video)
-    console.log(client)
-    //console.log(video)
-    res.json(video)
-})
 ////
-router.get("/image", async (req, res) => {
+router.get("/image", verifyToken, async (req, res) => {
     console.log(req.query.id)
-    await test1(db, ObjectId(req.query.id)).then(re => {
+    await getImageGridFS(db, ObjectId(req.query.id)).then(re => {
         //console.log("hna 1")
         res.set('Content-Type', 'text/html');
         res.send(Buffer.from("<img src='" + re + "'></img"));
@@ -1209,7 +945,7 @@ router.get("/image", async (req, res) => {
 
 })
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////
-router.post("/extract", async (req, res) => {
+router.post("/extract", verifyToken, async (req, res) => {
     let geometries = await db.collection("geometries")
     var condition = req.body
     console.log(condition)
@@ -1363,9 +1099,7 @@ router.post("/extract", async (req, res) => {
         return element;
     });
     Promise.all(to).then(ee => {
-        ////console.log(a.length)
         console.log("---- Extract ----")
-        //console.log(list)
         res.status(200).json(DataAll)
     });
 });
@@ -1383,7 +1117,7 @@ async function IsDeletedBy(id, role) {
 }
 ////////********************************************************//////////////////////
 
-router.get('/getAllDeleteRequests', async (req, res) => {
+router.get('/getAllDeleteRequests', verifyToken, async (req, res) => {
 
     list = []
     let delReq = await db.collection("DeleteRequest")
@@ -1408,68 +1142,48 @@ router.get('/getAllDeleteRequests', async (req, res) => {
             var element = elem.PDV[0].geometry.properties;
             //elem.geometry.properties.status="red_white"
             if (element.nfc.NFCPhoto != null) {
-                await test1(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
+                await getImageGridFS(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
                     //console.log("hna 1")
                     elem.PDV[0].geometry.properties.NFCP = re
                 })
             }
             if (element.PVPhoto != null) {
-                await test1(db, ObjectId(element.PVPhoto)).then(re => {
+                await getImageGridFS(db, ObjectId(element.PVPhoto)).then(re => {
                     //console.log("hna 2")
                     elem.PDV[0].geometry.properties.PVP = re
                 });
             }
             if (id_raison != null) {
-                await test1(db, id_raison).then(re => {
+                await getImageGridFS(db, id_raison).then(re => {
                     console.log("------------- get -------")
                     console.log(re.length)
                     elem.prove = re
                 });
             }
-            //a.add(elem)
         }
-        /*if(elem.Photo != undefined){
-            await test1(db, ObjectId(elem.Photo)).then(re => {
-                //console.log("hna 1")
-                elem.PhotoURL = re
-            })
-        }*/
-
         list.push(elem)
-
     })
-    ////console.log(a.length)
     Promise.all(curs).then(ee => {
         console.log("---- Deleted Requestes ----")
         list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); //sort by date desc
-
         res.json(list)
     });
 
     // res.json(values)
 })
 
-router.post('/updateRole', async (req, res) => {
-
+router.post('/updateRole', verifyToken, async (req, res) => {
     let role = req.body.request
     console.log(role)
-
     let collection = db.collection("settings")
-    //------ this to update each element in array without duplicate---
-    // var updated= await collection.updateOne(
-    //     {proprety: "test","details.roles.name": role.role},
-    //     {$addToSet: {"details.roles.$.permissions" :{
-    //         $each:
-    //         role.permissions
-    //     }}} )
     var updated = await collection.updateOne(
         { proprety: "role", "details.roles.name": role.role },
-        { $set: { "details.roles.$.permissions": role.permissions,"details.roles.$.sectors": role.sectors} })
+        { $set: { "details.roles.$.permissions": role.permissions, "details.roles.$.sectors": role.sectors } })
     console.log(updated)
     res.status(200).json(updated)
 })
 
-router.post('/addRole', async (req, res) => {
+router.post('/addRole', verifyToken, async (req, res) => {
     let role = req.body.request
     console.log(role)
 
@@ -1482,65 +1196,61 @@ router.post('/addRole', async (req, res) => {
     res.status(200).json(updated)
 })
 
-router.post('/deleteRole', async(req,res)=>{
+router.post('/deleteRole', verifyToken, async (req, res) => {
     let role = req.body.request
     console.log(role)
     let settings = db.collection("settings")
     let users = db.collection("users")
-    usersList = await users.find({'role': role.name}).toArray()
+    usersList = await users.find({ 'role': role.name }).toArray()
     console.log(usersList)
-    if(usersList.length==0){
+    if (usersList.length == 0) {
         var updated = await settings.updateOne(
-        { proprety: "role" },
-        { $pull:{ "details.roles": {name: role.name}}})
+            { proprety: "role" },
+            { $pull: { "details.roles": { name: role.name } } })
         console.log(updated)
     }
     res.send(usersList).status(200)
-    
+
     // res.status(200).json(updated)
-    
+
 })
 
-router.post('/deleteRoleDef', async(req,res)=>{
+router.post('/deleteRoleDef', verifyToken, async (req, res) => {
     let role = req.body.request
     console.log(role)
     let settings = db.collection("settings")
     let users = db.collection("users")
 
     var updated = await settings.updateOne(
-    { proprety: "role" },
-    { $pull:{ "details.roles": {name: role.name}}})
+        { proprety: "role" },
+        { $pull: { "details.roles": { name: role.name } } })
     console.log(updated)
-    var updated1 = await users.update({'role': role.name},
-    {$set: {'status':'out of work'}})
+    var updated1 = await users.update({ 'role': role.name },
+        { $set: { 'status': 'out of work' } })
     console.log(updated1)
     res.send(updated).status(200)
 
-    
+
     // res.status(200).json(updated)
-    
+
 })
 
 
-router.get('/UserRoles/:email', async (req, res) => {
+router.get('/UserRoles/:email', verifyToken, async (req, res) => {
     let email = req.params.email
     let listOfRoles = []
     users = await db.collection("users")
-
     roles = await users.find({ "email": email }).toArray()
     roles.forEach(el => {
-        // let listOfRoles=[]
         listOfRoles.push(el.role)
-        // console.log("roles",listOfRoles)
 
     })
-
     console.log("roles2", listOfRoles)
     res.send(listOfRoles).status(200)
 
 })
 
-router.post('/ValidateDeleteClient', async (req, res) => {
+router.post('/ValidateDeleteClient', verifyToken, async (req, res) => {
     let _id = req.body.request._id
     let request = req.body.request
 
@@ -1585,27 +1295,9 @@ router.post('/ValidateDeleteClient', async (req, res) => {
 
 });
 
-router.post('/deleteo', function (req, res, next) {
-    console.log("chwya labasssss")
-    console.log(req.body); // see what got uploaded
-    //console.log(req.file);
-    // let uploadLocation ='/uploads/'+"test.txt" // where to save the file to. make sure the incoming name has a .wav extension
-    //fs.writeFileSync(uploadLocation,Buffer.from(new Uint8Array(req.file.buffer))); // write the blob to the server as a file
-    //let collection=db.collection("testVideo")
-    //collection.insertOne(req.body)
-    res.status(200).json("test"); //send back that everything went ok
-});
-
-router.get("/VideoReadHafsa", async (req, res) => {
-    console.log("hhhhhhhh")
-    let collection = db.collection("testVideo")
-    var Values = await collection.find({}).toArray()
-    res.json(Values[0])
-});
-
-router.put("/UpdateUser", async (req, res) => {
+router.put("/UpdateUser", verifyToken, async (req, res) => {
     user = req.body
-    console.log("UpdateUser",req.body)
+    console.log("UpdateUser", req.body)
 
     users = await db.collection("users")
     secteurs = await db.collection("secteurs")
@@ -1615,47 +1307,36 @@ router.put("/UpdateUser", async (req, res) => {
     await users.updateMany({ _id: ObjectId(user._id) }, { $set: { "UserID": user.UserID, "name": user.name, "phone": user.phone, "CIN": user.CIN, "role": user.role, "email": user.email, "password": user.password } }).then(res => console.log(res))
     user.sectors.forEach(async el => {
 
-        await secteurs.updateMany({ nameSecteur: Number(el) }, { $addToSet: { users: ObjectId(user._id) } }).then(res => console.log(`user ${user._id} a été ajouter vers sector ${el}`,res))
+        await secteurs.updateMany({ nameSecteur: Number(el) }, { $addToSet: { users: ObjectId(user._id) } }).then(res => console.log(`user ${user._id} a été ajouter vers sector ${el}`, res))
 
     })
     user.SectorDeleted.forEach(async el => {
-        await secteurs.updateMany({ nameSecteur: Number(el) }, { $pull: { users:{$in:[ObjectId(user._id)]}  } }).then(res => console.log(`user ${user._id} a été suprimer au sector ${el}`,res))
+        await secteurs.updateMany({ nameSecteur: Number(el) }, { $pull: { users: { $in: [ObjectId(user._id)] } } }).then(res => console.log(`user ${user._id} a été suprimer au sector ${el}`, res))
     })
 
 })
 ////************************* INJECTION ***********************/////
 
-var insertedId;  // variable where the ID inserted will be stored 
-var insertedIds;  // variable where All IDs inserted will be stored
-
-async function getInsertedIds(result) {
-    if (result.insertedId != null) {
-        insertedId = await result.insertedId
-        //console.log(insertedId)
-    } else {
-        insertedIds = await result.insertedIds
-    }
-}
 
 async function putEachData(res, collection) {
     if (res.geometry.type == "MultiPolygon") {
-        var id = await db.collection("users").find({role:"Admin"}).toArray();
+        var id = await db.collection("users").find({ role: "Admin" }).toArray();
         //console.log(id[0]._id)
-        var user=id[0]._id;
+        var user = id[0]._id;
         await collection.updateOne({ "geometry.geometry.type": "MultiPolygon", "geometry.properties.idSecteur": res.properties.idSecteur }, { $set: { geometry: res } }, { upsert: true }).then(rr => console.log(rr)).catch(error => console.log(error))
         await db.collection("secteurs").updateOne(
             { "nameSecteur": res.properties.idSecteur }, {
-            $addToSet: { users:id[0]._id},
+            $addToSet: { users: id[0]._id },
             $setOnInsert: {
                 routes: [],
-                points:[],
+                points: [],
                 typePDV: [],
                 machine: null,
-                secteur: null,  
+                secteur: null,
             }
         },
             { upsert: true }
-        ).then(r=>{
+        ).then(r => {
             console.log(r)
         })
     } else {
@@ -1685,28 +1366,28 @@ async function PutDataGeometries(collection, file) {
 
 async function InjectSecteurData(elem) {
     console.log("\n --------------------- Start Injecting Sector Data ------------------------------")
-    var id = await db.collection("users").find({role:"Admin"}).toArray();
+    var id = await db.collection("users").find({ role: "Admin" }).toArray();
     console.log(id[0]._id)
-    var user=id[0]._id;
+    var user = id[0]._id;
     var arrNull = []  // put Data that Have Null in idSecteur ( didn't join with any sector)
     elem.forEach(async (value) => {
         var val = value.geometry;
         if (val.properties.idSecteur != null) {
             await db.collection("secteurs").updateOne(
                 { "nameSecteur": val.properties.idSecteur }, {
-                $addToSet: { points: { "point": value._id, "route": null },users:id[0]._id},
-                $set:{
+                $addToSet: { points: { "point": value._id, "route": null }, users: id[0]._id },
+                $set: {
                     machine: val.properties.machine,
                 },
                 $setOnInsert: {
                     routes: [],
                     typePDV: [],
-                    secteur: null,  
+                    secteur: null,
                 }
             },
                 { upsert: true }
             )
-           
+
 
         } else {
             arrNull.push(val.properties.Identifiant)

@@ -86,13 +86,11 @@ export class MapComponent implements AfterViewInit {
     tiles.addTo(this.map);
     this.markersCluster = this._serviceClient.markersCluster;
     this.markerClusterSector = this._serviceClient.markerClusterSector
-    if (this.markerClusterSector.getLayers() == 0) {
-      this.markersCluster.clearLayers();
-      this.PutDataInMap();
-    }
+   
     this.map.addLayer(this.markerClusterSector)
     this.map.addLayer(this.markersCluster);
     this.map.addControl(L.control.zoom({ position: 'bottomleft' }));
+  
   }
   ngOnInit(): void {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
@@ -102,6 +100,10 @@ export class MapComponent implements AfterViewInit {
   //////////////*** Init map ////////
   ngAfterViewInit(): void {
     this.initMap();
+    if (this.markerClusterSector.getLayers() == 0) {
+      this.markersCluster.clearLayers()
+      this.PutDataInMap();
+    }
     this.aroute.params.subscribe(params => {
       if (params['lat']) {
         this.map.flyTo(new L.LatLng(params['lat'], params['long']), 18);
@@ -143,7 +145,7 @@ export class MapComponent implements AfterViewInit {
       }).addTo(this.map);
 
     }, (err) => {
-      console.log(`err :${err}`)
+     // console.log(`err :${err}`)
     },
       {
         enableHighAccuracy: true,
@@ -175,7 +177,7 @@ export class MapComponent implements AfterViewInit {
           }).addTo(this.map);
         }
       },
-        (error: GeolocationPositionError) => console.log(error), options);
+        (error: GeolocationPositionError) => console.log(), options);
     } else {
       alert('Geolocation is not supported by this browser.');
     }
@@ -574,7 +576,6 @@ export class MapComponent implements AfterViewInit {
     if (IDGeomerty != undefined) {
       var db = new Dexie("off").open().then((res) => {
         res.table("pdvs").get({ "_id": IDGeomerty }).then(r => {
-          console.log(r)
           if (r != undefined) {
             if (r.geometry.properties?.status != "deleted") {
               this.map.setView(new L.LatLng(r.geometry.geometry.coordinates[1], r.geometry.geometry.coordinates[0]), 30);
