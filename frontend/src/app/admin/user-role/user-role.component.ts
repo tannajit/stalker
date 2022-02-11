@@ -13,7 +13,8 @@ export class UserRoleComponent implements OnInit {
 
   
   permissions = [
-    "Add NFC",
+    "Add NFC-Update",
+    "Add NFC-Add",
     "Update Client",
     "Delete Client",
     "Add Client",

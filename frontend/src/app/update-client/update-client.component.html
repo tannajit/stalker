@@ -94,7 +94,7 @@
 
         <div class="inputs-container">
             <ng-container *ngFor="let perm of loggedUser.permissions">
-            <div class="nfc" *ngIf="perm == 'Add NFC'">
+            <div class="nfc" *ngIf="perm == 'Add NFC-Update'">
                 <div class="scan-field">
                     <label class="input-label">NFC card puce : </label>
                     <button mat-button class="btn-green" (click)="Read()">Read</button>
