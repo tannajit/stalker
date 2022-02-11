@@ -11,6 +11,25 @@
     background-color: #C2BEBE;
     color: #313030;
 }
+.verify-phone{
+    display: flex;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+.phone{
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: flex-start;
+}
+.phone-code{
+    background-color: #C2BEBE;
+    margin-right: 4px;
+    width: fit-content;
+    padding: 6px;
+}
+
 @media (min-width: 1200px){
 
 
@@ -1038,7 +1057,7 @@
     }
     .field{
         display: flex;
-        flex-flow: row;
+        flex-flow: column;
         gap: 10px;
         align-items: center;
     }

@@ -5,6 +5,9 @@
 /* Page title */
 /* ---------------------------------------------------------- */
 .title-holder {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
     border-bottom: 2px solid #f2f2f2;
     margin-bottom: 10px;
   }
@@ -161,4 +164,20 @@
   }
   .detail-icon{
     color: #4d4c4a;
+  }
+
+  .title-holder .btns{
+    display: flex;
+    flex-flow: row;
+    gap: 8px;
+  }
+  .title-holder .btns button{
+      margin-bottom: 5px;
+      border: 2px solid #27AE61;
+      color: rgb(39, 38, 38);
+      font-size: 13px;
+      line-height: 30px;
+      border-radius: 8px;
+      text-align: center !important;
+      box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
   }

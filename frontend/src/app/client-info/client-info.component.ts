@@ -20,10 +20,10 @@ export class ClientInfoComponent implements OnInit {
   loggedUser;
   clientOfSeller;
   clientOfAuditor;
-  safeURL;
+  safeURL; 
   videoURL: "https://www.youtube.com/watch?v=iloN8k4zdgE&ab_channel=MRUTaste"
-  Offline = false;
-  //////////////////////////////////////////////
+  Offline = true;
+
 
   ////********* CONSTRUCTOR ******///////////////
   constructor(

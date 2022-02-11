@@ -1,3 +1,11 @@
+
+.phone-code{
+    background-color: #C2BEBE;
+    margin-right: 4px;
+    width: fit-content;
+    padding: 6px;
+}
+
 @media (min-width: 1200px){
 
 .progress-cantainer{
@@ -1095,7 +1103,8 @@
         display: flex;
         flex-flow: row;
         gap: 10px;
-        align-items: center;
+        align-items: flex-start;
+        justify-content: flex-start;
     }
 
     .field button{
@@ -1593,5 +1602,12 @@
     flex-flow: column;
     justify-content: flex-start;
     align-items: flex-start;
+}
+
+.phone{
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: flex-start;
 }
 
