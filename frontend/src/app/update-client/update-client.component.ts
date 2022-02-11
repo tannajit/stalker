@@ -116,7 +116,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
     this.loggedUser = JSON.parse(localStorage.getItem("user"));
     this.clientInfo = clientService.getClientInfo();
     this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time, err => {
-      this.timeLeft = 2;
+      this.timeLeft = 1;
     })
     this.PhoneNumber = this.clientInfo.geometry.properties.PhoneNumber;
     console.log("***** this CLIENT ****")
@@ -125,6 +125,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   //////////////////////////////////////////////////
   private destroyed: Subject<void> = new Subject<void>();
   ngOnInit(): void {
+    this.clientService.markersCluster=new L.MarkerClusterGroup();
     var db = new Dexie("off").open().then((res) => {
       res.table("sector").get({ "nameSecteur": Number(this.clientInfo.geometry.properties.Code_Secteur_OS) }).then(r => {
         console.log(r)
@@ -156,6 +157,11 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
     this.initMap();
     this.clientInfo = this.clientService.getClientInfo();
     console.log(this.clientInfo)
+    var iconClient = L.icon({ iconUrl: 'assets/' + this.clientInfo.geometry.properties?.status + '.png', iconSize: [8, 8] });
+    L.marker([this.clientInfo.geometry.geometry.coordinates[1], this.clientInfo.geometry.geometry.coordinates[0]], { icon: iconClient }).addTo(this.map)
+
+    
+
 
 
   }
@@ -462,7 +468,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   }
 
   //**** VERIFY SMS ****//
-  disbale_sms;
+  disbale_sms=true;
   display;
   Verify(code: string) {
     this.disbale_sms = true;
@@ -471,9 +477,13 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   }
 
   VerifySMS() {
+    this.verification_code="1111"
     if (this.verification_code === this.codeSMS) {
       this.status = "the code is correct"
-      this.clientInfo.geometry.properties.PhoneNumber = this.PhoneNumber
+      this.clientInfo.geometry.properties.PhoneNumber = "0"+this.PhoneNumber;
+      this.verification_code = null;
+      this.disbale_sms = false;
+      this.showVerifCodeInput=false;
     } else {
       this.status = "the code is incorrect"
     }
@@ -502,6 +512,8 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
         clearInterval(timer);
         this.verification_code = null;
         this.disbale_sms = false;
+        this.showVerifCodeInput=false;
+        this.PhoneNumber=null
       }
     }, 1000);
   }
@@ -616,6 +628,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
   //////////************ UPDATE CLIENT IN INDEXEDB ************/////////////
   version = 6;
   UpdateDexie() {
+    
     var db = new Dexie("off").open().then((res) => {
       if (this.clientInfo.geometry.properties.PVP == null) {
         this.clientInfo.geometry.properties.PVP = this.clientInfo.geometry.properties.PVPhoto
@@ -627,12 +640,26 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
       console.log(client)
       res.table("pdvs").update(this.clientInfo._id, this.clientInfo).then(r => {
         console.log(r)
-        this._router.navigate(['/map']).then(() => {
-          window.location.reload();
-        })
+        this._router.navigate(['/map'])
+        // this._router.navigate(['/map']).then(() => {
+        //   window.location.reload();
+        // })
       });
 
     });
   }
-
+  errorPhone="";
+ 
+  OnChangeNumber() {
+    this.disbale_sms=true;
+    this.errorPhone=" Please Enter a valid Phone Number";
+    //this.errorPhone
+    var pattern=/^[6-7]{1}[0-9]{8}$/
+    console.log( pattern.test(this.PhoneNumber))
+    if(pattern.test(this.PhoneNumber)){
+      this.disbale_sms=false;
+      this.errorPhone=""
+    }
+    console.log(this.PhoneNumber)
+  }
 }

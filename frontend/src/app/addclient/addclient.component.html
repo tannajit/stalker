@@ -201,17 +201,20 @@
                             <!-- To Do  -->
                             <mat-form-field>
                                 <mat-label>Phone number</mat-label>
-                                <input matInput [(ngModel)]="PhoneNumber" placeholder="add Phone number....." pattern="[6-7]{1}[0-9]{8}" required />
+                                <input matInput [(ngModel)]="PhoneNumber" placeholder="add Phone number....."   (ngModelChange)="OnChangeNumber()"  required />
                             </mat-form-field>
-        
+                            
                             <button mat-button class="btn-green" [disabled]="disbale_sms"
-                                (click)="Verify('code'); showVerifCodeInput= true">Send Code</button>
+                              (click)="Verify('code'); showVerifCodeInput= true">Send Code</button>
                         </div>
-                        
-                        <p style="font-weight: bold; color: rgb(87, 22, 22);">{{display}}</p>
+                        <label class="warning-phone"> {{errorPhone}}  </label>
+                           
+                  
+                       
                     </div>  
                 </div>
                 <div class="field" *ngIf="showVerifCodeInput">
+                    <p style="font-weight: bold; color: rgb(87, 22, 22);">{{display}}</p>
                     <div class="verify-phone">
                         <div>
                             <mat-form-field>

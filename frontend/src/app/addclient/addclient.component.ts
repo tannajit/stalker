@@ -19,6 +19,7 @@ import Dexie from 'dexie';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 const incr = 1;
 import { HttpClient } from '@angular/common/http';
+import { timeStamp } from 'console';
 
 @Component({
   selector: 'app-addclient',
@@ -117,7 +118,7 @@ export class AddclientComponent implements AfterViewInit {
   markersCluster = new L.MarkerClusterGroup();
 
   //*SMS VARIABLES *//
-  disbale_sms = false;
+  disbale_sms = true;
   verification_code = null;
   timeLeft: number = 5;
   interval_validation;
@@ -273,7 +274,7 @@ export class AddclientComponent implements AfterViewInit {
     this.initMap();
     //this._setting.getSettings("sms")
     this._setting.getSettings('param=sms').subscribe(res => this.timeLeft = res.details.time, err => {
-      this.timeLeft = 2;
+      this.timeLeft =1;
     })
     this.aroute.paramMap.subscribe(params => {
       this.mySector = params.get('sector')
@@ -413,7 +414,7 @@ export class AddclientComponent implements AfterViewInit {
     this.percentage = 0
     interval(300).subscribe(x => {
       if (this.percentage < 100) {
-        this.percentage += 10
+        this.percentage += 50
       }
     });
   }
@@ -454,10 +455,15 @@ export class AddclientComponent implements AfterViewInit {
   }
 
   VerifySMS() {
-    //this.verification_code ='0000';
+    this.verification_code ='0000';
     if (this.verification_code === this.codeSMS) {
       this.status = "The code is correct"
-      this.clientInfos.PhoneNumber = this.PhoneNumber;
+      this.clientInfos.PhoneNumber ="0"+this.PhoneNumber;
+      this.verification_code = null;
+      this.disbale_sms = false;
+      this.showVerifCodeInput=false;
+    
+     
     } else {
       this.status = "The code is incorrect"
     }
@@ -487,6 +493,8 @@ export class AddclientComponent implements AfterViewInit {
         clearInterval(timer);
         this.verification_code = null;
         this.disbale_sms = false;
+        this.showVerifCodeInput=false;
+        this.PhoneNumber=null
       }
     }, 1000);
   }
@@ -587,6 +595,7 @@ export class AddclientComponent implements AfterViewInit {
   }
   ////////////////////////////////////////////////////////////////
 
+
   ////////////********** ADD CLIENT IN OFFLINE MODE **************/////////////////
   AddNewClient(client) {
     var db = new Dexie("off").open().then((res) => {
@@ -598,6 +607,18 @@ export class AddclientComponent implements AfterViewInit {
   }
 
   ///////////////////////////////////////////////////////////////////////////////
-
-
+  errorPhone="";
+ 
+  OnChangeNumber() {
+    this.disbale_sms=true;
+    this.errorPhone=" Please Enter a valid Phone Number";
+    //this.errorPhone
+    var pattern=/^[6-7]{1}[0-9]{8}$/
+    console.log( pattern.test(this.PhoneNumber))
+    if(pattern.test(this.PhoneNumber)){
+      this.disbale_sms=false;
+      this.errorPhone=""
+    }
+    console.log(this.PhoneNumber)
+  }
 }

@@ -218,40 +218,41 @@
                 <div class="field">
                     <div class="verify-phone">
                         <div class="phone">
-                            
-                            <span class="phone-code">+212</span>
-
+                            <!-- To Do  -->
+                            <span class="phone-code">+212</span> 
+                            <!-- To Do  -->
                             <mat-form-field>
-                                <mat-label>Phone number*</mat-label>
-                                <input matInput placeholder="678876435" [(ngModel)]="PhoneNumber" />
+                                <mat-label>Phone number</mat-label>
+                                <input matInput [(ngModel)]="PhoneNumber" placeholder="add Phone number....."   (ngModelChange)="OnChangeNumber()"  required />
                             </mat-form-field>
-        
+                            
                             <button mat-button class="btn-green" [disabled]="disbale_sms"
-                                (click)="Verify('code'); showVerifCodeInput= true">Send Code</button>
-    
+                              (click)="Verify('code'); showVerifCodeInput= true">Send Code</button>
                         </div>
-                        <p style="font-weight: bold; color: rgb(87, 22, 22);left: 0;">{{display}}</p>
-                    </div>
-                    
+                        <label class="warning-phone"> {{errorPhone}}  </label>
+                           
+                  
+                       
+                    </div>  
                 </div>
-
                 <div class="field" *ngIf="showVerifCodeInput">
-                    <div>
-                        <mat-form-field>
-                            <input matInput placeholder="code SMS" name="codeSMS" [(ngModel)]="codeSMS" />
-                        </mat-form-field>
-                        <button (click)="VerifySMS()" mat-button class="btn-yellow">Verify</button>
-                    </div>
-                    
-                    <div>
-                        <p *ngIf="verification_code === codeSMS; else error" style="color: green;">
-                            {{status}}
-                        </p>
-                        <ng-template #error>
-                            <p style="color: red;">{{status}}</p>
-                        </ng-template>
-                        
-                    </div>
+                    <p style="font-weight: bold; color: rgb(87, 22, 22);">{{display}}</p>
+                    <div class="verify-phone">
+                        <div>
+                            <mat-form-field>
+                                <input matInput placeholder="code SMS" name="codeSMS" [(ngModel)]="codeSMS" />
+                            </mat-form-field>
+                            <button (click)="VerifySMS()" mat-button class="btn-yellow">Verify</button>
+                        </div>
+                        <div>
+                            <p *ngIf="verification_code === codeSMS; else error" style="color: green;">
+                                {{status}}
+                            </p>
+                            <ng-template #error>
+                                <p style="color: red;">{{status}}</p>
+                            </ng-template>                         
+                        </div>                 
+                    </div>   
                 </div>
                 <div class="field">
                     <mat-label class="input-label">PV photo : </mat-label>

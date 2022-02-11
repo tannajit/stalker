@@ -85,12 +85,14 @@ export class MapComponent implements AfterViewInit {
     });
     tiles.addTo(this.map);
     this.markersCluster = this._serviceClient.markersCluster;
-    this.markerClusterSector = this._serviceClient.markerClusterSector
-   
+    this.markerClusterSector = this._serviceClient.markerClusterSector;
+    if (this.markersCluster.getLayers().length == 0) {
+      this.markersCluster.clearLayers()
+      this.PutDataInMap();
+    }
     this.map.addLayer(this.markerClusterSector)
     this.map.addLayer(this.markersCluster);
     this.map.addControl(L.control.zoom({ position: 'bottomleft' }));
-  
   }
   ngOnInit(): void {
     //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
@@ -100,10 +102,6 @@ export class MapComponent implements AfterViewInit {
   //////////////*** Init map ////////
   ngAfterViewInit(): void {
     this.initMap();
-    if (this.markerClusterSector.getLayers() == 0) {
-      this.markersCluster.clearLayers()
-      this.PutDataInMap();
-    }
     this.aroute.params.subscribe(params => {
       if (params['lat']) {
         this.map.flyTo(new L.LatLng(params['lat'], params['long']), 18);
