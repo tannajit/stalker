@@ -22,7 +22,7 @@ export class ClientInfoComponent implements OnInit {
   clientOfAuditor;
   safeURL; 
   videoURL: "https://www.youtube.com/watch?v=iloN8k4zdgE&ab_channel=MRUTaste"
-  Offline = true;
+  Offline = false;
 
 
   ////********* CONSTRUCTOR ******///////////////

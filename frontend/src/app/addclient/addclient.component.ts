@@ -490,12 +490,9 @@ export class AddclientComponent implements AfterViewInit {
       }
     }, 1000);
   }
-  //////////////////////////////////////////////////////////////
 
   /////////////*********  SEND CLIENT INFOS ************////////////
   Send() {
-    // this.clientInfos.UUid=UUID.UUID();
-    //this.clientInfos.PhoneNumber = this.PhoneNumber
     this.clientInfos.NomPrenom = this.NomPrenom
     this.clientInfos.TypeDPV = this.TypeDPV;
     this.clientInfos.detailType = this.detailType;
@@ -504,7 +501,7 @@ export class AddclientComponent implements AfterViewInit {
     this.clientInfos.created_at = new Date()
     this.clientInfos.updated_at = new Date()
 
-    if (this.loggedUser.permissions.includes("Add NFC-Add")) {
+    if (this.loggedUser.permissions.includes("Add NFC")) {
       if (this.clientInfos.codeNFC === null) {
         this.clientInfos.status = "pink"
       }
@@ -523,7 +520,6 @@ export class AddclientComponent implements AfterViewInit {
     console.log(this.clientInfos["status"])
     this.clientInfos["city"] = this.city
     this.clientInfos["region"] = this.region
-
     console.log(this.clientInfos)
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodo(this.clientInfos);

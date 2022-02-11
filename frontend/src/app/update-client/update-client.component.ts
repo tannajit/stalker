@@ -556,7 +556,7 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
     console.log('########## Updated Client ##########')
     console.log(this.clientInfo)
 
-    if (this.loggedUser.permissions.includes("Add NFC-Update")) {
+    if (this.loggedUser.permissions.includes("Add NFC")) {
       if (this.clientInfo.geometry.properties.codeQR === null) {
         this.clientInfo.geometry.properties.status = "pink"
       }
@@ -578,7 +578,6 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
     if (!this.onlineOfflineService.isOnline) {
       this.clientService.addTodoUpdate(this.clientInfo)
       this.UpdateDexie()
-      console.log("wtf")
       //this.UpdateIndexDB()
     } else {
       this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
