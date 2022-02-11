@@ -94,7 +94,7 @@ export class AddclientComponent implements AfterViewInit {
   nfcObject = { Numero_Serie: null, Technologies: null, Type_card: null, UUID: null, NFCPhoto: null }
   clientInfos = {
     UUid: null, codes: [], codeNFC: null, NFCPhoto: null, TypeDPV: null, sector: null, nfc: this.nfcObject,
-    NomPrenom: null, detailType: null, userId: null, userRole: null, PhoneNumber: null, PVPhoto: null, Status: "red", created_at: null, updated_at: null
+    NomPrenom: null, detailType: null, userId: null, userRole: null, PhoneNumber: null, PVPhoto: null, status: null, created_at: null, updated_at: null
   }
   latclt
   lonclt
@@ -454,6 +454,7 @@ export class AddclientComponent implements AfterViewInit {
   }
 
   VerifySMS() {
+    //this.verification_code ='0000';
     if (this.verification_code === this.codeSMS) {
       this.status = "The code is correct"
       this.clientInfos.PhoneNumber = this.PhoneNumber;
@@ -503,21 +504,23 @@ export class AddclientComponent implements AfterViewInit {
     this.clientInfos.created_at = new Date()
     this.clientInfos.updated_at = new Date()
 
-    // if(this.user.role=="Seller"){
-    //   this.clientInfos.Status = "white_red"
-    // }else{
-    //   this.clientInfos.Status = "red_white"
-    // }
-    if (this.loggedUser.permissions.includes("Add NFC")) {
+    if (this.loggedUser.permissions.includes("Add NFC-Add")) {
       if (this.clientInfos.codeNFC === null) {
-        this.clientInfos["status"] = "pink"
+        this.clientInfos.status = "pink"
       }
       else {
-        this.clientInfos["status"] = "purple"
+        this.clientInfos.status = "purple"
       }
     } else {
-      this.clientInfos["status"] = "red"
+      if(this.loggedUser.role=="Seller"){
+        this.clientInfos.status = "white_red"
+        
+      }else if(this.loggedUser.role=="Auditor"){
+        this.clientInfos.status = "red_white"
+      }
+      
     }
+    console.log(this.clientInfos["status"])
     this.clientInfos["city"] = this.city
     this.clientInfos["region"] = this.region
 
@@ -551,7 +554,7 @@ export class AddclientComponent implements AfterViewInit {
             "NomPrenom": this.NomPrenom,
             "PhoneNumber": this.PhoneNumber,
             "PVP": this.clientInfos.PVPhoto,
-            "status": this.clientInfos.Status
+            "status": this.clientInfos.status 
           }
         },
         "_id": _id
@@ -559,44 +562,6 @@ export class AddclientComponent implements AfterViewInit {
       this.AddNewClient(client)
       // this._router.navigate(['/map'])
     } else {
-      // this.clientService.SendClient(this.clientInfos).subscribe((res) => {
-      //   console.log("\n **********Response form API************")
-      //   console.log(res)
-      //   //this.index.ClearData();
-      //   var db, transaction;
-      //   var request = window.indexedDB.open("off", this.version)
-      //   request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      //     console.log("Why didn't you allow my web app to use IndexedDB?!");
-      //   };
-      //   request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      //     db = event.target.result;
-      //     console.log("$$$$$$$$$$$$$$$$ Success Add client $$$$$$$$$$$$$$$$$$")
-      //     this.clientService.getAllClient().subscribe((res) => {
-      //       console.log("\n get all element After Adding New Client \n ")
-      //       console.log(res)
-      //       var i = 0;
-      //       res.forEach((element, index, array) => {
-      //         i++;
-      //         console.log("-----------------------------------")
-      //         console.log(element)
-      //         console.log("-----------------------------------")
-      //         var geo = { _id: element._id, Valeur: JSON.stringify(element.geometry) }
-      //         transaction = db.transaction(['data'], 'readwrite');
-      //         var objectStore = transaction.objectStore("data");
-      //         var request = objectStore.put(geo)
-      //         request.onsuccess = (event) => {
-      //           console.log("****************** done Adding to Database After Adding Client *******************")
-      //         }
-      //         if (i === array.length) {
-      //           console.log("Array I" + i)
-      //           this._router.navigate(['/map']).then(()=>{
-      //           })
-      //         }
-      //       });
-      //     });
-      //   }
-      // });
-      // this.AddNewClient();
       this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
         disableClose: true
       });
@@ -613,20 +578,7 @@ export class AddclientComponent implements AfterViewInit {
           console.log(client)
           this.AddNewClient(client)
           this.dialogConf.close()
-
-          // this.clientService.getAllClient().subscribe(async (res1) => {
-
-          //   var db = new Dexie("off").open().then((res) => {
-          //     res.table("pdvs").clear().then((l)=>{
-          //       res.table("pdvs").bulkAdd(res1).then((lastKey)=>{
-          //         this.openAlertDialog("The Client has been added successfully!","Ok, Cool!")
-          //           this._router.navigate(['/map'])
-          //          });
-          //     }) 
-          //   });
-          // });
           this.openAlertDialog("The Client has been added successfully!", "Ok")
-          //this._router.navigate(['/map'])
         }
 
       }, err => {
@@ -642,75 +594,13 @@ export class AddclientComponent implements AfterViewInit {
   ////////////********** ADD CLIENT IN OFFLINE MODE **************/////////////////
   AddNewClient(client) {
     var db = new Dexie("off").open().then((res) => {
-      console.log("***")
-
-      var codeSector = this.mySector.slice(0, 3)
-      ///////
-      // var geom = {
-      //   "geometry": {
-      //   client,
-      //   "_id": client.id
-      // }
+      // var codeSector = this.mySector.slice(0, 3)
       res.table("pdvs").put(client).then(r => {
         this._router.navigate(['/map'])
       })
     });
   }
 
-  AddNewClientIndexDB() {
-    var db, transaction;
-    var request = window.indexedDB.open("off", this.version)
-    request.onerror = function (event: Event & { target: { result: IDBDatabase } }) {
-      console.log("Why didn't you allow my web app to use IndexedDB?!");
-    };
-    request.onsuccess = (event: Event & { target: { result: IDBDatabase } }) => {
-      db = event.target.result;
-      var clientGeo = "hhh";
-      var _id = UUID.UUID();
-      var codeSector = this.mySector.slice(0, 3)
-      ///////
-      var geom = {
-        "geometry": {
-          "type": "Feature",
-          "geometry": {
-            "type": "Point",
-            "coordinates": [this.clientInfos["lon"], this.clientInfos["lat"]]
-          },
-          "properties": {
-            "codeDANON": this.clientInfos.codes[0],
-            "codeCOLA": this.clientInfos.codes[1],
-            "codeFGD": this.clientInfos.codes[2],
-            "codeQR": 0,
-            "nfc": this.nfcObject,
-            "Code_Region": parseInt(codeSector),
-            "Code_Secteur_OS": parseInt(this.mySector),
-            "machine": "CMG",
-            "TypeDPV": this.TypeDPV,
-            "detailType": this.detailType,
-            "userId": 'test',
-            "userRole": this.loggedUser.role,
-            "NomPrenom": this.NomPrenom,
-            "PhoneNumber": this.PhoneNumber,
-            "PVP": this.clientInfos.PVPhoto,
-            "status": this.clientInfos.Status
-          }
-        },
-        "_id": _id
-      }
-      console.log(geom)
-
-      const geo = { _id: geom._id, Valeur: JSON.stringify(geom.geometry) };
-      transaction = db.transaction(['data'], 'readwrite');
-      const objectStore = transaction.objectStore('data');
-      const request = objectStore.add(geo);
-      request.onsuccess = (event) => {
-        console.log('done Adding');
-        this._router.navigate(['map']).then(() => {
-
-        })
-      };
-    }
-  }
   ///////////////////////////////////////////////////////////////////////////////
 
 
