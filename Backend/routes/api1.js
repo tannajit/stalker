@@ -240,6 +240,7 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
         { $project: { info: 1, _id: 0 } }
 
     ]).toArray();
+    //console.log(values)
     ListInfo = []
     a = []
     values.forEach(elemm => {
@@ -262,7 +263,6 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
                 elem.geometry.properties.NFCP = null
             }
             if (element?.PVPhoto != null) {
-                //console.log(element?.PVPhoto)
                 await getImageGridFS(db, ObjectId(element.PVPhoto)).then(re => {
                     elem.geometry.properties.PVP = re
                 }).catch(err => console.log(err))
@@ -277,8 +277,6 @@ router.get('/getClientByUser', verifyToken, async (req, res) => {
     }).catch(err =>
         console.log(err)
     );
-
-
 })
 
 // get client by seller   (Fadma's code)
@@ -328,8 +326,8 @@ router.post('/restoreUser', verifyToken, async (req, res) => {
 })
 
 async function InsertClient(client, res) {
-    console.log("/n /n *************************** /n /n")
-    console.log(client)
+    console.log("/n ********** Insert Client ***************** /n")
+    //console.log(client)
     try {
         let collection = db.collection("clients") // collection clients
         let geometries = db.collection("geometries") /// geometries Collections
@@ -382,6 +380,8 @@ async function InsertClient(client, res) {
         ////********* Add in geometries *****************/
         delete clientinfo.idGeometry;
         var clientGeo = GeoJSON.parse(clientinfo, { Point: ['lat', 'lon'] }); // convert to GeoJson
+        //console.log(clientGeo)
+        delete clientGeo.properties._id;
         geometries.insertOne({ _id: id, geometry: clientGeo }).then(result => {
             var up = secteurs.updateOne({ "nameSecteur": clientinfo.Code_Secteur_OS, users: ObjectId(clientinfo.userId) },
                 { $addToSet: { points: { "point": id, "route": null } } }).then(ss => {
@@ -426,7 +426,7 @@ async function updateClient(client) {
         codeQR: client.geometry.properties.codeQR,
         nfc: client.geometry.properties.nfc,
         Code_Secteur_OS: (client.geometry.properties.Code_Secteur_OS != null) ? parseInt(client.geometry.properties.Code_Secteur_OS) : 93603636360,
-        machine:client.geometry.properties?.machine,
+        machine: client.geometry.properties?.machine,
         TypeDPV: client.geometry.properties.TypeDPV,
         detailType: client.geometry.properties.detailType,
         userId: client.geometry.properties.updatedBy,
@@ -491,11 +491,11 @@ router.post('/updateClient', verifyToken, async (req, res) => {
         id_NFC = ObjectId(client.geometry.properties.nfc.NFCPhoto);
     }
     if (client.geometry.properties.PVP == null) {
-       // console.log(client.geometry.properties.PVPhoto)
+        // console.log(client.geometry.properties.PVPhoto)
         await StoreImageGridFS(db, client.geometry.properties.NomPrenom, client.geometry.properties.PVPhoto).then(s => id_pv = s._id, err => console.log(err))
         console.log("PV photo id: " + id_pv);
     } else {
-       // console.log(client.geometry.properties.PVPhoto);
+        // console.log(client.geometry.properties.PVPhoto);
         id_pv = ObjectId(client.geometry.properties.PVPhoto);
     }
     console.log(client)
@@ -680,13 +680,35 @@ async function getUser(user) {
 }
 //***  Login */
 router.post('/login', async (req, res) => {
-
-    //console.log(JSON.stringify(req.headers));
     let user = req.body;
-    //console.log(user)
     var status = await getUser(user)
     res.status(status.value).send({ 'Data': status.data })
 })
+
+//// a user is active or not 
+router.get("/isActive", verifyToken, async (req, res) => {
+    console.log("*********** is Active *********")
+    var obj = req.query
+    obj._id = ObjectId(obj._id)
+    //obj.status="lll"
+    let collection = db.collection("users")
+    var User = await collection.find(obj).toArray()
+    res.json(User)
+})
+
+//
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 100 * 1024 * 1024 }
+});
+
+router.post("/blob", upload.single('file'), async (req, res) => {
+     const videoData = req.file;
+    // console.log(videoData)
+    console.log(req)
+    console.log("***")
+    res.json(videoData)
+});
 
 router.get('/GeEmail', verifyToken, async (req, res) => {
     console.log("****** get All Email *****")
@@ -884,13 +906,10 @@ router.get("/settings", async (req, res) => {
         var values = await collection.find({ "proprety": proprety }).toArray()
         response = values[0]
     }
-
     console.log(values)
     res.json(response)
 
 })
-
-//////////***********************************////////////////////////
 //////////***********************************////////////////////////
 router.get("/GetClient/:id", verifyToken, async (req, res) => {
     console.log("get client")
@@ -900,13 +919,11 @@ router.get("/GetClient/:id", verifyToken, async (req, res) => {
 })
 
 router.post("/DeleteRequest", verifyToken, async (req, res) => {
-
     console.log("get client : ")
     dataclient = req.body.data
     client = {}
     var id_Photo;
     var id_Video;
-
     DeleteRequest = await db.collection("DeleteRequest")
     if (req.body.Photo._imageAsDataUrl != null) {
         var photo = req.body.Photo._imageAsDataUrl
@@ -935,14 +952,12 @@ router.post("/DeleteRequest", verifyToken, async (req, res) => {
 })
 
 ////
-router.get("/image", verifyToken, async (req, res) => {
+router.get("/image", async (req, res) => {
     console.log(req.query.id)
     await getImageGridFS(db, ObjectId(req.query.id)).then(re => {
-        //console.log("hna 1")
         res.set('Content-Type', 'text/html');
         res.send(Buffer.from("<img src='" + re + "'></img"));
     })
-
 })
 //////////////////******* Extract data (Hafsa's Code) ***********/////////////////////
 router.post("/extract", verifyToken, async (req, res) => {
@@ -1022,17 +1037,16 @@ router.post("/extract", verifyToken, async (req, res) => {
         var imgurl = "http://localhost:3000/api1/image?id="
         var Data = {
             "Identifiant system": element._id,
-            "code": (element.geometry.properties.Code_Client != null) ? element.geometry.properties.Code_Client : "",
+            "Code_client": (element.geometry.properties.Code_Client != null) ? element.geometry.properties.Code_Client : "",
             "X": element.geometry.geometry.coordinates[1],
             "Y": element.geometry.geometry.coordinates[0],
             "Date_Creation": element.geometry.properties.created_at,
-            "NFC_ID": (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc?.Numero_Serie,
-            "NFC_UUID": (element.geometry.properties.NFC != null) ? element.geometry.properties.NFC : element.geometry.properties.nfc?.UUID,
-            "Code_Secteur_OS": element.geometry.properties.Code_Secteur_OS,
-            "machine": (element.geometry.properties.machine != null) ? element.geometry.properties.machine : "",
+            "NFC_UUID": element.geometry.properties.nfc?.UUID,
+            "Code_Secteur": element.geometry.properties.Code_Secteur_OS,
+            "Machine": (element.geometry.properties.machine != null) ? element.geometry.properties.machine : "",
             "TypeDPV": (element.geometry.properties.TypeDPV != null) ? element.geometry.properties.TypeDPV : "",
-            "NomPrenom": (element.geometry.properties.NomPrenom != null) ? element.geometry.properties.NomPrenom : element.geometry.properties.Nom_Client,
-            "PhoneNumber": (element.geometry.properties.PhoneNumber != null) ? element.geometry.properties.PhoneNumber : element.geometry.properties.Telephone_Client,
+            "NomPrenom": element.geometry.properties.NomPrenom,
+            "PhoneNumber": element.geometry.properties.PhoneNumber,
             "Photo_PDV": (element.geometry.properties.PVPhoto != null) ? imgurl + element.geometry.properties.PVPhoto : '',
             "Passage_Auditeur": "NO",
             "Auditeur_ID": "",
@@ -1042,13 +1056,13 @@ router.post("/extract", verifyToken, async (req, res) => {
             "Phone_Auditeur": "",
             "Photo_Auditor": "",
             "Valid_Auditeur": "",
-            "Passage_Vendeur": "NO",
+            "Passage_Vondeur": "NO",
             "SalesPerson_ID": "",
             "Date_Reception_Vondeur": "",
-            "Nom_Vendeur": "",
-            "Type_Vendeur": "",
-            "Phone_Vendeur": "",
-            "Photo_Vendeur": "",
+            "Nom_Vondeur": "",
+            "Type_Vondeur": "",
+            "Phone_Vondeur": "",
+            "Photo_Vondeur": "",
             "Valid_Vondeur": "",
             "Supprime_Audtior": "",
             "Supprime_Vondeur": ""
@@ -1104,7 +1118,7 @@ router.post("/extract", verifyToken, async (req, res) => {
     });
 });
 
-///*** Hafsa Function  ****///
+///*** Hafsa's Function to check if a SP has a delete request ****///
 async function IsDeletedBy(id, role) {
     return new Promise(async (resolve, reject) => {
         let delReq = await db.collection("DeleteRequest")
@@ -1115,10 +1129,9 @@ async function IsDeletedBy(id, role) {
             reject("No")
     })
 }
-////////********************************************************//////////////////////
+////////************* Get all Delete Requests **************/////////////////
 
 router.get('/getAllDeleteRequests', verifyToken, async (req, res) => {
-
     list = []
     let delReq = await db.collection("DeleteRequest")
     var values = await delReq.aggregate([
@@ -1130,33 +1143,22 @@ router.get('/getAllDeleteRequests', verifyToken, async (req, res) => {
                 as: "PDV"
             }
         }]).toArray();
-    //res.json(values)
-    console.log(values)
     curs = values.map(async (elem) => {
-        console.log(elem.created_at)
-        // console.log(elem)
         var id_raison = (elem.Video != null) ? elem.Video : (elem.Photo != null) ? elem.Photo : null;
-        console.log(id_raison)
-        ////console.log(elem) //
         if (elem.PDV[0].geometry.properties?.nfc != undefined) {
             var element = elem.PDV[0].geometry.properties;
-            //elem.geometry.properties.status="red_white"
             if (element.nfc.NFCPhoto != null) {
                 await getImageGridFS(db, ObjectId(element.nfc.NFCPhoto)).then(re => {
-                    //console.log("hna 1")
                     elem.PDV[0].geometry.properties.NFCP = re
                 })
             }
             if (element.PVPhoto != null) {
                 await getImageGridFS(db, ObjectId(element.PVPhoto)).then(re => {
-                    //console.log("hna 2")
                     elem.PDV[0].geometry.properties.PVP = re
                 });
             }
             if (id_raison != null) {
                 await getImageGridFS(db, id_raison).then(re => {
-                    console.log("------------- get -------")
-                    console.log(re.length)
                     elem.prove = re
                 });
             }
@@ -1164,12 +1166,10 @@ router.get('/getAllDeleteRequests', verifyToken, async (req, res) => {
         list.push(elem)
     })
     Promise.all(curs).then(ee => {
-        console.log("---- Deleted Requestes ----")
+        console.log("---- Send Deleted Requestes ----")
         list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); //sort by date desc
         res.json(list)
     });
-
-    // res.json(values)
 })
 
 router.post('/updateRole', verifyToken, async (req, res) => {

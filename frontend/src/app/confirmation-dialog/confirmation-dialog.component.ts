@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { AuthenticationService } from '../authentication.service';
 
 @Component({
   selector: 'app-confirmation-dialog',
@@ -8,11 +9,18 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 })
 export class ConfirmationDialogComponent implements OnInit {
 
-  public confirmMessage:string;
+  public confirmMessage: string;
 
-  constructor(public dialogRef: MatDialogRef<ConfirmationDialogComponent>) { }
+  constructor(public dialogRef: MatDialogRef<ConfirmationDialogComponent>,
+    private _auth: AuthenticationService) { }
 
   ngOnInit(): void {
   }
 
+
+  logout() {
+    console.log("logout ")
+    this._auth.forceLogout = true;  /// force to logout even if there's cache in offline 
+    this._auth.logoutUser()
+  }
 }

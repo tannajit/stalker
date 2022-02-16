@@ -38,6 +38,8 @@ export class ClientsService {
   private _getClientByID = this.uri + "/api1/GetClient";
   private _allDeleteRequests = this.uri + "/api1/getAllDeleteRequests";
 
+  private blob = this.uri + "/api1/blob";
+
   private _sync = this.uri + "/api1/getClientByUser1";
   ////////////////////remplacer par uri après le port
   //private _getClientByID = "http://localhost:3000/api1/GetClient";
@@ -55,6 +57,41 @@ export class ClientsService {
   }
   SendClient(client) {
     return this.http.post<any>(this._addclient, client);
+  }
+  SendClient1(client) {
+    var formData: FormData = new FormData();
+    // Currently empt
+    console.log(client.blob)
+    //var formData = new FormData(); // Currently empt
+    formData.append('file',client.blob,"name.jpeg");
+    formData.append("name", "zmr");
+    console.log(formData.getAll)
+    //  return this.http.post<any>(this.blob, client).subscribe(r=>{
+    //    console.log('hh')
+    //  });
+    const req = new HttpRequest('POST', this.blob, formData, {
+      reportProgress: true,
+      responseType: 'json'
+    });
+    console.log(req)
+
+    return this.http.request(req)
+  }
+
+  upload1(file: File): Observable<HttpEvent<any>> {
+    const formData: FormData = new FormData();
+
+    formData.append('file', file);
+    console.log(formData)
+
+    const req = new HttpRequest('POST', `${this.baseUrl}/upload`, formData, {
+      reportProgress: true,
+      responseType: 'json'
+    });
+    console.log(req)
+
+    return this.http.request(req);
+
   }
   getAllClient() {
     return this.http.get<any>(this._clientUrl)
@@ -99,22 +136,6 @@ export class ClientsService {
   DeleteClientByID(id) {
     console.log("DeleteClientByID" + id);
     return this.http.get(this._Delete + "DeleteClient/" + id);
-  }
-
-  // DeleteRequest(data) {
-  //   console.log("DeleteClientByID" + data.video);
-  //   return this.http.post(this._Delete + "DeleteRequest", data);
-  // }
-
-  // ReadV() {
-  //   return this.http.get(this._Delete + "ReadVideo");
-  // }
-
-  myDelete(info) {
-    return this.http.post<any>("http://localhost:3000/api1/deleteo", info)
-  }
-  myDeleteRead() {
-    return this.http.get<any>("http://localhost:3000/api1/VideoReadHafsa")
   }
 
   //////////////////////////////////////////////////////////
@@ -273,8 +294,8 @@ export class ClientsService {
       objectStoreRequest.onsuccess = event => {
         var element = event.target.result
 
-        this.GetNamePlace(element["lat"],element["lon"]).subscribe(res=>{
-          console.log("reselem",res)
+        this.GetNamePlace(element["lat"], element["lon"]).subscribe(res => {
+          console.log("reselem", res)
           var city = res.results[0].locations[0].adminArea5
           var region = res.results[0].locations[0].adminArea3
           element["city"] = city
@@ -286,7 +307,7 @@ export class ClientsService {
         })
         console.log(element)
 
-        
+
         var objectStoreRequest1 = objectStore.delete(id);
         objectStoreRequest1.onsuccess = event => {
           console.log("item deleted from indexedDb");
@@ -314,21 +335,21 @@ export class ClientsService {
       objectStoreRequest.onsuccess = event => {
         var element = event.target.result
         console.log(element)
-        
-        this.GetNamePlace(element.geometry.geometry.coordinates[1],element.geometry.geometry.coordinates[0]).subscribe(res=>{
-          console.log("reselem",res)
+
+        this.GetNamePlace(element.geometry.geometry.coordinates[1], element.geometry.geometry.coordinates[0]).subscribe(res => {
+          console.log("reselem", res)
           var city = res.results[0].locations[0].adminArea5
           var region = res.results[0].locations[0].adminArea3
-          element.geometry.properties["city"]=city
-          element.geometry.properties["region"]=region
+          element.geometry.properties["city"] = city
+          element.geometry.properties["region"] = region
           this.updateClient(element).subscribe(res => {
             console.log(res);
             console.log("data sent succusfuly")
           })
-          
+
         })
-        
-        
+
+
         var objectStoreRequest1 = objectStore.delete(id);
         objectStoreRequest1.onsuccess = event => {
           console.log("item deleted from indexedDb");
@@ -411,7 +432,7 @@ export class ClientsService {
       transaction = this.db.transaction(['client'], 'readwrite');
       var objectStore = transaction.objectStore("client");
       var objectStoreRequest = await objectStore.getAll();
-      objectStoreRequest.onsuccess = async  (event) =>{
+      objectStoreRequest.onsuccess = async (event) => {
         var all = await event.target.result
         all.forEach(element => {
           console.log("---")
@@ -441,7 +462,7 @@ export class ClientsService {
       var objectStore = transaction.objectStore("update");
       var objectStoreRequest = await objectStore.getAll();
 
-      objectStoreRequest.onsuccess = async  (event)=> {
+      objectStoreRequest.onsuccess = async (event) => {
         var all = await event.target.result
         all.forEach(element => {
           console.log("---")
@@ -470,7 +491,7 @@ export class ClientsService {
       transaction = this.db.transaction(['delete'], 'readwrite');
       var objectStore = transaction.objectStore("delete");
       var objectStoreRequest = await objectStore.getAll();
-      objectStoreRequest.onsuccess = async (event)  => {
+      objectStoreRequest.onsuccess = async (event) => {
         var all = await event.target.result
         all.forEach(element => {
           console.log("---")
@@ -531,7 +552,7 @@ export class ClientsService {
 
     }
     if (this.PositionClient != null) {
-     // console.log("MyPosition " + this.MyPosition);
+      // console.log("MyPosition " + this.MyPosition);
 
       //console.log("Pointposition " + this.PositionClient);
 
@@ -628,19 +649,19 @@ export class ClientsService {
         var all = event.target.result
         console.log(all)
         all.forEach(element => {
-          console.log("element",element)
-          this.GetNamePlace(element["lat"],element["lon"]).subscribe(res=>{
-            console.log("reselem",res)
+          console.log("element", element)
+          this.GetNamePlace(element["lat"], element["lon"]).subscribe(res => {
+            console.log("reselem", res)
             var city = res.results[0].locations[0].adminArea5
             var region = res.results[0].locations[0].adminArea3
-            element["city"]=city
-            element["region"]=region
+            element["city"] = city
+            element["region"] = region
             this.SendClient(element).subscribe(res => {
               console.log(res);
             })
           })
-          
-          
+
+
           console.log("data sent succusfuly")
         })
         var objectStoreRequest1 = objectStore.clear();
@@ -648,9 +669,9 @@ export class ClientsService {
           console.log("item deleted from indexedDb");
         }
       }
-      
+
     }
-    
+
   }
 
   async SendALLUpdate() {
@@ -671,21 +692,21 @@ export class ClientsService {
       var objectStoreRequest = objectStore.getAll();
       objectStoreRequest.onsuccess = event => {
         var all = event.target.result
-        console.log("all",all)
+        console.log("all", all)
         all.forEach(element => {
-          console.log("element Geometry",element.geometry.geometry)
-          this.GetNamePlace(element.geometry.geometry.coordinates[1],element.geometry.geometry.coordinates[0]).subscribe(res=>{
-            console.log("reselem",res)
+          console.log("element Geometry", element.geometry.geometry)
+          this.GetNamePlace(element.geometry.geometry.coordinates[1], element.geometry.geometry.coordinates[0]).subscribe(res => {
+            console.log("reselem", res)
             var city = res.results[0].locations[0].adminArea5
             var region = res.results[0].locations[0].adminArea3
-            element.geometry.properties["city"]=city
-            element.geometry.properties["region"]=region
+            element.geometry.properties["city"] = city
+            element.geometry.properties["region"] = region
             this.updateClient(element).subscribe(res => {
               console.log(res);
             })
           })
-          
-          
+
+
           console.log("data sent succusfuly")
         })
         var objectStoreRequest1 = objectStore.clear();
@@ -760,13 +781,13 @@ export class ClientsService {
   }
 
 
-  CalculateBack(){
+  CalculateBack() {
     interval(500).subscribe(x => {
       console.log("am runing")
     });
   }
 
-  SaveInIndexDB(ress,ArrayIDS){
+  SaveInIndexDB(ress, ArrayIDS) {
     console.log("Adding PDVs in IndexedDB")
     var db = new Dexie("off").open().then((res) => {
       //console
@@ -778,9 +799,9 @@ export class ClientsService {
       })
     });
   }
-  GetNamePlace(lat,lon){
-    
-    return this.http.get<any>("https://www.mapquestapi.com/geocoding/v1/reverse?key=JlNC9Ur4Y3uBUEqGkqdDvvOGCcFOuWwA&location="+lat+"%2C"+lon+"&outFormat=json&thumbMaps=false")
+  GetNamePlace(lat, lon) {
+
+    return this.http.get<any>("https://www.mapquestapi.com/geocoding/v1/reverse?key=JlNC9Ur4Y3uBUEqGkqdDvvOGCcFOuWwA&location=" + lat + "%2C" + lon + "&outFormat=json&thumbMaps=false")
 
   }
   //****************************** */

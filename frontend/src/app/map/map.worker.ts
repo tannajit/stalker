@@ -34,6 +34,7 @@ function ClearData(RessPDV) {
     var objectStoreRequest = objectStore.clear();
     objectStoreRequest.onsuccess = function (event) {
       //StorePDVIndexdb()
+      console.log("store PDVS")
       var db = new Dexie("off").open().then((res) => {
         res.table("pdvs").bulkAdd(RessPDV).then((lastKey) => {
           postMessage("done");

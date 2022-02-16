@@ -9,6 +9,8 @@ import Dexie from 'dexie';
 })
 export class AuthenticationService {
   private _UsersUrl = "http://localhost:3000/api1/login"
+  private _isActive = "http://localhost:3000/api1/isActive"
+  public forceLogout = false;
 
   // idadd = []
   // idupdate = []
@@ -19,6 +21,7 @@ export class AuthenticationService {
     private _router: Router,
     private _index: IndexdbService) {
     this.version = this._index.version
+    this.forceLogout = false;
   }
   getUserLogin(data, httpOptions) {
     return this.http.post<any>(this._UsersUrl, data)
@@ -29,22 +32,39 @@ export class AuthenticationService {
   loggedIn() {
     return !!localStorage.getItem('token')
   }
+  isActive() {
+    console.log(JSON.parse
+      (localStorage.getItem('user')))
+    var id = JSON.parse(localStorage.getItem('user'))._id
+    var role = JSON.parse(localStorage.getItem('user')).role
+    return this.http.get<any>(this._isActive + "?_id=" + id + "&role=" + role + "&status=Active")
+  }
   //////////************** Logout **************/////////////////
   logoutUser() {
+
     var idadd = this.clientService.getShow()
     console.log(idadd)
     var idupdate = this.clientService.getID()
     console.log(idupdate)
     var iddelete = this.clientService.getIDdelete()
     console.log(iddelete)
-    if (idupdate.length>0 || idadd.length>0 || iddelete.length>0) {
-      console.log("ba9i lcache kayn")
-    }else{ 
-      console.log("makinch lcache")
+    if (!this.forceLogout) {
+      if (idupdate.length > 0 || idadd.length > 0 || iddelete.length > 0) {
+        console.log("ba9i lcache kayn")
+      } else {
+        console.log("makinch lcache")
+        localStorage.removeItem('token')
+        //this._index.ClearData()
+        //this._index.ClearDataSector()
+        //this.ClearData();
+        var db = new Dexie("off").open().then((res) => {
+          res.table("sector").clear().then((l) => {
+          })
+          this.ClearData()
+        });
+      }
+    } else {
       localStorage.removeItem('token')
-      //this._index.ClearData()
-      //this._index.ClearDataSector()
-      //this.ClearData();
       var db = new Dexie("off").open().then((res) => {
         res.table("sector").clear().then((l) => {
         })

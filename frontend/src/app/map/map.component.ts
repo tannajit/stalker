@@ -15,6 +15,7 @@ import { ExtractSelectComponent } from '../extract-select/extract-select.compone
 import { takeUntil } from 'rxjs/operators';
 import { interval, Subject } from 'rxjs';
 import Dexie from 'dexie';
+import { AuthenticationService } from '../authentication.service';
 
 @Component({
   selector: 'app-map',
@@ -29,6 +30,7 @@ export class MapComponent implements AfterViewInit {
     private _router: Router,
     private zone: NgZone,
     private aroute: ActivatedRoute,
+    private _auth: AuthenticationService,
     private index: IndexdbService,
     private dialog: MatDialog) {
     //this.index.createDatabase();
@@ -41,6 +43,7 @@ export class MapComponent implements AfterViewInit {
   dialogRef: MatDialogRef<ClientInfoComponent>;
   dialogExtract: MatDialogRef<ExtractSelectComponent>;
   dialogConf: MatDialogRef<ConfirmationDialogComponent>;
+  dialogLogout: MatDialogRef<ConfirmationDialogComponent>;
   private destroyed: Subject<void> = new Subject<void>();
   private map;
   public content = null;
@@ -79,7 +82,8 @@ export class MapComponent implements AfterViewInit {
       zoom: 8,
       zoomControl: false
     });
-    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    const tiles = L.tileLayer('http://192.168.2.240:8080/tile/{z}/{x}/{y}.png', {
+
       maxZoom: 20,
       minZoom: 2
     });
@@ -87,7 +91,8 @@ export class MapComponent implements AfterViewInit {
     this.markersCluster = this._serviceClient.markersCluster;
     this.markerClusterSector = this._serviceClient.markerClusterSector;
     if (this.markersCluster.getLayers().length == 0) {
-      this.markersCluster.clearLayers()
+      //console.log("nmi")
+      //this.markersCluster.clearLayers()
       this.PutDataInMap();
     }
     this.map.addLayer(this.markerClusterSector)
@@ -143,7 +148,7 @@ export class MapComponent implements AfterViewInit {
       }).addTo(this.map);
 
     }, (err) => {
-     // console.log(`err :${err}`)
+      // console.log(`err :${err}`)
     },
       {
         enableHighAccuracy: true,
@@ -206,12 +211,47 @@ export class MapComponent implements AfterViewInit {
       const objectStore = transaction.objectStore('pdvs');
       const objectStoreRequest = objectStore.getAll();
       //sector
+      this.markersCluster.clearLayers();
+      objectStoreRequest.onsuccess = event => {
+        console.log("here ")
+        var all = event.target.result;
+        var length = all.length;
+        console.log(length)
+        var i = 0;
+        while (i < length) {
+          var element = all[i]
+          const Point = { _id: element._id, geometry: element.geometry };
+          const geojsonPoint: geojson.Point = element.geometry;
+          var iconClient = L.icon({ iconUrl: 'assets/' + element.geometry.properties?.status + '.png', iconSize: [8, 8] });
+          var marker = L.geoJSON(geojsonPoint, {
+            pointToLayer: (point, latlon) => {
+              return L.marker(latlon, { icon: iconClient });
+            }
+          });
+          //console.log(marker)
+          marker.on('click', () => {
+            this.content = Point.geometry;
+            this.zone.run(() => this.openDialog(Point));
+            this._serviceClient.getPosition({ "Client": new L.LatLng(element.geometry.geometry.coordinates[1], element.geometry.geometry.coordinates[0]) });
+          });
+          if (element.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
+            this.DeletedMarkerCluster.addLayer(marker)
+          } else if (element.geometry.properties?.status != 'deleted') {
+            marks.push(marker)
+          }
+          i++;
+          if (i == length) {
+            console.log("<wtf")
+            this.markersCluster.addLayers(marks)
+          }
+        }
+      }
       var transactions = db.transaction(['sector'], 'readwrite');
       const objectStores = transactions.objectStore('sector');
       const objectStoreRequests = objectStores.getAll();
       objectStoreRequests.onsuccess = event => {
         var all = event.target.result;
-        this.markersCluster.clearLayers();
+        this.markerClusterSector.clearLayers();
         var length = all.length;
         var j = 0;
         while (j < length) {
@@ -228,37 +268,7 @@ export class MapComponent implements AfterViewInit {
           j++;
         }
       }
-      objectStoreRequest.onsuccess = event => {
-        var all = event.target.result;
-        this.markersCluster.clearLayers();
-        var length = all.length;
-        var i = 0;
-        while (i < length) {
-          var element = all[i]
-          const Point = { _id: element._id, geometry: element.geometry };
-          const geojsonPoint: geojson.Point = element.geometry;
-          var iconClient = L.icon({ iconUrl: 'assets/' + element.geometry.properties?.status + '.png', iconSize: [8, 8] });
-          var marker = L.geoJSON(geojsonPoint, {
-            pointToLayer: (point, latlon) => {
-              return L.marker(latlon, { icon: iconClient });
-            }
-          });
-          marker.on('click', () => {
-            this.content = Point.geometry;
-            this.zone.run(() => this.openDialog(Point));
-            this._serviceClient.getPosition({ "Client": new L.LatLng(element.geometry.geometry.coordinates[1], element.geometry.geometry.coordinates[0]) });
-          });
-          if (element.geometry.properties?.status == 'deleted' && (this.user.role == "Admin" || this.user.role == "Back Office")) {
-            this.DeletedMarkerCluster.addLayer(marker)
-          } else if (element.geometry.properties?.status != 'deleted') {
-            marks.push(marker)
-          }
-          i++;
-          if (i == length) {
-            this.markersCluster.addLayers(marks)
-          }
-        }
-      }
+
     }
   }
   ///////////// this function get PDV data from DataBase
@@ -290,7 +300,17 @@ export class MapComponent implements AfterViewInit {
         }
         i++;
       }
-    });
+    },
+      error => {
+        if (this.dialogConf) {
+          //console.log(t2 - this.startTime);
+          //console.log("---  End Sync ---- ")
+          this.dialogConf.close()
+        }
+        //this.dialogConf.close()
+        this.openAlertDialog("An error has occurred please try again later !! ")
+
+      });
   }
   ///////////// this function get Sector data from DataBase
   getSectorFromAPI() {
@@ -308,32 +328,60 @@ export class MapComponent implements AfterViewInit {
         this.markerClusterSector.addLayer(marker);
         this.AllSecteurs.push({ coor: Point.geometry.geometry.coordinates, sector: Point.geometry.properties.idSecteur });
       });
+    }, error => {
+      //this.dialogConf.close()
+      if (this.dialogConf) {
+        //console.log(t2 - this.startTime);
+        //console.log("---  End Sync ---- ")
+        this.dialogConf.close()
+      }
+      this.openAlertDialog("An error has occurred please try again later !! ")
     });
   }
 
   //// this function synchronize the data ( get data updated from Database )
   async sync() {
-    this.startTime = performance.now();
-    console.log("--- Start Sync ---- ")
-    this.getSectorFromAPI();
-    if (this.user.role != "Admin") {
-      this.getPDVFromAPI();
-    }
-    this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
-      disableClose: true
-    });
-    this.dialogConf.componentInstance.confirmMessage = "sync"
-    if (typeof Worker !== 'undefined') {
-      this.worker.onmessage = (e) => {
-        let t2 = performance.now();
+   
+    ///
+    /// user verification 
+    this._auth.isActive().subscribe(r => {
+      console.log(r)
+      if (r.length == 0) {
         if (this.dialogConf) {
-          console.log(t2 - this.startTime);
-          console.log("---  End Sync ---- ")
           this.dialogConf.close()
-          this.openAlertDialog("Sync is Done")
         }
+        this.dialogLogout = this.dialog.open(ConfirmationDialogComponent, {
+          disableClose: true
+        });
+        this.dialogLogout.componentInstance.confirmMessage = "logout"
+      } else {
+        this.startTime = performance.now();
+        console.log("--- Start Sync ---- ")
+        this.getSectorFromAPI();
+        if (this.user.role != "Admin") {
+          this.getPDVFromAPI();
+        }
+        //// sync processing ////
+        this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
+          disableClose: true
+        });
+        this.dialogConf.componentInstance.confirmMessage = "sync"
+        if (typeof Worker !== 'undefined') {
+          this.worker.onmessage = (e) => {
+            let t2 = performance.now();
+            if (this.dialogConf) {
+              console.log(t2 - this.startTime);
+              console.log("---  End Sync ---- ")
+              this.dialogConf.close()
+              this.openAlertDialog("Sync is Done")
+            }
+          }
+        }
+
       }
-    }
+    })
+
+
   }
   /////////////////////////////////////////////////////////////////
 
