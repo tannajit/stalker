@@ -1,9 +1,9 @@
 <div class="content-body">
-    
+
     <ng-container *ngIf="percentage == 100; else elseTemplate">
         <p>Position Fixed</p>
     </ng-container>
-    
+
     <ng-template #elseTemplate>
         <p>Fixing Position...</p>
     </ng-template>
@@ -23,8 +23,7 @@
     </div>
 
     <div>
-        <button mat-button class="btn-yellow" (click)="showcheck()"
-            [disabled]="(percentage!=100) ||  !Status || hide">Next</button>
+        <button mat-button class="btn-yellow" (click)="showcheck()" [disabled]="(percentage!=100) ||  !Status || hide">Next</button>
     </div>
 
     <div class="container" id="checkcodes" *ngIf="hide">
@@ -32,9 +31,7 @@
             <div class="scan-field">
                 <label class="input-label">Code Centrale Danoune : </label>
                 <div>
-                    <button mat-button class="btn-green" [disabled]="test"
-                        (click)="toggleShow(1,qrResultString);"
-                        style="align-self: flex-start;">Scan</button>
+                    <button mat-button class="btn-green" [disabled]="test" (click)="toggleShow(1,qrResultString);" style="align-self: flex-start;">Scan</button>
 
                     <div *ngFor="let code of ListCodes" class="qr-container">
                         <span *ngIf="code.nbr == 1">{{ code.value}}</span>
@@ -44,9 +41,7 @@
             <div class="scan-field">
                 <label class="input-label">Code Coca Cola : </label>
                 <div>
-                    <button mat-button class="btn-green" [disabled]="test"
-                        (click)="toggleShow(2,qrResultString)"
-                        >Scan</button>
+                    <button mat-button class="btn-green" [disabled]="test" (click)="toggleShow(2,qrResultString)">Scan</button>
                     <div *ngFor="let code of ListCodes" class="qr-container">
                         <span *ngIf="code.nbr == 2">{{code.value}}</span>
                     </div>
@@ -56,8 +51,7 @@
             <div class="scan-field">
                 <label class="input-label">Code FGD : </label>
                 <div>
-                    <button mat-button class="btn-green" [disabled]="test"
-                        (click)="toggleShow(3,qrResultString)">Scan</button>
+                    <button mat-button class="btn-green" [disabled]="test" (click)="toggleShow(3,qrResultString)">Scan</button>
                     <div *ngFor="let code of ListCodes" class="qr-container">
                         <span *ngIf="code.nbr == 3">{{ code.value}}</span>
                     </div>
@@ -99,13 +93,12 @@
                     <div class="scan-field">
                         <label class="input-label">Qr Code : </label>
                         <div>
-                            <button mat-button class="btn-green"
-                                (click)="toggleShow(4,qrResultString);scan=!scan">Scan</button>
+                            <button mat-button class="btn-green" (click)="toggleShow(4,qrResultString);scan=!scan">Scan</button>
                             <div *ngFor="let code of ListCodes" class="qr-container">
                                 <span *ngIf="code.nbr == 4">{{ code.value}}</span>
                             </div>
                         </div>
-    
+
                     </div>
                     <div *ngIf="isShown && scan " class="Scan-container">
                         <zxing-scanner Class="small-video" (scanSuccess)="onCodeResult($event)"></zxing-scanner>
@@ -128,26 +121,23 @@
                             <button mat-button class="btn-green" (click)="triggerSnapshot();">Click Here</button>
                             <button mat-button class="btn-green" (click)="toggleNFCWebcam();">Close Camera</button>
                         </div>
-                        <webcam [height]="200" [width]="500" [trigger]="triggerObservable"
-                            (imageCapture)="handleNFCImage($event)">
-                        </webcam> 
+                        <webcam [height]="200" [width]="500" [trigger]="triggerObservable" (imageCapture)="handleNFCImage($event)">
+                        </webcam>
                     </div>
                     <div *ngIf="webcamNFCImage" class="Scan-container">
                         <div class="snapshot">
-                            <img [height]="200" [width]="200" [src]="webcamNFCImage.imageAsDataUrl"
-                                style="border-radius: 8px;" />
+                            <img [height]="200" [width]="200" [src]="webcamNFCImage.imageAsDataUrl" style="border-radius: 8px;" />
                         </div>
                     </div>
                 </div>
             </ng-container>
-            
+
             <div class="pdv">
                 <div class="field">
-                    <mat-form-field    >
-                        <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="TypeDPV"
-                            [(value)]="selected">
-                            <div *ngFor="let type of TypesPDVs" >
-                                <mat-option  value="{{type}}">{{type}}</mat-option>
+                    <mat-form-field>
+                        <mat-select placeholder="PDV Type*" panelClass="selectPanel2" [(ngModel)]="TypeDPV" [(value)]="selected">
+                            <div *ngFor="let type of TypesPDVs">
+                                <mat-option value="{{type}}">{{type}}</mat-option>
                             </div>
                             <!-- 
                             <mat-option value="Detail">Detail</mat-option>
@@ -192,26 +182,25 @@
                     </mat-form-field>
                 </div>
              -->
-                
+
                 <div class="field">
                     <div class="verify-phone">
                         <div class="phone">
                             <!-- To Do  -->
-                            <span class="phone-code">+212</span> 
+                            <span class="phone-code">+212</span>
                             <!-- To Do  -->
                             <mat-form-field>
                                 <mat-label>Phone number</mat-label>
-                                <input matInput [(ngModel)]="PhoneNumber" placeholder="600000000"   (ngModelChange)="OnChangeNumber()"  required />
+                                <input matInput [(ngModel)]="PhoneNumber" placeholder="600000000" (ngModelChange)="OnChangeNumber()" required />
                             </mat-form-field>
-                            
-                            <button mat-button class="btn-green" [disabled]="disbale_sms"
-                              (click)="Verify('code'); showVerifCodeInput= true">Send Code</button>
+
+                            <button mat-button class="btn-green" [disabled]="disbale_sms" (click)="Verify('code'); showVerifCodeInput= true">Send Code</button>
                         </div>
                         <label class="warning-phone"> {{errorPhone}}  </label>
-                           
-                  
-                       
-                    </div>  
+
+
+
+                    </div>
                 </div>
                 <div class="field" *ngIf="showVerifCodeInput">
                     <p style="font-weight: bold; color: rgb(87, 22, 22);">{{display}}</p>
@@ -228,9 +217,9 @@
                             </p>
                             <ng-template #error>
                                 <p style="color: red;">{{status}}</p>
-                            </ng-template>                         
-                        </div>                 
-                    </div>   
+                            </ng-template>
+                        </div>
+                    </div>
                 </div>
                 <div class="field">
                     <mat-label class="input-label">PV photo : </mat-label>
@@ -239,8 +228,7 @@
                     </button>
                 </div>
                 <div *ngIf="showPDVWebcam" class="Scan-container">
-                    <webcam [height]="200" [width]="500" [trigger]="triggerObservable"
-                        (imageCapture)="handlePDVImage($event)">
+                    <webcam [height]="200" [width]="500" [trigger]="triggerObservable" (imageCapture)="handlePDVImage($event)">
                     </webcam>
                     <div class="camera-btns">
                         <button mat-button class="btn-yellow" (click)="triggerSnapshot()">Click Here</button>
@@ -258,9 +246,9 @@
         </div>
         <div class="btns">
             <button mat-button class="btn-red" routerLink="/map">Cancel</button>
-            <button mat-button class="btn-yellow" (click)="Send()" [disabled]="ActiveSend()">Send</button>    
+            <button mat-button class="btn-yellow" (click)="Send()" [disabled]="ActiveSend()">Send</button>
         </div>
-        
+
     </div>
 
 </div>

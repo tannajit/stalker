@@ -415,7 +415,7 @@ export class AddclientComponent implements AfterViewInit {
     this.percentage = 0
     interval(300).subscribe(x => {
       if (this.percentage < 100) {
-        this.percentage += 10
+        this.percentage += 20
       }
     });
   }
@@ -501,6 +501,13 @@ export class AddclientComponent implements AfterViewInit {
   }
 
   /////////////*********  SEND CLIENT INFOS ************////////////
+  nmi=null;
+  toBase64(arr) {
+    //arr = new Uint8Array(arr) if it's an ArrayBuffer
+    return btoa(
+       arr.reduce((data, byte) => data + String.fromCharCode(byte), '')
+    );
+ }
   async Send() {
     this.clientInfos.NomPrenom = this.NomPrenom
     this.clientInfos.TypeDPV = this.TypeDPV;
@@ -569,35 +576,31 @@ export class AddclientComponent implements AfterViewInit {
       this.AddNewClient(client)
       // this._router.navigate(['/map'])
     } else {
-      // this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
-      //   disableClose: true
-      // });
-      // this.dialogConf.componentInstance.confirmMessage = "add"
-      delete this.clientInfos.PVPhoto
-      this.clientService.SendClient1(this.clientInfos).subscribe(r=>{
-        console.log(r)
-      })
-      // this.clientService.SendClient(this.clientInfos).subscribe((res) => {
-      //   //console.log(res)
-      //   if (res.message == 'Done') {
-      //     //this.AddNewClient(res.id)
-      //     console.log(res)
-      //     var client = res.clientGeometry
-      //     client.geometry.properties["NFCP"] = this.clientInfos.NFCPhoto
-      //     client.geometry.properties["PVP"] = this.clientInfos.PVPhoto
-      //     //client["_id"]=res.id
-      //     console.log(client)
-      //     this.AddNewClient(client)
-      //     this.dialogConf.close()
-      //     this.openAlertDialog("The Client has been added successfully!", "Ok")
-      //   }
+      this.dialogConf = this.dialog.open(ConfirmationDialogComponent, {
+        disableClose: true
+      });
+      this.dialogConf.componentInstance.confirmMessage = "add"
+      this.clientService.SendClient(this.clientInfos).subscribe((res) => {
+        //console.log(res)
+        if (res.message == 'Done') {
+          //this.AddNewClient(res.id)
+          console.log(res)
+          var client = res.clientGeometry
+          client.geometry.properties["NFCP"] = this.clientInfos.NFCPhoto
+          client.geometry.properties["PVP"] = this.clientInfos.PVPhoto
+          //client["_id"]=res.id
+          console.log(client)
+          this.AddNewClient(client)
+          this.dialogConf.close()
+          this.openAlertDialog("The Client has been added successfully!", "Ok")
+        }
 
-      // }, err => {
-      //   this.dialogConf.close()
-      //   this.openAlertDialog("An error has occurred! Please Try again", "Ok")
-      //   console.log("errooooooooor")
-      //   console.log(err)
-      // });
+      }, err => {
+        this.dialogConf.close()
+        this.openAlertDialog("An error has occurred! Please Try again", "Ok")
+        console.log("errooooooooor")
+        console.log(err)
+      });
     }
   }
   ////////////////////////////////////////////////////////////////
