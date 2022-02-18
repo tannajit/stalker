@@ -516,9 +516,6 @@ export class AddclientComponent implements AfterViewInit {
     this.clientInfos.userRole = this.user.role;
     this.clientInfos.created_at = new Date()
     this.clientInfos.updated_at = new Date()
-    const blob = await (await fetch(this.clientInfos.PVPhoto)).blob();
-    this.clientInfos["blob"]=blob;
-
     if (this.loggedUser.permissions.includes("Add NFC")) {
       if (this.clientInfos.codeNFC === null) {
         this.clientInfos.status = "pink"

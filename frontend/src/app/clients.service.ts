@@ -38,7 +38,7 @@ export class ClientsService {
   private _getClientByID = this.uri + "/api1/GetClient";
   private _allDeleteRequests = this.uri + "/api1/getAllDeleteRequests";
 
-  private blob = this.uri + "/api1/blob";
+  // private blob = this.uri + "/api1/blob";
 
   private _sync = this.uri + "/api1/getClientByUser1";
   ////////////////////remplacer par uri après le port
@@ -58,25 +58,7 @@ export class ClientsService {
   SendClient(client) {
     return this.http.post<any>(this._addclient, client);
   }
-  SendClient1(client) {
-    var formData: FormData = new FormData();
-    // Currently empt
-    console.log(client.blob)
-    //var formData = new FormData(); // Currently empt
-    formData.append('file',client.blob,"name.jpeg");
-    formData.append("name", "zmr");
-    console.log(formData.getAll)
-    //  return this.http.post<any>(this.blob, client).subscribe(r=>{
-    //    console.log('hh')
-    //  });
-    const req = new HttpRequest('POST', this.blob, formData, {
-      reportProgress: true,
-      responseType: 'json'
-    });
-    console.log(req)
-
-    return this.http.request(req)
-  }
+ 
 
   upload1(file: File): Observable<HttpEvent<any>> {
     const formData: FormData = new FormData();
