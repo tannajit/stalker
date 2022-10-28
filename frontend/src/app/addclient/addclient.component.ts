@@ -354,9 +354,9 @@ export class AddclientComponent implements AfterViewInit {
           this.clientInfos["lon"] = this.lonclt
 
           this.clientService.GetNamePlace(this.latclt, this.lonclt).subscribe(res => {
-            console.log("res", res.results[0].locations[0])
-            this.city = res.results[0].locations[0].adminArea5
-            this.region = res.results[0].locations[0].adminArea3
+            console.log("res", res.address)
+            this.city = res.address.city
+            this.region = res.address.region
             console.log("city", this.city)
             console.log("region", this.region)
 

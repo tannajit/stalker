@@ -82,7 +82,7 @@ export class MapComponent implements AfterViewInit {
       zoom: 8,
       zoomControl: false
     });
-    const tiles = L.tileLayer('http://192.168.2.240:8080/tile/{z}/{x}/{y}.png', {
+    const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
       maxZoom: 20,
       minZoom: 2

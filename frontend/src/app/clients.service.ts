@@ -781,9 +781,15 @@ export class ClientsService {
       })
     });
   }
-  GetNamePlace(lat, lon) {
+  // GetNamePlace(lat, lon) {
+  //    console.log('getNametest::::::::::',lat,lon)
 
-    return this.http.get<any>("https://www.mapquestapi.com/geocoding/v1/reverse?key=JlNC9Ur4Y3uBUEqGkqdDvvOGCcFOuWwA&location=" + lat + "%2C" + lon + "&outFormat=json&thumbMaps=false")
+  //   return this.http.get<any>("https://www.mapquestapi.com/geocoding/v1/reverse?key=JlNC9Ur4Y3uBUEqGkqdDvvOGCcFOuWwA&location=" + lat + "%2C" + lon + "&outFormat=json&thumbMaps=false")
+
+  // }
+  GetNamePlace(lat, lon) {
+    console.log('getNametest::::::::::',lat,lon)
+    return this.http.get<any>('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+lat+'&'+'lon='+lon)
 
   }
   //****************************** */

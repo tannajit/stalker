@@ -346,11 +346,11 @@ export class UpdateClientComponent implements AfterViewInit, OnInit {
     //if(this.clientInfo.geometry.properties?.city||this.clientInfo.geometry.properties?.region){
 
     this.clientService.GetNamePlace(this.clientInfo.geometry.geometry.coordinates[1], this.clientInfo.geometry.geometry.coordinates[0]).subscribe(res => {
-      console.log("res", res.results[0].locations[0])
-      this.city = res.results[0].locations[0].adminArea5
-      this.region = res.results[0].locations[0].adminArea3
-      console.log("city", this.city)
-      console.log("region", this.region)
+      console.log("res", res.address)
+        this.city = res.address.city
+        this.region = res.address.region
+        console.log("cityUp", this.city)
+        console.log("regionUp", this.region)
       // this.clientInfo.geometry.properties.city =this.city
       // this.clientInfo.geometry.properties.region = this.region
 
